@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 
 var Subscription = new Schema({
   name: {type: String, required: false, trim: true},
+  confirmed: {type: Boolean, required: false, default: false},
   resource: {
     type: {type: String, trim: true, enum: ['EMAIL', 'URL'], default: 'EMAIL'},
     content: {type: String, trim: true}

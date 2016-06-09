@@ -9,5 +9,59 @@
             "baseUrl": "#(service.uri)",
             "path": "/api/v1/subscriptions"
         }]
+    }, {
+        "url": "/subscriptions",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions"
+        }]
+    }, {
+        "url": "/subscriptions/:id",
+        "method": "DELETE",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "DELETE",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/:id"
+        }]
+    }, {
+        "url": "/subscriptions/:id",
+        "method": "PATCH",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "PATCH",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/:id"
+        }]
+    }, {
+        "url": "/subscriptions/:id",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/:id"
+        }]
+    }, {
+        "url": "/subscriptions/:id/confirm",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/:id/confirm"
+        }]
+    }, {
+        "url": "/subscriptions/:id/unsubscribe",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/:id/unsubscribe"
+        }]
     }]
 }

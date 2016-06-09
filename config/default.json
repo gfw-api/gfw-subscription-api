@@ -14,5 +14,10 @@
     "apiGateway":{
         "uri": "http://localhost:8000/gateway/service",
         "queue": "redis://localhost:6379"
+    },
+    "mongodb":{
+      "database": "gfw_subscription_db",
+      "host": "192.168.99.100",
+      "port": 32780
     }
 }

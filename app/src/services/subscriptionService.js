@@ -1,6 +1,7 @@
 'use strict';
 
-var logger = require('logger');
+var _ = require('lodash');
+
 var Subscription = require('models/subscription');
 var SubscriptionSerializer = require('serializers/subscriptionSerializer');
 var config = require('config');
@@ -30,27 +31,61 @@ class SubscriptionService {
     return SubscriptionSerializer.serialize(subscriptionFormatted);
   }
 
-  static * deleteSubscriptionById(id, userId) {
-    let subscription = yield SubscriptionService.getSubscriptionById(
-      id, userId);
-    yield subscription.remove();
+  static * confirmSubscription(id, userId) {
+    let subscription = yield Subscription.where({
+      _id: id,
+      userId: userId
+    }).findOne();
 
-    return SubscriptionSerializer.serialize(subscription);
+    subscription.confirmed = true;
+    subscription.save();
+
+    return SubscriptionSerializer.serialize(
+      SubscriptionService.formatSubscription(subscription));
+  }
+
+  static * updateSubscription(id, userId, data) {
+    let subscription = yield Subscription.where({
+      _id: id,
+      userId: userId
+    }).findOne();
+
+    let attributes = _.omitBy(data, _.isNil);
+    attributes = _.omit(attributes, 'loggedUser');
+    _.each(attributes, function(value, attribute) {
+      subscription[attribute] = value;
+    });
+
+    subscription.save();
+
+    return SubscriptionSerializer.serialize(
+      SubscriptionService.formatSubscription(subscription));
+  }
+
+  static * deleteSubscriptionById(id, userId) {
+    let subscription = yield Subscription.where({
+      _id: id,
+      userId: userId
+    }).findOneAndRemove();
+
+    return SubscriptionSerializer.serialize(
+      SubscriptionService.formatSubscription(subscription));
   }
 
   static * getSubscriptionById(id, userId) {
-    let subscription = yield Subscription.findOne({
-      id: id,
+    let subscription = yield Subscription.where({
+      _id: id,
       userId: userId
-    });
+    }).findOne();
 
-    return SubscriptionSerializer.serialize(subscription);
+    return SubscriptionSerializer.serialize(
+      SubscriptionService.formatSubscription(subscription));
   }
 
   static * getSubscriptionsForUser(userId) {
     let subscriptions = yield Subscription.find({
       userId: userId
-    });
+    }).exec();
 
     return SubscriptionSerializer.serialize(subscriptions);
   }
