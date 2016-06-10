@@ -72,7 +72,7 @@ class SubscriptionService {
       SubscriptionService.formatSubscription(subscription));
   }
 
-  static * getSubscriptionById(id, userId) {
+  static * getSubscriptionForUser(id, userId) {
     let subscription = yield Subscription.where({
       _id: id,
       userId: userId

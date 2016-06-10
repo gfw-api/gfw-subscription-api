@@ -14,7 +14,7 @@ class SubscriptionsRouter {
         id = this.params.id;
 
     try {
-      this.body = yield SubscriptionService.getSubscriptionById(id, user.id);
+      this.body = yield SubscriptionService.getSubscriptionForUser(id, user.id);
     } catch (err) {
       logger.error(err);
     }
