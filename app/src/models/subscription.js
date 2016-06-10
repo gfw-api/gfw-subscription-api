@@ -2,11 +2,18 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+const ALERT_TYPES = ['EMAIL', 'URL'];
+var alertPublishers = {};
+ALERT_TYPES.forEach(function(type) {
+  var typePublisher = require('publishers/' + type.toLowerCase() + 'Publisher');
+  alertPublishers[type] = typePublisher;
+});
+
 var Subscription = new Schema({
   name: {type: String, required: false, trim: true},
   confirmed: {type: Boolean, required: false, default: false},
   resource: {
-    type: {type: String, trim: true, enum: ['EMAIL', 'URL'], default: 'EMAIL'},
+    type: {type: String, trim: true, enum: ALERT_TYPES, default: ALERT_TYPES[0]},
     content: {type: String, trim: true}
   },
   layers: {type : Array , 'default' : []},
