@@ -82,6 +82,16 @@ class SubscriptionService {
       SubscriptionService.formatSubscription(subscription));
   }
 
+  static * getSubscriptionById(id) {
+    let subscription = yield Subscription.where({ _id: id }).findOne();
+    return subscription;
+  }
+
+  static * getSubscriptionsByLayer(layerSlug) {
+    let subscriptions = yield Subscription.where({ layers: layerSlug }).find();
+    return subscriptions;
+  }
+
   static * getSubscriptionsForUser(userId) {
     let subscriptions = yield Subscription.find({
       userId: userId

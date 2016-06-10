@@ -23,4 +23,8 @@ var Subscription = new Schema({
   updateAt: {type: Date, required: false, default: Date.now},
 });
 
+Subscription.method.publish = function*(layerSlug) {
+  let analysisResults = {};
+};
+
 module.exports = mongoose.model('Subscription', Subscription);
