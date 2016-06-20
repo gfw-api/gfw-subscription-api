@@ -1,10 +1,11 @@
 prod:
-  extends:
-    file: base.yml
-    service: base
-  container_name: gfw-subscription-api
-  environment:
-    NODE_ENV: prod
+  image: vizzuality/gfw-subscription-api:1.0.0${STAGING}
+  ports:
+    - "3600"
+  env_file:
+    - prod.env
   command: start
-  volumes:
-    - ./app:/opt/gfw-subscription-api/app
+  log_driver: "gelf"
+  restart: always
+  log_opt:
+    gelf-address: ${GELF_ADDRESS}
