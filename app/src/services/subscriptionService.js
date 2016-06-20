@@ -88,7 +88,7 @@ class SubscriptionService {
   }
 
   static * getSubscriptionsByLayer(layerSlug) {
-    let subscriptions = yield Subscription.where({ layers: layerSlug }).find();
+    let subscriptions = yield Subscription.where({ layers: {name: layerSlug} }).find();
     return subscriptions;
   }
 

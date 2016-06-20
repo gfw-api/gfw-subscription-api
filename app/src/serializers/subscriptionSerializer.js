@@ -13,6 +13,10 @@ var subscriptionSerializer = new JSONAPISerializer('subscription', {
     attributes: ['type', 'content']
   },
 
+  layers: {
+    attributes: ['name', 'params']
+  },
+
   typeForAttribute: function (attribute) { return attribute; },
   keyForAttribute: 'camelCase'
 });

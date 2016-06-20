@@ -3,6 +3,7 @@
 var config = require('config');
 var logger = require('logger');
 var AsyncClient = require('async-client');
+var _ = require('lodash');
 
 var SubscriptionService = require('services/subscriptionService');
 
@@ -27,10 +28,12 @@ class AlertPublishQueue {
 
   * processMessage(channel, message) {
     let config = JSON.parse(message),
+        layerSlug = config.layer_slug,
         subscription = yield SubscriptionService.getSubscriptionById(
-          config.subscription_id);
+          config.subscription_id),
+        layer = _.find(subscription.layers, {name: layerSlug});
 
-    yield subscription.sendAlert(config.layer_slug);
+    yield subscription.publish(layer, config.begin, config.end);
   }
 }
 

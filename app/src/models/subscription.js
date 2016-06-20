@@ -9,6 +9,8 @@ ALERT_TYPES.forEach(function(type) {
   alertPublishers[type] = typePublisher;
 });
 
+var Layer = require('models/layer');
+
 var Subscription = new Schema({
   name: {type: String, required: false, trim: true},
   confirmed: {type: Boolean, required: false, default: false},
@@ -23,8 +25,10 @@ var Subscription = new Schema({
   updateAt: {type: Date, required: false, default: Date.now},
 });
 
-Subscription.method.publish = function*(layerSlug) {
-  let analysisResults = {};
+Subscription.methods.publish = function*(layerConfig, begin, end) {
+  var layer = yield Layer.findBySlug(layerConfig.name);
+  // AnalysisService.execute(layerSlug, begin, end)
+  // alertPublishers[this.resource.type].publish(subscription, layer, analysis_results)
 };
 
 module.exports = mongoose.model('Subscription', Subscription);

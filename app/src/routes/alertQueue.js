@@ -8,7 +8,7 @@ var SubscriptionService = require('services/subscriptionService');
 var MessageProcessor = require('services/messageProcessor');
 
 const CHANNEL = 'subscription_alerts';
-const ALERT_POST_CHANNEL = 'subscription_alerts_post';
+const ALERT_POST_CHANNEL = 'subscription_alerts_publish';
 
 class AlertQueue {
   constructor() {

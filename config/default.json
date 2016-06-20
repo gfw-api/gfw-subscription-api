@@ -12,7 +12,7 @@
         "port": 3600
     },
     "apiGateway":{
-        "uri": "http://localhost:8000/gateway/service",
+        "uri": "http://192.168.99.100:8000/gateway/service",
         "queue": "redis://localhost:6379"
     },
     "mongodb":{
