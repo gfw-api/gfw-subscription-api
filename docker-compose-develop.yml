@@ -8,6 +8,7 @@ develop:
   environment:
     NODE_ENV: dev
     API_GATEWAY_URI: http://192.168.99.100:8000
+    API_GATEWAY_URL: http://192.168.99.100:8000
     API_GATEWAY_QUEUE_URL: redis://192.168.99.100:6379
     API_GATEWAY_QUEUE_PROVIDER: redis
     SELF_REGISTRY: "on"

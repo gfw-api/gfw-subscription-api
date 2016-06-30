@@ -43,7 +43,7 @@ class SubscriptionsRouter {
     logger.info('Confirming subscription by id %s', this.params.id);
     try {
       this.body = yield SubscriptionService.confirmSubscription(
-        this.params.id, this.query.loggedUser.id);
+        this.params.id, this.request.query.loggedUser.id);
     } catch (err) {
       logger.error(err);
     }
@@ -62,7 +62,7 @@ class SubscriptionsRouter {
   static * unsubscribeSubscription() {
     logger.info('Unsubscribing subscription by id %s', this.params.id);
     let subscription = yield SubscriptionService.deleteSubscriptionById(
-      this.params.id, this.query.loggedUser.id);
+      this.params.id, this.request.query.loggedUser.id);
 
     if (!subscription) {
       logger.error('Subscription not found');
@@ -76,7 +76,7 @@ class SubscriptionsRouter {
   static * deleteSubscription() {
     logger.info('Deleting subscription by id %s', this.params.id);
     let subscription = yield SubscriptionService.deleteSubscriptionById(
-      this.params.id, this.query.loggedUser.id);
+      this.params.id, this.request.query.loggedUser.id);
 
     if (!subscription) {
       logger.error('Subscription not found');

@@ -6,7 +6,7 @@ var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 var subscriptionSerializer = new JSONAPISerializer('subscription', {
   attributes: [
     'name', 'createdAt', 'updatedAt', 'userId', 'geostoreId',
-    'resource', 'layers'
+    'resource', 'layers', 'params'
   ],
 
   resource: {
@@ -15,6 +15,10 @@ var subscriptionSerializer = new JSONAPISerializer('subscription', {
 
   layers: {
     attributes: ['name', 'params']
+  },
+
+  params: {
+    attributes: ['iso', 'id1', 'wdpa_id', 'use']
   },
 
   typeForAttribute: function (attribute) { return attribute; },

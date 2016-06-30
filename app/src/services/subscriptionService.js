@@ -16,6 +16,7 @@ class SubscriptionService {
       createdAt: subscription.created_at,
       updatedAt: subscription.updated_at,
       userId: subscription.userId,
+      params: subscription.params,
       geostoreId: subscription.geostoreId,
       resource: subscription.resource,
       layers: subscription.layers

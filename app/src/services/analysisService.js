@@ -1,5 +1,7 @@
 'use strict';
 
+var AnalysisClassifier = require('services/analysisClassifier');
+
 var microserviceClient = require('microservice-client');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 var deserializer = function(obj) {
@@ -15,18 +17,29 @@ var formatDate = function(date) {
 
 class AnalysisService {
 
-  static * execute(layerSlug, begin, end) {
-    let period = formatDate(begin) + ',' + formatDate(end);
+  static * execute(subscription, layerSlug, begin, end) {
+    console.log('Executing analysis for', layerSlug, begin, end);
 
+    let period = formatDate(begin) + ',' + formatDate(end),
+        query = { period: period };
+
+    if (subscription.geostoreId) {
+      query.geostore = subscription.geostoreId;
+    }
+
+    let path = AnalysisClassifier.pathFor(subscription),
+        url = '/' + layerSlug + path;
+
+    console.log('URL', url);
     let result = yield microserviceClient.requestToMicroservice({
-      uri: '/' + layerSlug,
-      method: 'GET',
-      json: true,
-      qs: {period: period}
-    });
+          uri: url,
+          method: 'GET',
+          json: true,
+          qs: query
+        });
 
     if (result.statusCode !== 200) {
-      console.error('Error obtaining layer:');
+      console.error('Error calculating analysis:');
       console.error(result.body);
       return null;
     }
@@ -36,4 +49,4 @@ class AnalysisService {
 
 }
 
-module.export = AnalysisService;
+module.exports = AnalysisService;
