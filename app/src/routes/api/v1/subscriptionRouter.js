@@ -2,7 +2,7 @@
 
 var Router = require('koa-router');
 var logger = require('logger');
-//var StoryValidator = require('validators/storyValidator');
+var Subscription = require('models/subscription');
 var SubscriptionService = require('services/subscriptionService');
 var router = new Router({
   prefix: '/subscriptions'
@@ -44,6 +44,23 @@ class SubscriptionsRouter {
     try {
       this.body = yield SubscriptionService.confirmSubscription(
         this.params.id, this.request.query.loggedUser.id);
+    } catch (err) {
+      logger.error(err);
+    }
+  }
+
+  static * sendConfirmation() {
+    logger.info('Resending confirmation email for subscription with id %s', this.params.id);
+    var user = this.request.query.loggedUser,
+        id = this.params.id;
+
+    let subscription = yield Subscription.where({
+      _id: id,
+      userId: user.id
+    }).findOne();
+
+    try {
+      this.body = SubscriptionService.sendConfirmation(subscription);
     } catch (err) {
       logger.error(err);
     }
@@ -92,6 +109,7 @@ router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', SubscriptionsRouter.getSubscriptions);
 router.get('/:id', SubscriptionsRouter.getSubscription);
 router.get('/:id/confirm', SubscriptionsRouter.confirmSubscription);
+router.get('/:id/send_confirmation', SubscriptionsRouter.sendConfirmation);
 router.get('/:id/unsubscribe', SubscriptionsRouter.unsubscribeSubscription);
 router.patch('/:id', SubscriptionsRouter.updateSubscription);
 router.delete('/:id', SubscriptionsRouter.deleteSubscription);

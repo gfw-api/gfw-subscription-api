@@ -29,15 +29,25 @@ class SubscriptionService {
     data.userId = data.loggedUser.id;
 
     let subscriptionFormatted = SubscriptionService.formatSubscription(data);
-    yield new Subscription(subscriptionFormatted).save();
+    let subscription = yield new Subscription(subscriptionFormatted).save();
+    let serializedSubscription = SubscriptionSerializer.serialize(subscriptionFormatted);
 
-    mailService.sendMail('subscription-confirmation', {
-      confirmation_url: 'http://google.com'
-    },[{
-        address: data.email
-    }]);
+    SubscriptionService.sendConfirmation(subscription);
 
-    return SubscriptionSerializer.serialize(subscriptionFormatted);
+    return serializedSubscription;
+  }
+
+  static sendConfirmation(subscription) {
+    if (subscription.resource.type === 'EMAIL') {
+      mailService.sendMail('subscription-confirmation', {
+        confirmation_url: 'http://google.com'
+      },[{
+          address: subscription.resource.content
+      }]);
+
+      return SubscriptionSerializer.serialize(
+        SubscriptionService.formatSubscription(subscription));
+    }
   }
 
   static * confirmSubscription(id, userId) {
