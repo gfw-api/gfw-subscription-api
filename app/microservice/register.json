@@ -46,6 +46,15 @@
             "path": "/api/v1/subscriptions/:id"
         }]
     }, {
+        "url": "/subscriptions/:id/send_confirmation",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/:id/send_confirmation"
+        }]
+    }, {
         "url": "/subscriptions/:id/confirm",
         "method": "GET",
         "authenticated": true,
