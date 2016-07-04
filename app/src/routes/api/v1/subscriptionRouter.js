@@ -60,7 +60,8 @@ class SubscriptionsRouter {
     }).findOne();
 
     try {
-      this.body = SubscriptionService.sendConfirmation(subscription);
+      SubscriptionService.sendConfirmation(subscription);
+      this.redirect(this.headers.referer);
     } catch (err) {
       logger.error(err);
     }
