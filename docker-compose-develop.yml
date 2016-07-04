@@ -11,6 +11,7 @@ develop:
     API_GATEWAY_URL: http://192.168.99.100:8000
     API_GATEWAY_QUEUE_URL: redis://192.168.99.100:6379
     API_GATEWAY_QUEUE_PROVIDER: redis
+    API_GATEWAY_QUEUE_NAME: mail
     SELF_REGISTRY: "on"
     SPARKPOST_API_KEY: <apikey>
   command: develop

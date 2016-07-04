@@ -6,6 +6,8 @@ var Subscription = require('models/subscription');
 var SubscriptionSerializer = require('serializers/subscriptionSerializer');
 var config = require('config');
 
+var mailService = require('services/mailService');
+
 class SubscriptionService {
 
   static formatSubscription(subscription) {
@@ -28,6 +30,12 @@ class SubscriptionService {
 
     let subscriptionFormatted = SubscriptionService.formatSubscription(data);
     yield new Subscription(subscriptionFormatted).save();
+
+    mailService.sendMail('subscription-confirmation', {
+      confirmation_url: 'http://google.com'
+    },[{
+        address: data.email
+    }]);
 
     return SubscriptionSerializer.serialize(subscriptionFormatted);
   }

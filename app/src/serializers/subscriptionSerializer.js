@@ -6,7 +6,7 @@ var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 var subscriptionSerializer = new JSONAPISerializer('subscription', {
   attributes: [
     'name', 'createdAt', 'updatedAt', 'userId', 'geostoreId',
-    'resource', 'layers', 'params'
+    'resource', 'layers', 'params', 'confirmed'
   ],
 
   resource: {
