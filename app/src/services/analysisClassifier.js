@@ -15,12 +15,12 @@ class AnalysisClassifier {
       return url;
     }
 
-    if (params.use) {
-      return '/use/' + params.use.name + '/' + params.use.id;
+    if (params.use && params.useid) {
+      return '/use/' + params.use + '/' + params.useid;
     }
 
-    if (params.wdpa_id) {
-      return '/wdpa/' + params.wdpa_id;
+    if (params.wdpa) {
+      return '/wdpa/' + params.wdpa;
     }
 
     return '/';
