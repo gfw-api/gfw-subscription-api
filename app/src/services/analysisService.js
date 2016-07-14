@@ -30,7 +30,6 @@ class AnalysisService {
     let path = AnalysisClassifier.pathFor(subscription),
         url = '/' + layerSlug + path;
 
-    console.log('URL', url);
     let result = yield microserviceClient.requestToMicroservice({
           uri: url,
           method: 'GET',

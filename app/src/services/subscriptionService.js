@@ -7,6 +7,7 @@ var SubscriptionSerializer = require('serializers/subscriptionSerializer');
 var config = require('config');
 
 var mailService = require('services/mailService');
+var UrlService = require('services/urlService');
 
 class SubscriptionService {
 
@@ -40,7 +41,7 @@ class SubscriptionService {
   static sendConfirmation(subscription) {
     if (subscription.resource.type === 'EMAIL') {
       mailService.sendMail('subscription-confirmation', {
-        confirmation_url: 'http://google.com'
+        confirmation_url: UrlService.confirmationUrl(subscription)
       },[{
           address: subscription.resource.content
       }]);

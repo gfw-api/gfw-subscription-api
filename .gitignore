@@ -2,3 +2,4 @@
 .DS_STORE
 npm-debug.log
 prod.env
+*.u*~

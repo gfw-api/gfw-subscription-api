@@ -1,6 +1,7 @@
 'use strict';
 
 var Router = require('koa-router');
+var UrlService = require('services/urlService');
 var logger = require('logger');
 var Subscription = require('models/subscription');
 var SubscriptionService = require('services/subscriptionService');
@@ -42,8 +43,10 @@ class SubscriptionsRouter {
   static * confirmSubscription() {
     logger.info('Confirming subscription by id %s', this.params.id);
     try {
-      this.body = yield SubscriptionService.confirmSubscription(
+      yield SubscriptionService.confirmSubscription(
         this.params.id, this.request.query.loggedUser.id);
+      this.redirect(UrlService.flagshipUrl(
+        '/my_gfw/subscriptions?subscription_confirmed=true'));
     } catch (err) {
       logger.error(err);
     }

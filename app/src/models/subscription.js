@@ -1,4 +1,5 @@
 'use strict';
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var logger = require('logger');
@@ -12,6 +13,8 @@ ALERT_TYPES.forEach(function(type) {
 
 var Layer = require('models/layer');
 var AnalysisService = require('services/analysisService');
+var AnalysisResultsAdapter = require('adapters/analysisResultsAdapter');
+var AnalysisResultsPresenter = require('presenters/analysisResultsPresenter');
 
 var Subscription = new Schema({
   name: {type: String, required: false, trim: true},
@@ -30,14 +33,20 @@ var Subscription = new Schema({
 
 Subscription.methods.publish = function*(layerConfig, begin, end) {
   var layer = yield Layer.findBySlug(layerConfig.name);
+  if (!layer) { return; }
 
-  if (layer) {
-    console.log('Going to run analysis ok');
-    var analysisResults = yield AnalysisService.execute(
-      this, layerConfig.name, begin, end);
-    logger.info(analysisResults);
-    // alertPublishers[this.resource.type].publish(subscription, layer, analysis_results)
-  }
+  var results = yield AnalysisService.execute(
+    this, layerConfig.name, begin, end);
+
+  results = AnalysisResultsAdapter.transform(results, layer);
+  if (AnalysisResultsAdapter.isZero(results)) { return; }
+
+  results = AnalysisResultsPresenter.render(results, layer);
+
+  alertPublishers[this.resource.type].publish(this, results, layer);
+
+  console.log('Results');
+  console.log(results);
 };
 
 module.exports = mongoose.model('Subscription', Subscription);
