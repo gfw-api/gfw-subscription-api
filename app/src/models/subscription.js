@@ -41,7 +41,8 @@ Subscription.methods.publish = function*(layerConfig, begin, end) {
   results = AnalysisResultsAdapter.transform(results, layer);
   if (AnalysisResultsAdapter.isZero(results)) { return; }
 
-  results = AnalysisResultsPresenter.render(results, layer);
+  results = AnalysisResultsPresenter.render(
+    results, this, layer, begin, end);
 
   alertPublishers[this.resource.type].publish(this, results, layer);
 

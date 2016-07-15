@@ -1,14 +1,80 @@
 'use strict';
 
+var moment = require('moment'),
+    _      = require('lodash');
+
 var VIIRSPresenter = require('presenters/viirsPresenter'),
     GLADPresenter  = require('presenters/gladPresenter');
+
+var UrlService = require('services/urlService'),
+    AlertUrlService = require('services/alertUrlService');
 
 const PRESENTER_MAP = {
   'viirs-active-fires': VIIRSPresenter,
   'glad-alerts': GLADPresenter
 };
 
-const decorateWithConfig = function(results) {
+var decorateWithName = function(results, subscription) {
+  if (!_.isEmpty(subscription.name)) {
+    results.alert_name = subscription.name;
+  } else {
+    results.alert_name = 'Unnamed Subscription';
+  }
+
+  return results;
+};
+
+var summaryForLayer = function(layer) {
+  let meta = layer.meta;
+  if (meta === undefined) { return ''; }
+
+  return '';
+  //let updatePeriod = meta.updates.charAt(0).toUpperCase() + meta.updates.slice(1);
+  //return `${meta.description} at a ${meta.resolution} resolution.
+    //Coverage of ${meta.coverage}. Source is ${meta.source}.
+    //Available data from ${meta.timescale}, updated ${updatePeriod}`;
+};
+
+var decorateWithMetadata = function(results, layer) {
+  if (!layer.meta) { return results; }
+
+  results.alert_type = layer.meta.description;
+  results.alert_summary = summaryForLayer(layer);
+
+  return results;
+};
+
+var decorateWithDates = function(results, begin, end) {
+  begin = moment(begin).format('YYYY-MM-DD');
+  end = moment(end).format('YYYY-MM-DD');
+  results.alert_date = begin + ' to ' + end;
+
+  return results;
+};
+
+var decorateWithLinks = function(results, subscription, layer, begin, end) {
+  results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
+  results.subscriptions_url = UrlService.flagshipUrl('/my_gfw/subscriptions');
+  results.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
+
+  return results;
+};
+
+var decorateWithArea = function(results, subscription) {
+  let params = subscription.params || {};
+
+  if (params.iso) {
+    results.selected_area = `ISO Code: ${params.iso}`;
+
+    if (params.id1) {
+      results.selected_area += `, ID1: ${params.id1}`;
+    }
+  } else if (params.wdpa) {
+    results.selected_area = `WDPA ID: ${params.wdpa}`;
+  } else {
+    results.selected_area = 'Custom Area';
+  }
+
   return results;
 };
 
@@ -17,14 +83,20 @@ class AnalysisResultsPresenter {
     return results;
   }
 
-  static render(results, layer) {
+  static render(results, subscription, layer, begin, end) {
     let Presenter = PRESENTER_MAP[layer.slug];
 
     if (Presenter) {
       results = Presenter.transform(results, layer);
     }
 
-    return this.decorateWithConfig(results);
+    results = decorateWithName(results, subscription);
+    results = decorateWithArea(results, subscription);
+    results = decorateWithLinks(results, subscription, layer, begin, end);
+    results = decorateWithMetadata(results, layer);
+    results = decorateWithDates(results, begin, end);
+
+    return results;
   }
 }
 

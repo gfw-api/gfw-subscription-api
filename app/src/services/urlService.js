@@ -14,6 +14,10 @@ class UrlService {
       return BASE_URL + '/subscriptions/' + subscription._id + '/confirm';
   }
 
+  static unsubscribeUrl(subscription) {
+      return BASE_URL + '/subscriptions/' + subscription._id + '/unsubscribe';
+  }
+
 }
 
 module.exports = UrlService;
