@@ -15,7 +15,7 @@ describe('Subscription serializer test', function() {
       type: 'EMAIL',
       content: 'adam.mulligan@vizzuality.com'
     },
-    layers: ['layer_slug']
+    datasets: ['layer_slug']
   };
 
   it('Generate correct jsonapi response of the story', function() {
@@ -33,6 +33,6 @@ describe('Subscription serializer test', function() {
     data.attributes.should.have.property('resource');
     data.attributes.should.have.property('userId');
     data.attributes.should.have.property('geostoreId');
-    data.attributes.should.have.property('layers');
+    data.attributes.should.have.property('datasets');
   });
 });

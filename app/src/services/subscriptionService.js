@@ -22,7 +22,7 @@ class SubscriptionService {
       params: subscription.params,
       geostoreId: subscription.geostoreId,
       resource: subscription.resource,
-      layers: subscription.layers
+      datasets: subscription.datasets
     };
   }
 
@@ -108,7 +108,7 @@ class SubscriptionService {
   }
 
   static * getSubscriptionsByLayer(layerSlug) {
-    let subscriptions = yield Subscription.where({ layers: {name: layerSlug} }).find();
+    let subscriptions = yield Subscription.where({ datasets: {name: layerSlug} }).find();
     return subscriptions;
   }
 

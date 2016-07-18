@@ -23,7 +23,7 @@ var Subscription = new Schema({
     type: {type: String, trim: true, enum: ALERT_TYPES, default: ALERT_TYPES[0]},
     content: {type: String, trim: true}
   },
-  layers: {type: Array, 'default' : []},
+  datasets: {type: Array, 'default' : []},
   geostoreId: {type: String, trim: true},
   params: {type: Schema.Types.Mixed, default: {}},
   userId: {type: String, trim: true},

@@ -31,7 +31,7 @@ class AlertPublishQueue {
         layerSlug = config.layer_slug,
         subscription = yield SubscriptionService.getSubscriptionById(
           config.subscription_id),
-        layer = _.find(subscription.layers, {name: layerSlug});
+        layer = _.find(subscription.datasets, {name: layerSlug});
 
     yield subscription.publish(layer, config.begin, config.end);
   }
