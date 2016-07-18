@@ -15,6 +15,8 @@ var ErrorSerializer = require('serializers/errorSerializer');
 var mongoose = require('mongoose');
 var mongoUri = process.env.MONGO_URI || 'mongodb://' + config.get('mongodb.host') + ':' + config.get('mongodb.port') + '/' + config.get('mongodb.database');
 
+var cronLoader = require('cronLoader');
+
 var onDbReady = function(err) {
   if (err) {
     logger.error(err);
@@ -75,6 +77,8 @@ var onDbReady = function(err) {
           logger.error(err);
           process.exit(1);
       });
+
+      cronLoader.load();
   });
 
   logger.info('Server started in port:' + port);

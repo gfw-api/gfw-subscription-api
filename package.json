@@ -41,7 +41,8 @@
     "microservice-client": "git+https://github.com/Vizzuality/microservice-client.git#1.2.1",
     "moment": "^2.13.0",
     "mongoose": "4.4.6",
-    "url": "0.11.0"
+    "url": "0.11.0",
+    "cron": "~1.1.0"
   },
   "devDependencies": {
     "co-mocha": "1.1.2",

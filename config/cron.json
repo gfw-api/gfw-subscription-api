@@ -1,0 +1,5 @@
+[{
+  "name": "GLAD Alerts",
+  "dataset": "glad-alerts",
+  "crontab": "* * * * *"
+}]
