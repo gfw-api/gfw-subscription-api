@@ -6,10 +6,10 @@ class AnalysisClassifier {
     let params = subscription.params || {};
 
     if (params.iso) {
-      let url = '/admin/' + params.iso;
+      let url = '/admin/' + params.iso.country;
 
-      if (params.id1) {
-        url += '/' + params.id1;
+      if (params.iso.region) {
+        url += '/' + params.iso.region;
       }
 
       return url;

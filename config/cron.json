@@ -1,5 +1,5 @@
 [{
-  "name": "GLAD Alerts",
-  "dataset": "glad-alerts",
+  "name": "Viirs active fires",
+  "dataset": "viirs-active-fires",
   "crontab": "* * * * *"
 }]

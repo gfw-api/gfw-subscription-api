@@ -108,7 +108,7 @@ class SubscriptionService {
   }
 
   static * getSubscriptionsByLayer(layerSlug) {
-    let subscriptions = yield Subscription.where({ datasets: {name: layerSlug} }).find();
+    let subscriptions = yield Subscription.find({ datasets: {$in: [layerSlug]}, confirmed: true }).exec();
     return subscriptions;
   }
 

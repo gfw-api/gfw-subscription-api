@@ -17,10 +17,10 @@ const iso = function(subscription) {
   let params = subscription.params || {};
 
   if (params.iso) {
-    let iso = params.iso;
+    let iso = params.iso.country;
 
-    if (params.id1) {
-      iso += `-${params.id1}`;
+    if (params.iso.region) {
+      iso += `-${params.iso.region}`;
     }
 
     return iso;
