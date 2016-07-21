@@ -3,6 +3,7 @@
     "name": "#(service.name)",
     "urls": [{
         "url": "/subscriptions",
+        "authenticated": true,
         "method": "POST",
         "endpoints": [{
             "method": "POST",

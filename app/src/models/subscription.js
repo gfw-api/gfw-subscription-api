@@ -32,12 +32,13 @@ var Subscription = new Schema({
 });
 
 Subscription.methods.publish = function*(layerConfig, begin, end) {
+  logger.info('Publishing subscription with data', layerConfig, begin, end);
   var layer = yield Layer.findBySlug(layerConfig.name);
   if (!layer) { return; }
 
   var results = yield AnalysisService.execute(
-    this, layerConfig.name, begin, end);
-
+    this, layerConfig.slug, begin, end);
+  logger.debug('Results obtained', results);
   results = AnalysisResultsAdapter.transform(results, layer);
   if (AnalysisResultsAdapter.isZero(results)) { return; }
 

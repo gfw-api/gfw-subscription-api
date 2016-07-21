@@ -63,11 +63,11 @@ var decorateWithLinks = function(results, subscription, layer, begin, end) {
 var decorateWithArea = function(results, subscription) {
   let params = subscription.params || {};
 
-  if (params.iso) {
-    results.selected_area = `ISO Code: ${params.iso}`;
+  if (params.iso.country) {
+    results.selected_area = `ISO Code: ${params.iso.country}`;
 
-    if (params.id1) {
-      results.selected_area += `, ID1: ${params.id1}`;
+    if (params.iso.region) {
+      results.selected_area += `, ID1: ${params.iso.region}`;
     }
   } else if (params.wdpa) {
     results.selected_area = `WDPA ID: ${params.wdpa}`;

@@ -28,13 +28,15 @@ class AlertQueue {
   }
 
   * processMessage(channel, message) {
+    logger.info('Processing alert');
     let layerSlug = MessageProcessor.getLayerSlug(message),
         begin = MessageProcessor.getBeginDate(message),
         end   = MessageProcessor.getEndDate(message);
 
+    logger.debug('Params in message', layerSlug, begin, end);
     let subscriptions = yield SubscriptionService.getSubscriptionsByLayer(
       layerSlug);
-
+    logger.debug('Subscriptions obtained', subscriptions);
     try {
       logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
 

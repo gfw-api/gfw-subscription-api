@@ -38,7 +38,7 @@
     "koa-router": "5.4.0",
     "koa-validate": "0.2.11",
     "lodash": "^4.13.1",
-    "microservice-client": "git+https://github.com/Vizzuality/microservice-client.git#1.2.1",
+    "microservice-client": "git+https://github.com/Vizzuality/microservice-client.git#1.2.4",
     "moment": "^2.13.0",
     "mongoose": "4.4.6",
     "url": "0.11.0",

@@ -1,5 +1,5 @@
 'use strict';
-
+var logger = require('logger');
 var AnalysisClassifier = require('services/analysisClassifier');
 
 var microserviceClient = require('microservice-client');
@@ -18,7 +18,8 @@ var formatDate = function(date) {
 class AnalysisService {
 
   static * execute(subscription, layerSlug, begin, end) {
-    console.log('Executing analysis for', layerSlug, begin, end);
+
+    logger.info('Executing analysis for', layerSlug, begin, end);
 
     let period = formatDate(begin) + ',' + formatDate(end),
         query = { period: period };
