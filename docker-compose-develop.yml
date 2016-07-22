@@ -13,6 +13,7 @@ develop:
     API_GATEWAY_QUEUE_URL: redis://192.168.99.100:6379
     API_GATEWAY_QUEUE_PROVIDER: redis
     API_GATEWAY_QUEUE_NAME: mail
+    MIGRATE_URI: http://migration:}HVVKfFiLuuGYEg4CPVAQEhmCbfAMM@staging.api-staging.globalforestwatch.org/migrations/subscriptions
   command: develop
   links:
     - mongo
