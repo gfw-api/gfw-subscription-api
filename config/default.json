@@ -19,5 +19,8 @@
       "database": "gfw_subscription_db",
       "host": "192.168.99.100",
       "port": 32780
+  },
+  "migrate":{
+        "uri": ""
     }
 }
