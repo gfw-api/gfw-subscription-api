@@ -2,10 +2,10 @@
   "name": "Viirs active fires",
   "dataset": "viirs-active-fires",
   "crontab": "* */10 * * * *",
-  "periodicity": 24*60*60*1000
+  "periodicity": 86400000
 },{
   "name": "Glad alerts",
   "dataset": "glad-alerts",
   "crontab": "* */10 * * * *",
-  "periodicity": 7*24*60*60*1000
+  "periodicity": 604800000
 }]
