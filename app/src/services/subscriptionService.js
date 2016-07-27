@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
-
+var logger = require('logger');
 var Subscription = require('models/subscription');
 var SubscriptionSerializer = require('serializers/subscriptionSerializer');
 var config = require('config');
@@ -30,6 +30,7 @@ class SubscriptionService {
     data.userId = data.loggedUser.id;
 
     let subscriptionFormatted = SubscriptionService.formatSubscription(data);
+    logger.debug('Creating subscription ', subscriptionFormatted);
     let subscription = yield new Subscription(subscriptionFormatted).save();
     let serializedSubscription = SubscriptionSerializer.serialize(subscriptionFormatted);
 

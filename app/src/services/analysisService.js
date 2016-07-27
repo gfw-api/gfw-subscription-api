@@ -6,7 +6,7 @@ var microserviceClient = require('microservice-client');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 var deserializer = function(obj) {
     return function(callback) {
-        new JSONAPIDeserializer({}).deserialize(obj, callback);
+        new JSONAPIDeserializer({keyForAttribute: 'camelCase'}).deserialize(obj, callback);
     };
 };
 
@@ -17,15 +17,18 @@ var formatDate = function(date) {
 
 class AnalysisService {
 
-  static * execute(subscription, layerSlug, begin, end) {
+  static * execute(subscription, layerSlug, begin, end, forSubscription) {
 
     logger.info('Executing analysis for', layerSlug, begin, end);
 
     let period = formatDate(begin) + ',' + formatDate(end),
         query = { period: period };
 
-    if (subscription.geostoreId) {
-      query.geostore = subscription.geostoreId;
+    if (subscription.params.geostoreId) {
+      query.geostore = subscription.params.geostoreId;
+    }
+    if(forSubscription) {
+        query.forSubscription = true;
     }
 
     let path = AnalysisClassifier.pathFor(subscription),

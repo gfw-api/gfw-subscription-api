@@ -27,6 +27,8 @@
   "dependencies": {
     "async-client": "git+https://github.com/Vizzuality/async-client-nodejs.git#1.0.0",
     "bunyan": "1.7.1",
+    "cartodb": "^0.5.1",
+    "co-request": "^1.0.0",
     "co-sleep": "0.0.1",
     "config": "1.19.0",
     "cron": "~1.1.0",
@@ -44,6 +46,8 @@
     "microservice-client": "git+https://github.com/Vizzuality/microservice-client.git#1.2.4",
     "moment": "^2.13.0",
     "mongoose": "4.4.6",
+    "mustache": "^2.2.1",
+    "turf-explode": "^3.0.12",
     "url": "0.11.0"
   },
   "devDependencies": {

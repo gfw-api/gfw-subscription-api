@@ -7,6 +7,7 @@ develop:
   container_name: gfw-subscription-api-develop
   environment:
     NODE_ENV: dev
+    CARTODB_USER: wri-01
     FLAGSHIP_URL: http://staging.globalforestwatch.org
     API_GATEWAY_URL: http://192.168.99.100:8000
     API_GATEWAY_EXTERNAL_URL: http://192.168.99.100:8000

@@ -2,7 +2,7 @@
 
 class GLADPresenter {
 
-  static transform(results, layer) {
+  static * transform(results, layer, subscription) {
     results.value = results.value + ' forest change alerts';
     return results;
   }

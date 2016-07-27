@@ -83,11 +83,11 @@ class AnalysisResultsPresenter {
     return results;
   }
 
-  static render(results, subscription, layer, begin, end) {
+  static * render(results, subscription, layer, begin, end) {
     let Presenter = PRESENTER_MAP[layer.slug];
 
     if (Presenter) {
-      results = Presenter.transform(results, layer);
+      results = yield Presenter.transform(results, layer, subscription, begin, end);
     }
 
     results = decorateWithName(results, subscription);

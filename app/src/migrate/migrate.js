@@ -11,7 +11,6 @@ var mongoUri = process.env.MONGO_URI || 'mongodb://' + config.get('mongodb.host'
 
 let Subscription = require('models/subscription');
 
-
 var microserviceClient = require('microservice-client');
 
 var obtainData = function*(cursor) {
@@ -92,7 +91,7 @@ var transformAndSaveData = function*(data){
                              region: data[i].id1
                          },
                          geostoreId: data[i].geostore,
-                         wdpa: data[i].wdpa,
+                         wdpaid: data[i].wdpaid,
                          use: data[i].use,
                          useId: data[i].useid,
                          ifl: data[i].ifl,
