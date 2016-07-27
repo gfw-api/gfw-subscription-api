@@ -109,27 +109,6 @@ class SubscriptionsRouter {
     this.body = subscription;
   }
 
-  static * test(){
-      var subscription = {
-          name: 'test',
-          createdAt: '2016-04-12T15:41:38.000Z',
-          updatedAt: '2016-04-12T15:41:38.125Z',
-          userId: 'aaaa',
-          resource: {
-              type: 'EMAIL',
-              content: 'adam.mulligan@vizzuality.com'
-          },
-          params: {
-              iso: {
-                  country: 'BRA'
-              }
-          },
-          datasets: ['layer_slug']
-      };
-    //   logger.debug(ImageService);
-     yield imageService.overviewImage(subscription);
-
-  }
 }
 
 router.post('/', SubscriptionsRouter.createSubscription);
@@ -140,6 +119,5 @@ router.get('/:id/send_confirmation', SubscriptionsRouter.sendConfirmation);
 router.get('/:id/unsubscribe', SubscriptionsRouter.unsubscribeSubscription);
 router.patch('/:id', SubscriptionsRouter.updateSubscription);
 router.delete('/:id', SubscriptionsRouter.deleteSubscription);
-router.get('/test', SubscriptionsRouter.test);
 
 module.exports = router;
