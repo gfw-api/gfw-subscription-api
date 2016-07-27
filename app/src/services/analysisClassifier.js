@@ -5,7 +5,7 @@ class AnalysisClassifier {
   static pathFor(subscription) {
     let params = subscription.params || {};
 
-    if (params.iso) {
+    if (params.iso && params.iso.country) {
       let url = '/admin/' + params.iso.country;
 
       if (params.iso.region) {
