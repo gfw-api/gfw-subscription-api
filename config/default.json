@@ -11,16 +11,19 @@
         "uri": "http://192.168.99.100:3200",
         "port": 3600
     },
-    "apiGateway":{
+    "apiGateway": {
         "uri": "http://192.168.99.100:8000/gateway/service",
         "queue": "redis://localhost:6379"
     },
-    "mongodb":{
-      "database": "gfw_subscription_db",
-      "host": "192.168.99.100",
-      "port": 32780
-  },
-  "migrate":{
+    "mongodb": {
+        "database": "gfw_subscription_db",
+        "host": "192.168.99.100",
+        "port": 32780
+    },
+    "migrate": {
         "uri": ""
+    },
+    "cartoDB":{
+        "user": null
     }
 }

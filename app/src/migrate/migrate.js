@@ -11,7 +11,6 @@ var mongoUri = process.env.MONGO_URI || 'mongodb://' + config.get('mongodb.host'
 
 let Subscription = require('models/subscription');
 
-
 var microserviceClient = require('microservice-client');
 
 var obtainData = function*(cursor) {

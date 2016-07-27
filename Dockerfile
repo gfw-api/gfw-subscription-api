@@ -1,7 +1,6 @@
 FROM mhart/alpine-node:6.2.2
 MAINTAINER raul.requero@vizzuality.com
 
-
 ENV NAME gfw-subscription-api
 ENV USER microservice
 
