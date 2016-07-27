@@ -19,8 +19,8 @@ class AnalysisClassifier {
       return '/use/' + params.use + '/' + params.useid;
     }
 
-    if (params.wdpa) {
-      return '/wdpa/' + params.wdpa;
+    if (params.wdpaid) {
+      return '/wdpa/' + params.wdpaid;
     }
 
     return '/';
