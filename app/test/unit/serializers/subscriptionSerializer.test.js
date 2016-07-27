@@ -10,7 +10,6 @@ describe('Subscription serializer test', function() {
     createdAt: '2016-04-12T15:41:38.000Z',
     updatedAt: '2016-04-12T15:41:38.125Z',
     userId: 'aaaa',
-    geostoreId: 'aaaa',
     resource: {
       type: 'EMAIL',
       content: 'adam.mulligan@vizzuality.com'
@@ -32,7 +31,6 @@ describe('Subscription serializer test', function() {
     data.attributes.should.have.property('updatedAt');
     data.attributes.should.have.property('resource');
     data.attributes.should.have.property('userId');
-    data.attributes.should.have.property('geostoreId');
     data.attributes.should.have.property('datasets');
   });
 });

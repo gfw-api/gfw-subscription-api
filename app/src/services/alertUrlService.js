@@ -35,7 +35,7 @@ class AlertUrlService {
     let query = {
       begin: moment(begin).format('YYYY-MM-DD'),
       end: moment(end).format('YYYY-MM-DD'),
-      geostore: subscription.geostoreId
+      geostore: subscription.params.geostore
     };
 
     let existingUrlParams = _.pick(subscription.params, ALLOWED_PARAMS);

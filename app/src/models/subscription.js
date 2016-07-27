@@ -24,7 +24,6 @@ var Subscription = new Schema({
     content: {type: String, trim: true}
   },
   datasets: {type: Array, 'default' : []},
-  geostoreId: {type: String, trim: true},
   params: {type: Schema.Types.Mixed, default: {}},
   userId: {type: String, trim: true, required: false},
   createdAt: {type: Date, required: false, default: Date.now},

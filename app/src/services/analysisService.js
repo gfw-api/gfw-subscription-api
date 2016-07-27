@@ -24,8 +24,8 @@ class AnalysisService {
     let period = formatDate(begin) + ',' + formatDate(end),
         query = { period: period };
 
-    if (subscription.params.geostoreId) {
-      query.geostore = subscription.params.geostoreId;
+    if (subscription.params.geostore) {
+      query.geostore = subscription.params.geostore;
     }
     if(forSubscription) {
         query.forSubscription = true;

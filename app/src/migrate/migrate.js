@@ -77,7 +77,6 @@ var transformAndSaveData = function*(data){
                  yield new Subscription({
                      name: data[i].name,
                      confirmed: data[i].confirmed,
-                     geostoreId: data[i].geostore,
                      resource:{
                          type: 'EMAIL',
                          content: data[i].email
@@ -90,7 +89,7 @@ var transformAndSaveData = function*(data){
                              country: data[i].iso,
                              region: data[i].id1
                          },
-                         geostoreId: data[i].geostore,
+                         geostore: data[i].geostore,
                          wdpaid: data[i].wdpaid,
                          use: data[i].use,
                          useId: data[i].useid,

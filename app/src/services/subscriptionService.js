@@ -22,7 +22,6 @@ class SubscriptionService {
             updatedAt: subscription.updated_at,
             userId: subscription.userId,
             params: subscription.params,
-            geostoreId: subscription.geostoreId,
             resource: subscription.resource,
             datasets: subscription.datasets
         };
