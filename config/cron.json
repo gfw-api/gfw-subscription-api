@@ -1,4 +1,4 @@
-.[{
+[{
   "name": "Viirs active fires",
   "dataset": "viirs-active-fires",
   "crontab": "00 */10 * * * *",
