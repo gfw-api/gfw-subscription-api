@@ -1,5 +1,5 @@
 'use strict';
-
+var logger = require('logger');
 var mailService = require('services/mailService');
 
 const DEFAULT_TEMPLATE = 'new-forest-change-notification';
@@ -10,6 +10,7 @@ const TEMPLATE_MAP = {
 class EmailPublisher {
 
   static publish(subscription, results, layer) {
+      logger.info('Publishing email with results', results);
     let template = TEMPLATE_MAP[layer.slug] || DEFAULT_TEMPLATE,
         recipients = [{
           address: {
