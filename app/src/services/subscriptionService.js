@@ -11,115 +11,125 @@ var UrlService = require('services/urlService');
 
 class SubscriptionService {
 
-  static formatSubscription(subscription) {
-    if (!subscription) { return {}; }
+    static formatSubscription(subscription) {
+        if (!subscription) {
+            return {};
+        }
 
-    return {
-      name: subscription.name,
-      createdAt: subscription.created_at,
-      updatedAt: subscription.updated_at,
-      userId: subscription.userId,
-      params: subscription.params,
-      geostoreId: subscription.geostoreId,
-      resource: subscription.resource,
-      datasets: subscription.datasets
-    };
-  }
-
-  static * createSubscription(data) {
-    data.userId = data.loggedUser.id;
-
-    let subscriptionFormatted = SubscriptionService.formatSubscription(data);
-    logger.debug('Creating subscription ', subscriptionFormatted);
-    let subscription = yield new Subscription(subscriptionFormatted).save();
-    let serializedSubscription = SubscriptionSerializer.serialize(subscriptionFormatted);
-
-    SubscriptionService.sendConfirmation(subscription);
-
-    return serializedSubscription;
-  }
-
-  static sendConfirmation(subscription) {
-    if (subscription.resource.type === 'EMAIL') {
-      mailService.sendMail('subscription-confirmation', {
-        confirmation_url: UrlService.confirmationUrl(subscription)
-      },[{
-          address: subscription.resource.content
-      }]);
-
-      return SubscriptionSerializer.serialize(
-        SubscriptionService.formatSubscription(subscription));
+        return {
+            name: subscription.name,
+            createdAt: subscription.created_at,
+            updatedAt: subscription.updated_at,
+            userId: subscription.userId,
+            params: subscription.params,
+            geostoreId: subscription.geostoreId,
+            resource: subscription.resource,
+            datasets: subscription.datasets
+        };
     }
-  }
 
-  static * confirmSubscription(id, userId) {
-    let subscription = yield Subscription.where({
-      _id: id,
-      userId: userId
-    }).findOne();
+    static * createSubscription(data) {
+        logger.info('Creating subscription with data ', data);
+        data.userId = data.loggedUser.id;
 
-    subscription.confirmed = true;
-    subscription.save();
+        let subscriptionFormatted = SubscriptionService.formatSubscription(data);
+        logger.debug('Creating subscription ', subscriptionFormatted);
+        let subscription = yield new Subscription(subscriptionFormatted).save();
+        let serializedSubscription = SubscriptionSerializer.serialize(subscriptionFormatted);
 
-    return SubscriptionSerializer.serialize(
-      SubscriptionService.formatSubscription(subscription));
-  }
+        SubscriptionService.sendConfirmation(subscription);
 
-  static * updateSubscription(id, userId, data) {
-    let subscription = yield Subscription.where({
-      _id: id,
-      userId: userId
-    }).findOne();
+        return serializedSubscription;
+    }
 
-    let attributes = _.omitBy(data, _.isNil);
-    attributes = _.omit(attributes, 'loggedUser');
-    _.each(attributes, function(value, attribute) {
-      subscription[attribute] = value;
-    });
+    static sendConfirmation(subscription) {
+        if (subscription.resource.type === 'EMAIL') {
+            mailService.sendMail('subscription-confirmation', {
+                confirmation_url: UrlService.confirmationUrl(subscription)
+            }, [{
+                address: subscription.resource.content
+            }]);
 
-    subscription.save();
+            return SubscriptionSerializer.serialize(
+                SubscriptionService.formatSubscription(subscription));
+        }
+    }
 
-    return SubscriptionSerializer.serialize(
-      SubscriptionService.formatSubscription(subscription));
-  }
+    static * confirmSubscription(id, userId) {
+        let subscription = yield Subscription.where({
+            _id: id,
+            userId: userId
+        }).findOne();
 
-  static * deleteSubscriptionById(id, userId) {
-    let subscription = yield Subscription.where({
-      _id: id,
-      userId: userId
-    }).findOneAndRemove();
+        subscription.confirmed = true;
+        subscription.save();
 
-    return SubscriptionSerializer.serialize(
-      SubscriptionService.formatSubscription(subscription));
-  }
+        return SubscriptionSerializer.serialize(
+            SubscriptionService.formatSubscription(subscription));
+    }
 
-  static * getSubscriptionForUser(id, userId) {
-    let subscription = yield Subscription.where({
-      _id: id,
-      userId: userId
-    }).findOne();
+    static * updateSubscription(id, userId, data) {
+        let subscription = yield Subscription.where({
+            _id: id,
+            userId: userId
+        }).findOne();
 
-    return SubscriptionSerializer.serialize(
-      SubscriptionService.formatSubscription(subscription));
-  }
+        let attributes = _.omitBy(data, _.isNil);
+        attributes = _.omit(attributes, 'loggedUser');
+        _.each(attributes, function(value, attribute) {
+            subscription[attribute] = value;
+        });
 
-  static * getSubscriptionById(id) {
-    let subscription = yield Subscription.where({ _id: id }).findOne();
-    return subscription;
-  }
+        subscription.save();
 
-  static * getSubscriptionsByLayer(layerSlug) {
-    let subscriptions = yield Subscription.find({ datasets: {$in: [layerSlug]}, confirmed: true }).exec();
-    return subscriptions;
-  }
+        return SubscriptionSerializer.serialize(
+            SubscriptionService.formatSubscription(subscription));
+    }
 
-  static * getSubscriptionsForUser(userId) {
-    let subscriptions = yield Subscription.find({
-      userId: userId
-    }).exec();
+    static * deleteSubscriptionById(id, userId) {
+        let subscription = yield Subscription.where({
+            _id: id,
+            userId: userId
+        }).findOneAndRemove();
 
-    return SubscriptionSerializer.serialize(subscriptions);
-  }
+        return SubscriptionSerializer.serialize(
+            SubscriptionService.formatSubscription(subscription));
+    }
+
+    static * getSubscriptionForUser(id, userId) {
+        let subscription = yield Subscription.where({
+            _id: id,
+            userId: userId
+        }).findOne();
+
+        return SubscriptionSerializer.serialize(
+            SubscriptionService.formatSubscription(subscription));
+    }
+
+    static * getSubscriptionById(id) {
+        let subscription = yield Subscription.where({
+            _id: id
+        }).findOne();
+        return subscription;
+    }
+
+    static * getSubscriptionsByLayer(layerSlug) {
+        let subscriptions = yield Subscription.find({
+            datasets: {
+                $in: [layerSlug]
+            },
+            confirmed: true
+        }).exec();
+        return subscriptions;
+    }
+
+    static * getSubscriptionsForUser(userId) {
+        let subscriptions = yield Subscription.find({
+            userId: userId
+        }).exec();
+
+        return SubscriptionSerializer.serialize(subscriptions);
+    }
 }
 
 module.exports = SubscriptionService;
