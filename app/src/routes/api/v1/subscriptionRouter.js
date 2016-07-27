@@ -65,7 +65,8 @@ class SubscriptionsRouter {
 
     try {
       SubscriptionService.sendConfirmation(subscription);
-      this.redirect(this.headers.referer);
+      logger.info('Redirect to ', this.headers.referer)
+      this.redirect(config.get('gfw.flagshipUrl') + '/my_gfw/subscriptions');
     } catch (err) {
       logger.error(err);
     }
