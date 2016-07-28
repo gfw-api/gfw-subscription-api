@@ -42,8 +42,8 @@ class AnalysisService {
         });
 
     if (result.statusCode !== 200) {
-      console.error('Error calculating analysis:');
-      console.error(result.body);
+      logger.error('Error calculating analysis:');
+      logger.error(result.body);
       return null;
     }
 

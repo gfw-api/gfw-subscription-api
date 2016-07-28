@@ -114,7 +114,7 @@ function* getQuery(subscription) {
 
         let geostore = yield deserializer(result.body);
         return Mustache.render(WORLD, {
-            geojson: geostore.geojson
+            geojson: JSON.stringify(geostore.geojson.features[0].geometry)
         });
     }
 }
@@ -159,7 +159,7 @@ function* getBBoxQuery(client, subscription) {
 
         let geostore = yield deserializer(result.body);
         let data = yield executeThunk(client, WORLD_BBOX, {
-            geojson: geostore.geojson
+            geojson: JSON.stringify(geostore.geojson.features[0].geometry)
         });
         return data.rows[0].bbox;
     }

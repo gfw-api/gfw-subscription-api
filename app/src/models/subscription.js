@@ -39,7 +39,10 @@ Subscription.methods.publish = function*(layerConfig, begin, end) {
     this, layerConfig.slug, begin, end);
   logger.debug('Results obtained', results);
   results = AnalysisResultsAdapter.transform(results, layer);
-  if (AnalysisResultsAdapter.isZero(results)) { return; }
+  if (AnalysisResultsAdapter.isZero(results)) {
+      logger.info('Not send subscription. Is zero value');
+      return;
+  }
 
   results = yield AnalysisResultsPresenter.render(
     results, this, layer, begin, end);
