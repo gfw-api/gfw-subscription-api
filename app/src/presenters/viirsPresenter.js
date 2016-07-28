@@ -9,7 +9,6 @@ class VIIRSPresenter {
     static * transform(results, layer, subscription, begin, end) {
         logger.debug('Obtaining fires');
         let alerts = yield analysisService.execute(subscription, layer.slug, begin, end, true);
-        logger.debug('fires obtained', alerts);
         if(alerts){
             let alertsFormat = [];
             let length = 10;
@@ -17,7 +16,6 @@ class VIIRSPresenter {
                 length = alerts.length;
             }
             for(let i=0; i < length; i++){
-                logger.debug('Formatting');
                 try{
                     alertsFormat.push({
                         acq_date: alerts[i].acqDate.split('T')[0],

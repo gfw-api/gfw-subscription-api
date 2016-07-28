@@ -3,9 +3,4 @@
   "dataset": "viirs-active-fires",
   "crontab": "00 * * * * *",
   "periodicity": 86400000
-},{
-  "name": "Glad alerts",
-  "dataset": "glad-alerts",
-  "crontab": "00 * * * * *",
-  "periodicity": 604800000
 }]

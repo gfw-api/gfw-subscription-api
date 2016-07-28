@@ -6,6 +6,7 @@ var logger = require('logger');
 var Subscription = require('models/subscription');
 var SubscriptionService = require('services/subscriptionService');
 var imageService = require('services/imageService');
+var config = require('config');
 var router = new Router({
   prefix: '/subscriptions'
 });
@@ -65,7 +66,7 @@ class SubscriptionsRouter {
 
     try {
       SubscriptionService.sendConfirmation(subscription);
-      logger.info('Redirect to ', this.headers.referer)
+      logger.info('Redirect to ', this.headers.referer);
       this.redirect(config.get('gfw.flagshipUrl') + '/my_gfw/subscriptions');
     } catch (err) {
       logger.error(err);

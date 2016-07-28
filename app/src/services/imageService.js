@@ -31,8 +31,8 @@ const WDPA = `SELECT p.the_geom_webmercator
           FROM wdpa_protected_areas
           WHERE wdpaid={{wdpaid}}
       ) p`;
-const USE = `SELECT the_geom_webmercator
-        FROM {{use_table}}
+const USE = `SELECT p.the_geom_webmercator
+        FROM {{use_table}} p
         WHERE cartodb_id = {{pid}}`;
 
 const WORLD_BBOX = `SELECT ST_AsGeojson(ST_Expand(ST_Extent(ST_SetSRID(ST_GeomFromGeoJSON('{{{geojson}}}'),4326)),1))
@@ -91,7 +91,7 @@ function* getQuery(subscription) {
                 id1: subscription.params.iso.region
             });
         }
-    } else if (subscription.params.wdpa) {
+    } else if (subscription.params.wdpaid) {
         return Mustache.render(WDPA, {
             wdpaid: subscription.params.wdpaid
         });
@@ -113,8 +113,9 @@ function* getQuery(subscription) {
         }
 
         let geostore = yield deserializer(result.body);
+        console.log(JSON.stringify(geostore.geojson.features[0].geometry));
         return Mustache.render(WORLD, {
-            geojson: JSON.stringify(geostore.geojson.features[0].geometry)
+            geojson: JSON.stringify(geostore.geojson.features[0].geometry).replace(/"/g, '\\"')
         });
     }
 }
@@ -134,7 +135,7 @@ function* getBBoxQuery(client, subscription) {
             });
             return data.rows[0].bbox;
         }
-    } else if (subscription.params.wdpa) {
+    } else if (subscription.params.wdpaid) {
         let data = yield executeThunk(client, WDPA_BBOX, {
             wdpaid: subscription.params.wdpaid
         });
@@ -160,6 +161,7 @@ function* getBBoxQuery(client, subscription) {
         let geostore = yield deserializer(result.body);
         let data = yield executeThunk(client, WORLD_BBOX, {
             geojson: JSON.stringify(geostore.geojson.features[0].geometry)
+
         });
         return data.rows[0].bbox;
     }
@@ -167,6 +169,7 @@ function* getBBoxQuery(client, subscription) {
 
 function getBBoxOfGeojson(geojson){
     logger.debug('Explode geojson', geojson.type);
+    logger.debug(JSON.stringify(geojson));
     let points = explode(geojson);
     let minx=360, miny = 360;
     let maxx=-360, maxy = -360;
@@ -209,7 +212,7 @@ class ImageService {
         };
 
         let template = Mustache.render(JSON.stringify(viirsTemplate), config).replace(/\s\s+/g, ' ').trim();
-        logger.debug(template);
+        console.log(template);
         let result = yield request({
             url: 'https://wri-01.cartodb.com/api/v1/map',
             method: 'POST',

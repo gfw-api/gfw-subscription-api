@@ -2,6 +2,7 @@
 
 var moment = require('moment'),
     _ = require('lodash');
+var logger = require('logger');
 
 var VIIRSPresenter = require('presenters/viirsPresenter'),
     GLADPresenter = require('presenters/gladPresenter');
@@ -67,7 +68,7 @@ var decorateWithLinks = function(results, subscription, layer, begin, end) {
 var decorateWithArea = function(results, subscription) {
     let params = subscription.params || {};
 
-    if (params.iso.country) {
+    if (params.iso && params.iso.country) {
         results.selected_area = `ISO Code: ${params.iso.country}`;
 
         if (params.iso.region) {
@@ -88,19 +89,24 @@ class AnalysisResultsPresenter {
     }
 
     static * render(results, subscription, layer, begin, end) {
-        let Presenter = PRESENTER_MAP[layer.slug];
+        try{
+            let Presenter = PRESENTER_MAP[layer.slug];
 
-        if (Presenter) {
-            results = yield Presenter.transform(results, layer, subscription, begin, end);
+            if (Presenter) {
+                results = yield Presenter.transform(results, layer, subscription, begin, end);
+            }
+
+            results = decorateWithName(results, subscription);
+            results = decorateWithArea(results, subscription);
+            results = decorateWithLinks(results, subscription, layer, begin, end);
+            results = decorateWithMetadata(results, layer);
+            results = decorateWithDates(results, begin, end);
+
+            return results;
+        } catch(err){
+            logger.error(err);
+            throw err;
         }
-
-        results = decorateWithName(results, subscription);
-        results = decorateWithArea(results, subscription);
-        results = decorateWithLinks(results, subscription, layer, begin, end);
-        results = decorateWithMetadata(results, layer);
-        results = decorateWithDates(results, begin, end);
-
-        return results;
     }
 }
 

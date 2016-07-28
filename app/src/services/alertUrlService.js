@@ -1,7 +1,7 @@
 'use strict';
 
 var config = require('config');
-const BASE_URL = config.get('apiGateway.externalUrl');
+const BASE_URL = config.get('gfw.flagshipUrl');
 
 var qs = require('querystring'),
     moment = require('moment'),
