@@ -20,24 +20,16 @@ var load = function() {
 
     /* THIS CODE IS TO TEST */
     logger.info('Creating cron task for ' + task.name);
-    setTimeout(function(){
-        logger.debug('sending');
+
+
+    new CronJob(task.crontab, function() {
+        logger.info('Publishing ' + task.dataset);
         asynClient.emit(JSON.stringify({
             layer_slug: task.dataset,
             begin_date: new Date(Date.now() - task.periodicity),
             end_date: new Date()
         }));
-    }, 2000);
-
-
-    // new CronJob(task.crontab, function() {
-    //     logger.info('Publishing ' + task.dataset);
-    //     asynClient.emit(JSON.stringify({
-    //         layer_slug: task.dataset,
-    //         begin_date: new Date(Date.now() - task.periodicity),
-    //         end_date: new Date()
-    //     }));
-    // }, null, true, 'Europe/London');
+    }, null, true, 'Europe/London');
   });
 };
 
