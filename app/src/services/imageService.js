@@ -32,7 +32,7 @@ const WDPA = `SELECT p.the_geom_webmercator
           WHERE wdpaid={{wdpaid}}
       ) p`;
 const USE = `SELECT p.the_geom_webmercator
-        FROM {{use_table}} p
+        FROM gfw_{{use_table}} p
         WHERE cartodb_id = {{pid}}`;
 
 const WORLD_BBOX = `SELECT ST_AsGeojson(ST_Expand(ST_Extent(ST_SetSRID(ST_GeomFromGeoJSON('{{{geojson}}}'),4326)),1))
@@ -57,7 +57,7 @@ const WDPA_BBOX = `SELECT ST_AsGeojson(ST_Expand(ST_Extent(p.the_geom),1)) AS bb
           WHERE wdpaid={{wdpaid}}
         ) p`;
 const USE_BBOX = `SELECT ST_AsGeojson(ST_Expand(ST_Extent(the_geom),1)) AS bbox
-        FROM {{use_table}}
+        FROM gfw_{{use_table}}
         WHERE cartodb_id = {{pid}}`;
 
 var deserializer = function(obj) {
