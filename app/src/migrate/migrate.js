@@ -11,7 +11,7 @@ var mongoUri = process.env.MONGO_URI || 'mongodb://' + config.get('mongodb.host'
 
 let Subscription = require('models/subscription');
 
-var microserviceClient = require('microservice-client');
+var microserviceClient = require('vizz.microservice-client');
 
 var obtainData = function*(cursor) {
     let url = uriMigrate;

@@ -1,6 +1,6 @@
 'use strict';
 
-var microserviceClient = require('microservice-client');
+var microserviceClient = require('vizz.microservice-client');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
 var deserializer = function(obj) {
@@ -54,7 +54,7 @@ const LAYERS = [{
 class Layer {
 
     static * findBySlug(slug) {
-        // This code is valid until the refactor is made 
+        // This code is valid until the refactor is made
         for(let i = 0, length = LAYERS.length; i < length; i++){
             if(LAYERS[i].slug === slug) {
                 return LAYERS[i];

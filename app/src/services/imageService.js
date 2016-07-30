@@ -1,7 +1,7 @@
 'use strict';
 var logger = require('logger');
 var Mustache = require('mustache');
-var microserviceClient = require('microservice-client');
+var microserviceClient = require('vizz.microservice-client');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 var viirsTemplate = require('services/template/viirs.json');
 var request = require('co-request');

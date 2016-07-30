@@ -2,7 +2,7 @@
 var logger = require('logger');
 var AnalysisClassifier = require('services/analysisClassifier');
 
-var microserviceClient = require('microservice-client');
+var microserviceClient = require('vizz.microservice-client');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 var deserializer = function(obj) {
     return function(callback) {
