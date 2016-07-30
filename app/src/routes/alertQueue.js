@@ -2,7 +2,7 @@
 
 var config = require('config');
 var logger = require('logger');
-var AsyncClient = require('async-client');
+var AsyncClient = require('vizz.async-client');
 
 var SubscriptionService = require('services/subscriptionService');
 var MessageProcessor = require('services/messageProcessor');

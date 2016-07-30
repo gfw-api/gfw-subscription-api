@@ -8,7 +8,7 @@ var taskConfig = require('../../config/cron.json');
 var SubscriptionEvent = require('models/subscriptionEvent');
 
 const CHANNEL = 'subscription_alerts';
-var AsyncClient = require('async-client');
+var AsyncClient = require('vizz.async-client');
 var asynClient = new AsyncClient(AsyncClient.REDIS, {
     url: require('config').get('apiGateway.queueUrl')
 });

@@ -25,7 +25,6 @@
     "node": ">5.7.0"
   },
   "dependencies": {
-    "async-client": "git+https://github.com/Vizzuality/async-client-nodejs.git#1.0.0",
     "bunyan": "1.7.1",
     "cartodb": "^0.5.1",
     "co-request": "^1.0.0",
@@ -43,12 +42,13 @@
     "koa-router": "5.4.0",
     "koa-validate": "0.2.11",
     "lodash": "^4.13.1",
-    "microservice-client": "git+https://github.com/Vizzuality/microservice-client.git#1.2.4",
     "moment": "^2.13.0",
     "mongoose": "4.4.6",
     "mustache": "^2.2.1",
     "turf-explode": "^3.0.12",
-    "url": "0.11.0"
+    "url": "0.11.0",
+    "vizz.async-client": "^1.0.0",
+    "vizz.microservice-client": "^1.2.5"
   },
   "devDependencies": {
     "co-mocha": "1.1.2",
