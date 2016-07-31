@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
-  title: GFW Mail API
-  description: Global Forest Watch - Mail API
+  title: GFW Subscription API
+  description: Global Forest Watch - Subscriptions API
   version: "1.0.0"
 host: example.vizzuality.com
 
@@ -12,8 +12,232 @@ schemes:
 produces:
   - application/vnd.api+json
 
+# will be prefixed to all paths
+basePath: /api/v1
 
-
+paths:
+  /subscriptions:
+    get:
+      description: Returns subscriptions of the logged user
+      operationId: getSubscriptions
+      produces:
+        - application/vnd.api+json
+      tags:
+        - SUBSCRIPTION
+      responses:
+        200:
+          description: Subscriptions obtained
+          schema:
+            $ref: '#/definitions/SubscriptionAPI'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+    post:
+      summary: Create subscriptions.
+      produces:
+        - application/vnd.api+json
+      tags:
+        - SUBSCRIPTION
+      operationId: createSubscription
+      parameters:
+        - name: subscription
+          in: body
+          description: Subscription to save
+          required: true
+          schema:
+            $ref: '#/definitions/SubscriptionCreate'
+      responses:
+        200:
+          description: The subscription created
+          schema:
+            $ref: '#/definitions/SubscriptionAPI'
+        400:
+          description: Validate error
+          schema:
+            $ref: '#/definitions/Errors'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+  /subscriptions/{id}:
+    get:
+      description: Returns subscriptions of the logged user
+      operationId: getSubscription
+      produces:
+        - application/vnd.api+json
+      tags:
+        - SUBSCRIPTION
+      parameters:
+        - name: id
+          in: path
+          description: ID of subscription to fetch
+          required: true
+          type: string
+      responses:
+        200:
+          description: Subscriptions obtained
+          schema:
+            $ref: '#/definitions/SubscriptionAPI'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+    patch:
+      summary: Update subscription.
+      produces:
+        - application/vnd.api+json
+      tags:
+        - SUBSCRIPTION
+      operationId: updateSubscription
+      parameters:
+        - name: id
+          in: path
+          description: ID of subscription to update
+          required: true
+          type: string
+        - name: subscription
+          in: body
+          description: New data of the subscription
+          required: true
+          schema:
+            $ref: '#/definitions/SubscriptionCreate'
+      responses:
+        200:
+          description: The subscription updated
+          schema:
+            $ref: '#/definitions/SubscriptionAPI'
+        400:
+          description: Validate error
+          schema:
+            $ref: '#/definitions/Errors'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+    delete:
+      summary: Delete subscription.
+      produces:
+        - application/vnd.api+json
+      tags:
+        - SUBSCRIPTION
+      operationId: deleteSubscription
+      parameters:
+        - name: id
+          in: path
+          description: ID of subscription to delete
+          required: true
+          type: string
+      responses:
+        200:
+          description: The subscription deleted
+          schema:
+            $ref: '#/definitions/SubscriptionAPI'
+        400:
+          description: Validate error
+          schema:
+            $ref: '#/definitions/Errors'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+  /subscriptions/{id}/confirm:
+    get:
+      description: Confirm subscription
+      operationId: confirmSubscription
+      produces:
+        - application/vnd.api+json
+      tags:
+        - SUBSCRIPTION
+      parameters:
+        - name: id
+          in: path
+          description: ID of subscription to confirm
+          required: true
+          type: string
+      responses:
+        302:
+          description: Subscription confirmed successfully
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+  /subscriptions/{id}/send_confirmation:
+    get:
+      description: Resend confirmation of subscription
+      operationId: sendConfirmation
+      produces:
+        - application/vnd.api+json
+      tags:
+        - SUBSCRIPTION
+      parameters:
+        - name: id
+          in: path
+          description: ID of subscription to confirm
+          required: true
+          type: string
+      responses:
+        302:
+          description: Subscription confirmed successfully
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+  /subscriptions/{id}/unsubscribe:
+    get:
+      description: Remove subscription
+      operationId: unsubscribeSubscription
+      produces:
+        - application/vnd.api+json
+      tags:
+        - SUBSCRIPTION
+      parameters:
+        - name: id
+          in: path
+          description: ID of subscription to confirm
+          required: true
+          type: string
+      responses:
+        200:
+          description: Subscription removed
+          schema:
+            $ref: '#/definitions/SubscriptionAPI'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
 definitions:
   Errors:
     type: object
@@ -63,3 +287,83 @@ definitions:
       meta:
         type: object
         description: A meta object containing non-standard meta-information about the error.
+  SubscriptionAPI:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Subscription'
+
+  Subscription:
+    type: object
+    properties:
+      type:
+        type: string
+        description: Resource type
+      id:
+        type: string
+        description: Resource id
+      attributes:
+        properties:
+          schema:
+            $ref: '#/definitions/SubscriptionData'
+  SubscriptionData:
+    type: object
+    required:
+      - name
+      - resource
+      - datasets
+      - params
+    properties:
+      name:
+        type: string
+        description: Name of the subscription
+      resource:
+        type: object
+        properties:
+          type:
+            type: string
+            description: Subscription type (EMAIL, URL)
+          content:
+            type: string
+            description: In mail case, is the user email
+      datasets:
+        type: string
+        description: Datasets that subscribes (example => viirs-active-fires, glad-alerts)
+      params:
+        type: object
+        properties:
+          iso:
+            type: object
+            properties:
+              country:
+                type: string
+                description: ISO code of the country
+              region:
+                type: number
+                description: Number code of the region
+          wdpaid:
+            type: number
+            description: Id of the protected area
+          use:
+            type: string
+            description: Name of the use (example=> mining, oilpalm, fiber, gfw_logging, etc)
+          useid:
+            type: number
+            description: id of the use
+          geostore:
+            type: string
+            description: Id of the geostore
+
+  SubscriptionCreate:
+    allOf:
+      - $ref: '#/definitions/SubscriptionData'
+      - type: object
+        properties:
+          confirmed:
+            type: boolean
+            description: If the subscription is confirmed
+          createdAt:
+            type: string
+            description: Creation date
