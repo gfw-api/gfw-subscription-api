@@ -1,11 +1,11 @@
 [{
   "name": "Viirs active fires",
   "dataset": "viirs-active-fires",
-  "crontab": "00 * * * * *",
+  "crontab": "00 00 23 * * 0-6",
   "periodicity": 86400000
 },{
   "name": "Glad alerts",
   "dataset": "glad-alerts",
-  "crontab": "00 * * * * *",
+  "crontab": "00 30 23 * * 0",
   "periodicity": 604800000
 }]

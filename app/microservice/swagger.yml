@@ -9,6 +9,8 @@ schemes:
   - https
   - http
 
+consumes:
+  - application/json
 produces:
   - application/vnd.api+json
 
@@ -18,7 +20,55 @@ basePath: /api/v1
 paths:
   /subscriptions:
     get:
-      description: Returns subscriptions of the logged user
+      summary: Get subscriptions
+      description: |
+        Returns subscriptions of the logged user
+        **Is necesary authentication**
+        ### Example response
+        ```json
+        {
+            "data": [{
+                "type": "subscription",
+                "id": "579fa00dad0efc0000c58000",
+                "attributes": {
+                    "name": "brazil-fires",
+                    "createdAt": "2016-08-03T10:26:32.409Z",
+                    "userId": "573c0015c0a1a601103bcccb",
+                    "resource": {
+                        "type": "EMAIL",
+                        "content": "vizz@vizzuality.com"
+                    },
+                    "datasets": ["viirs-active-fires"],
+                    "params": {
+                        "iso": {
+                            "region": null,
+                            "country": "BRA"
+                        },
+                        "geostore": null
+                    },
+                    "confirmed": true
+                }
+            }, {
+                "type": "subscription",
+                "id": "579f12cf10558d2a003e1150",
+                "attributes": {
+                    "name": "brazil-fires-not-confirmed",
+                    "createdAt": "2016-08-03T10:26:32.412Z",
+                    "userId": "573c0015c0a1a601103bcccb",
+                    "resource": {
+                        "type": "EMAIL",
+                        "content": "vizz@vizzuality.com"
+                    },
+                    "datasets": ["viirs-active-fires"],
+                    "params": {
+                        "wdpaid": "12345",
+                        "geostore": null
+                    },
+                    "confirmed": false
+                }
+            }]
+        }
+        ```
       operationId: getSubscriptions
       produces:
         - application/vnd.api+json
@@ -39,6 +89,38 @@ paths:
             $ref: '#/definitions/Errors'
     post:
       summary: Create subscriptions.
+      description: |
+        Create subscription to the logged user
+        **Is necesary authentication**
+        ### Example response
+        ```json
+        {
+            "data": [{
+                "type": "subscription",
+                "id": "579fa00dad0efc0000c58000",
+                "attributes": {
+                    "name": "brazil-fires",
+                    "createdAt": "2016-08-03T10:26:32.409Z",
+                    "userId": "573c0015c0a1a601103bcccb",
+                    "resource": {
+                        "type": "EMAIL",
+                        "content": "vizz@vizzuality.com"
+                    },
+                    "datasets": ["viirs-active-fires"],
+                    "params": {
+                        "iso": {
+                            "region": null,
+                            "country": "BRA"
+                        },
+                        "geostore": null
+                    },
+                    "confirmed": true
+                }
+            }]
+        }
+        ```
+      consumes:
+        - application/json
       produces:
         - application/vnd.api+json
       tags:
@@ -47,7 +129,28 @@ paths:
       parameters:
         - name: subscription
           in: body
-          description: Subscription to save
+          description: |
+            Subscription to save
+            #### Body example
+            ```json
+            {
+                "name": "brazil-fires",
+                "createdAt": "2016-08-03T10:26:32.409Z",
+                "userId": "573c0015c0a1a601103bcccb",
+                "resource": {
+                    "type": "EMAIL",
+                    "content": "vizz@vizzuality.com"
+                },
+                "datasets": ["viirs-active-fires"],
+                "params": {
+                    "iso": {
+                        "region": null,
+                        "country": "BRA"
+                    },
+                    "geostore": null
+                }
+            }
+            ```
           required: true
           schema:
             $ref: '#/definitions/SubscriptionCreate'
@@ -70,7 +173,41 @@ paths:
             $ref: '#/definitions/Errors'
   /subscriptions/{id}:
     get:
-      description: Returns subscriptions of the logged user
+      summary: Get subscription by id
+      description: |
+        Returns subscriptions of the logged user
+        **Is necesary authentication**
+        ### Example URL request
+        ```
+        {{host}}/subscriptions/ca38fa80a4ffa9ac6217a7e0bf71e6df
+        ```
+        ### Example response
+        ```json
+        {
+            "data": [{
+                "type": "subscription",
+                "id": "579fa00dad0efc0000c58000",
+                "attributes": {
+                    "name": "brazil-fires",
+                    "createdAt": "2016-08-03T10:26:32.409Z",
+                    "userId": "573c0015c0a1a601103bcccb",
+                    "resource": {
+                        "type": "EMAIL",
+                        "content": "vizz@vizzuality.com"
+                    },
+                    "datasets": ["viirs-active-fires"],
+                    "params": {
+                        "iso": {
+                            "region": null,
+                            "country": "BRA"
+                        },
+                        "geostore": null
+                    },
+                    "confirmed": true
+                }
+            }]
+        }
+        ```
       operationId: getSubscription
       produces:
         - application/vnd.api+json
@@ -97,6 +234,42 @@ paths:
             $ref: '#/definitions/Errors'
     patch:
       summary: Update subscription.
+      description: |
+        Update subscription.
+        **Is necesary authentication**
+        ### Example URL request
+        ```
+        {{host}}/subscriptions/ca38fa80a4ffa9ac6217a7e0bf71e6df
+        ```
+        ### Example response
+        ```json
+        {
+            "data": [{
+                "type": "subscription",
+                "id": "579fa00dad0efc0000c58000",
+                "attributes": {
+                    "name": "brazil-fires",
+                    "createdAt": "2016-08-03T10:26:32.409Z",
+                    "userId": "573c0015c0a1a601103bcccb",
+                    "resource": {
+                        "type": "EMAIL",
+                        "content": "vizz@vizzuality.com"
+                    },
+                    "datasets": ["viirs-active-fires"],
+                    "params": {
+                        "iso": {
+                            "region": null,
+                            "country": "BRA"
+                        },
+                        "geostore": null
+                    },
+                    "confirmed": true
+                }
+            }]
+        }
+        ```
+      consumes:
+        - application/json
       produces:
         - application/vnd.api+json
       tags:
@@ -110,7 +283,28 @@ paths:
           type: string
         - name: subscription
           in: body
-          description: New data of the subscription
+          description: |
+            New data of the subscription
+            #### Body example
+            ```json
+            {
+                "name": "brazil-fires",
+                "createdAt": "2016-08-03T10:26:32.409Z",
+                "userId": "573c0015c0a1a601103bcccb",
+                "resource": {
+                    "type": "EMAIL",
+                    "content": "vizz@vizzuality.com"
+                },
+                "datasets": ["viirs-active-fires"],
+                "params": {
+                    "iso": {
+                        "region": null,
+                        "country": "BRA"
+                    },
+                    "geostore": null
+                }
+            }
+            ```
           required: true
           schema:
             $ref: '#/definitions/SubscriptionCreate'
@@ -133,6 +327,40 @@ paths:
             $ref: '#/definitions/Errors'
     delete:
       summary: Delete subscription.
+      description: |
+        Delete subscription.
+        **Is necesary authentication**
+        ### Example URL request
+        ```
+        {{host}}/subscriptions/ca38fa80a4ffa9ac6217a7e0bf71e6df
+        ```
+        ### Example response
+        ```json
+        {
+            "data": [{
+                "type": "subscription",
+                "id": "579fa00dad0efc0000c58000",
+                "attributes": {
+                    "name": "brazil-fires",
+                    "createdAt": "2016-08-03T10:26:32.409Z",
+                    "userId": "573c0015c0a1a601103bcccb",
+                    "resource": {
+                        "type": "EMAIL",
+                        "content": "vizz@vizzuality.com"
+                    },
+                    "datasets": ["viirs-active-fires"],
+                    "params": {
+                        "iso": {
+                            "region": null,
+                            "country": "BRA"
+                        },
+                        "geostore": null
+                    },
+                    "confirmed": true
+                }
+            }]
+        }
+        ```
       produces:
         - application/vnd.api+json
       tags:
@@ -163,6 +391,13 @@ paths:
             $ref: '#/definitions/Errors'
   /subscriptions/{id}/confirm:
     get:
+      summary: |
+        Confirm subscription
+        **Is necesary authentication**
+        ### Example URL request
+        ```
+        {{host}}/subscriptions/ca38fa80a4ffa9ac6217a7e0bf71e6df/confirm
+        ```
       description: Confirm subscription
       operationId: confirmSubscription
       produces:
@@ -188,7 +423,9 @@ paths:
             $ref: '#/definitions/Errors'
   /subscriptions/{id}/send_confirmation:
     get:
-      description: Resend confirmation of subscription
+      description: |
+        Resend confirmation of subscription
+        **Is necesary authentication**
       operationId: sendConfirmation
       produces:
         - application/vnd.api+json
@@ -211,9 +448,44 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Errors'
+
   /subscriptions/{id}/unsubscribe:
     get:
-      description: Remove subscription
+      summary: Remove subscription
+      description: |
+        Remove subscription
+        **Is necesary authentication**
+        ### Example URL request
+        ```
+        {{host}}/subscriptions/ca38fa80a4ffa9ac6217a7e0bf71e6df/unsubscribe
+        ```
+        ### Example response
+        ```json
+        {
+            "data": [{
+                "type": "subscription",
+                "id": "579fa00dad0efc0000c58000",
+                "attributes": {
+                    "name": "brazil-fires",
+                    "createdAt": "2016-08-03T10:26:32.409Z",
+                    "userId": "573c0015c0a1a601103bcccb",
+                    "resource": {
+                        "type": "EMAIL",
+                        "content": "vizz@vizzuality.com"
+                    },
+                    "datasets": ["viirs-active-fires"],
+                    "params": {
+                        "iso": {
+                            "region": null,
+                            "country": "BRA"
+                        },
+                        "geostore": null
+                    },
+                    "confirmed": true
+                }
+            }]
+        }
+        ```
       operationId: unsubscribeSubscription
       produces:
         - application/vnd.api+json
