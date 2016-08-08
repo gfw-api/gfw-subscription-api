@@ -16,7 +16,7 @@ const ALLOWED_PARAMS = [
 const iso = function(subscription) {
   let params = subscription.params || {};
 
-  if (params.iso) {
+  if (params.iso && params.iso.country) {
     let iso = params.iso.country;
 
     if (params.iso.region) {
@@ -41,7 +41,7 @@ class AlertUrlService {
     let existingUrlParams = _.pick(subscription.params, ALLOWED_PARAMS);
     query = _.omitBy(Object.assign(query, existingUrlParams), _.isNil);
 
-    let baselayer = layer.slug,
+    let baselayer = layer.name,
         querystring = qs.stringify(query);
 
     return `${BASE_URL}/map/3/0/0/${iso(subscription)}/grayscale/${baselayer}?${querystring}`;

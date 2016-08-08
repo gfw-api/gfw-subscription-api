@@ -31,7 +31,7 @@ class VIIRSPresenter {
             logger.debug('Alerts formated', alertsFormat);
             results.fire_alerts = alertsFormat;
         }
-        results.value = results.value + ' fires';
+        results.alert_count = results.value;
         results.map_image = yield imageService.overviewImage(subscription);
         return results;
     }

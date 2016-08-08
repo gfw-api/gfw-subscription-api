@@ -23,7 +23,8 @@ class SubscriptionService {
             userId: subscription.userId,
             params: subscription.params,
             resource: subscription.resource,
-            datasets: subscription.datasets
+            datasets: subscription.datasets,
+            language: subscription.language
         };
     }
 

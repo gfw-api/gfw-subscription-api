@@ -84,6 +84,7 @@ var transformAndSaveData = function*(data){
                      userId: userId,
                      createdAt: data[i].created,
                      datasets: [data[i].topic],
+                     language: data[i].language || 'en',
                      params:{
                          iso:{
                              country: data[i].iso,
