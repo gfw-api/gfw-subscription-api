@@ -18,7 +18,7 @@ var subscriptionSerializer = new JSONAPISerializer('subscription', {
   },
 
   params: {
-    attributes: ['iso', 'id1', 'wdpa_id', 'use', 'geostore']
+    attributes: ['iso', 'id1', 'wdpaid', 'use', 'useid', 'geostore']
   },
 
   typeForAttribute: function (attribute) { return attribute; },
