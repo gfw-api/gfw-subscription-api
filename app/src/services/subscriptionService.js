@@ -74,17 +74,15 @@ class SubscriptionService {
             _id: id,
             userId: userId
         }).findOne();
-
         let attributes = _.omitBy(data, _.isNil);
         attributes = _.omit(attributes, 'loggedUser');
         _.each(attributes, function(value, attribute) {
             subscription[attribute] = value;
         });
 
-        subscription.save();
+        yield subscription.save();
 
-        return SubscriptionSerializer.serialize(
-            SubscriptionService.formatSubscription(subscription));
+        return SubscriptionSerializer.serialize(subscription);
     }
 
     static * deleteSubscriptionById(id, userId) {
