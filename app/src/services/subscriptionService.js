@@ -91,8 +91,7 @@ class SubscriptionService {
             userId: userId
         }).findOneAndRemove();
 
-        return SubscriptionSerializer.serialize(
-            SubscriptionService.formatSubscription(subscription));
+        return SubscriptionSerializer.serialize(subscription);
     }
 
     static * getSubscriptionForUser(id, userId) {
@@ -101,8 +100,7 @@ class SubscriptionService {
             userId: userId
         }).findOne();
 
-        return SubscriptionSerializer.serialize(
-            SubscriptionService.formatSubscription(subscription));
+        return SubscriptionSerializer.serialize(subscription);
     }
 
     static * getSubscriptionById(id) {
