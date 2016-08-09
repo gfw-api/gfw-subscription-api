@@ -12,15 +12,11 @@ const ALERT_POST_CHANNEL = 'subscription_alerts_publish';
 
 class AlertQueue {
   constructor() {
-    logger.debug('Initializing queue with provider %s ', config.get('apiGateway.queueProvider'));
-    switch (config.get('apiGateway.queueProvider').toLowerCase()) {
-      case AsyncClient.REDIS:
-        this.asynClient = new AsyncClient(AsyncClient.REDIS, {
-        url: config.get('apiGateway.queueUrl')
-      });
-      break;
-      default:
-    }
+    logger.debug('Initializing queue with provider %s ', `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`);
+    this.asynClient = new AsyncClient(AsyncClient.REDIS, {
+        url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
+    });
+
 
     var channel = this.asynClient.toChannel(CHANNEL);
     channel.on('message', this.processMessage.bind(this));

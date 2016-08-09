@@ -2,6 +2,7 @@
 
 var logger = require('logger');
 var CronJob = require('cron').CronJob;
+var config = require('config');
 
 var taskConfig = require('../../config/cron.json');
 
@@ -10,7 +11,7 @@ var SubscriptionEvent = require('models/subscriptionEvent');
 const CHANNEL = 'subscription_alerts';
 var AsyncClient = require('vizz.async-client');
 var asynClient = new AsyncClient(AsyncClient.REDIS, {
-    url: require('config').get('apiGateway.queueUrl')
+    url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
 });
 asynClient = asynClient.toChannel(CHANNEL);
 

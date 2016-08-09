@@ -15,6 +15,10 @@
         "uri": "http://192.168.99.100:8000/gateway/service",
         "queue": "redis://localhost:6379"
     },
+    "redisLocal": {
+        "host": null,
+        "port": null
+    },
     "mongodb": {
         "database": "gfw_subscription_db",
         "host": "192.168.99.100",
