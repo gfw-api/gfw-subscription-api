@@ -35,9 +35,18 @@ class AlertUrlService {
     let query = {
       begin: moment(begin).format('YYYY-MM-DD'),
       end: moment(end).format('YYYY-MM-DD'),
-      geostore: subscription.params.geostore,
       fit_to_geom: true
     };
+    if(subscription.params.geostore) {
+        query.geostore = subscription.params.geostore;
+    }
+    if(subscription.params.use){
+        query.use = subscription.params.use;
+        query.useid = subscription.params.useid;
+    }
+    if(subscription.params.wdpaid){
+        query.wdpaid = subscription.params.wdpaid;
+    }
 
     let existingUrlParams = _.pick(subscription.params, ALLOWED_PARAMS);
     query = _.omitBy(Object.assign(query, existingUrlParams), _.isNil);
