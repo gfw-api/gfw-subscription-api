@@ -35,11 +35,10 @@ class SubscriptionService {
         let subscriptionFormatted = SubscriptionService.formatSubscription(data);
         logger.debug('Creating subscription ', subscriptionFormatted);
         let subscription = yield new Subscription(subscriptionFormatted).save();
-        let serializedSubscription = SubscriptionSerializer.serialize(subscriptionFormatted);
-
+        
         SubscriptionService.sendConfirmation(subscription);
 
-        return subscription;
+        return SubscriptionSerializer.serialize(subscription);
     }
 
     static sendConfirmation(subscription) {
