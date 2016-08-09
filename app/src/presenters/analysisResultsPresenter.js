@@ -95,7 +95,7 @@ class AnalysisResultsPresenter {
             if (Presenter) {
                 results = yield Presenter.transform(results, layer, subscription, begin, end);
             }
-
+            results.layerSlug = layer.slug;
             results = decorateWithName(results, subscription);
             results = decorateWithArea(results, subscription);
             results = decorateWithLinks(results, subscription, layer, begin, end);

@@ -17,7 +17,6 @@ class SubscriptionService {
         }
 
         return {
-            _id: subscription.id,
             name: subscription.name,
             createdAt: subscription.created_at,
             updatedAt: subscription.updated_at,
@@ -40,7 +39,7 @@ class SubscriptionService {
 
         SubscriptionService.sendConfirmation(subscription);
 
-        return serializedSubscription;
+        return subscription;
     }
 
     static sendConfirmation(subscription) {
