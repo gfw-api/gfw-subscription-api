@@ -13,7 +13,7 @@ prod:
   #   gelf-address: ${GELF_ADDRESS}
 redis:
   image: redis
-  container_name: rw-adapter-csv-redis
+  container_name: gfw-subscriptions-api-redis
   ports:
     - "6379"
   restart: always

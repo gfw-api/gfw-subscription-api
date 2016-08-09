@@ -23,7 +23,7 @@ develop:
     - ./app:/opt/gfw-subscription-api/app
 redis:
   image: redis
-  container_name: rw-adapter-csv-redis
+  container_name: gfw-subscriptions-api-redis
   ports:
     - "6379"
   restart: always
