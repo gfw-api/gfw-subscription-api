@@ -17,6 +17,7 @@ class SubscriptionService {
         }
 
         return {
+            _id: subscription.id,
             name: subscription.name,
             createdAt: subscription.created_at,
             updatedAt: subscription.updated_at,
