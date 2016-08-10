@@ -63,17 +63,17 @@ microserviceClient.setDataConnection({
 });
 
 var oldDatasets = {
-    "alerts/treeloss": "umd-loss-gain",
-    "alerts/terra": "terrai-alerts",
-    "alerts/glad": "glad-alerts"
-    "alerts/prodes": "prodes-loss",
-    "alerts/viirs": "viirs-active-fires",
-    "alerts/guyra": "guira-loss",
-    "alerts/sad": "imazon-alerts"
+    "alerts_treeloss": "umd-loss-gain",
+    "alerts_terra": "terrai-alerts",
+    "alerts_glad": "glad-alerts"
+    "alerts_prodes": "prodes-loss",
+    "alerts_viirs": "viirs-active-fires",
+    "alerts_guyra": "guira-loss",
+    "alerts_sad": "imazon-alerts"
 };
 
 var tranformDataset = function(oldDataset){
-    if(oldDatasets[oldDataset]){
+    if(oldDataset && oldDatasets[oldDataset.replace(/\//g, '_')]){
         return oldDatasets[oldDataset];
     }
     return oldDataset;
