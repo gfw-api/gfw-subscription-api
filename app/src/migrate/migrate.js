@@ -62,6 +62,23 @@ microserviceClient.setDataConnection({
     apiGatewayUrl: process.env.API_GATEWAY_URL_MIGRATE
 });
 
+var oldDatasets = {
+    "alerts/treeloss": "umd-loss-gain",
+    "alerts/terra": "terrai-alerts",
+    "alerts/glad": "glad-alerts"
+    "alerts/prodes": "prodes-loss",
+    "alerts/viirs": "viirs-active-fires",
+    "alerts/guyra": "guira-loss",
+    "alerts/sad": "imazon-alerts"
+};
+
+var tranformDataset = function(oldDataset){
+    if(oldDatasets[oldDataset]){
+        return oldDatasets[oldDataset];
+    }
+    return oldDataset;
+}
+
 var transformAndSaveData = function*(data){
     logger.info('Saving data');
     if(data){
@@ -74,6 +91,8 @@ var transformAndSaveData = function*(data){
                  }else {
                      logger.info('Subscription without user_id');
                  }
+                 let language = data[i].language  || 'en';
+
                  yield new Subscription({
                      name: data[i].name,
                      confirmed: data[i].confirmed,
@@ -83,8 +102,8 @@ var transformAndSaveData = function*(data){
                      },
                      userId: userId,
                      createdAt: data[i].created,
-                     datasets: [data[i].topic],
-                     language: data[i].language || 'en',
+                     datasets: [tranformDataset(data[i].topic)],
+                     language: language.toLowerCase(),
                      params:{
                          iso:{
                              country: data[i].iso,
