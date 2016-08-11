@@ -46,7 +46,7 @@ class SubscriptionsRouter {
     logger.info('Confirming subscription by id %s', this.params.id);
     try {
       yield SubscriptionService.confirmSubscription(
-        this.params.id, this.request.query.loggedUser.id);
+        this.params.id);
       this.redirect(UrlService.flagshipUrl(
         '/my_gfw/subscriptions?subscription_confirmed=true'));
     } catch (err) {
@@ -86,7 +86,7 @@ class SubscriptionsRouter {
   static * unsubscribeSubscription() {
     logger.info('Unsubscribing subscription by id %s', this.params.id);
     let subscription = yield SubscriptionService.deleteSubscriptionById(
-      this.params.id, this.request.query.loggedUser.id);
+      this.params.id);
 
     if (!subscription) {
       logger.error('Subscription not found');

@@ -55,10 +55,9 @@ class SubscriptionService {
         }
     }
 
-    static * confirmSubscription(id, userId) {
+    static * confirmSubscription(id) {
         let subscription = yield Subscription.where({
             _id: id,
-            userId: userId
         }).findOne();
 
         subscription.confirmed = true;
@@ -84,10 +83,9 @@ class SubscriptionService {
         return SubscriptionSerializer.serialize(subscription);
     }
 
-    static * deleteSubscriptionById(id, userId) {
+    static * deleteSubscriptionById(id) {
         let subscription = yield Subscription.where({
             _id: id,
-            userId: userId
         }).findOneAndRemove();
 
         return SubscriptionSerializer.serialize(subscription);

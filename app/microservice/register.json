@@ -59,7 +59,7 @@
     }, {
         "url": "/subscriptions/:id/confirm",
         "method": "GET",
-        "authenticated": true,
+        "authenticated": false,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -68,7 +68,7 @@
     }, {
         "url": "/subscriptions/:id/unsubscribe",
         "method": "GET",
-        "authenticated": true,
+        "authenticated": false,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
