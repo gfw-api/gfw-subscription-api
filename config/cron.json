@@ -19,7 +19,7 @@
 },{
   "name": "Imazon alerts",
   "dataset": "imazon-alerts",
-  "crontab": "00 * * * * *",
+  "crontab": "00 30 23 1 * *",
   "gap": 1,
   "periodicity": {
       "value": 1,
@@ -28,7 +28,7 @@
 },{
   "name": "Terrai alerts",
   "dataset": "terrai-alerts",
-  "crontab": "00 * * * * *",
+  "crontab": "00 23 * * 0",
   "gap": 0,
   "periodicity": {
       "value": 1,
