@@ -2,10 +2,24 @@
   "name": "Viirs active fires",
   "dataset": "viirs-active-fires",
   "crontab": "00 30 23 * * 0-6",
+  "gap": 0,
   "periodicity": 86400000
 },{
   "name": "Glad alerts",
   "dataset": "glad-alerts",
   "crontab": "00 30 23 * * 0",
+  "gap": 0,
+  "periodicity": 604800000
+},{
+  "name": "Imazon alerts",
+  "dataset": "imazon-alerts",
+  "crontab": "00 * * * * *",
+  "gap": 2,
+  "periodicity": 604800000
+},{
+  "name": "Terrai alerts",
+  "dataset": "terrai-alerts",
+  "crontab": "00 * * * * *",
+  "gap": 2,
   "periodicity": 604800000
 }]

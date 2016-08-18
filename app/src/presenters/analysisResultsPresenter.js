@@ -5,14 +5,18 @@ var moment = require('moment'),
 var logger = require('logger');
 
 var VIIRSPresenter = require('presenters/viirsPresenter'),
-    GLADPresenter = require('presenters/gladPresenter');
+    GLADPresenter = require('presenters/gladPresenter'),
+    TerraiPresenter = require('presenters/terraiPresenter'),
+    ImazonPresenter = require('presenters/imazonPresenter');
 
 var UrlService = require('services/urlService'),
     AlertUrlService = require('services/alertUrlService');
 
 const PRESENTER_MAP = {
     'viirs-active-fires': VIIRSPresenter,
-    'glad-alerts': GLADPresenter
+    'glad-alerts': GLADPresenter,
+    'imazon-alerts': ImazonPresenter,
+    'terrai-alerts': TerraiPresenter
 };
 
 var decorateWithName = function(results, subscription) {
