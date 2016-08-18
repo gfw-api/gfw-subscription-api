@@ -3,8 +3,10 @@
 class ImazonPresenter {
 
     static * transform(results, layer, subscription) {
-        result.alert_count_degradation = 0;
-        result.alert_count_deforestation = 0;
+        let result = {
+            alert_count_degradation: 0,
+            alert_count_deforestation: 0
+        };
         if (results.value) {
             for (let i = 0, length = results.value.length; i < length; i++) {
                 if (results.value[i].dataType === 'degrad') {
