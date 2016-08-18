@@ -19,7 +19,12 @@ class AnalysisResultsAdapter {
     if (_.isArray(results.value)) {
       return _.filter(
         results.value,
-        function(n) { return n > 0; }
+        function(n) {
+            if(_.isObject(n)){
+                return n.value > 0;
+            }
+            return n > 0;
+        }
       ).length === 0;
     } else {
       return results.value === 0;
