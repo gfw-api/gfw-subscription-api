@@ -9,9 +9,9 @@ class ImazonPresenter {
         if (results.value) {
             for (let i = 0, length = results.value.length; i < length; i++) {
                 if (results.value[i].dataType === 'degrad') {
-                    result.alert_count_degradation = results.value[i].dataType.value;
+                    results.alert_count_degradation = results.value[i].dataType.value;
                 } else if (results.value[i].dataType === 'defor') {
-                    result.alert_count_deforestation = results.value[i].dataType.value;
+                    results.alert_count_deforestation = results.value[i].dataType.value;
                 }
             }
         }
