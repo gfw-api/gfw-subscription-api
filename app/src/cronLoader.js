@@ -1,6 +1,7 @@
 'use strict';
 
 var logger = require('logger');
+var moment = require('moment');
 var CronJob = require('cron').CronJob;
 var config = require('config');
 
@@ -25,10 +26,13 @@ var load = function() {
 
     new CronJob(task.crontab, function() {
         logger.info('Publishing ' + task.dataset);
+        let beginData = moment().subtract(0, 'months').subtract(task.periodicity, 'milliseconds').toDate();
+        let endDate = moment().subtract(0, 'months').toDate();
+
         asynClient.emit(JSON.stringify({
             layer_slug: task.dataset,
-            begin_date: new Date(Date.now() - task.periodicity),
-            end_date: new Date()
+            begin_date: beginData,
+            end_date: endDate
         }));
     }, null, true, 'Europe/London');
   });

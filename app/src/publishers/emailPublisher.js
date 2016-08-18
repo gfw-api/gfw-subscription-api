@@ -4,7 +4,8 @@ var mailService = require('services/mailService');
 
 const DEFAULT_TEMPLATE = 'forest-change-notification';
 const TEMPLATE_MAP = {
-  'viirs-active-fires': 'fires-notification'
+  'viirs-active-fires': 'fires-notification',
+  'imazon-alerts': 'forest-change-imazon-alerts'
 };
 
 class EmailPublisher {
