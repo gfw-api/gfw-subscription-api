@@ -23,7 +23,7 @@
   "gap": 1,
   "periodicity": {
       "value": 1,
-      "measure": "month"
+      "measure": "months"
   }
 },{
   "name": "Terrai alerts",
