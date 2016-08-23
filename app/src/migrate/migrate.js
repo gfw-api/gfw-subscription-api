@@ -57,6 +57,27 @@ var obtainNewUserId = function*(userId) {
         logger.error(e);
     }
 };
+
+var createGeoJSON = function*(geojson) {
+    try{
+        logger.info('Creating geostore');
+
+        let result = yield microserviceClient.requestToMicroservice({
+          uri: '/geostore/' + userId,
+          method: 'POST',
+          body: {
+              geojson: geojson
+          }
+          json: true
+        });
+
+
+
+        return result.body.data.id;
+    }catch(e){
+        logger.error(e);
+    }
+};
 logger.info('Setting info', process.env.API_GATEWAY_URL_MIGRATE);
 microserviceClient.setDataConnection({
     apiGatewayUrl: process.env.API_GATEWAY_URL_MIGRATE
@@ -93,6 +114,11 @@ var transformAndSaveData = function*(data){
                  }
                  let language = data[i].language  || 'en';
 
+                 if(!data[i].params.iso && !data[i].params.id1 && !data[i].params.wdpaid && !data[i].params.use && !data[i].params.useid && !data[i].params.ifl && data[i].params.fl_id1 && !data[i].params.geostore){
+                     let geostore = yield createGeoJSON(data[i].params.geom);
+                     data[i].geostore = geostore.id;
+                 }
+
                  yield new Subscription({
                      name: data[i].name,
                      confirmed: data[i].confirmed,
@@ -106,15 +132,15 @@ var transformAndSaveData = function*(data){
                      language: language.toLowerCase(),
                      params:{
                          iso:{
-                             country: data[i].iso,
-                             region: data[i].id1
+                             country: data[i].iso || data[i].params.iso,
+                             region: data[i].id1 || data[i].params.id1
                          },
-                         geostore: data[i].geostore,
-                         wdpaid: data[i].wdpaid,
-                         use: data[i].use,
-                         useId: data[i].useid,
-                         ifl: data[i].ifl,
-                         fl_id1: data[i].fl_id1
+                         geostore: data[i].geostore || data[i].params.geostore,
+                         wdpaid: data[i].wdpaid || data[i].params.wdpaid,
+                         use: data[i].use || data[i].params.use,
+                         useId: data[i].useid || data[i].params.useid,
+                         ifl: data[i].ifl || data[i].params.ifl,
+                         fl_id1: data[i].fl_id1 || data[i].params.fl_id1
                      }
                  }).save();
 
