@@ -27,7 +27,7 @@ class AnalysisResultsAdapter {
         }
       ).length === 0;
     } else {
-      return results.value === 0;
+      return !results.value;
     }
   }
 
