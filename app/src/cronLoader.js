@@ -26,8 +26,8 @@ var load = function() {
 
     new CronJob(task.crontab, function() {
         logger.info('Publishing ' + task.dataset);
-        let beginData = moment().subtract(task.gap, 'months').subtract(task.periodicity.value, task.periodicity.measure).toDate();
-        let endDate = moment().subtract(task.gap, 'months').toDate();
+        let beginData = moment().subtract(task.gap.value, task.gap.measure).subtract(task.periodicity.value, task.periodicity.measure).toDate();
+        let endDate = moment().subtract(task.gap.value, task.gap.measure).toDate();
 
         asynClient.emit(JSON.stringify({
             layer_slug: task.dataset,

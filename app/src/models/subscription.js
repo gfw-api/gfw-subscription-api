@@ -15,6 +15,7 @@ var Layer = require('models/layer');
 var AnalysisService = require('services/analysisService');
 var AnalysisResultsAdapter = require('adapters/analysisResultsAdapter');
 var AnalysisResultsPresenter = require('presenters/analysisResultsPresenter');
+var Stadistic = require('models/stadistic');
 
 var Subscription = new Schema({
   name: {type: String, required: false, trim: true},
@@ -49,9 +50,9 @@ Subscription.methods.publish = function*(layerConfig, begin, end) {
     results, this, layer, begin, end);
 
   alertPublishers[this.resource.type].publish(this, results, layer);
+  logger.info('Saving stadistic');
+  yield new Stadistic({slug: layerConfig.slug}).save();
 
-  console.log('Results');
-  console.log(results);
 };
 
 module.exports = mongoose.model('Subscription', Subscription);
