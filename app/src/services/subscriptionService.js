@@ -34,6 +34,8 @@ class SubscriptionService {
 
         let subscriptionFormatted = SubscriptionService.formatSubscription(data);
         logger.debug('Creating subscription ', subscriptionFormatted);
+        delete subscriptionFormatted.createdAt;
+        delete subscriptionFormatted.updatedAt;
         let subscription = yield new Subscription(subscriptionFormatted).save();
 
         SubscriptionService.sendConfirmation(subscription);
