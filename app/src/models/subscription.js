@@ -28,7 +28,7 @@ var Subscription = new Schema({
   params: {type: Schema.Types.Mixed, default: {}},
   userId: {type: String, trim: true, required: false},
   language: {type: String, trim: true, required: false, default: 'en'},
-  createdAt: {type: Date, required: false, default: Date.now},
+  createdAt: {type: Date, required: true, default: Date.now},
   updateAt: {type: Date, required: false, default: Date.now},
 });
 
