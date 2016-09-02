@@ -46,7 +46,7 @@ class SubscriptionService {
     static sendConfirmation(subscription) {
         logger.info('Sending confirmation email', subscription);
         if (subscription.resource.type === 'EMAIL') {
-            mailService.sendMail('subscription-confirmation', {
+            mailService.sendMail(`subscription-confirmation-${subscription.language}`, {
                 confirmation_url: UrlService.confirmationUrl(subscription)
             }, [{
                 address: subscription.resource.content
