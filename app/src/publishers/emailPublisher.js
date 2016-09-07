@@ -15,6 +15,7 @@ class EmailPublisher {
     let template = TEMPLATE_MAP[layer.slug] || DEFAULT_TEMPLATE;
     let language = subscription.language.toLowerCase().replace(/_/g, '-');
     template = `${template}-${language}`;
+    logger.info('MAIL TEMPLATE', template);
     let recipients = [{
           address: {
             email: subscription.resource.content

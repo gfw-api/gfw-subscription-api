@@ -64,7 +64,7 @@ var createGeoJSON = function*(geojsonParam) {
         let json = {
             geojson: geojsonParam
         };
-        if (typeof geojsonParam === "string") {
+        if (typeof geojsonParam === 'string') {
             json.geojson = JSON.parse(geojsonParam);
         }
         let result = yield microserviceClient.requestToMicroservice({
@@ -100,7 +100,7 @@ var tranformDataset = function(oldDataset) {
         return oldDatasets[oldDataset];
     }
     return oldDataset;
-}
+};
 
 var transformAndSaveData = function*(data) {
     logger.info('Saving data');
