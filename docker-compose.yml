@@ -7,6 +7,10 @@ prod:
   command: start
   # log_driver: "gelf"
   restart: always
+  environment:
+      - reschedule=on-node-failure
+  labels:
+    com.docker.swarm.reschedule-policies: "[\"on-node-failure\"]"
   links:
     - redis
   # log_opt:
