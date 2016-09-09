@@ -1,7 +1,7 @@
 [{
   "name": "Viirs active fires",
   "dataset": "viirs-active-fires",
-  "crontab": "00 * * * * *",
+  "crontab": "00 30 23 * * 0-6",
   "gap": {
       "value": 0,
       "measure": "week"
@@ -13,7 +13,7 @@
 },{
   "name": "Glad alerts",
   "dataset": "glad-alerts",
-  "crontab": "00 * * * * *",
+  "crontab": "00 30 23 * * 0",
   "gap": {
       "value": 1,
       "measure": "week"
