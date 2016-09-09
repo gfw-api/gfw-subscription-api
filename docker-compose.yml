@@ -9,10 +9,6 @@ prod:
   restart: always
   links:
     - redis
-  labels:
-    - "name-container=subscription_prod"
-  environment:
-      - affinity:name-container=subscription_redis
   # log_opt:
   #   gelf-address: ${GELF_ADDRESS}
 redis:
@@ -20,9 +16,6 @@ redis:
   container_name: gfw-subscriptions-api-redis
   ports:
     - "6379"
-  labels:
-    - "name-container=subscription_redis"
   restart: always
   environment:
       - reschedule=on-node-failure
-      - affinity:name-container=subscription_prod
