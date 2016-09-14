@@ -3,6 +3,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var logger = require('logger');
+var LastUpdate = require('models/lastUpdate');
 
 const ALERT_TYPES = ['EMAIL', 'URL'];
 var alertPublishers = {};
@@ -52,6 +53,11 @@ Subscription.methods.publish = function*(layerConfig, begin, end) {
   alertPublishers[this.resource.type].publish(this, results, layer);
   logger.info('Saving stadistic');
   yield new Stadistic({slug: layerConfig.slug}).save();
+  if(layerConfig.slug !== 'viirs-active-fires') {
+      let endDate = end.toISOString ? end.toISOString().slice(0, 10): end.slice(0, 10);
+      logger.debug('Saving lastupdates',  layerConfig.slug, endDate);
+      yield LastUpdate.update({dataset: layerConfig.slug},{date: endDate} ).exec();
+  } 
 
 };
 
