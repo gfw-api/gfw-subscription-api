@@ -13,7 +13,9 @@ class EmailPublisher {
   static publish(subscription, results, layer) {
       logger.info('Publishing email with results', results);
     let template = TEMPLATE_MAP[layer.slug] || DEFAULT_TEMPLATE;
-    template = `${template}-${subscription.language}`;
+    let language = subscription.language.toLowerCase().replace(/_/g, '-');
+    template = `${template}-${language}`;
+    logger.info('MAIL TEMPLATE', template);
     let recipients = [{
           address: {
             email: subscription.resource.content

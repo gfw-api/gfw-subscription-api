@@ -33,12 +33,31 @@ class SubscriptionsRouter {
     }
   }
 
+  static validateSubscription(subs){
+      if(!subs.datasets || subs.datasets.length === 0) {
+          return 'Dataset required';
+      }
+      if(!subs.language){
+          return 'Language required';
+      }
+      if(!subs.resource){
+          return 'Resource required';
+      }
+      return null;
+  }
+
   static * createSubscription() {
     logger.info('Creating subscription with body', this.request.body);
     try {
-      this.body = yield SubscriptionService.createSubscription(this.request.body);
+        let message = SubscriptionsRouter.validateSubscription(this.request.body);
+        if (message) {
+            this.throw(400, message);
+            return;
+        }
+        this.body = yield SubscriptionService.createSubscription(this.request.body);
     } catch (err) {
       logger.error(err);
+      throw err;
     }
   }
 

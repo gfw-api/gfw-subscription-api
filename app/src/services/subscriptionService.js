@@ -34,6 +34,8 @@ class SubscriptionService {
 
         let subscriptionFormatted = SubscriptionService.formatSubscription(data);
         logger.debug('Creating subscription ', subscriptionFormatted);
+        delete subscriptionFormatted.createdAt;
+        delete subscriptionFormatted.updatedAt;
         let subscription = yield new Subscription(subscriptionFormatted).save();
 
         SubscriptionService.sendConfirmation(subscription);
@@ -44,7 +46,8 @@ class SubscriptionService {
     static sendConfirmation(subscription) {
         logger.info('Sending confirmation email', subscription);
         if (subscription.resource.type === 'EMAIL') {
-            mailService.sendMail('subscription-confirmation', {
+            let language = subscription.language.toLowerCase().replace(/_/g, '-');
+            mailService.sendMail(`subscription-confirmation-${language}`, {
                 confirmation_url: UrlService.confirmationUrl(subscription)
             }, [{
                 address: subscription.resource.content
