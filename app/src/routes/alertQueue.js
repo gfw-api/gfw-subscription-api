@@ -28,14 +28,16 @@ class AlertQueue {
     setTimeout(function() {
       logger.info(`Sending pack of ${i*10} to ${(i*10)+10}`);
       for (let j = i * 10; j < ((i * 10) + 10); j++) {
-        let config = {
-          layer_slug: layerSlug,
-          subscription_id: subscriptions[j]._id,
-          begin: begin,
-          end: end
-        };
+        if(subscriptions.length > j ){
+          let config = {
+            layer_slug: layerSlug,
+            subscription_id: subscriptions[j]._id,
+            begin: begin,
+            end: end
+          };
 
-        channel.emit(JSON.stringify(config));
+          channel.emit(JSON.stringify(config));
+        }
       }
       if(((i * 10) + 10) < subscriptions.length){
         this.sendPack(subscriptions, begin, end, layerSlug, i++, channel);
