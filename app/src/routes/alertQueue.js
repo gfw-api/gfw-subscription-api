@@ -23,7 +23,7 @@ class AlertQueue {
     channel.subscribe();
   }
 
-  static sendPack(subscriptions, i) {
+  sendPack(subscriptions, i) {
 
     let channel = this.asynClient.toChannel(ALERT_POST_CHANNEL);
     setTimeout(function() {
@@ -55,8 +55,11 @@ class AlertQueue {
     logger.debug('Subscriptions obtained', subscriptions);
 
     logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
-
-    sendPack(subscriptions);
+    try {
+      sendPack(subscriptions);
+    } catch (e) {
+      logger.error(e);
+    }
   }
 }
 
