@@ -25,21 +25,21 @@ class AlertQueue {
 
   static sendPack(subscriptions, i) {
 
-      let channel = this.asynClient.toChannel(ALERT_POST_CHANNEL);
-      setTimeout(function(){
-          logger.info(`Sending pack of ${i*10} to ${(i*10)+10}`);
-          for(let j = i * 10; j < ((i*10) +10); j++) {
-              let config = {
-                layer_slug: layerSlug,
-                subscription_id: subscription._id,
-                begin: begin,
-                end: end
-              };
+    let channel = this.asynClient.toChannel(ALERT_POST_CHANNEL);
+    setTimeout(function() {
+      logger.info(`Sending pack of ${i*10} to ${(i*10)+10}`);
+      for (let j = i * 10; j < ((i * 10) + 10); j++) {
+        let config = {
+          layer_slug: layerSlug,
+          subscription_id: subscription._id,
+          begin: begin,
+          end: end
+        };
 
-              channel.emit(JSON.stringify(config));
-          }
-          AlertQueue.sendPack(subscriptions, i++);
-      }, 60000);
+        channel.emit(JSON.stringify(config));
+      }
+      AlertQueue.sendPack(subscriptions, i++);
+    }, 60000);
   }
 
   *
@@ -56,12 +56,8 @@ class AlertQueue {
       try {
         logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
 
-
         AlertQueue.sendPack(subscriptions);
-          catch (e) {
-            logger.error('Error sending subscription mail', e);
-          }
-        }
+
       }
 
       module.exports = new AlertQueue();
