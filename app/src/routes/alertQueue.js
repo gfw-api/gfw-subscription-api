@@ -24,30 +24,6 @@ class AlertQueue {
     channel.subscribe();
   }
 
-  sendPack(subscriptions, begin, end, layerSlug, i, channel) {
-    logger.debug('Executing timer');
-
-      for (let i = 0; i < subscriptions.length; j++) {
-
-          let config = {
-            layer_slug: layerSlug,
-            subscription_id: subscriptions[i]._id,
-            begin: begin,
-            end: end
-          };
-
-          channel.emit(JSON.stringify(config));
-
-      }
-      if(((i * 10) + 10) < subscriptions.length){
-        let next = i++;
-        this.sendPack(subscriptions, begin, end, layerSlug, next, channel);
-      } else {
-        logger.info('Finished subscriptions');
-      }
-    }.bind(this), 30000);
-  }
-
   *
   processMessage(channel, message) {
     logger.info('Processing alert');
