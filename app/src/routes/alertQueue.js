@@ -37,7 +37,11 @@ class AlertQueue {
 
         channel.emit(JSON.stringify(config));
       }
-      this.sendPack(subscriptions, begin, end, layerSlug, i++, channel);
+      if(((i * 10) + 10) < subscriptions.length){
+        this.sendPack(subscriptions, begin, end, layerSlug, i++, channel);
+      } else {
+        logger.info('Finished subscriptions');
+      }
     }.bind(this), 60000);
   }
 
