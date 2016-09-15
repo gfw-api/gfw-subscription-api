@@ -30,7 +30,7 @@ class AlertQueue {
       for (let j = i * 10; j < ((i * 10) + 10); j++) {
         let config = {
           layer_slug: layerSlug,
-          subscription_id: subscriptions[i]._id,
+          subscription_id: subscriptions[j]._id,
           begin: begin,
           end: end
         };
