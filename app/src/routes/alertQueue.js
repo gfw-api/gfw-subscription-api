@@ -56,7 +56,7 @@ class AlertQueue {
 
     logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
 
-    AlertQueue.sendPack(subscriptions);
+    sendPack(subscriptions);
   }
 }
 
