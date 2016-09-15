@@ -38,7 +38,7 @@ class AlertQueue {
         channel.emit(JSON.stringify(config));
       }
       this.sendPack(subscriptions, begin, end, layerSlug, i++, channel);
-    }, 60000);
+    }.bind(this), 60000);
   }
 
   *
