@@ -14,7 +14,7 @@ class AlertQueue {
   constructor() {
     logger.debug('Initializing queue with provider %s ', `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`);
     this.asynClient = new AsyncClient(AsyncClient.REDIS, {
-        url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
+      url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
     });
 
 
@@ -23,34 +23,51 @@ class AlertQueue {
     channel.subscribe();
   }
 
-  * processMessage(channel, message) {
+  sendPack(subscriptions, begin, end, layerSlug, i, channel) {
+    logger.debug('Executing timer');
+    setTimeout(function() {
+      logger.info(`Sending pack of ${i*10} to ${(i*10)+10}`);
+      for (let j = i * 10; j < ((i * 10) + 10); j++) {
+        if(subscriptions.length > j ){
+          let config = {
+            layer_slug: layerSlug,
+            subscription_id: subscriptions[j]._id,
+            begin: begin,
+            end: end
+          };
+
+          channel.emit(JSON.stringify(config));
+        }
+      }
+      if(((i * 10) + 10) < subscriptions.length){
+        this.sendPack(subscriptions, begin, end, layerSlug, i++, channel);
+      } else {
+        logger.info('Finished subscriptions');
+      }
+    }.bind(this), 60000);
+  }
+
+  *
+  processMessage(channel, message) {
     logger.info('Processing alert');
     let layerSlug = MessageProcessor.getLayerSlug(message),
-        begin = MessageProcessor.getBeginDate(message),
-        end   = MessageProcessor.getEndDate(message);
+      begin = MessageProcessor.getBeginDate(message),
+      end = MessageProcessor.getEndDate(message);
 
     logger.debug('Params in message', layerSlug, begin, end);
     let subscriptions = yield SubscriptionService.getSubscriptionsByLayer(
       layerSlug);
     logger.debug('Subscriptions obtained', subscriptions);
+
+    logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
     try {
-      logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
-
       let channel = this.asynClient.toChannel(ALERT_POST_CHANNEL);
-      subscriptions.forEach(function(subscription) {
-        let config = {
-          layer_slug: layerSlug,
-          subscription_id: subscription._id,
-          begin: begin,
-          end: end
-        };
-
-        channel.emit(JSON.stringify(config));
-      });
+      this.sendPack(subscriptions, begin, end, layerSlug, 0, channel);
     } catch (e) {
-      logger.error('Error sending subscription mail', e);
+      logger.error(e);
     }
   }
 }
+
 
 module.exports = new AlertQueue();

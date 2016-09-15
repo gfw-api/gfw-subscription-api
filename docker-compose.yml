@@ -1,10 +1,11 @@
 prod:
-  image: vizzuality/gfw-subscription-api:1.0.4${STAGING}
+  image: vizzuality/gfw-subscription-api:1.0.5${STAGING}
   ports:
     - "3600"
   env_file:
     - prod.env
   command: start
+  dns: ${DNS_SERVER}
   # log_driver: "gelf"
   restart: always
   links:
