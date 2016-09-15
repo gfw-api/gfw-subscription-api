@@ -40,11 +40,12 @@ class AlertQueue {
         }
       }
       if(((i * 10) + 10) < subscriptions.length){
-        this.sendPack(subscriptions, begin, end, layerSlug, i++, channel);
+        let next = i++;
+        this.sendPack(subscriptions, begin, end, layerSlug, next, channel);
       } else {
         logger.info('Finished subscriptions');
       }
-    }.bind(this), 60000);
+    }.bind(this), 30000);
   }
 
   *
