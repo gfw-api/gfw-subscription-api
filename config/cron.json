@@ -1,7 +1,7 @@
 [{
   "name": "Viirs active fires",
   "dataset": "viirs-active-fires",
-  "crontab": "00 30 23 * * 0-6",
+  "crontab": "00 00 9 * * 0-6",
   "gap": {
       "value": 0,
       "measure": "week"
@@ -13,7 +13,7 @@
 },{
   "name": "Glad alerts",
   "dataset": "glad-alerts",
-  "crontab": "00 45 18 * * 0-6",
+  "crontab": "00 30 9 * * 0-6",
   "gap": {
       "value": 0,
       "measure": "week"
@@ -25,7 +25,7 @@
 },{
   "name": "Imazon alerts",
   "dataset": "imazon-alerts",
-  "crontab": "00 30 23 1 * *",
+  "crontab": "00 00 10 1 * *",
   "gap": {
       "value": 1,
       "measure": "months"
@@ -33,17 +33,5 @@
   "periodicity": {
       "value": 1,
       "measure": "months"
-  }
-},{
-  "name": "Terrai alerts",
-  "dataset": "terrai-alerts",
-  "crontab": "00 23 * * 0",
-  "gap": {
-      "value": 0,
-      "measure": "week"
-  },
-  "periodicity": {
-      "value": 1,
-      "measure": "week"
   }
 }]

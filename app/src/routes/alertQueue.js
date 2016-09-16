@@ -2,6 +2,7 @@
 
 var config = require('config');
 var logger = require('logger');
+var sleep = require('co-sleep');
 var AsyncClient = require('vizz.async-client');
 
 var SubscriptionService = require('services/subscriptionService');
@@ -23,31 +24,6 @@ class AlertQueue {
     channel.subscribe();
   }
 
-  sendPack(subscriptions, begin, end, layerSlug, i, channel) {
-    logger.debug('Executing timer');
-    setTimeout(function() {
-      logger.info(`Sending pack of ${i*10} to ${(i*10)+10}`);
-      for (let j = i * 10; j < ((i * 10) + 10); j++) {
-        if(subscriptions.length > j ){
-          let config = {
-            layer_slug: layerSlug,
-            subscription_id: subscriptions[j]._id,
-            begin: begin,
-            end: end
-          };
-
-          channel.emit(JSON.stringify(config));
-        }
-      }
-      if(((i * 10) + 10) < subscriptions.length){
-        let next = i++;
-        this.sendPack(subscriptions, begin, end, layerSlug, next, channel);
-      } else {
-        logger.info('Finished subscriptions');
-      }
-    }.bind(this), 30000);
-  }
-
   *
   processMessage(channel, message) {
     logger.info('Processing alert');
@@ -63,7 +39,20 @@ class AlertQueue {
     logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
     try {
       let channel = this.asynClient.toChannel(ALERT_POST_CHANNEL);
-      this.sendPack(subscriptions, begin, end, layerSlug, 0, channel);
+
+      for (let i = 0, length = subscriptions.length; i < length; i++) {
+          if( i % 10 === 0 && i !== 0) {
+            yield sleep(60000);
+          }
+          let config = {
+            layer_slug: layerSlug,
+            subscription_id: subscriptions[i]._id,
+            begin: begin,
+            end: end
+          };
+          channel.emit(JSON.stringify(config));
+      }
+
     } catch (e) {
       logger.error(e);
     }
