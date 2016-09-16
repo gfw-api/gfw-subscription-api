@@ -40,18 +40,18 @@ class AlertQueue {
     try {
       let channel = this.asynClient.toChannel(ALERT_POST_CHANNEL);
 
-      for (let i = 0, length = subscriptions.length; i < length; i++) {
-          if( i % 10 === 0) {
-            yield sleep(20000);
-          }
-          let config = {
-            layer_slug: layerSlug,
-            subscription_id: subscriptions[i]._id,
-            begin: begin,
-            end: end
-          };
-          channel.emit(JSON.stringify(config));
-      }
+      // for (let i = 0, length = subscriptions.length; i < length; i++) {
+      //     if( i % 10 === 0) {
+      //       yield sleep(20000);
+      //     }
+      //     let config = {
+      //       layer_slug: layerSlug,
+      //       subscription_id: subscriptions[i]._id,
+      //       begin: begin,
+      //       end: end
+      //     };
+      //     channel.emit(JSON.stringify(config));
+      // }
 
     } catch (e) {
       logger.error(e);
