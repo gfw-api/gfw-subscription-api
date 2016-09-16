@@ -42,7 +42,7 @@ class AlertQueue {
 
       for (let i = 0, length = subscriptions.length; i < length; i++) {
           if( i % 10 === 0 && i !== 0) {
-            yield sleep(60000);
+            yield sleep(30000);
           }
           let config = {
             layer_slug: layerSlug,
