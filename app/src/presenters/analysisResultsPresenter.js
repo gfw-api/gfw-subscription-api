@@ -56,7 +56,8 @@ var decorateWithMetadata = function(results, layer) {
 var decorateWithDates = function(results, begin, end) {
     begin = moment(begin).format('YYYY-MM-DD');
     end = moment(end).format('YYYY-MM-DD');
-    results.alert_date = begin + ' to ' + end;
+    results.alert_date_begin = begin;
+    results.alert_date_end = end;
 
     return results;
 };
