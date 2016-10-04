@@ -40,6 +40,10 @@ Subscription.methods.publish = function*(layerConfig, begin, end) {
 
   var results = yield AnalysisService.execute(
     this, layerConfig.slug, begin, end);
+  if(!results){
+    logger.info('Results is null. Returning');
+    return;
+  }
   logger.debug('Results obtained', results);
   results = AnalysisResultsAdapter.transform(results, layer);
   if (AnalysisResultsAdapter.isZero(results)) {
@@ -57,7 +61,7 @@ Subscription.methods.publish = function*(layerConfig, begin, end) {
       let endDate = end.toISOString ? end.toISOString().slice(0, 10): end.slice(0, 10);
       logger.debug('Saving lastupdates',  layerConfig.slug, endDate);
       yield LastUpdate.update({dataset: layerConfig.slug},{date: endDate} ).exec();
-  } 
+  }
 
 };
 
