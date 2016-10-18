@@ -5,11 +5,19 @@ var UrlService = require('services/urlService');
 var logger = require('logger');
 var Subscription = require('models/subscription');
 var SubscriptionService = require('services/subscriptionService');
+var UpdateService = require('services/updateService');
 var imageService = require('services/imageService');
 var config = require('config');
 var router = new Router({
   prefix: '/subscriptions'
 });
+
+const CHANNEL = 'subscription_alerts';
+var AsyncClient = require('vizz.async-client');
+var asynClient = new AsyncClient(AsyncClient.REDIS, {
+    url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
+});
+asynClient = asynClient.toChannel(CHANNEL);
 
 class SubscriptionsRouter {
   static * getSubscription() {
@@ -130,6 +138,25 @@ class SubscriptionsRouter {
     this.body = subscription;
   }
 
+  static * notifyUpdates() {
+    const dataset = this.params.dataset;
+    logger.info(`Notify '${dataset}' was updated`);
+    let result = yield UpdateService.checkUpdated(dataset);
+    logger.info(`Checking if '${dataset}' was updating`);
+
+    if(result.updated) {
+      asynClient.emit(JSON.stringify({
+          layer_slug: dataset,
+          begin_date: new Date(result.beginDate),
+          end_date: new Date(result.endDate)
+      }));
+      this.body = 'Dataset:${dataset} was updated';
+    } else {
+      logger.info(`${dataset} was not updated`);
+      this.body = `Dataset:${dataset} wasn't updated`;
+    }
+  }
+
 }
 
 router.post('/', SubscriptionsRouter.createSubscription);
@@ -140,5 +167,6 @@ router.get('/:id/send_confirmation', SubscriptionsRouter.sendConfirmation);
 router.get('/:id/unsubscribe', SubscriptionsRouter.unsubscribeSubscription);
 router.patch('/:id', SubscriptionsRouter.updateSubscription);
 router.delete('/:id', SubscriptionsRouter.deleteSubscription);
+router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 
 module.exports = router;
