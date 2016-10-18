@@ -74,5 +74,14 @@
             "baseUrl": "#(service.uri)",
             "path": "/api/v1/subscriptions/:id/unsubscribe"
         }]
+    }, {
+        "url": "/subscriptions/notify-updates/:dataset",
+        "method": "POST",
+        "authenticated": false,
+        "endpoints": [{
+            "method": "POST",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/notify-updates/:dataset"
+        }]
     }]
 }
