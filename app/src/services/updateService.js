@@ -39,6 +39,9 @@ class UpdateService {
             };
         }
 
+        logger.debug('Saving lastupdates',  dataset, latest.maxDate);
+        yield LastUpdate.update({dataset: dataset},{date: latest.maxDate} ).exec();
+
         return {
             beginDate: lastUpdated.date,
             endDate: latest.maxDate,
