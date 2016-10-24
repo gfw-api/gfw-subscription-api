@@ -150,7 +150,7 @@ class SubscriptionsRouter {
           begin_date: new Date(result.beginDate),
           end_date: new Date(result.endDate)
       }));
-      this.body = 'Dataset:${dataset} was updated';
+      this.body = `Dataset:${dataset} was updated`;
     } else {
       logger.info(`${dataset} was not updated`);
       this.body = `Dataset:${dataset} wasn't updated`;
