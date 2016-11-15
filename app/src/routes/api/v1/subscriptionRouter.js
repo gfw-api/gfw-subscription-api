@@ -21,7 +21,7 @@ asynClient = asynClient.toChannel(CHANNEL);
 
 class SubscriptionsRouter {
   static * getSubscription() {
-    var user = this.request.query.loggedUser,
+    var user = JSON.parse(this.request.query.loggedUser),
         id = this.params.id;
 
     try {
@@ -32,7 +32,7 @@ class SubscriptionsRouter {
   }
 
   static * getSubscriptions() {
-    var user = this.request.query.loggedUser;
+    var user = JSON.parse(this.request.query.loggedUser);
 
     try {
       this.body = yield SubscriptionService.getSubscriptionsForUser(user.id);
@@ -83,7 +83,7 @@ class SubscriptionsRouter {
 
   static * sendConfirmation() {
     logger.info('Resending confirmation email for subscription with id %s', this.params.id);
-    var user = this.request.query.loggedUser,
+    var user = JSON.parse(this.request.query.loggedUser),
         id = this.params.id;
 
     let subscription = yield Subscription.where({
@@ -104,7 +104,7 @@ class SubscriptionsRouter {
     logger.info('Update subscription by id %s', this.params.id);
     try {
       this.body = yield SubscriptionService.updateSubscription(
-        this.params.id, this.request.body.loggedUser.id, this.request.body);
+        this.params.id, JSON.parse(this.request.body.loggedUser).id, this.request.body);
     } catch (err) {
       logger.error(err);
     }
@@ -127,7 +127,7 @@ class SubscriptionsRouter {
   static * deleteSubscription() {
     logger.info('Deleting subscription by id %s', this.params.id);
     let subscription = yield SubscriptionService.deleteSubscriptionById(
-      this.params.id, this.request.query.loggedUser.id);
+      this.params.id, JSON.parse(this.request.query.loggedUser).id);
 
     if (!subscription) {
       logger.error('Subscription not found');
