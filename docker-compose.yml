@@ -6,12 +6,13 @@ prod:
     - prod.env
   command: start
   dns: ${DNS_SERVER}
-  # log_driver: "gelf"
   restart: always
   links:
     - redis
-  # log_opt:
-  #   gelf-address: ${GELF_ADDRESS}
+  log_driver: "syslog"
+  log_opt:
+    syslog-address: ${SYSLOG_ADDRESS}
+    tag: gfw-subscription-api${STAGING} 
 redis:
   image: redis
   container_name: gfw-subscriptions-api-redis
