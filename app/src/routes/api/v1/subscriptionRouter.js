@@ -104,7 +104,7 @@ class SubscriptionsRouter {
     logger.info('Update subscription by id %s', this.params.id);
     try {
       this.body = yield SubscriptionService.updateSubscription(
-        this.params.id, JSON.parse(this.request.body.loggedUser).id, this.request.body);
+        this.params.id, this.request.body.loggedUser.id, this.request.body);
     } catch (err) {
       logger.error(err);
     }

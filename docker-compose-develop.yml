@@ -10,6 +10,7 @@ develop:
     CARTODB_USER: wri-01
     FLAGSHIP_URL: http://staging.globalforestwatch.org
     API_GATEWAY_URL: http://192.168.1.169:9000
+    API_URL: http://localhost:9000
     API_GATEWAY_EXTERNAL_URL: http://192.168.1.169:8000
     API_GATEWAY_QUEUE_URL: redis://192.168.1.169:6379
     API_GATEWAY_QUEUE_PROVIDER: redis
