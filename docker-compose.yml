@@ -1,17 +1,19 @@
 prod:
-  image: vizzuality/gfw-subscription-api:1.0.6${STAGING}
+  image: vizzuality/gfw-subscription-api:1.0.7${STAGING}
   ports:
     - "3600"
   env_file:
     - prod.env
   command: start
   dns: ${DNS_SERVER}
-  # log_driver: "gelf"
   restart: always
   links:
     - redis
-  # log_opt:
-  #   gelf-address: ${GELF_ADDRESS}
+  log_driver: "syslog"
+  log_opt:
+    syslog-address: ${SYSLOG_ADDRESS}
+    tag: gfw-subscription-api${STAGING}
+
 redis:
   image: redis
   container_name: gfw-subscriptions-api-redis
