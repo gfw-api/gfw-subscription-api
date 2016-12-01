@@ -4,9 +4,5 @@
         "level": "warn",
         "toFile": false,
         "dirLogFile": null
-    },
-    "service": {
-        "uri": "http://localhost:3200",
-        "port": null
     }
 }

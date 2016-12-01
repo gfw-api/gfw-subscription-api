@@ -7,9 +7,10 @@ var AsyncClient = require('vizz.async-client');
 
 var SubscriptionService = require('services/subscriptionService');
 var MessageProcessor = require('services/messageProcessor');
+var EmailPublisher = require('publishers/emailPublisher');
 
+const STATS_MAILS = config.get('mails.statsRecipients').split(',');
 const CHANNEL = 'subscription_alerts';
-const ALERT_POST_CHANNEL = 'subscription_alerts_publish';
 
 class AlertQueue {
   constructor() {
@@ -38,25 +39,22 @@ class AlertQueue {
 
     logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
     try {
-      let channel = this.asynClient.toChannel(ALERT_POST_CHANNEL);
-
-      for (let i = 0, length = subscriptions.length; i < length; i++) {
-          if( i % 10 === 0 && i !== 0) {
-            yield sleep(30000);
-          }
-          let config = {
-            layer_slug: layerSlug,
-            subscription_id: subscriptions[i]._id,
-            begin: begin,
-            end: end
-          };
-          channel.emit(JSON.stringify(config));
-      }
-
+        let mailCounter = 0;
+        for (let i = 0, length = subscriptions.length; i < length; i++) {
+            let subscription = yield SubscriptionService.getSubscriptionById(
+                  subscriptions[i]._id);
+            let layer = {name: layerSlug, slug: layerSlug};
+            let sent = yield subscription.publish(layer, begin, end);
+            if(sent){
+                mailCounter++;
+            }
+        }
+        EmailPublisher.sendStats(STATS_MAILS, {counter: mailCounter, dataset: layerSlug});
     } catch (e) {
       logger.error(e);
     }
   }
+
 }
 
 

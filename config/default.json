@@ -13,7 +13,7 @@
     },
     "apiGateway": {
         "uri": "http://192.168.1.109:8000/gateway/service",
-        "queue": "redis://localhost:6379"
+        "queue": "redis://mymachine:6379"
     },
     "redisLocal": {
         "host": null,
@@ -29,5 +29,8 @@
     },
     "cartoDB":{
         "user": null
+    },
+    "mails":{
+        "statsRecipients": "sergio.gordillo@vizzuality.com,raul.requero@vizzuality.com"
     }
 }

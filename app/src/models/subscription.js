@@ -48,7 +48,7 @@ Subscription.methods.publish = function*(layerConfig, begin, end) {
   results = AnalysisResultsAdapter.transform(results, layer);
   if (AnalysisResultsAdapter.isZero(results)) {
       logger.info('Not send subscription. Is zero value');
-      return;
+      return false;
   }
 
   results = yield AnalysisResultsPresenter.render(
@@ -57,6 +57,7 @@ Subscription.methods.publish = function*(layerConfig, begin, end) {
   alertPublishers[this.resource.type].publish(this, results, layer);
   logger.info('Saving stadistic');
   yield new Stadistic({slug: layerConfig.slug}).save();
+  return true;
 
 };
 

@@ -15,7 +15,7 @@ class UrlService {
   }
 
   static unsubscribeUrl(subscription) {
-      return BASE_URL + '/subscriptions/' + subscription._id + '/unsubscribe';
+      return BASE_URL + '/subscriptions/' + subscription._id + '/unsubscribe?redirect=true';
   }
 
 }

@@ -21,6 +21,7 @@ asynClient = asynClient.toChannel(CHANNEL);
 
 class SubscriptionsRouter {
   static * getSubscription() {
+    logger.debug(this.request.query.loggedUser);
     var user = JSON.parse(this.request.query.loggedUser),
         id = this.params.id;
 
@@ -120,7 +121,10 @@ class SubscriptionsRouter {
       this.throw(404, 'Subscription not found');
       return;
     }
-
+    if(this.query.redirect){
+        this.redirect(config.get('gfw.flagshipUrl'));
+        return;
+    }
     this.body = subscription;
   }
 

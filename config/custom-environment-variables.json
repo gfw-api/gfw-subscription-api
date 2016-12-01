@@ -23,5 +23,8 @@
     },
     "cartoDB":{
         "user": "CARTODB_USER"
+    },
+    "mails":{
+        "statsRecipients": "STATS_RECIPIENTS"
     }
 }
