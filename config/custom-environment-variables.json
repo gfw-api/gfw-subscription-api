@@ -1,6 +1,7 @@
 {
     "gfw": {
-      "flagshipUrl": "FLAGSHIP_URL"
+      "flagshipUrl": "FLAGSHIP_URL",
+      "apiUrl": "API_URL"
     },
     "apiGateway":{
         "uri": "API_GATEWAY_URI",
@@ -22,5 +23,8 @@
     },
     "cartoDB":{
         "user": "CARTODB_USER"
+    },
+    "mails":{
+        "statsRecipients": "STATS_RECIPIENTS"
     }
 }

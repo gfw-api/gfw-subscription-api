@@ -8,12 +8,12 @@
     "service": {
         "id": "gfw-subscription-api_1.0.0",
         "name": "GFW SUBSCRIPTION API",
-        "uri": "http://192.168.99.100:3200",
+        "uri": "http://192.168.1.109:3200",
         "port": 3600
     },
     "apiGateway": {
-        "uri": "http://192.168.99.100:8000/gateway/service",
-        "queue": "redis://localhost:6379"
+        "uri": "http://192.168.1.109:8000/gateway/service",
+        "queue": "redis://mymachine:6379"
     },
     "redisLocal": {
         "host": null,
@@ -21,7 +21,7 @@
     },
     "mongodb": {
         "database": "gfw_subscription_db",
-        "host": "192.168.99.100",
+        "host": "192.168.1.109",
         "port": 32780
     },
     "migrate": {
@@ -29,5 +29,8 @@
     },
     "cartoDB":{
         "user": null
+    },
+    "mails":{
+        "statsRecipients": "sergio.gordillo@vizzuality.com,raul.requero@vizzuality.com"
     }
 }

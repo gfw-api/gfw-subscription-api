@@ -32,12 +32,15 @@ class UpdateService {
         let lastUpdated = yield LastUpdate.findOne({dataset: dataset}).exec();
         logger.debug('Last updated', lastUpdated);
 
-        if (lastUpdated.date === latest.maxDate){
+        if (!lastUpdated || lastUpdated.date === latest.maxDate){
             logger.info(`Dataset ${dataset} was not updated`);
             return {
                 updated: false
             };
         }
+
+        logger.debug('Saving lastupdates',  dataset, latest.maxDate);
+        yield LastUpdate.update({dataset: dataset},{date: latest.maxDate} ).exec();
 
         return {
             beginDate: lastUpdated.date,

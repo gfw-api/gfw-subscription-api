@@ -21,8 +21,15 @@ class EmailPublisher {
             email: subscription.resource.content
           }
         }];
-
     mailService.sendMail(template, results, recipients);
+  }
+
+  static sendStats(emails, stats) {
+    logger.info('Publishing email with stats', stats);
+    let template = 'subscriptions-stats';
+    logger.info('MAIL TEMPLATE', template);
+    let recipients = emails.map(el => ({address: {email: el}}));
+    mailService.sendMail(template, stats, recipients);
   }
 
 }

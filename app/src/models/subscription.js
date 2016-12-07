@@ -48,7 +48,7 @@ Subscription.methods.publish = function*(layerConfig, begin, end) {
   results = AnalysisResultsAdapter.transform(results, layer);
   if (AnalysisResultsAdapter.isZero(results)) {
       logger.info('Not send subscription. Is zero value');
-      return;
+      return false;
   }
 
   results = yield AnalysisResultsPresenter.render(
@@ -57,11 +57,7 @@ Subscription.methods.publish = function*(layerConfig, begin, end) {
   alertPublishers[this.resource.type].publish(this, results, layer);
   logger.info('Saving stadistic');
   yield new Stadistic({slug: layerConfig.slug}).save();
-  if(layerConfig.slug !== 'viirs-active-fires') {
-      let endDate = end.toISOString ? end.toISOString().slice(0, 10): end.slice(0, 10);
-      logger.debug('Saving lastupdates',  layerConfig.slug, endDate);
-      yield LastUpdate.update({dataset: layerConfig.slug},{date: endDate} ).exec();
-  }
+  return true;
 
 };
 
