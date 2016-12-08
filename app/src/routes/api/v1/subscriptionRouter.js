@@ -122,7 +122,8 @@ class SubscriptionsRouter {
       return;
     }
     if(this.query.redirect){
-        this.redirect(config.get('gfw.flagshipUrl'));
+        this.redirect(UrlService.flagshipUrl(
+          '/my_gfw/subscriptions?unsubscription_confirmed=true'));
         return;
     }
     this.body = subscription;
