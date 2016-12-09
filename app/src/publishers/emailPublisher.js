@@ -25,9 +25,9 @@ class EmailPublisher {
   }
 
   static sendStats(emails, stats) {
-    logger.info('Publishing email with stats', stats);
+    logger.warn('Publishing email with stats', stats);
     let template = 'subscriptions-stats';
-    logger.info('MAIL TEMPLATE', template);
+    logger.warn('MAIL TEMPLATE', template);
     let recipients = emails.map(el => ({address: {email: el}}));
     mailService.sendMail(template, stats, recipients);
   }
