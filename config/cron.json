@@ -11,18 +11,6 @@
       "measure": "day"
   }
 },{
-  "name": "Glad alerts",
-  "dataset": "glad-alerts",
-  "crontab": "00 35 12 * * 0-6",
-  "gap": {
-      "value": 0,
-      "measure": "week"
-  },
-  "periodicity": {
-      "value": 1,
-      "measure": "day"
-  }
-},{
   "name": "Imazon alerts",
   "dataset": "imazon-alerts",
   "crontab": "00 00 10 1 * *",
