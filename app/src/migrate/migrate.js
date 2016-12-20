@@ -11,7 +11,7 @@ var mongoUri = process.env.MONGO_URI || 'mongodb://' + config.get('mongodb.host'
 
 let Subscription = require('models/subscription');
 
-var microserviceClient = require('vizz.microservice-client');
+// var microserviceClient = require('vizz.microservice-client');
 
 var obtainData = function*(cursor) {
     let url = uriMigrate;
@@ -44,15 +44,15 @@ var obtainNewUserId = function*(userId) {
         if (cacheUsers[userId]) {
             return cacheUsers[userId];
         }
-        let result = yield microserviceClient.requestToMicroservice({
-            uri: '/user/oldId/' + userId,
-            method: 'GET',
-            json: true
-        });
+        // let result = yield microserviceClient.requestToMicroservice({
+        //     uri: '/user/oldId/' + userId,
+        //     method: 'GET',
+        //     json: true
+        // });
 
 
-        cacheUsers[userId] = result.body.data.id;
-        return result.body.data.id;
+        // cacheUsers[userId] = result.body.data.id;
+        // return result.body.data.id;
     } catch (e) {
         logger.error(e);
     }
@@ -67,23 +67,23 @@ var createGeoJSON = function*(geojsonParam) {
         if (typeof geojsonParam === 'string') {
             json.geojson = JSON.parse(geojsonParam);
         }
-        let result = yield microserviceClient.requestToMicroservice({
-            uri: '/geostore',
-            method: 'POST',
-            body: json,
-            json: true
-        });
+        // let result = yield microserviceClient.requestToMicroservice({
+        //     uri: '/geostore',
+        //     method: 'POST',
+        //     body: json,
+        //     json: true
+        // });
 
 
-        return result;
+        // return result;
     } catch (e) {
         logger.error(e);
     }
 };
 logger.info('Setting info', process.env.API_GATEWAY_URL_MIGRATE);
-microserviceClient.setDataConnection({
-    apiGatewayUrl: process.env.API_GATEWAY_URL_MIGRATE
-});
+// microserviceClient.setDataConnection({
+//     apiGatewayUrl: process.env.API_GATEWAY_URL_MIGRATE
+// });
 
 var oldDatasets = {
     'alerts/treeloss': 'umd-loss-gain',

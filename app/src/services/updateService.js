@@ -1,7 +1,7 @@
 'use strict';
 
 const logger = require('logger');
-const microserviceClient = require('vizz.microservice-client');
+const ctRegisterMicroservice = require('ct-register-microservice-node');
 const LastUpdate = require('models/lastUpdate');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
@@ -15,38 +15,39 @@ var deserializer = function(obj) {
 class UpdateService {
     static * checkUpdated(dataset){
         logger.info(`Checking if dataset ${dataset} was updated`);
-        let result = yield microserviceClient.requestToMicroservice({
-            uri: `/${dataset}/latest`,
-            method: 'GET',
-            json: true
-        });
-        logger.debug(result);
-        if (result.statusCode !== 200) {
-            logger.error('Error to obtain latest endpoint', result.body);
+        try {
+          let result = yield ctRegisterMicroservice.requestToMicroservice({
+              uri: `/${dataset}/latest`,
+              method: 'GET',
+              json: true
+          });
+          
+          let latest = yield deserializer(result);
+          logger.debug('Obtaining last updated');
+          let lastUpdated = yield LastUpdate.findOne({dataset: dataset}).exec();
+          logger.debug('Last updated', lastUpdated);
+
+          if (!lastUpdated || lastUpdated.date === latest.maxDate){
+              logger.info(`Dataset ${dataset} was not updated`);
+              return {
+                  updated: false
+              };
+          }
+
+          logger.debug('Saving lastupdates',  dataset, latest.maxDate);
+          yield LastUpdate.update({dataset: dataset},{date: latest.maxDate} ).exec();
+
+          return {
+              beginDate: lastUpdated.date,
+              endDate: latest.maxDate,
+              updated: true
+          };
+        } catch (e) {
+          logger.error('Error to obtain latest endpoint', e);
             return {
                 updated: false
             };
         }
-        let latest = yield deserializer(result.body);
-        logger.debug('Obtaining last updated');
-        let lastUpdated = yield LastUpdate.findOne({dataset: dataset}).exec();
-        logger.debug('Last updated', lastUpdated);
-
-        if (!lastUpdated || lastUpdated.date === latest.maxDate){
-            logger.info(`Dataset ${dataset} was not updated`);
-            return {
-                updated: false
-            };
-        }
-
-        logger.debug('Saving lastupdates',  dataset, latest.maxDate);
-        yield LastUpdate.update({dataset: dataset},{date: latest.maxDate} ).exec();
-
-        return {
-            beginDate: lastUpdated.date,
-            endDate: latest.maxDate,
-            updated: true
-        };
 
     }
 }

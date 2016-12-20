@@ -4,8 +4,10 @@ var _ = require('lodash');
 
 const GENERIC_ADAPTER = require('adapters/genericAdapter');
 const GladAdapter = require('adapters/gladAdapter');
+const StoryAdapter = require('adapters/storyAdapter');
 const ADAPTER_MAP = {
-  'glad-alerts': GladAdapter
+  'glad-alerts': GladAdapter,
+  'story': StoryAdapter
 };
 
 class AnalysisResultsAdapter {

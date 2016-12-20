@@ -4,7 +4,7 @@
     "tags": ["gfw"],
     "urls": [{
         "url": "/subscriptions",
-        "authenticated": true,
+        "authenticated": false,
         "method": "POST",
         "endpoints": [{
             "method": "POST",

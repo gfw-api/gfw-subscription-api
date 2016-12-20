@@ -2,7 +2,7 @@
 var logger = require('logger');
 var AnalysisClassifier = require('services/analysisClassifier');
 
-var microserviceClient = require('vizz.microservice-client');
+const ctRegisterMicroservice = require('ct-register-microservice-node');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 var deserializer = function(obj) {
     return function(callback) {
@@ -31,23 +31,23 @@ class AnalysisService {
         query.forSubscription = true;
     }
 
-    let path = AnalysisClassifier.pathFor(subscription),
+    let path = AnalysisClassifier.pathFor(subscription, layerSlug),
         url = '/' + layerSlug + path;
     logger.debug('subscription id: ', subscription._id, 'Url ', url, 'and query ', query);
-    let result = yield microserviceClient.requestToMicroservice({
-          uri: url,
-          method: 'GET',
-          json: true,
-          qs: query
-        });
-
-    if (result.statusCode !== 200) {
-      logger.error('Error calculating analysis:');
-      logger.error(result.body);
+    try {
+      let result = yield ctRegisterMicroservice.requestToMicroservice({
+            uri: url,
+            method: 'GET',
+            json: true,
+            qs: query
+      });
+      return yield deserializer(result);
+    } catch (e) {
+      logger.error(e);
       return null;
     }
 
-    return yield deserializer(result.body);
+    
   }
 
 }

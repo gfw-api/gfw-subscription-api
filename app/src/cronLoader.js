@@ -29,7 +29,7 @@ var load = function() {
     new CronJob(task.crontab, function() {
         co(function *() {
             logger.info('Publishing ' + task.dataset);
-            if (task.dataset !== 'viirs-active-fires'){
+            if (task.dataset !== 'viirs-active-fires' && task.dataset !== 'story'){
                 logger.info(`Checking if dataset '${task.dataset}' was updated`);
                 let result = yield UpdateService.checkUpdated(task.dataset);
                 if(result.updated) {
