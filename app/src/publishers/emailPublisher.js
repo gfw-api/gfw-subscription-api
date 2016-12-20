@@ -11,7 +11,7 @@ const TEMPLATE_MAP = {
 
 class EmailPublisher {
 
-  static * publish(subscription, results, layer) {
+  static publish(subscription, results, layer) {
       logger.info('Publishing email with results', results);
     let template = TEMPLATE_MAP[layer.slug] || DEFAULT_TEMPLATE;
     let language = subscription.language.toLowerCase().replace(/_/g, '-');

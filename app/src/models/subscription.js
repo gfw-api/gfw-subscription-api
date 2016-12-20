@@ -54,7 +54,12 @@ Subscription.methods.publish = function*(layerConfig, begin, end) {
   results = yield AnalysisResultsPresenter.render(
     results, this, layer, begin, end);
 
-  yield alertPublishers[this.resource.type].publish(this, results, layer);
+  if (this.resource.type === 'URL') {
+    yield alertPublishers[this.resource.type].publish(this, results, layer);
+  } else {
+    alertPublishers[this.resource.type].publish(this, results, layer);
+  }
+  
   logger.info('Saving stadistic');
   yield new Stadistic({slug: layerConfig.slug}).save();
   return true;
