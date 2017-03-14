@@ -15,7 +15,7 @@ var searchImage = function(story){
     }
   }
   return null;
-}
+};
 
 class StoryAdapter {
 
