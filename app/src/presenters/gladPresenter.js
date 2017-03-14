@@ -20,7 +20,8 @@ class GLADPresenter {
       results.alerts = alerts.data;
     } catch (err) {
       logger.error(err);
-      throw(err);
+      //throw(err);
+      results.alerts = [];
     }
     logger.info('Glad P Results ', results);
     return results;
