@@ -13,7 +13,7 @@ const ALLOWED_PARAMS = [
   'fit_to_geom'
 ];
 
-const iso = function(subscription) {
+const getIso = function(subscription) {
   let params = subscription.params || {};
 
   if (params.iso && params.iso.country) {
@@ -37,7 +37,7 @@ class AlertUrlService {
       end: moment(end).format('YYYY-MM-DD'),
       fit_to_geom: true
     };
-    let iso = iso(subscription);
+    let iso = getIso(subscription);
 
     if(subscription.params.geostore) {
         query.geostore = subscription.params.geostore;
