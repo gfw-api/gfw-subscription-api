@@ -6,11 +6,10 @@ class GLADPresenter {
 
   static * transform(results, layer, subscription) {
     results.alert_count = results.value;
-    let uri = results.downloadUrls.csv.replace('download', 'query').split('&format')[0];
-    uri = uri.replace('&geostore', ' order by julian_day desc, year desc limit 10&geostore');
+    let uri = '/query' + results.downloadUrls.csv.split('download')[1];
+    uri = uri.split('&format')[0].replace('&geostore', ' order by julian_day desc, year desc limit 10&geostore');
 
-    logger.debug('ENDPOINT ', uri);
-    logger.info('ENDPOINT ', uri);
+    logger.info('Last alerts endpoint ', uri);
 
     try {
       let alerts = yield ctRegisterMicroservice.requestToMicroservice({
