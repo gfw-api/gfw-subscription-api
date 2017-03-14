@@ -9,6 +9,9 @@ class GLADPresenter {
     let uri = results.downloadUrls.csv.replace('download', 'query').split('&format')[0];
     uri = uri.replace('&geostore', ' order by julian_day desc, year desc limit 10&geostore');
 
+    logger.debug('ENDPOINT ', uri);
+    logger.info('ENDPOINT ', uri);
+
     try {
       let alerts = yield ctRegisterMicroservice.requestToMicroservice({
           uri: uri,
