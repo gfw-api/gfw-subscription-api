@@ -17,7 +17,10 @@ class GLADPresenter {
           method: 'GET',
           json: true
       });
-      results.alerts = alerts.data;
+      results.alerts = alerts.data.map(el => {
+        el.date = new Date(new Date(el.year, 0, 1).getTime() + el.julian_day*24*3600*1000);
+        return el;
+      });
     } catch (err) {
       logger.error(err);
       //throw(err);
