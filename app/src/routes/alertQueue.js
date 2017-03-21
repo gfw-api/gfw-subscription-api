@@ -40,6 +40,7 @@ class AlertQueue {
     logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
     try {
         let mailCounter = 0;
+        let mails = [];
         for (let i = 0, length = subscriptions.length; i < length; i++) {
             let subscription = yield SubscriptionService.getSubscriptionById(
                   subscriptions[i]._id);
@@ -47,9 +48,10 @@ class AlertQueue {
             let sent = yield subscription.publish(layer, begin, end);
             if(sent){
                 mailCounter++;
+                mails.push(subscription.resource.content);
             }
         }
-        EmailPublisher.sendStats(STATS_MAILS, {counter: mailCounter, dataset: layerSlug});
+        EmailPublisher.sendStats(STATS_MAILS, {counter: mailCounter, mails: mails, dataset: layerSlug});
     } catch (e) {
       logger.error(e);
     }

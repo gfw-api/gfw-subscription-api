@@ -1,6 +1,6 @@
 'use strict';
 
-var microserviceClient = require('vizz.microservice-client');
+// var microserviceClient = require('vizz.microservice-client');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
 var deserializer = function(obj) {
@@ -48,6 +48,10 @@ const LAYERS = [{
 }, {
     name: 'umd_as_it_happens_idn',
     slug: 'glad-alerts',
+    subscription: true
+},{
+    name: 'story',
+    slug: 'story',
     subscription: true
 }, ];
 

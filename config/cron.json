@@ -22,4 +22,16 @@
       "value": 1,
       "measure": "months"
   }
+},{
+  "name": "Stories",
+  "dataset": "story",
+  "crontab": "00 00 22 * * 0-6",
+  "gap": {
+      "value": 0,
+      "measure": "week"
+  },
+  "periodicity": {
+      "value": 1,
+      "measure": "day"
+  }
 }]

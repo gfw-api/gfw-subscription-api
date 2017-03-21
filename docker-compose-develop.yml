@@ -18,7 +18,6 @@ develop:
     MIGRATE_URI: <migrateuri>
     CT_URL: http://mymachine:9000
     LOCAL_URL: http://mymachine:3600
-    DEBUG: "*"
   command: develop
   links:
     - mongo

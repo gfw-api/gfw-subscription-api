@@ -36,9 +36,13 @@ class SubscriptionService {
         logger.debug('Creating subscription ', subscriptionFormatted);
         delete subscriptionFormatted.createdAt;
         delete subscriptionFormatted.updatedAt;
+        if (subscriptionFormatted.resource.type === 'URL') {
+          subscriptionFormatted.confirmed = true;
+        }
         let subscription = yield new Subscription(subscriptionFormatted).save();
-
-        SubscriptionService.sendConfirmation(subscription);
+        if (subscriptionFormatted.resource.type !== 'URL') {
+          SubscriptionService.sendConfirmation(subscription);
+        }
 
         return SubscriptionSerializer.serialize(subscription);
     }

@@ -13,7 +13,7 @@ const ALLOWED_PARAMS = [
   'fit_to_geom'
 ];
 
-const iso = function(subscription) {
+const getIso = function(subscription) {
   let params = subscription.params || {};
 
   if (params.iso && params.iso.country) {
@@ -37,15 +37,19 @@ class AlertUrlService {
       end: moment(end).format('YYYY-MM-DD'),
       fit_to_geom: true
     };
+    let iso = getIso(subscription);
+
     if(subscription.params.geostore) {
         query.geostore = subscription.params.geostore;
     }
     if(subscription.params.use){
         query.use = subscription.params.use;
         query.useid = subscription.params.useid;
+        iso = 'ALL';
     }
     if(subscription.params.wdpaid){
         query.wdpaid = subscription.params.wdpaid;
+        iso = 'ALL';
     }
 
     let existingUrlParams = _.pick(subscription.params, ALLOWED_PARAMS);
@@ -54,7 +58,7 @@ class AlertUrlService {
     let baselayer = layer.name,
         querystring = qs.stringify(query);
 
-    return `${BASE_URL}/map/3/0/0/${iso(subscription)}/grayscale/${baselayer}?${querystring}`;
+    return `${BASE_URL}/map/3/0/0/${iso}/grayscale/${baselayer}?${querystring}`;
   }
 
 }

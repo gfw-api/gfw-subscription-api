@@ -3,8 +3,8 @@
     "name": "#(service.name)",
     "tags": ["gfw"],
     "urls": [{
-        "url": "/subscriptions",
-        "authenticated": true,
+        "url": "/v1/subscriptions",
+        "authenticated": false,
         "method": "POST",
         "endpoints": [{
             "method": "POST",
@@ -12,7 +12,7 @@
             "path": "/api/v1/subscriptions"
         }]
     }, {
-        "url": "/subscriptions",
+        "url": "/v1/subscriptions",
         "method": "GET",
         "authenticated": true,
         "endpoints": [{
@@ -21,7 +21,7 @@
             "path": "/api/v1/subscriptions"
         }]
     }, {
-        "url": "/subscriptions/:id",
+        "url": "/v1/subscriptions/:id",
         "method": "DELETE",
         "authenticated": true,
         "endpoints": [{
@@ -30,7 +30,7 @@
             "path": "/api/v1/subscriptions/:id"
         }]
     }, {
-        "url": "/subscriptions/:id",
+        "url": "/v1/subscriptions/:id",
         "method": "PATCH",
         "authenticated": true,
         "endpoints": [{
@@ -39,7 +39,7 @@
             "path": "/api/v1/subscriptions/:id"
         }]
     }, {
-        "url": "/subscriptions/:id",
+        "url": "/v1/subscriptions/:id",
         "method": "GET",
         "authenticated": true,
         "endpoints": [{
@@ -48,7 +48,7 @@
             "path": "/api/v1/subscriptions/:id"
         }]
     }, {
-        "url": "/subscriptions/:id/send_confirmation",
+        "url": "/v1/subscriptions/:id/send_confirmation",
         "method": "GET",
         "authenticated": true,
         "endpoints": [{
@@ -57,7 +57,7 @@
             "path": "/api/v1/subscriptions/:id/send_confirmation"
         }]
     }, {
-        "url": "/subscriptions/:id/confirm",
+        "url": "/v1/subscriptions/:id/confirm",
         "method": "GET",
         "authenticated": false,
         "endpoints": [{
@@ -66,7 +66,7 @@
             "path": "/api/v1/subscriptions/:id/confirm"
         }]
     }, {
-        "url": "/subscriptions/:id/unsubscribe",
+        "url": "/v1/subscriptions/:id/unsubscribe",
         "method": "GET",
         "authenticated": false,
         "endpoints": [{
@@ -75,7 +75,7 @@
             "path": "/api/v1/subscriptions/:id/unsubscribe"
         }]
     }, {
-        "url": "/subscriptions/notify-updates/:dataset",
+        "url": "/v1/subscriptions/notify-updates/:dataset",
         "method": "POST",
         "authenticated": false,
         "endpoints": [{

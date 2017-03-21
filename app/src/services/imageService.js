@@ -1,7 +1,7 @@
 'use strict';
 var logger = require('logger');
 var Mustache = require('mustache');
-var microserviceClient = require('vizz.microservice-client');
+const ctRegisterMicroservice = require('ct-register-microservice-node');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 var viirsTemplate = require('services/template/viirs.json');
 var request = require('co-request');
@@ -101,22 +101,23 @@ function* getQuery(subscription) {
             pid: subscription.params.useid
         });
     } else if (subscription.params.geostore) {
-        let result = yield microserviceClient.requestToMicroservice({
-            uri: '/geostore/' + subscription.params.geostore,
-            method: 'GET',
-            json: true
-        });
-        if (result.statusCode !== 200) {
-            console.error('Error obtaining geostore:');
-            console.error(result);
-            return null;
-        }
+        try {
+          let result = yield ctRegisterMicroservice.requestToMicroservice({
+              uri: '/geostore/' + subscription.params.geostore,
+              method: 'GET',
+              json: true
+          });
 
-        let geostore = yield deserializer(result.body);
-        console.log(JSON.stringify(geostore.geojson.features[0].geometry));
-        return Mustache.render(WORLD, {
-            geojson: JSON.stringify(geostore.geojson.features[0].geometry).replace(/"/g, '\\"')
-        });
+          let geostore = yield deserializer(result);
+          console.log(JSON.stringify(geostore.geojson.features[0].geometry));
+          return Mustache.render(WORLD, {
+              geojson: JSON.stringify(geostore.geojson.features[0].geometry).replace(/"/g, '\\"')
+          });
+        } catch(e){
+          logger.error(e);
+          return null;
+        }
+        
     }
 }
 
@@ -147,23 +148,23 @@ function* getBBoxQuery(client, subscription) {
         });
         return data.rows[0].bbox;
     } else if (subscription.params.geostore) {
-        let result = yield microserviceClient.requestToMicroservice({
-            uri: '/geostore/' + subscription.params.geostore,
+      try{
+        let result = yield ctRegisterMicroservice.requestToMicroservice({
+              uri: '/geostore/' + subscription.params.geostore,
             method: 'GET',
             json: true
         });
-        if (result.statusCode !== 200) {
-            console.error('Error obtaining geostore:');
-            console.error(result);
-            return null;
-        }
-
-        let geostore = yield deserializer(result.body);
+        
+        let geostore = yield deserializer(result);
         let data = yield executeThunk(client, WORLD_BBOX, {
             geojson: JSON.stringify(geostore.geojson.features[0].geometry)
 
         });
         return data.rows[0].bbox;
+      } catch (e) {
+        logger.error('ERror obtaining geostore', e);
+        return null;
+      }
     }
 }
 
