@@ -9,7 +9,7 @@ class VIIRSPresenter {
     static * transform(results, layer, subscription, begin, end) {
         logger.debug('Obtaining fires');
         let alerts = yield analysisService.execute(subscription, layer.slug, begin, end, true);
-        if(alerts){
+        if(alerts && alerts.length && alerts.length > 0){
             let alertsFormat = [];
             let length = 10;
             if(alerts.length < 10){

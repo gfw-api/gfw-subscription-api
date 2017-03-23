@@ -42,13 +42,17 @@ class AlertQueue {
         let mailCounter = 0;
         let mails = [];
         for (let i = 0, length = subscriptions.length; i < length; i++) {
-            let subscription = yield SubscriptionService.getSubscriptionById(
-                  subscriptions[i]._id);
-            let layer = {name: layerSlug, slug: layerSlug};
-            let sent = yield subscription.publish(layer, begin, end);
-            if(sent){
-                mailCounter++;
-                mails.push(subscription.resource.content);
+            try {
+              let subscription = yield SubscriptionService.getSubscriptionById(
+                    subscriptions[i]._id);
+              let layer = {name: layerSlug, slug: layerSlug};
+              let sent = yield subscription.publish(layer, begin, end);
+              if(sent){
+                  mailCounter++;
+                  mails.push(subscription.resource.content);
+              }
+            } catch(e) {
+              logger.error(e);
             }
         }
         EmailPublisher.sendStats(STATS_MAILS, {counter: mailCounter, mails: mails, dataset: layerSlug});
