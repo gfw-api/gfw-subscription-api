@@ -36,7 +36,7 @@ class StoryAdapter {
         
       }
     }
-    logger.info('Stories', this.results);
+    logger.info('Stories', stories);
     return {
       list: this.results,
       value: this.results.length,
