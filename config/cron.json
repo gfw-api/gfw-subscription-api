@@ -25,7 +25,7 @@
 },{
   "name": "Stories",
   "dataset": "story",
-  "crontab": "00 00 22 * * 0-6",
+  "crontab": "*/5 * * * * *",
   "gap": {
       "value": 0,
       "measure": "week"
