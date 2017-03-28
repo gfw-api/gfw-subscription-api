@@ -33,9 +33,10 @@ class StoryAdapter {
           url: UrlService.flagshipUrl('/stories/'+this.results[i].id),
           image: searchImage(this.results[i])
         });
+        
       }
     }
-
+    logger.info('Stories', this.results);
     return {
       list: this.results,
       value: this.results.length,
