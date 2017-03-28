@@ -9,8 +9,8 @@ const DOMAIN_IMAGE = 'http://gfw2stories.s3.amazonaws.com/uploads/';
 var searchImage = function(story){
   if (story.media){
     for (let i= 0, length = story.media.length; i < length; i++) {
-      if (story.media[i].mimeType && story.media[i].url){
-        return DOMAIN_IMAGE + story.media[i].url;
+      if (story.media[i].previewUrl){
+        return DOMAIN_IMAGE + story.media[i].previewUrl;
       }
     }
   }
