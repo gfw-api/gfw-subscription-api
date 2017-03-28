@@ -29,7 +29,7 @@ class StoryAdapter {
       for (let i = 0, length = this.results.length; i < length; i++) {
         stories.push({
           title: this.results[i].title,
-          description: this.results[i].description.substring(0, 350),
+          description: this.results[i].details ? his.results[i].details.substring(0, 350) : '',
           url: UrlService.flagshipUrl('/stories/'+this.results[i].id),
           image: searchImage(this.results[i])
         });
