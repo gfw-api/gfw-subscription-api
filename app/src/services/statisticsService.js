@@ -19,7 +19,7 @@ class StatisticsService {
   static * getUsers(startDate, endDate) {
     try {
       const result = yield ctRegisterMicroservice.requestToMicroservice({
-        uri: `/user/internal/all-users?start=${startDate.toISOString().substring(0, 10)}&end=${endDate.toISOString().substring(0, 10)}`,
+        uri: `/user/obtain/all-users?start=${startDate.toISOString().substring(0, 10)}&end=${endDate.toISOString().substring(0, 10)}`,
         method: 'GET',
         json: true
       });
@@ -108,6 +108,9 @@ class StatisticsService {
         }
       }
     }]).exec();
+    if (info.usersWithSubscriptions) {
+      info.usersWithSubscriptions = info.usersWithSubscriptions[0].count;
+    }
     info.totalEmailsSendInThisQ = yield StadisticModel.count(defaultFilter);
     info.totalEmailsSended = yield StadisticModel.count();
 
