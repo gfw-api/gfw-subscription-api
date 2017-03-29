@@ -7,6 +7,7 @@ var Subscription = require('models/subscription');
 var SubscriptionService = require('services/subscriptionService');
 var UpdateService = require('services/updateService');
 var imageService = require('services/imageService');
+var StatisticsService = require('services/statisticsService');
 var config = require('config');
 var router = new Router({
   prefix: '/subscriptions'
@@ -15,7 +16,7 @@ var router = new Router({
 const CHANNEL = 'subscription_alerts';
 var AsyncClient = require('vizz.async-client');
 var asynClient = new AsyncClient(AsyncClient.REDIS, {
-    url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
+  url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
 });
 asynClient = asynClient.toChannel(CHANNEL);
 
@@ -23,7 +24,7 @@ class SubscriptionsRouter {
   static * getSubscription() {
     logger.debug(this.request.query.loggedUser);
     var user = JSON.parse(this.request.query.loggedUser),
-        id = this.params.id;
+      id = this.params.id;
 
     try {
       this.body = yield SubscriptionService.getSubscriptionForUser(id, user.id);
@@ -42,28 +43,28 @@ class SubscriptionsRouter {
     }
   }
 
-  static validateSubscription(subs){
-      if(!subs.datasets || subs.datasets.length === 0) {
-          return 'Dataset required';
-      }
-      if(!subs.language){
-          return 'Language required';
-      }
-      if(!subs.resource){
-          return 'Resource required';
-      }
-      return null;
+  static validateSubscription(subs) {
+    if (!subs.datasets || subs.datasets.length === 0) {
+      return 'Dataset required';
+    }
+    if (!subs.language) {
+      return 'Language required';
+    }
+    if (!subs.resource) {
+      return 'Resource required';
+    }
+    return null;
   }
 
   static * createSubscription() {
     logger.info('Creating subscription with body', this.request.body);
     try {
-        let message = SubscriptionsRouter.validateSubscription(this.request.body);
-        if (message) {
-            this.throw(400, message);
-            return;
-        }
-        this.body = yield SubscriptionService.createSubscription(this.request.body);
+      let message = SubscriptionsRouter.validateSubscription(this.request.body);
+      if (message) {
+        this.throw(400, message);
+        return;
+      }
+      this.body = yield SubscriptionService.createSubscription(this.request.body);
     } catch (err) {
       logger.error(err);
       throw err;
@@ -85,7 +86,7 @@ class SubscriptionsRouter {
   static * sendConfirmation() {
     logger.info('Resending confirmation email for subscription with id %s', this.params.id);
     var user = JSON.parse(this.request.query.loggedUser),
-        id = this.params.id;
+      id = this.params.id;
 
     let subscription = yield Subscription.where({
       _id: id,
@@ -121,10 +122,10 @@ class SubscriptionsRouter {
       this.throw(404, 'Subscription not found');
       return;
     }
-    if(this.query.redirect){
-        this.redirect(UrlService.flagshipUrl(
-          '/my_gfw/subscriptions?unsubscription_confirmed=true'));
-        return;
+    if (this.query.redirect) {
+      this.redirect(UrlService.flagshipUrl(
+        '/my_gfw/subscriptions?unsubscription_confirmed=true'));
+      return;
     }
     this.body = subscription;
   }
@@ -149,11 +150,11 @@ class SubscriptionsRouter {
     let result = yield UpdateService.checkUpdated(dataset);
     logger.info(`Checking if '${dataset}' was updating`);
 
-    if(result.updated) {
+    if (result.updated) {
       asynClient.emit(JSON.stringify({
-          layer_slug: dataset,
-          begin_date: new Date(result.beginDate),
-          end_date: new Date(result.endDate)
+        layer_slug: dataset,
+        begin_date: new Date(result.beginDate),
+        end_date: new Date(result.endDate)
       }));
       this.body = `Dataset:${dataset} was updated`;
     } else {
@@ -162,7 +163,34 @@ class SubscriptionsRouter {
     }
   }
 
+  static * statistics() {
+    logger.info('Obtaining statistics');
+    this.assert(this.query.start, 400, 'Start date required');
+    this.assert(this.query.end, 400, 'End date required');
+    this.body = yield StatisticsService.getStatistics(new Date(this.query.start), new Date(this.query.end));
+  }
+
 }
+
+const isAdmin = function * (next) {
+  let loggedUser = this.request.body ? this.request.body.loggedUser : null;
+  if (!loggedUser) {
+    loggedUser = this.query.loggedUser ? JSON.parse(this.query.loggedUser) : null;
+  }
+  if (!loggedUser) {
+    this.throw(403, 'Not authorized');
+    return;
+  }
+  if (loggedUser.role !== 'ADMIN') {
+    this.throw(403, 'Not authorized');
+    return;
+  }
+  if (!loggedUser.extraUserData || !loggedUser.extraUserData.apps || loggedUser.extraUserData.apps.indexOf('gfw') === -1)  {
+    this.throw(403, 'Not authorized');
+    return;
+  }
+  yield next;
+};
 
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', SubscriptionsRouter.getSubscriptions);
@@ -173,5 +201,6 @@ router.get('/:id/unsubscribe', SubscriptionsRouter.unsubscribeSubscription);
 router.patch('/:id', SubscriptionsRouter.updateSubscription);
 router.delete('/:id', SubscriptionsRouter.deleteSubscription);
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
+router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
 
 module.exports = router;

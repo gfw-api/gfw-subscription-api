@@ -83,5 +83,14 @@
             "baseUrl": "#(service.uri)",
             "path": "/api/v1/subscriptions/notify-updates/:dataset"
         }]
+    }, {
+        "url": "/v1/subscriptions/statistics",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/statistics"
+        }]
     }]
 }
