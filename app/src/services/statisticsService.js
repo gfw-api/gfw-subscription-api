@@ -111,7 +111,7 @@ class StatisticsService {
     if (info.usersWithSubscriptions) {
       info.usersWithSubscriptions = info.usersWithSubscriptions[0].count;
     }
-    info.totalEmailsSendInThisQ = yield StadisticModel.count(defaultFilter);
+    info.totalEmailsSentInThisQ = yield StadisticModel.count(defaultFilter);
     info.totalEmailsSended = yield StadisticModel.count();
 
     return info;
