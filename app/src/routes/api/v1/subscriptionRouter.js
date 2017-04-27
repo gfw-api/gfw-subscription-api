@@ -1,29 +1,56 @@
 'use strict';
 
-var Router = require('koa-router');
-var UrlService = require('services/urlService');
-var logger = require('logger');
-var Subscription = require('models/subscription');
-var SubscriptionService = require('services/subscriptionService');
-var UpdateService = require('services/updateService');
-var imageService = require('services/imageService');
-var config = require('config');
-var router = new Router({
+const Router = require('koa-router');
+const UrlService = require('services/urlService');
+const logger = require('logger');
+const coRequest = require('co-request');
+const Subscription = require('models/subscription');
+const SubscriptionService = require('services/subscriptionService');
+const UpdateService = require('services/updateService');
+const imageService = require('services/imageService');
+const StatisticsService = require('services/statisticsService');
+const mailService = require('services/mailService');
+const GenericError = require('errors/genericError');
+const config = require('config');
+const router = new Router({
   prefix: '/subscriptions'
 });
 
 const CHANNEL = 'subscription_alerts';
-var AsyncClient = require('vizz.async-client');
-var asynClient = new AsyncClient(AsyncClient.REDIS, {
-    url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
+const AsyncClient = require('vizz.async-client');
+let asynClient = new AsyncClient(AsyncClient.REDIS, {
+  url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
 });
 asynClient = asynClient.toChannel(CHANNEL);
+
+const fakeData = {
+  layerSlug: 'layer slug',
+  alert_name: 'subscription name',
+  selected_area: 'area in meters',
+  unsubscribe_url: 'url',
+  subscriptions_url: 'url of the user subscriptions (../my_gfw/subscriptions)',
+  alert_link: 'url of the map with the subscription',
+  alert_type: 'description of the layer',
+  alert_summary: 'description of the alert',
+  alert_date_begin: 'beginDate',
+  alert_date_end: 'endDate',
+  alert_count: 'number of alert',
+  map_image: 'url of the image',
+  fire_alerts: [{
+      acq_date: 'date of the alert',
+      acq_time: 'time of the alert',
+      latitude: 'latitude in decimal degree',
+      longitude: 'longitude in decimal degree'
+    }
+  ],
+  alert_download: 'url'
+};
 
 class SubscriptionsRouter {
   static * getSubscription() {
     logger.debug(JSON.parse(this.request.query.loggedUser));
     var user = JSON.parse(this.request.query.loggedUser),
-        id = this.params.id;
+      id = this.params.id;
 
     try {
       this.body = yield SubscriptionService.getSubscriptionForUser(id, user.id);
@@ -42,28 +69,28 @@ class SubscriptionsRouter {
     }
   }
 
-  static validateSubscription(subs){
-      if(!subs.datasets || subs.datasets.length === 0) {
-          return 'Dataset required';
-      }
-      if(!subs.language){
-          return 'Language required';
-      }
-      if(!subs.resource){
-          return 'Resource required';
-      }
-      return null;
+  static validateSubscription(subs) {
+    if (!subs.datasets || subs.datasets.length === 0) {
+      return 'Dataset required';
+    }
+    if (!subs.language) {
+      return 'Language required';
+    }
+    if (!subs.resource) {
+      return 'Resource required';
+    }
+    return null;
   }
 
   static * createSubscription() {
     logger.info('Creating subscription with body', this.request.body);
     try {
-        let message = SubscriptionsRouter.validateSubscription(this.request.body);
-        if (message) {
-            this.throw(400, message);
-            return;
-        }
-        this.body = yield SubscriptionService.createSubscription(this.request.body);
+      let message = SubscriptionsRouter.validateSubscription(this.request.body);
+      if (message) {
+        this.throw(400, message);
+        return;
+      }
+      this.body = yield SubscriptionService.createSubscription(this.request.body);
     } catch (err) {
       logger.error(err);
       throw err;
@@ -85,7 +112,7 @@ class SubscriptionsRouter {
   static * sendConfirmation() {
     logger.info('Resending confirmation email for subscription with id %s', this.params.id);
     var user = JSON.parse(this.request.query.loggedUser),
-        id = this.params.id;
+      id = this.params.id;
 
     let subscription = yield Subscription.where({
       _id: id,
@@ -121,10 +148,10 @@ class SubscriptionsRouter {
       this.throw(404, 'Subscription not found');
       return;
     }
-    if(this.query.redirect){
-        this.redirect(UrlService.flagshipUrl(
-          '/my_gfw/subscriptions?unsubscription_confirmed=true'));
-        return;
+    if (this.query.redirect) {
+      this.redirect(UrlService.flagshipUrl(
+        '/my_gfw/subscriptions?unsubscription_confirmed=true'));
+      return;
     }
     this.body = subscription;
   }
@@ -149,11 +176,11 @@ class SubscriptionsRouter {
     let result = yield UpdateService.checkUpdated(dataset);
     logger.info(`Checking if '${dataset}' was updating`);
 
-    if(result.updated) {
+    if (result.updated) {
       asynClient.emit(JSON.stringify({
-          layer_slug: dataset,
-          begin_date: new Date(result.beginDate),
-          end_date: new Date(result.endDate)
+        layer_slug: dataset,
+        begin_date: new Date(result.beginDate),
+        end_date: new Date(result.endDate)
       }));
       this.body = `Dataset:${dataset} was updated`;
     } else {
@@ -162,7 +189,56 @@ class SubscriptionsRouter {
     }
   }
 
+  static * statistics() {
+    logger.info('Obtaining statistics');
+    this.assert(this.query.start, 400, 'Start date required');
+    this.assert(this.query.end, 400, 'End date required');
+    this.body = yield StatisticsService.getStatistics(new Date(this.query.start), new Date(this.query.end));
+  }
+
+  static * checkHook() {
+    logger.info('Checking hook');
+    const info = this.request.body;
+    if (info.type === 'EMAIL') {
+      mailService.sendMail('fires-notification-en', fakeData, [{email: info.content}]);
+    } else {
+      try {
+        yield coRequest({
+          uri: info.content,
+          method: 'POST',
+          body: fakeData,
+          json: true
+        });
+        
+      } catch (e) {
+        
+        throw new GenericError(400, `${e.message}`);
+      }
+    }
+    this.body = 'ok';
+  }
+
 }
+
+const isAdmin = function* (next) {
+  let loggedUser = this.request.body ? this.request.body.loggedUser : null;
+  if (!loggedUser) {
+    loggedUser = this.query.loggedUser ? JSON.parse(this.query.loggedUser) : null;
+  }
+  if (!loggedUser) {
+    this.throw(403, 'Not authorized');
+    return;
+  }
+  if (loggedUser.role !== 'ADMIN') {
+    this.throw(403, 'Not authorized');
+    return;
+  }
+  if (!loggedUser.extraUserData || !loggedUser.extraUserData.apps || loggedUser.extraUserData.apps.indexOf('gfw') === -1)  {
+    this.throw(403, 'Not authorized');
+    return;
+  }
+  yield next;
+};
 
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', SubscriptionsRouter.getSubscriptions);
@@ -173,5 +249,7 @@ router.get('/:id/unsubscribe', SubscriptionsRouter.unsubscribeSubscription);
 router.patch('/:id', SubscriptionsRouter.updateSubscription);
 router.delete('/:id', SubscriptionsRouter.deleteSubscription);
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
+router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
+router.post('/check-hook', SubscriptionsRouter.checkHook);
 
 module.exports = router;
