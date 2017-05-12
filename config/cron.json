@@ -39,11 +39,11 @@
   "dataset": "forma-alerts",
   "crontab": "00 * * * * *",
   "gap": {
-      "value": 0,
-      "measure": "week"
+      "value": 1,
+      "measure": "day"
   },
   "periodicity": {
       "value": 1,
-      "measure": "day"
+      "measure": "months"
   }
 }]

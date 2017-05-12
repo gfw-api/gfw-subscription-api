@@ -44,6 +44,9 @@ var load = function() {
             } else {
                 let beginData = moment().subtract(task.gap.value, task.gap.measure).subtract(task.periodicity.value, task.periodicity.measure).toDate();
                 let endDate = moment().subtract(task.gap.value, task.gap.measure).toDate();
+                logger.info('START ' + beginData);
+                logger.info('END ' + endDate);
+
 
                 asynClient.emit(JSON.stringify({
                     layer_slug: task.dataset,
