@@ -53,7 +53,11 @@ const LAYERS = [{
     name: 'story',
     slug: 'story',
     subscription: true
-}, ];
+},{
+    name: 'forma-alerts',
+    slug: 'forma-alerts',
+    subscription: true
+}];
 
 class Layer {
 
