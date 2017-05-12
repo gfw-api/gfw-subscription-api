@@ -37,13 +37,13 @@
 },{
   "name": "Forma",
   "dataset": "forma-alerts",
-  "crontab": "00 * * * * 0-6",
+  "crontab": "00 00 22 * * 0-6",
   "gap": {
-      "value": 1,
+      "value": 0,
       "measure": "day"
   },
   "periodicity": {
       "value": 1,
-      "measure": "months"
+      "measure": "day"
   }
 }]
