@@ -37,7 +37,7 @@
 },{
   "name": "Forma",
   "dataset": "forma-alerts",
-  "crontab": "00 * * * * 0-6",
+  "crontab": "00 45 12 * * 0-6",
   "gap": {
       "value": 1,
       "measure": "day"
@@ -49,7 +49,7 @@
 }, {
   "name": "Forma250",
   "dataset": "forma250GFW",
-  "crontab": "30 * * * * 0-6",
+  "crontab": "00 15 13 * * 0-6",
   "gap": {
       "value": 1,
       "measure": "day"
