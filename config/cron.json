@@ -39,7 +39,7 @@
   "dataset": "forma-alerts",
   "crontab": "00 * * * * 0-6",
   "gap": {
-      "value": 0,
+      "value": 1,
       "measure": "day"
   },
   "periodicity": {
@@ -51,7 +51,7 @@
   "dataset": "forma250GFW",
   "crontab": "30 * * * * 0-6",
   "gap": {
-      "value": 0,
+      "value": 1,
       "measure": "day"
   },
   "periodicity": {
