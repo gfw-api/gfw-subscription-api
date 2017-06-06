@@ -63,8 +63,8 @@
   "dataset": "terrai-alerts",
   "crontab": "0 * * * * *",
   "gap": {
-      "value": 1,
-      "measure": "day"
+      "value": 4,
+      "measure": "month"
   },
   "periodicity": {
       "value": 1,
