@@ -8,7 +8,8 @@ const TEMPLATE_MAP = {
   'imazon-alerts': 'forest-change-imazon-alerts',
   'story': 'stories-alerts',
   'forma-alerts': 'forest-change-notification',
-  'forma250GFW': 'forest-change-notification'
+  'forma250GFW': 'forest-change-notification',
+  'terrai-alerts': 'terrai-alerts'
 
 };
 
