@@ -7,7 +7,7 @@ class TerraiPresenter {
   static * transform(results, layer, subscription) {
     results.alert_count = results.value;
     let uri = '/query' + results.downloadUrls.csv.split('download')[1];
-    geostore =  /geostore=([a-z0-9]*)/g.exec(uri)[1];
+    const geostore =  /geostore=([a-z0-9]*)/g.exec(uri)[1];
     uri = uri.split('&format')[0].replace('ORDER BY year, day', ' order by day desc, year desc limit 10&geostore=') + geostore;
 
     logger.info('Last alerts endpoint ', uri);
