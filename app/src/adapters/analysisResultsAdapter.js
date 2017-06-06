@@ -6,10 +6,12 @@ const GENERIC_ADAPTER = require('adapters/genericAdapter');
 const GladAdapter = require('adapters/gladAdapter');
 const StoryAdapter = require('adapters/storyAdapter');
 const Forma250Adapter = require('adapters/forma250Adapter');
+const TerraiAdapter = require('adapters/terraiAdapter');
 const ADAPTER_MAP = {
   'glad-alerts': GladAdapter,
   'story': StoryAdapter,
-  'forma250GFW': Forma250Adapter
+  'forma250GFW': Forma250Adapter,
+  'terrai-alerts': TerraiAdapter
 };
 
 class AnalysisResultsAdapter {
