@@ -59,15 +59,15 @@
       "measure": "day"
   }
 }, {
-  "name": "Forma250",
+  "name": "Terrai",
   "dataset": "terrai-alerts",
-  "crontab": "30 * * * * 0-6",
+  "crontab": "0 * * * * *",
   "gap": {
       "value": 1,
       "measure": "day"
   },
   "periodicity": {
       "value": 1,
-      "measure": "day"
+      "measure": "month"
   }
 }]
