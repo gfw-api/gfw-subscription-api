@@ -1,4 +1,6 @@
 'use strict';
+var logger = require('logger');
+const ctRegisterMicroservice = require('ct-register-microservice-node');
 
 class TerraiPresenter {
 
