@@ -7,9 +7,10 @@ class TerraiPresenter {
   static * transform(results, layer, subscription) {
     results.alert_count = results.value;
     let uri = '/query' + results.downloadUrls.csv.split('download')[1];
-    uri = uri.split('&format')[0].replace('&geostore', ' order by day desc, year desc limit 10&geostore');
+    geostore =  /geostore=([a-z0-9]*)/g.exec(uri)[1];
+    uri = uri.split('&format')[0].replace('ORDER BY year, day', ' order by day desc, year desc limit 10&geostore=') + geostore;
 
-    logger.debug('Last alerts endpoint ', uri);
+    logger.info('Last alerts endpoint ', uri);
 
     try {
       let alerts = yield ctRegisterMicroservice.requestToMicroservice({
