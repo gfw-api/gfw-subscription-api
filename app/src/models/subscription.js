@@ -26,11 +26,16 @@ var Subscription = new Schema({
     content: {type: String, trim: true}
   },
   datasets: {type: Array, 'default' : []},
+  datasetsQuery: [{
+    id: { type: String, required: false, trim: true },
+    type: { type: String, required: false, trim: true }
+  }],
   params: {type: Schema.Types.Mixed, default: {}},
   userId: {type: String, trim: true, required: false},
   language: {type: String, trim: true, required: false, default: 'en'},
   createdAt: {type: Date, required: true, default: Date.now},
   updateAt: {type: Date, required: false, default: Date.now},
+  application: { type: String, required: true, default: 'gfw', trim: true }
 });
 
 Subscription.methods.publish = function*(layerConfig, begin, end) {
