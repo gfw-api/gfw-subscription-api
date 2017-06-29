@@ -47,6 +47,10 @@
       "measure": "day"
   }
 }, {
+  "name": "Dataset",
+  "dataset": "dataset",
+  "crontab": "00 * * * * 0-6"
+}, {
   "name": "Forma250",
   "dataset": "forma250GFW",
   "crontab": "00 15 13 * * 0-6",

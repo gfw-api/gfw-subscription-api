@@ -29,6 +29,12 @@ var load = function() {
     new CronJob(task.crontab, function() {
         co(function *() {
             logger.info('Publishing ' + task.dataset);
+            if (task.dataset === 'dataset') {
+                asynClient.emit(JSON.stringify({
+                    layer_slug: task.dataset
+                }));
+                return;
+            }
             if (task.dataset !== 'viirs-active-fires' && task.dataset !== 'story' && task.dataset !== 'forma-alerts' && task.dataset !== 'forma250GFW'){
                 logger.info(`Checking if dataset '${task.dataset}' was updated`);
                 let result = yield UpdateService.checkUpdated(task.dataset);
