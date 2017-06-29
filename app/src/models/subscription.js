@@ -28,7 +28,8 @@ var Subscription = new Schema({
   datasets: {type: Array, 'default' : []},
   datasetsQuery: [{
     id: { type: String, required: false, trim: true },
-    type: { type: String, required: false, trim: true }
+    type: { type: String, required: false, trim: true },
+    lastSentDate: { type: Date, required: true, default: Date.now }
   }],
   params: {type: Schema.Types.Mixed, default: {}},
   userId: {type: String, trim: true, required: false},
