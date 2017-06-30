@@ -70,8 +70,8 @@ class SubscriptionsRouter {
   }
 
   static validateSubscription(subs) {
-    if (!subs.datasets || subs.datasets.length === 0) {
-      return 'Dataset required';
+    if ( (!subs.datasets || subs.datasets.length === 0) && (!subs.datasetsQuery || subs.datasetsQuery.length === 0)) {
+      return 'Dataset or datasetsQuery required';
     }
     if (!subs.language) {
       return 'Language required';
