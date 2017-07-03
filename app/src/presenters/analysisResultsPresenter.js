@@ -8,7 +8,8 @@ var VIIRSPresenter = require('presenters/viirsPresenter'),
     GLADPresenter = require('presenters/gladPresenter'),
     TerraiPresenter = require('presenters/terraiPresenter'),
     StoryPresenter = require('presenters/storyPresenter'),
-    ImazonPresenter = require('presenters/imazonPresenter');
+    ImazonPresenter = require('presenters/imazonPresenter'),
+    FormaPresenter = require('presenters/formaPresenter');
 
 var UrlService = require('services/urlService'),
     AlertUrlService = require('services/alertUrlService');
@@ -18,7 +19,9 @@ const PRESENTER_MAP = {
     'glad-alerts': GLADPresenter,
     'imazon-alerts': ImazonPresenter,
     'terrai-alerts': TerraiPresenter,
-    'story': StoryPresenter
+    'story': StoryPresenter,
+    'forma-alerts': FormaPresenter,
+    'forma250GFW': FormaPresenter,
 };
 
 var decorateWithName = function(results, subscription) {

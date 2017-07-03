@@ -6,6 +6,7 @@ var sleep = require('co-sleep');
 var AsyncClient = require('vizz.async-client');
 
 var SubscriptionService = require('services/subscriptionService');
+var DatasetService = require('services/datasetService');
 var MessageProcessor = require('services/messageProcessor');
 var EmailPublisher = require('publishers/emailPublisher');
 
@@ -28,6 +29,11 @@ class AlertQueue {
   *
   processMessage(channel, message) {
     logger.info('Processing alert');
+    if (JSON.parse(message).layer_slug === 'dataset') {
+        yield DatasetService.processSubscriptions();
+        return;
+    }
+
     let layerSlug = MessageProcessor.getLayerSlug(message),
       begin = MessageProcessor.getBeginDate(message),
       end = MessageProcessor.getEndDate(message);

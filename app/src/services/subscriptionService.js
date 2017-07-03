@@ -24,6 +24,8 @@ class SubscriptionService {
             params: subscription.params,
             resource: subscription.resource,
             datasets: subscription.datasets,
+            datasetsQuery: subscription.datasetsQuery,
+            application: subscription.application || 'gfw',
             language: subscription.language
         };
     }
