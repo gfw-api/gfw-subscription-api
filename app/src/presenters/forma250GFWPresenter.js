@@ -12,4 +12,4 @@ class Forma250GFWPresenter {
 
 }
 
-module.exports = FormaPresenter;
+module.exports = Forma250GFWPresenter;
