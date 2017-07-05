@@ -22,62 +22,66 @@ class DatasetService {
             datasetsQuery: { $exists: true, $not: {$size: 0} }
         }).exec();
         logger.info('Iterate over subs');
-        for (let i = 0; i < subscriptions.length; i++) {
-            const subscription = subscriptions[i];
-            logger.info('Iterate over datasetsQuery of each subs');
-            for (let j = 0; j < subscription.datasetsQuery.length; j++) {
-                const datasetQuery = subscription.datasetsQuery[j];
-                // for each subs, each dataset query -> get dataset, get geostoreId from area and finally exec the desired query
-                const dataset = yield DatasetService.getDataset(datasetQuery.id);
-                if (!dataset) {
-                    logger.error('Error getting dataset of subs');
-                    return;
-                }
-                // geostore from different sources
-                let geostoreId = null;
-                if (subscription.params.area) {
-                    geostoreId = yield DatasetService.getGeostoreIdByArea(subscription.params.area);
-                } else if (subscription.params.geostore) {
-                    geostoreId = subscription.params.geostore;
-                } else {
-                    geostoreId = yield DatasetService.getGeostoreIdByParams(subscription.params);
-                }
-                if (!geostoreId) {
-                    logger.error('Error getting geostore of area');
-                    return;
-                }
-                const result = yield DatasetService.executeQuery(dataset.subscribable[datasetQuery.type], datasetQuery.lastSentDate, new Date(), geostoreId, dataset.tableName);
-                if (!result) {
-                    logger.error('Error processing subs query');
-                    return;
-                } else {
-                    logger.debug('Result: ', result);
-                    try {
-                        if (result.data && result.data.length === 1 && result.data[0].value && result.data[0].value > 0) {
-                            // sending mail
-                            if (subscription.resource.type === 'EMAIL') {
-
-                                    const data = {
-                                        value: result.data[0].value,
-                                        name: dataset.name
-                                    };
-                                    logger.debug('Sending mail with data', data );
-                                    MailService.sendMail('dataset', data , [{ address: subscription.resource.content }]);
-
-                            } else {
-                                // @TODO resource.type === 'WEBHOOK'?
-                            }
-                            // update subs
-                            subscription.datasetsQuery[j].lastSentDate = new Date();
-                            yield subscriptions[i].save();
-                            logger.debug('Finished subscription');
-                        }
-                    } catch (e) {
-                        logger.error(e);
+        try {
+            for (let i = 0; i < subscriptions.length; i++) {
+                const subscription = subscriptions[i];
+                logger.info('Iterate over datasetsQuery of each subs');
+                for (let j = 0; j < subscription.datasetsQuery.length; j++) {
+                    const datasetQuery = subscription.datasetsQuery[j];
+                    // for each subs, each dataset query -> get dataset, get geostoreId from area and finally exec the desired query
+                    const dataset = yield DatasetService.getDataset(datasetQuery.id);
+                    if (!dataset) {
+                        logger.error('Error getting dataset of subs');
                         return;
+                    }
+                    // geostore from different sources
+                    let geostoreId = null;
+                    if (subscription.params.area) {
+                        geostoreId = yield DatasetService.getGeostoreIdByArea(subscription.params.area);
+                    } else if (subscription.params.geostore) {
+                        geostoreId = subscription.params.geostore;
+                    } else {
+                        geostoreId = yield DatasetService.getGeostoreIdByParams(subscription.params);
+                    }
+                    if (!geostoreId) {
+                        logger.error('Error getting geostore of area');
+                        return;
+                    }
+                    const result = yield DatasetService.executeQuery(dataset.subscribable[datasetQuery.type], datasetQuery.lastSentDate, new Date(), geostoreId, dataset.tableName);
+                    if (!result) {
+                        logger.error('Error processing subs query');
+                        return;
+                    } else {
+                        logger.debug('Result: ', result);
+                        try {
+                            if (result.data && result.data.length === 1 && result.data[0].value && result.data[0].value > 0) {
+                                // sending mail
+                                if (subscription.resource.type === 'EMAIL') {
+
+                                        const data = {
+                                            value: result.data[0].value,
+                                            name: dataset.name
+                                        };
+                                        logger.debug('Sending mail with data', data );
+                                        MailService.sendMail('dataset', data , [{ address: subscription.resource.content }]);
+
+                                } else {
+                                    // @TODO resource.type === 'WEBHOOK'?
+                                }
+                                // update subs
+                                subscription.datasetsQuery[j].lastSentDate = new Date();
+                                yield subscriptions[i].save();
+                                logger.debug('Finished subscription');
+                            }
+                        } catch (e) {
+                            logger.error(e);
+                            return;
+                        }
                     }
                 }
             }
+        } catch(error) {
+            
         }
     }
 
