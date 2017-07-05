@@ -33,7 +33,15 @@ class DatasetService {
                     logger.error('Error getting dataset of subs');
                     return;
                 }
-                const geostoreId = yield DatasetService.getGeostoreIdByArea(subscription.params.area);
+                // geostore from different sources
+                let geostoreId = null;
+                if (subscription.params.area) {
+                    geostoreId = yield DatasetService.getGeostoreIdByArea(subscription.params.area);
+                } else if (subscription.params.geostore) {
+                    geostoreId = subscription.params.geostore;
+                } else {
+                    geostoreId = yield DatasetService.getGeostoreIdByParams(subscription.params);
+                }
                 if (!geostoreId) {
                     logger.error('Error getting geostore of area');
                     return;
@@ -112,6 +120,41 @@ class DatasetService {
                         uri += `/admin/${area.iso.country}/${area.iso.region}`;
                     } else {
                         uri += `/admin/${area.iso.country}`;
+                    }
+                 }
+            }
+            try {
+                logger.info('Uri', uri);
+                const result = yield ctRegisterMicroservice.requestToMicroservice({
+                    uri: uri,
+                    method: 'GET',
+                    json: true
+                });
+                const geostore = yield deserializer(result);
+                return geostore.id;
+            } catch(error) {
+                logger.error(error);
+                return null;
+            }
+        } catch(error) {
+            logger.error(error);
+            return null;
+        }
+    }
+
+    static * getGeostoreIdByParams(params){
+        try {
+            let uri = '/geostore';
+            if (params.use && params.useid) {
+                uri += `/use/${params.use}/${params.useid}`;
+            } else if (params.wdpaid){
+                uri += `/wdpa/${params.wdpaid}`;
+            } else {
+                if (params.iso && params.iso.country) {
+                    if (params.iso && params.iso.region) {
+                        uri += `/admin/${params.iso.country}/${params.iso.region}`;
+                    } else {
+                        uri += `/admin/${params.iso.country}`;
                     }
                  }
             }
