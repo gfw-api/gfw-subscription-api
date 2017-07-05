@@ -53,7 +53,12 @@ class SubscriptionService {
         logger.info('Sending confirmation email', subscription);
         if (subscription.resource.type === 'EMAIL') {
             let language = subscription.language.toLowerCase().replace(/_/g, '-');
-            mailService.sendMail(`subscription-confirmation-${language}`, {
+            let application = subscription.application || 'gfw';
+            let template = `subscription-confirmation-${language}`;
+            if (application !== 'gfw') {
+                template = `subscription-confirmation-${application}-${language}`;
+            }
+            mailService.sendMail(template, {
                 confirmation_url: UrlService.confirmationUrl(subscription)
             }, [{
                 address: subscription.resource.content
