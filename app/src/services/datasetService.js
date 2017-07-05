@@ -22,11 +22,11 @@ class DatasetService {
             datasetsQuery: { $exists: true, $not: {$size: 0} }
         }).exec();
         logger.info('Iterate over subs');
-        try {
-            for (let i = 0; i < subscriptions.length; i++) {
-                const subscription = subscriptions[i];
-                logger.info('Iterate over datasetsQuery of each subs');
-                for (let j = 0; j < subscription.datasetsQuery.length; j++) {
+        for (let i = 0; i < subscriptions.length; i++) {
+            const subscription = subscriptions[i];
+            logger.info('Iterate over datasetsQuery of each subs');
+            for (let j = 0; j < subscription.datasetsQuery.length; j++) {
+                try {
                     const datasetQuery = subscription.datasetsQuery[j];
                     // for each subs, each dataset query -> get dataset, get geostoreId from area and finally exec the desired query
                     const dataset = yield DatasetService.getDataset(datasetQuery.id);
@@ -78,10 +78,10 @@ class DatasetService {
                             return;
                         }
                     }
+                } catch (e) {
+                    logger.error(e);
                 }
             }
-        } catch(error) {
-            
         }
     }
 
