@@ -27,19 +27,19 @@ class UpdateService {
           let lastUpdated = yield LastUpdate.findOne({dataset: dataset}).exec();
           logger.debug('Last updated', lastUpdated);
 
-          if (!lastUpdated || lastUpdated.date === latest.date){
+          if (!lastUpdated || lastUpdated.date === latest[0].date){
               logger.info(`Dataset ${dataset} was not updated`);
               return {
                   updated: false
               };
           }
 
-          logger.debug('Saving lastupdates',  dataset, latest.date);
-          yield LastUpdate.update({dataset: dataset},{date: latest.date} ).exec();
+          logger.debug('Saving lastupdates',  dataset, latest[0].date);
+          yield LastUpdate.update({dataset: dataset},{date: latest[0].date} ).exec();
 
           return {
               beginDate: lastUpdated.date,
-              endDate: latest.date,
+              endDate: latest[0].date,
               updated: true
           };
         } catch (e) {
