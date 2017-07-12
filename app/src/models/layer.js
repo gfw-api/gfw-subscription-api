@@ -57,6 +57,10 @@ const LAYERS = [{
     name: 'forma-alerts',
     slug: 'forma-alerts',
     subscription: true
+},{
+    name: 'forma250GFW',
+    slug: 'forma250GFW',
+    subscription: true
 }];
 
 class Layer {
