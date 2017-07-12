@@ -3,9 +3,7 @@
 class Forma250GFWPresenter {
 
   static * transform(results, layer, subscription) {
-    results.alert_count = results.alertCounts;
-
-    
+    results.alert_count = results.value;
 
     return results;
   }
