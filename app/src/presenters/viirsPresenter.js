@@ -29,7 +29,7 @@ class VIIRSPresenter {
                 }
             }
             logger.debug('Alerts formated', alertsFormat);
-            results.fire_alerts = alertsFormat;
+            results.alerts = alertsFormat;
         }
         results.alert_count = results.value;
         results.map_image = yield imageService.overviewImage(subscription);
