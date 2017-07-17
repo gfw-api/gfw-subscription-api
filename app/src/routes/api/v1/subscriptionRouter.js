@@ -36,13 +36,12 @@ const fakeData = {
   alert_date_end: 'endDate',
   alert_count: 'number of alert',
   map_image: 'url of the image',
-  fire_alerts: [{
-      acq_date: 'date of the alert',
-      acq_time: 'time of the alert',
-      latitude: 'latitude in decimal degree',
-      longitude: 'longitude in decimal degree'
-    }
-  ],
+  alerts: [{
+    acq_date: 'date of the alert',
+    acq_time: 'time of the alert',
+    latitude: 'latitude in decimal degree',
+    longitude: 'longitude in decimal degree'
+  }],
   alert_download: 'url'
 };
 
