@@ -95,7 +95,7 @@
     }, {
         "url": "/v1/subscriptions/check-hook",
         "method": "POST",
-        "authenticated": true,
+        "authenticated": false,
         "endpoints": [{
             "method": "POST",
             "baseUrl": "#(service.uri)",
