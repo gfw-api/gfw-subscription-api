@@ -79,8 +79,21 @@ spec:
                 secretKeyRef:
                   name: dbsecrets
                   key: REDIS_URI
+          - name: REDIS_PORT_6379_TCP_ADDR
+            value: localhost
+          - name: REDIS_PORT_6379_TCP_PORT
+            value: "6379"
 
         ports:
           - containerPort: 3600
+
+      - name: redis
+        image: redis
+        ports:
+         - containerPort: 6379
+        resources:
+         requests:
+           memory: "0Mi"
+           cpu: "0m"
 
       restartPolicy: Always
