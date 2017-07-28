@@ -8,7 +8,7 @@ var request = require('co-request');
 var CartoDB = require('cartodb');
 var config = require('config');
 var explode = require('turf-explode');
-
+const AWS = require('aws-sdk');
 
 const WORLD = `SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON('{{{geojson}}}'),4326),3857)
       AS the_geom_webmercator`;
@@ -194,64 +194,87 @@ function getBBoxOfGeojson(geojson){
     return `${minx},${miny},${maxx},${maxy}`;
 }
 
+function* getCartoStaticImage(url) {
+  return yield request({
+    url: url,
+    method: 'GET',
+    encoding: null,
+    headers: {
+      'Content-Type': 'image/png'
+    }
+  });
+}
+
+function* getS3Url(imageKey, staticImage) {
+  const s3 = new AWS.S3();
+
+  return yield new Promise(function (fulfill, reject){
+    s3.upload({
+      Bucket: 'gfw2stories',
+      Key: `map_preview/${imageKey}`,
+      ContentType: staticImage.headers['content-type'],
+      ACL: 'public-read',
+      Body: staticImage.body
+    }, function(err, data) {
+      if (err !== null) {
+        fulfill(null);
+      } else {
+        fulfill(data.Location);
+      }
+    });
+  });
+}
+
+function* getImageUrl(layergroupid, bbox) {
+  const imageKey = `${layergroupid}_${bbox}.png`;
+  const staticImage = yield getCartoStaticImage(`http://wri-01.cartodb.com/api/v1/map/static/bbox/${layergroupid}/${bbox}/700/450.png`);
+  return yield getS3Url(imageKey, staticImage);
+}
+
 class ImageService {
-    constructor(){
-        this.client = new CartoDB.SQL({
-            user: config.get('cartoDB.user')
-        });
-    }
-    * overviewImage(subscription) {
-        logger.info('Generating image');
-        let begin = new Date(Date.now() - (24 * 60 * 60 * 1000));
-        let query = yield getQuery(subscription);
-        if (!query) {
-            return null;
-        }
-        let config = {
-            date: begin.toISOString().slice(0, 10),
-            'query': query
-        };
+  constructor(){
+    this.client = new CartoDB.SQL({
+      user: config.get('cartoDB.user')
+    });
+  }
+  * overviewImage(subscription) {
+    logger.info('Generating image');
+    let begin = new Date(Date.now() - (24 * 60 * 60 * 1000));
+    let query = yield getQuery(subscription);
 
-        let template = Mustache.render(JSON.stringify(viirsTemplate), config).replace(/\s\s+/g, ' ').trim();
-        console.log(template);
-        let result = yield request({
-            url: 'https://wri-01.cartodb.com/api/v1/map',
-            method: 'POST',
-            body: template,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (result.statusCode !== 200) {
-            console.error('Error obtaining layergroupid');
-            console.error(result.body);
-            return null;
-        }
-        result.body = JSON.parse(result.body);
-        logger.debug('Result layergroupid', result.body );
-        if (result.body.layergroupid) {
-            logger.debug('Obtained layergroupid',result.body.layergroupid, 'Obtaining image' );
-            let queryBBox = yield getBBoxQuery(this.client, subscription);
-
-            let bbox = getBBoxOfGeojson(JSON.parse(queryBBox));
-            let url = Mustache.render('http://wri-01.cartodb.com/api/v1/map/static/bbox/{{layergroupid}}/{{bbox}}/700/450.png', {
-                layergroupid: result.body.layergroupid,
-                bbox: bbox,
-            });
-            logger.debug('Url', url);
-            // let resultImage = yield request({
-            //     method: 'GET',
-            //     url: url
-            // });
-            // if (resultImage.statusCode !== 200) {
-            //     console.error('Error obtaining image');
-            //     console.error(result);
-            //     return null;
-            // }
-            // return resultImage.body;
-            return url;
-        }
+    logger.info('query', query);
+    if (!query) {
+      return null;
     }
+    let config = {
+      date: begin.toISOString().slice(0, 10),
+      'query': query
+    };
+
+    let template = Mustache.render(JSON.stringify(viirsTemplate), config).replace(/\s\s+/g, ' ').trim();
+    let result = yield request({
+      url: 'https://wri-01.cartodb.com/api/v1/map',
+      method: 'POST',
+      body: template,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    if (result.statusCode !== 200) {
+      console.error('Error obtaining layergroupid');
+      console.error(result.body);
+      return null;
+    }
+    result.body = JSON.parse(result.body);
+    if (result.body.layergroupid) {
+      logger.debug('Obtained layergroupid',result.body.layergroupid, 'Obtaining image' );
+      let queryBBox = yield getBBoxQuery(this.client, subscription);
+      let bbox = getBBoxOfGeojson(JSON.parse(queryBBox));
+      return yield getImageUrl(result.body.layergroupid, bbox);
+    } else {
+      return null;
+    }
+  }
 }
 
 module.exports = new ImageService();

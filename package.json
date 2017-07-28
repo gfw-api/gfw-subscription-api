@@ -25,12 +25,14 @@
     "node": ">5.7.0"
   },
   "dependencies": {
+    "aws-sdk": "^2.90.0",
     "bunyan": "1.7.1",
     "cartodb": "^0.5.1",
     "co-request": "^1.0.0",
     "co-sleep": "0.0.1",
     "config": "1.19.0",
     "cron": "~1.1.0",
+    "ct-register-microservice-node": "^2.1.2",
     "jsonapi-serializer": "2.1.1",
     "koa": "1.2.0",
     "koa-basic-auth": "1.1.2",
@@ -47,8 +49,7 @@
     "mustache": "^2.2.1",
     "turf-explode": "^3.0.12",
     "url": "0.11.0",
-    "vizz.async-client": "^1.0.0",
-    "ct-register-microservice-node": "^2.1.2"
+    "vizz.async-client": "^1.0.0"
   },
   "devDependencies": {
     "co-mocha": "1.1.2",
