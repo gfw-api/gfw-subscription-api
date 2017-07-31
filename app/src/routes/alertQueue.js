@@ -45,22 +45,26 @@ class AlertQueue {
     logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
     try {
         let mailCounter = 0;
-        let mails = [];
+        let users = [];
         for (let i = 0, length = subscriptions.length; i < length; i++) {
             try {
-              let subscription = yield SubscriptionService.getSubscriptionById(
-                    subscriptions[i]._id);
+              let subscription = yield SubscriptionService.getSubscriptionById(subscriptions[i]._id);
               let layer = {name: layerSlug, slug: layerSlug};
               let sent = yield subscription.publish(layer, begin, end);
-              if(sent){
+              if (sent) {
                   mailCounter++;
-                  mails.push(subscription.resource.content);
+                  users.push({
+                    userId: subscription.userId,
+                    email: subscription.resource.content,
+                    subscriptionId: subscriptions[i]._id
+                  });
               }
             } catch(e) {
               logger.error(e);
             }
         }
-        EmailPublisher.sendStats(STATS_MAILS, {counter: mailCounter, mails: mails, dataset: layerSlug});
+
+        EmailPublisher.sendStats(STATS_MAILS, {counter: mailCounter, users: users, dataset: layerSlug});
     } catch (e) {
       logger.error(e);
     }
