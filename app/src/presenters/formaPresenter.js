@@ -1,6 +1,7 @@
 'use strict';
 const logger = require('logger');
 const analysisService = require('services/analysisService');
+const imageService = require('services/imageService');
 
 class FormaPresenter {
 
@@ -28,7 +29,7 @@ class FormaPresenter {
       }
       results.alerts = alertsFormat;
     }
-
+    results.map_image = yield imageService.overviewImage(subscription, layer.slug, begin, end);
     results.alert_count = results.value;
     return results;
   }
