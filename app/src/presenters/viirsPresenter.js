@@ -32,7 +32,7 @@ class VIIRSPresenter {
             results.alerts = alertsFormat;
         }
         results.alert_count = results.value;
-        results.map_image = yield imageService.overviewImage(subscription);
+        results.map_image = yield imageService.overviewImage(subscription, layer.slug, begin, end);
         return results;
     }
 
