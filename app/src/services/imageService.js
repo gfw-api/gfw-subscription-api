@@ -3,12 +3,18 @@ var logger = require('logger');
 var Mustache = require('mustache');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
-var viirsTemplate = require('services/template/viirs.json');
 var request = require('co-request');
 var CartoDB = require('cartodb');
 var config = require('config');
 var explode = require('turf-explode');
 const AWS = require('aws-sdk');
+
+const viirsTemplate = require('services/imageService/template/viirs.json');
+const viirsQuery = require('services/imageService/query/viirs.json');
+
+const QUERY_MAP = {
+  'viirs-active-fires': viirsQuery,
+};
 
 const WORLD = `SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON('{{{geojson}}}'),4326),3857)
       AS the_geom_webmercator`;
@@ -239,6 +245,10 @@ class ImageService {
   }
   * overviewImage(subscription) {
     logger.info('Generating image');
+
+    logger.info('subscription', subscription);
+    logger.info('QUERY_MAP', QUERY_MAP);
+
     let begin = new Date(Date.now() - (24 * 60 * 60 * 1000));
     let query = yield getQuery(subscription);
 
