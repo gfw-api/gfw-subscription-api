@@ -1,0 +1,21 @@
+{
+  "WORLD": "SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON('{{{geojson}}}'),4326),3857) AS the_geom_webmercator",
+
+  "ISO": "SELECT the_geom_webmercator FROM gadm2_countries_simple WHERE iso = UPPER('{{iso}}')",
+
+  "ID1": "SELECT the_geom_webmercator FROM gadm2_provinces_simple WHERE iso = UPPER('{{iso}}') AND id_1 = {{id1}}",
+
+  "WDPA": "SELECT p.the_geom_webmercator FROM ( SELECT CASE WHEN marine::numeric = 2 THEN NULL WHEN ST_NPoints(the_geom)<=18000 THEN the_geom_webmercator WHEN ST_NPoints(the_geom) BETWEEN 18000 AND 50000 THEN ST_RemoveRepeatedPoints(the_geom_webmercator, 0.001) ELSE ST_RemoveRepeatedPoints(the_geom_webmercator, 0.005) END AS the_geom_webmercator FROM wdpa_protected_areas WHERE wdpaid={{wdpaid}} ) p",
+
+  "USE": "SELECT p.the_geom_webmercator FROM gfw_{{use_table}} p WHERE cartodb_id = {{pid}}",
+
+  "WORLD_BBOX": "SELECT ST_AsGeojson(ST_Expand(ST_Extent(ST_SetSRID(ST_GeomFromGeoJSON('{{{geojson}}}'),4326)),1)) AS bbox",
+
+  "ISO_BBOX": "SELECT ST_AsGeojson(ST_Expand(ST_Extent(the_geom),1)) AS bbox FROM gadm2_countries_simple WHERE iso = UPPER('{{iso}}')",
+
+  "ID1_BBOX": "SELECT ST_AsGeojson(ST_Expand(ST_Extent(the_geom),1)) AS bbox FROM gadm2_provinces_simple WHERE iso = UPPER('{{iso}}') AND id_1 = {{id1}}",
+
+  "WDPA_BBOX": "SELECT ST_AsGeojson(ST_Expand(ST_Extent(p.the_geom),1)) AS bbox FROM ( SELECT CASE WHEN marine::numeric = 2 THEN NULL WHEN ST_NPoints(the_geom)<=18000 THEN the_geom WHEN ST_NPoints(the_geom) BETWEEN 18000 AND 50000 THEN ST_RemoveRepeatedPoints(the_geom, 0.001) ELSE ST_RemoveRepeatedPoints(the_geom, 0.005) END AS the_geom FROM wdpa_protected_areas WHERE wdpaid={{wdpaid}} ) p",
+
+  "USE_BBOX": "SELECT ST_AsGeojson(ST_Expand(ST_Extent(the_geom),1)) AS bbox FROM gfw_{{use_table}} WHERE cartodb_id = {{pid}}"
+}

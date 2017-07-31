@@ -12,7 +12,7 @@
     "options": {
       "cartocss_version": "2.1.1",
       "cartocss": "#layer { marker-fill: #FFCC00; marker-width: 1.5; marker-line-color: #FFF; marker-line-width: 1; marker-line-opacity: 1; marker-opacity: 0.9; marker-comp-op: multiply; marker-type: ellipse; marker-placement: point; marker-allow-overlap: true; marker-clip: false; marker-multi-policy: largest;} #layer[zoom>6]{ marker-width: 3; } #layer[zoom>8]{ marker-width: 6; } #layer[zoom>11]{ marker-width: 13; } #layer[zoom>12]{ marker-width: 25; } #layer[zoom>13]{ marker-width: 50; } #layer[zoom>14]{ marker-width: 100; } #layer[zoom>15]{ marker-width: 200; } #layer[zoom>16]{ marker-width: 400; } #layer[zoom>17]{ marker-width: 800; }",
-      "sql": "SELECT the_geom_webmercator, 'vnp14imgtdl_nrt_global_7d' as tablename, 'vnp14imgtdl_nrt_global_7d' AS layer, acq_time, COALESCE(to_char(acq_date, 'DD Mon, YYYY')) as acq_date, confidence, bright_ti4 brightness, longitude, latitude FROM vnp14imgtdl_nrt_global_7d WHERE acq_date >= '{{date}}' AND confidence != 'low'"
+      "sql": "SELECT the_geom_webmercator, 'vnp14imgtdl_nrt_global_7d' as tablename, 'vnp14imgtdl_nrt_global_7d' AS layer, acq_time, COALESCE(to_char(acq_date, 'DD Mon, YYYY')) as acq_date, confidence, bright_ti4 brightness, longitude, latitude FROM vnp14imgtdl_nrt_global_7d WHERE acq_date >= '{{begin}}' AND confidence != 'low'"
     }
   }, {
     "type": "mapnik",
