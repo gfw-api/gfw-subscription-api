@@ -12,10 +12,12 @@ const AWS = require('aws-sdk');
 const geoQuery = require('services/imageService/geoQuery.json');
 const viirsTemplate = require('services/imageService/template/viirs.json');
 const formaAlertsTemplate = require('services/imageService/template/forma-alerts.json');
+const imazonAlertsTemplate = require('services/imageService/template/imazon-alerts.json');
 
 const LAYERS_PARAMS_MAP = {
   'viirs-active-fires': viirsTemplate,
-  'forma-alerts': formaAlertsTemplate
+  'forma-alerts': formaAlertsTemplate,
+  'imazon-alerts': imazonAlertsTemplate
 };
 
 var deserializer = function(obj) {
