@@ -39,21 +39,21 @@ var executeThunk = function(client, sql, params) {
 function* getQuery(subscription) {
     if (subscription.params.iso && subscription.params.iso.country) {
         if (!subscription.params.iso.region) {
-            return Mustache.render(geoQuery['ISO'], {
+            return Mustache.render(geoQuery.ISO, {
                 iso: subscription.params.iso.country
             });
         } else {
-            return Mustache.render(geoQuery['ID1'], {
+            return Mustache.render(geoQuery.ID1, {
                 iso: subscription.params.iso.country,
                 id1: subscription.params.iso.region
             });
         }
     } else if (subscription.params.wdpaid) {
-        return Mustache.render(geoQuery['WDPA'], {
+        return Mustache.render(geoQuery.WDPA, {
             wdpaid: subscription.params.wdpaid
         });
     } else if (subscription.params.use) {
-        return Mustache.render(geoQuery['USE'], {
+        return Mustache.render(geoQuery.USE, {
             use_table: subscription.params.use,
             pid: subscription.params.useid
         });
@@ -67,7 +67,7 @@ function* getQuery(subscription) {
 
           let geostore = yield deserializer(result);
           console.log(JSON.stringify(geostore.geojson.features[0].geometry));
-          return Mustache.render(geoQuery['WORLD'], {
+          return Mustache.render(geoQuery.WORLD, {
               geojson: JSON.stringify(geostore.geojson.features[0].geometry).replace(/"/g, '\\"')
           });
         } catch(e){
@@ -82,24 +82,24 @@ function* getBBoxQuery(client, subscription) {
     if (subscription.params.iso && subscription.params.iso.country) {
         if (!subscription.params.iso.region) {
 
-            let data = yield executeThunk(client, geoQuery['ISO_BBOX'], {
+            let data = yield executeThunk(client, geoQuery.ISO_BBOX, {
                 iso: subscription.params.iso.country
             });
             return data.rows[0].bbox;
         } else {
-            let data = yield executeThunk(client, geoQuery['ID1_BBOX'], {
+            let data = yield executeThunk(client, geoQuery.ID1_BBOX, {
                 iso: subscription.params.iso.country,
                 id1: subscription.params.iso.region
             });
             return data.rows[0].bbox;
         }
     } else if (subscription.params.wdpaid) {
-        let data = yield executeThunk(client, geoQuery['WDPA_BBOX'], {
+        let data = yield executeThunk(client, geoQuery.WDPA_BBOX, {
             wdpaid: subscription.params.wdpaid
         });
         return data.rows[0].bbox;
     } else if (subscription.params.use) {
-        let data = yield executeThunk(client, geoQuery['USE_BBOX'], {
+        let data = yield executeThunk(client, geoQuery.USE_BBOX, {
             use_table: subscription.params.use,
             pid: subscription.params.useid
         });
@@ -113,7 +113,7 @@ function* getBBoxQuery(client, subscription) {
         });
         
         let geostore = yield deserializer(result);
-        let data = yield executeThunk(client, geoQuery['WORLD_BBOX'], {
+        let data = yield executeThunk(client, geoQuery.WORLD_BBOX, {
             geojson: JSON.stringify(geostore.geojson.features[0].geometry)
 
         });
