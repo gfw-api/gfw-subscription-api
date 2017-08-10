@@ -63,7 +63,6 @@ node {
             sh("kubectl apply -f k8s/staging/")
           }
           sh("kubectl set image deployment ${appName} ${appName}=${imageTag} --record")
-          sh("kubectl set image deployment ${appName} ${appName}-cron=${imageTag} --record")
           break
 
         // Roll out to production
