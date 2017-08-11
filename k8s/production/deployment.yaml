@@ -28,7 +28,7 @@ spec:
           - name: PORT
             value: "3600"
           - name: NODE_ENV
-            value: staging
+            value: prod
           - name: NODE_PATH
             value: app/src
           - name: LOCAL_URL
