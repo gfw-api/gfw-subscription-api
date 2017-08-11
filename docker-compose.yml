@@ -12,8 +12,7 @@ prod:
   log_driver: "syslog"
   log_opt:
     syslog-address: ${SYSLOG_ADDRESS}
-    tag: gfw-subscription-api${STAGING}
-
+    tag: gfw-subscription-api${STAGING} 
 redis:
   image: redis
   container_name: gfw-subscriptions-api-redis

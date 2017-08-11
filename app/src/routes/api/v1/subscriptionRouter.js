@@ -47,7 +47,7 @@ const fakeData = {
 
 class SubscriptionsRouter {
   static * getSubscription() {
-    logger.debug(this.request.query.loggedUser);
+    logger.debug(JSON.parse(this.request.query.loggedUser));
     var user = JSON.parse(this.request.query.loggedUser),
       id = this.params.id;
 

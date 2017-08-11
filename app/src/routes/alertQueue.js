@@ -42,7 +42,6 @@ class AlertQueue {
     let subscriptions = yield SubscriptionService.getSubscriptionsByLayer(
       layerSlug);
     logger.debug('Subscriptions obtained', subscriptions);
-
     logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
     try {
         let mailCounter = 0;

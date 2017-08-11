@@ -14,12 +14,13 @@ var SubscriptionEvent = require('models/subscriptionEvent');
 const CHANNEL = 'subscription_alerts';
 var AsyncClient = require('vizz.async-client');
 var asynClient = new AsyncClient(AsyncClient.REDIS, {
-    url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
+  url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
 });
 asynClient = asynClient.toChannel(CHANNEL);
 
 
 var load = function() {
+  logger.info('Running crons');
   taskConfig.forEach(function(task) {
 
     /* THIS CODE IS TO TEST */
@@ -27,6 +28,7 @@ var load = function() {
 
 
     new CronJob(task.crontab, function() {
+
         co(function *() {
             logger.info('Publishing ' + task.dataset);
             if (task.dataset === 'dataset') {
@@ -51,15 +53,15 @@ var load = function() {
                 let beginData = moment().subtract(task.gap.value, task.gap.measure).subtract(task.periodicity.value, task.periodicity.measure).toDate();
                 let endDate = moment().subtract(task.gap.value, task.gap.measure).toDate();
 
-                asynClient.emit(JSON.stringify({
-                    layer_slug: task.dataset,
-                    begin_date: beginData,
-                    end_date: endDate
-                }));
-            }
-        }).then(function(){}, function(err){
-            logger.error(err);
-        });
+          asynClient.emit(JSON.stringify({
+            layer_slug: task.dataset,
+            begin_date: beginData,
+            end_date: endDate
+          }));
+        }
+      }).then(function() {}, function(err) {
+        logger.error(err);
+      });
 
 
 
@@ -67,4 +69,6 @@ var load = function() {
   });
 };
 
-module.exports = {load: load};
+module.exports = {
+  load: load
+};
