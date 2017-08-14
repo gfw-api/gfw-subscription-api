@@ -131,9 +131,10 @@ class SubscriptionService {
         return subscriptions;
     }
 
-    static * getSubscriptionsForUser(userId) {
+    static * getSubscriptionsForUser(userId, application) {
         let subscriptions = yield Subscription.find({
-            userId: userId
+            userId: userId,
+            application
         }).exec();
 
         return SubscriptionSerializer.serialize(subscriptions);
