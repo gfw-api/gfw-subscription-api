@@ -72,6 +72,16 @@ spec:
                 secretKeyRef:
                   name: mssecrets
                   key: CARTODB_USER
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+                secretKeyRef:
+                  name: mssecrets
+                  key: SUBSCRIPTIONS_AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+                secretKeyRef:
+                  name: mssecrets
+                  key: SUBSCRIPTIONS_AWS_SECRET_ACCESS_KEY
           - name: API_GATEWAY_QUEUE_PROVIDER
             value: redis
           - name: API_GATEWAY_QUEUE_NAME
