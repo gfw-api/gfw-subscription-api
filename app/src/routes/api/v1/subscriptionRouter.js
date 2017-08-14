@@ -101,7 +101,7 @@ class SubscriptionsRouter {
     try {
       yield SubscriptionService.confirmSubscription(
         this.params.id);
-      if (ctx.query.application && ctx.query.application === 'rw'){
+      if (this.query.application && this.query.application === 'rw'){
         this.redirect(UrlService.flagshipUrlRW('/myrw/areas'));
       } else {
         this.redirect(UrlService.flagshipUrl('/my_gfw/subscriptions?subscription_confirmed=true'));
