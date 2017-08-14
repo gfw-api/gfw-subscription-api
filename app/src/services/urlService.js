@@ -10,8 +10,13 @@ class UrlService {
     return config.get('gfw.flagshipUrl') + path;
   }
 
+  static flagshipUrlRW(path) {
+    if (!path) { path = ''; }
+    return config.get('rw.flagshipUrl') + path;
+  }
+
   static confirmationUrl(subscription) {
-      return BASE_URL + '/subscriptions/' + subscription._id + '/confirm';
+      return BASE_URL + '/subscriptions/' + subscription._id + '/confirm?application=' + subscription.application;
   }
 
   static unsubscribeUrl(subscription) {

@@ -3,6 +3,9 @@
       "flagshipUrl": "FLAGSHIP_URL",
       "apiUrl": "API_URL"
     },
+    "rw": {
+      "flagshipUrl": "RW_FLAGSHIP_URL"
+    },
     "apiGateway":{
         "uri": "API_GATEWAY_URI",
         "externalUrl": "API_GATEWAY_EXTERNAL_URL",

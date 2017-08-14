@@ -62,7 +62,7 @@ class SubscriptionsRouter {
     var user = JSON.parse(this.request.query.loggedUser);
 
     try {
-      this.body = yield SubscriptionService.getSubscriptionsForUser(user.id);
+      this.body = yield SubscriptionService.getSubscriptionsForUser(user.id, ctx.query.application || 'gfw');
     } catch (err) {
       logger.error(err);
     }
@@ -101,8 +101,11 @@ class SubscriptionsRouter {
     try {
       yield SubscriptionService.confirmSubscription(
         this.params.id);
-      this.redirect(UrlService.flagshipUrl(
-        '/my_gfw/subscriptions?subscription_confirmed=true'));
+      if (ctx.query.application && ctx.query.application === 'rw'){
+        this.redirect(UrlService.flagshipUrlRW('/myrw/areas'));
+      } else {
+        this.redirect(UrlService.flagshipUrl('/my_gfw/subscriptions?subscription_confirmed=true'));
+      }
     } catch (err) {
       logger.error(err);
     }

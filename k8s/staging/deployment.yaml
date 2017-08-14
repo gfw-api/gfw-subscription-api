@@ -65,6 +65,8 @@ spec:
             value: http://staging-api.globalforestwatch.org
           - name: API_URL
             value: http://staging-api.globalforestwatch.org
+          - name: RW_FLAGSHIP_URL
+            value: http://staging.resourcewatch.org
           - name: CARTODB_USER
             valueFrom:
                 secretKeyRef:
