@@ -62,7 +62,7 @@ class SubscriptionsRouter {
     var user = JSON.parse(this.request.query.loggedUser);
 
     try {
-      this.body = yield SubscriptionService.getSubscriptionsForUser(user.id, ctx.query.application || 'gfw');
+      this.body = yield SubscriptionService.getSubscriptionsForUser(user.id, this.query.application || 'gfw');
     } catch (err) {
       logger.error(err);
     }
