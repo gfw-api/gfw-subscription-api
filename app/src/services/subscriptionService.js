@@ -56,7 +56,7 @@ class SubscriptionService {
             let application = subscription.application || 'gfw';
             let template = `subscription-confirmation-${language}`;
             if (application !== 'gfw') {
-                //template = `subscription-confirmation-${application}-${language}`;
+                template = `subscription-confirmation-${application}-${language}`;
             }
             mailService.sendMail(template, {
                 confirmation_url: UrlService.confirmationUrl(subscription)
