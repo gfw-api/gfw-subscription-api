@@ -60,7 +60,9 @@ class DatasetService {
 
                                         const data = {
                                             value: result.data[0].value,
-                                            name: dataset.name
+                                            name: dataset.name,
+                                            beginDate: datasetQuery.lastSentDate.toISOString().slice(0, 10),
+                                            endDate: new Date().toISOString().slice(0, 10)
                                         };
                                         logger.debug('Sending mail with data', data );
                                         MailService.sendMail('dataset', data , [{ address: subscription.resource.content }]);
