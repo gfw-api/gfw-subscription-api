@@ -10,6 +10,7 @@ const UpdateService = require('services/updateService');
 const imageService = require('services/imageService');
 const StatisticsService = require('services/statisticsService');
 const mailService = require('services/mailService');
+const MockService = require('services/mockService');
 const GenericError = require('errors/genericError');
 const config = require('config');
 const router = new Router({
@@ -22,28 +23,6 @@ let asynClient = new AsyncClient(AsyncClient.REDIS, {
   url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
 });
 asynClient = asynClient.toChannel(CHANNEL);
-
-const fakeData = {
-  layerSlug: 'layer slug',
-  alert_name: 'subscription name',
-  selected_area: 'area in meters',
-  unsubscribe_url: 'url',
-  subscriptions_url: 'url of the user subscriptions (../my_gfw/subscriptions)',
-  alert_link: 'url of the map with the subscription',
-  alert_type: 'description of the layer',
-  alert_summary: 'description of the alert',
-  alert_date_begin: 'beginDate',
-  alert_date_end: 'endDate',
-  alert_count: 'number of alert',
-  map_image: 'url of the image',
-  alerts: [{
-    acq_date: 'date of the alert',
-    acq_time: 'time of the alert',
-    latitude: 'latitude in decimal degree',
-    longitude: 'longitude in decimal degree'
-  }],
-  alert_download: 'url'
-};
 
 class SubscriptionsRouter {
   static * getSubscription() {
@@ -201,19 +180,19 @@ class SubscriptionsRouter {
   static * checkHook() {
     logger.info('Checking hook');
     const info = this.request.body;
+    const slug = info.slug ? info.slug : 'viirs-active-fires';
+    const mock = yield MockService.getMock(slug);
     if (info.type === 'EMAIL') {
-      mailService.sendMail('fires-notification-en', fakeData, [{email: info.content}]);
+      mailService.sendMail('fires-notification-en', mock, [{email: info.content}]);
     } else {
       try {
         yield coRequest({
           uri: info.content,
           method: 'POST',
-          body: fakeData,
+          body: mock,
           json: true
         });
-        
       } catch (e) {
-        
         throw new GenericError(400, `${e.message}`);
       }
     }
