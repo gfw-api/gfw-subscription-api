@@ -54,10 +54,10 @@ const MOCK_DATA = {
     alert_date_end: '2017-08-21',
     alert_count: 25,
     stories: [{
-      title: "Murder in the Forest",
-      description: "Last updated in July 19, 2016 Last night I received the revolting news that Eusébio Ka’apor was cowardly murdered by loggers at Centro do Guilherme, Maranhão State, as a retaliation to the Ka’apor monitoring and surveillance, which resulted in the closure of all invasion roads at Alto Turiaçú Indigenous Territory",
-      url: "http://www.globalforestwatch.org/stories/425",
-      image: "http://gfw2stories.s3.amazonaws.com/uploads/14690228334704e26fbed5044e02012cf33c267c6f9bekaapor1.jpeg"
+      title: 'Murder in the Forest',
+      description: 'Last updated in July 19, 2016 Last night I received the revolting news that Eusébio Ka’apor was cowardly murdered by loggers at Centro do Guilherme, Maranhão State, as a retaliation to the Ka’apor monitoring and surveillance, which resulted in the closure of all invasion roads at Alto Turiaçú Indigenous Territory',
+      url: 'http://www.globalforestwatch.org/stories/425',
+      image: 'http://gfw2stories.s3.amazonaws.com/uploads/14690228334704e26fbed5044e02012cf33c267c6f9bekaapor1.jpeg'
     }]
   },
   'forma-alerts': {
