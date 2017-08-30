@@ -222,13 +222,13 @@ const isAdmin = function* (next) {
 };
 
 const existSubscription = function* (next) {
-  const subscription = yield Subscription.findById(ctx.params.id);
+  const subscription = yield Subscription.findById(this.params.id);
   if (!subscription) {
     this.throw(404, 'Subscription not found');
     return;
   }
   yield next;
-}
+};
 
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', SubscriptionsRouter.getSubscriptions);
