@@ -85,7 +85,7 @@ spec:
           - name: API_GATEWAY_QUEUE_PROVIDER
             value: redis
           - name: API_GATEWAY_QUEUE_NAME
-            value: mail_prod
+            value: mail_staging
           - name: API_GATEWAY_QUEUE_URL
             valueFrom:
                 secretKeyRef:
