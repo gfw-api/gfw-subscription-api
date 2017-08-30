@@ -57,6 +57,9 @@ class SubscriptionsRouter {
     if (!subs.resource) {
       return 'Resource required';
     }
+    if (!subs.params) {
+      return 'Params required';
+    }
     return null;
   }
 
