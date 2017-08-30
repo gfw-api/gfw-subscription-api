@@ -221,14 +221,23 @@ const isAdmin = function* (next) {
   yield next;
 };
 
+const existSubscription = function* (next) {
+  const subscription = yield Subscription.findById(ctx.params.id);
+  if (!subscription) {
+    this.throw(404, 'Subscription not found');
+    return;
+  }
+  yield next;
+}
+
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', SubscriptionsRouter.getSubscriptions);
-router.get('/:id', SubscriptionsRouter.getSubscription);
-router.get('/:id/confirm', SubscriptionsRouter.confirmSubscription);
-router.get('/:id/send_confirmation', SubscriptionsRouter.sendConfirmation);
-router.get('/:id/unsubscribe', SubscriptionsRouter.unsubscribeSubscription);
-router.patch('/:id', SubscriptionsRouter.updateSubscription);
-router.delete('/:id', SubscriptionsRouter.deleteSubscription);
+router.get('/:id', existSubscription, SubscriptionsRouter.getSubscription);
+router.get('/:id/confirm', existSubscription, SubscriptionsRouter.confirmSubscription);
+router.get('/:id/send_confirmation', existSubscription, SubscriptionsRouter.sendConfirmation);
+router.get('/:id/unsubscribe', existSubscription, SubscriptionsRouter.unsubscribeSubscription);
+router.patch('/:id',existSubscription,  SubscriptionsRouter.updateSubscription);
+router.delete('/:id', existSubscription, SubscriptionsRouter.deleteSubscription);
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
 router.post('/check-hook', SubscriptionsRouter.checkHook);
