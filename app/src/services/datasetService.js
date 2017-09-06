@@ -47,7 +47,7 @@ class DatasetService {
                         logger.error('Error getting geostore of area');
                         break;
                     }
-                    const result = yield DatasetService.executeQuery(dataset.subscribable[datasetQuery.type], datasetQuery.lastSentDate, new Date(), geostoreId, dataset.tableName);
+                    const result = yield DatasetService.executeQuery(dataset.subscribable[datasetQuery.type], datasetQuery.lastSentDate, new Date(), geostoreId, dataset.tableName, datasetQuery.threshold);
                     if (!result) {
                         logger.error('Error processing subs query');
                         break;
@@ -183,8 +183,9 @@ class DatasetService {
         }
     }
 
-    static * executeQuery(query, beginDate, endDate, geostoreId, tableName){
+    static * executeQuery(query, beginDate, endDate, geostoreId, tableName, threshold){
         let finalQuery = query.replace('{{begin}}', beginDate.toISOString().slice(0,10)).replace('{{end}}', endDate.toISOString().slice(0,10));
+        finalQuery += `&threshold=${threshold}`;
         logger.debug('Doing query: ', finalQuery);
         try {
             const result = yield ctRegisterMicroservice.requestToMicroservice({
