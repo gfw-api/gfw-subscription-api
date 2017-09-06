@@ -30,7 +30,8 @@ var Subscription = new Schema({
     _id: false,
     id: { type: String, required: false, trim: true },
     type: { type: String, required: false, trim: true },
-    lastSentDate: { type: Date, required: true, default: Date.now }
+    lastSentDate: { type: Date, required: true, default: Date.now },
+    threshold: {type: Number, required: false, default: 0}
   }],
   params: {type: Schema.Types.Mixed, default: {}},
   userId: {type: String, trim: true, required: false},
