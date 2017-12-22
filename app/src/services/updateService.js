@@ -27,8 +27,12 @@ class UpdateService {
           let lastUpdated = yield LastUpdate.findOne({dataset: dataset}).exec();
           logger.debug('Last updated', lastUpdated);
 
-          if (!lastUpdated || lastUpdated.date === latest[0].date){
-              logger.info(`Dataset ${dataset} was not updated`);
+          if (!lastUpdated || new Date(lastUpdated.date) >= new Date(latest[0].date)){
+              if (lastUpdated) {
+                logger.info(`Dataset ${dataset} was not updated (last sent date ${lastUpdated.date} and latest date ${latest[0].date})`);
+              } else {
+                logger.info(`Dataset ${dataset} was not updated`);
+              }
               return {
                   updated: false
               };
