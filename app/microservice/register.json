@@ -93,6 +93,15 @@
             "path": "/api/v1/subscriptions/statistics"
         }]
     }, {
+        "url": "/v1/subscriptions/statistics-group",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/statistics-group"
+        }]
+    }, {
         "url": "/v1/subscriptions/check-hook",
         "method": "POST",
         "authenticated": false,
