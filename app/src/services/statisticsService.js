@@ -138,7 +138,7 @@ class StatisticsService {
               data[dat].countries[sub.params.iso.country] = 0;
             }
             data[dat].countries[sub.params.iso.country] = data[dat].countries[sub.params.iso.country] +1;
-            if (data[dat].countries[sub.params.iso.region] > data[dat].countryTop.value) {
+            if (data[dat].countries[sub.params.iso.country] > data[dat].countryTop.value) {
               data[dat].countryTop.name = sub.params.iso.country;
               data[dat].countryTop.value = data[dat].countries[sub.params.iso.country];
             }
@@ -149,8 +149,8 @@ class StatisticsService {
             data[dat].wdpas[sub.params.wdpaid] = 0;
           }
           data[dat].wdpas[sub.params.wdpaid] = data[dat].wdpas[sub.params.wdpaid] +1;
-          if (data[dat].countries[sub.params.iso.region] > data[dat].wdpaTop.value) {
-            data[dat].wdpaTop.nameRegion = sub.params.wdpaid;
+          if (data[dat].countries[sub.params.wdpaid] > data[dat].wdpaTop.value) {
+            data[dat].wdpaTop.id = sub.params.wdpaid;
             data[dat].wdpaTop.value = data[dat].wdpas[sub.params.wdpaid];
           }
         } else {
