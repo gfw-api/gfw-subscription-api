@@ -154,7 +154,7 @@ class StatisticsService {
         } else {
           data[dat].use = data[dat].use + 1;
         }
-      })
+      });
 
     });
 
