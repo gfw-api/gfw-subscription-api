@@ -149,7 +149,7 @@ class StatisticsService {
             data[dat].wdpas[sub.params.wdpaid] = 0;
           }
           data[dat].wdpas[sub.params.wdpaid] = data[dat].wdpas[sub.params.wdpaid] +1;
-          if (data[dat].countries[sub.params.wdpaid] > data[dat].wdpaTop.value) {
+          if (data[dat].wdpas[sub.params.wdpaid] > data[dat].wdpaTop.value) {
             data[dat].wdpaTop.id = sub.params.wdpaid;
             data[dat].wdpaTop.value = data[dat].wdpas[sub.params.wdpaid];
           }
