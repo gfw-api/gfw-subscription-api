@@ -113,7 +113,7 @@ class StatisticsService {
               value: 0 
             },
             wdpaTop: {
-              name: null,
+              id: null,
               value: 0 
             }
           };
