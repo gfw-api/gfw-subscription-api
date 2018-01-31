@@ -88,9 +88,11 @@ class StatisticsService {
 
     const subscriptions = yield SubscriptionModel.find(filter);
     const data = {};
-
+    logger.debug('Subscriptions', subscriptions.length);
     subscriptions.forEach(sub => {
+      logger.debug('Iterating subs', sub);
       sub.datasets.forEach(dat => {
+        logger.debug('Iterating dataset', data);
         if (!data[dat]) {
           data[dat] = {
             country: 0,
