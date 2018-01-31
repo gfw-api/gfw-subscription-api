@@ -88,9 +88,11 @@ class StatisticsService {
 
     const subscriptions = yield SubscriptionModel.find(filter);
     const data = {};
-
+    logger.debug('Subscriptions', subscriptions.length);
     subscriptions.forEach(sub => {
+      logger.debug('Iterating subs', sub);
       sub.datasets.forEach(dat => {
+        logger.debug('Iterating dataset', data);
         if (!data[dat]) {
           data[dat] = {
             country: 0,
@@ -118,7 +120,7 @@ class StatisticsService {
         }
         if (sub.params.geostore) {
           data[dat].geostore = data[dat].geostore + 1;
-        } else if (sub.params.iso) {
+        } else if (sub.params.iso && (sub.params.iso.country || sub.params.iso.region)) {
           if (sub.params.iso.region) {
             data[dat].region = data[dat].region + 1;
             if (!data[dat].regions[sub.params.iso.region]) {
@@ -137,7 +139,7 @@ class StatisticsService {
             }
             data[dat].countries[sub.params.iso.country] = data[dat].countries[sub.params.iso.country] +1;
             if (data[dat].countries[sub.params.iso.region] > data[dat].countryTop.value) {
-              data[dat].countryTop.nameRegion = sub.params.iso.country;
+              data[dat].countryTop.name = sub.params.iso.country;
               data[dat].countryTop.value = data[dat].countries[sub.params.iso.country];
             }
           }
