@@ -4,6 +4,7 @@ const Subscription = require('models/subscription');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const MailService = require('services/mailService');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
+const julian = require('julian');
 const logger = require('logger');
 
 var deserializer = function(obj) {
@@ -184,7 +185,13 @@ class DatasetService {
     }
 
     static * executeQuery(query, beginDate, endDate, geostoreId, tableName, threshold){
-        let finalQuery = query.replace('{{begin}}', beginDate.toISOString().slice(0,10)).replace('{{end}}', endDate.toISOString().slice(0,10));
+        
+        let julianDayBegin = julian.toJulianDay(beginDate);
+        let yearBegin = beginDate.getFullYear();
+        let julianDayEnd = julian.toJulianDay(endDate);
+        let yearEnd = endDate.getFullYear();
+        let finalQuery = query.replace('{{begin}}', beginDate.toISOString().slice(0,10)).replace('{{end}}', endDate.toISOString().slice(0,10))
+          .replace('{{julianDayBegin}}', julianDayBegin).replace('{{yearBegin}}', yearBegin).replace('{{julianDayEnd}}', julianDayEnd).replace('{{yearEnd}}', yearEnd);
         finalQuery += `&threshold=${threshold}`;
         logger.debug('Doing query: ', finalQuery);
         try {

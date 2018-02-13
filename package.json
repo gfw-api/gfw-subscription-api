@@ -34,6 +34,7 @@
     "cron": "~1.1.0",
     "ct-register-microservice-node": "^2.1.2",
     "jsonapi-serializer": "2.1.1",
+    "julian": "0.2.0",
     "koa": "1.2.0",
     "koa-basic-auth": "1.1.2",
     "koa-body": "1.4.0",
