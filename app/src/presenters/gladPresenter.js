@@ -7,7 +7,7 @@ class GLADPresenter {
   static * transform(results, layer, subscription) {
     results.alert_count = results.value;
     let uri = '/query' + results.downloadUrls.csv.split('download')[1];
-    uri = uri.split('&format')[0].replace('ORDER BY year, julian_day', ' ORDER BY julian_day DESC, year DESC LIMIT 10');
+    uri = uri.replace(' ORDER BY year, julian_day', ' ORDER BY julian_day DESC, year DESC LIMIT 10').replace(/&format=(csv|json|xml)/g, '');
 
     logger.debug('Last alerts endpoint ', uri);
     try {
