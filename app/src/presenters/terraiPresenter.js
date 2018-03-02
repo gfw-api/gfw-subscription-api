@@ -7,7 +7,7 @@ class TerraiPresenter {
   static * transform(results, layer, subscription) {
     results.alert_count = results.value;
     let uri = '/query' + results.downloadUrls.csv.split('download')[1];
-    uri = uri.split('&format')[0].replace('ORDER BY year, day', ' ORDER BY day DESC, year DESC LIMIT 10');
+    uri = uri.replace('ORDER BY year, day', ' ORDER BY day DESC, year DESC LIMIT 10').replace(/&format=(csv|json|xml)/g, '');
 
     logger.info('Last alerts endpoint ', uri);
     try {
