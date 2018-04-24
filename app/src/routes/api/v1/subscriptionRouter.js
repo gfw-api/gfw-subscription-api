@@ -187,6 +187,14 @@ class SubscriptionsRouter {
     this.body = yield StatisticsService.infoGroupSubscriptions(new Date(this.query.start), new Date(this.query.end), this.query.application);
   }
 
+  static * statisticsByUser() {
+    logger.info('Obtaining statistics group');
+    this.assert(this.query.start, 400, 'Start date required');
+    this.assert(this.query.end, 400, 'End date required');
+    this.assert(this.query.application, 400, 'Application required');
+    this.body = yield StatisticsService.infoByUserSubscriptions(new Date(this.query.start), new Date(this.query.end), this.query.application);
+  }
+
   static * checkHook() {
     logger.info('Checking hook');
     const info = this.request.body;
@@ -251,6 +259,7 @@ router.delete('/:id', existSubscription, SubscriptionsRouter.deleteSubscription)
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
 router.get('/statistics-group', isAdmin, SubscriptionsRouter.statisticsGroup);
+router.get('/statistics-by-user', isAdmin, SubscriptionsRouter.statisticsByUser);
 router.post('/check-hook', SubscriptionsRouter.checkHook);
 
 module.exports = router;
