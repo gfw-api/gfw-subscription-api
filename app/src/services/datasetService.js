@@ -48,7 +48,7 @@ class DatasetService {
                         logger.error('Error getting geostore of area');
                         break;
                     }
-                    const result = yield DatasetService.executeQuery(dataset.subscribable[datasetQuery.type], datasetQuery.lastSentDate, new Date(), geostoreId, dataset.tableName, datasetQuery.threshold);
+                    const result = yield DatasetService.executeQuery(dataset.subscribable[datasetQuery.type].subscriptionQuery, datasetQuery.lastSentDate, new Date(), geostoreId, dataset.tableName, datasetQuery.threshold);
                     if (!result) {
                         logger.error('Error processing subs query');
                         break;
@@ -72,7 +72,15 @@ class DatasetService {
                                     // @TODO resource.type === 'WEBHOOK'?
                                 }
                                 // update subs
-                                subscription.datasetsQuery[j].lastSentDate = new Date();
+                                if (dataset.mainDateField) {
+                                  subscription.datasetsQuery[j].lastSentDate = yield DatasetService.getLastDateFromDataset(dataset.slug, dataset.mainDateField);
+                                } else {
+                                  subscription.datasetsQuery[j].lastSentDate = new Date();
+                                }
+                                subscription.datasetsQuery[j].historical = subscription.datasetsQuery[j].historical.concat([{
+                                  value: result.data[0].value,
+                                  date: new Date()
+                                }]);
                                 yield subscriptions[i].save();
                                 logger.debug('Finished subscription');
                             }
@@ -95,7 +103,7 @@ class DatasetService {
                 method: 'GET',
                 json: true
             });
-            return yield deserializer(result);
+            return result.data.attributes;
         } catch(error) {
             logger.error(error);
             return null;
@@ -185,26 +193,46 @@ class DatasetService {
     }
 
     static * executeQuery(query, beginDate, endDate, geostoreId, tableName, threshold){
-        
+
         let julianDayBegin = julian.toJulianDay(beginDate);
         let yearBegin = beginDate.getFullYear();
         let julianDayEnd = julian.toJulianDay(endDate);
         let yearEnd = endDate.getFullYear();
         let finalQuery = query.replace('{{begin}}', beginDate.toISOString().slice(0,10)).replace('{{end}}', endDate.toISOString().slice(0,10))
           .replace('{{julianDayBegin}}', julianDayBegin).replace('{{yearBegin}}', yearBegin).replace('{{julianDayEnd}}', julianDayEnd).replace('{{yearEnd}}', yearEnd);
-        finalQuery += `&threshold=${threshold}`;
         logger.debug('Doing query: ', finalQuery);
         try {
             const result = yield ctRegisterMicroservice.requestToMicroservice({
                 uri: '/query',
                 qs: {
                     sql: finalQuery,
+                    threshold,
                     geostore: geostoreId
                 },
                 method: 'GET',
                 json: true
             });
             return result;
+        } catch(error) {
+            logger.error(error);
+            return null;
+        }
+    }
+
+    static * getLastDateFromDataset(datasetSlug, datasetMainDateField){
+
+        const query = `select max(${datasetMainDateField}) as lastdate from ${datasetSlug})`;
+        logger.debug('Doing query: ', query);
+        try {
+            const result = yield ctRegisterMicroservice.requestToMicroservice({
+                uri: '/query',
+                qs: {
+                    sql: query
+                },
+                method: 'GET',
+                json: true
+            });
+            return result.data[0].lastdate;
         } catch(error) {
             logger.error(error);
             return null;
