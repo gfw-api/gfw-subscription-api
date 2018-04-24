@@ -96,9 +96,6 @@ class StatisticsService {
         $gte: startDate,
         $lt: endDate
       },
-      datasets: {
-        $ne: []
-      },
       application
     };
 
