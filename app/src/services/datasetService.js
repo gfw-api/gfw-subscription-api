@@ -15,6 +15,96 @@ var deserializer = function(obj) {
 
 class DatasetService {
 
+    static * runSubcriptionQuery(subscription, queryType) {
+      logger.info('Iterate over datasetsQuery of each subs');
+      const queryData = [];
+      for (let j = 0; j < subscription.datasetsQuery.length; j++) {
+          try {
+              const datasetQuery = subscription.datasetsQuery[j];
+              // for each subs, each dataset query -> get dataset, get geostoreId from area and finally exec the desired query
+              const dataset = yield DatasetService.getDataset(datasetQuery.id);
+              if (!dataset) {
+                  logger.error('Error getting dataset of subs');
+                  break;
+              }
+              // geostore from different sources
+              let geostoreId = null;
+              if (subscription.params.area) {
+                  geostoreId = yield DatasetService.getGeostoreIdByArea(subscription.params.area);
+              } else if (subscription.params.geostore) {
+                  geostoreId = subscription.params.geostore;
+              } else {
+                  geostoreId = yield DatasetService.getGeostoreIdByParams(subscription.params);
+              }
+              if (!geostoreId) {
+                  logger.error('Error getting geostore of area');
+                  break;
+              }
+              const result = yield DatasetService.executeQuery(dataset.subscribable[datasetQuery.type][queryType], datasetQuery.lastSentDate, new Date(), geostoreId, dataset.tableName, datasetQuery.threshold);
+              // for data endpoint
+              if (queryType === 'dataQuery') {
+                const queryDataObject = {};
+                queryDataObject[datasetQuery.id] = result.data;
+                queryData.push(queryDataObject);
+                continue; // not sending emails if dataQuery
+              }
+              if (!result) {
+                  logger.error('Error processing subs query');
+                  break;
+              } else {
+                  logger.debug('Result: ', result);
+                  try {
+                      if (result.data && result.data.length === 1 && result.data[0].value && result.data[0].value > 0) {
+                          // sending mail
+                          if (subscription.resource.type === 'EMAIL') {
+
+                                  const data = {
+                                      value: result.data[0].value,
+                                      name: dataset.name,
+                                      beginDate: datasetQuery.lastSentDate.toISOString().slice(0, 10),
+                                      endDate: new Date().toISOString().slice(0, 10)
+                                  };
+                                  logger.debug('Sending mail with data', data );
+                                  MailService.sendMail('dataset', data , [{ address: subscription.resource.content }]);
+
+                          } else {
+                              // @TODO resource.type === 'WEBHOOK'?
+                          }
+                          // update subs
+                          if (dataset.mainDateField) {
+                            subscription.datasetsQuery[j].lastSentDate = yield DatasetService.getLastDateFromDataset(dataset.slug, dataset.mainDateField);
+                          } else {
+                            subscription.datasetsQuery[j].lastSentDate = new Date();
+                          }
+                          subscription.datasetsQuery[j].historical = subscription.datasetsQuery[j].historical.concat([{
+                            value: result.data[0].value,
+                            date: new Date()
+                          }]);
+                          yield subscription.save();
+                          logger.debug('Finished subscription');
+                      }
+                  } catch (e) {
+                      logger.error(e);
+                      break;
+                  }
+              }
+          } catch (e) {
+              logger.error(e);
+          }
+      }
+      if (queryType === 'dataQuery') {
+        return queryData;
+      }
+    }
+
+    // for data endpoint
+    static * processSubscriptionData(subscriptionId){
+      const subscription = yield Subscription.findById(subscriptionId).exec();
+      const data = yield DatasetService.runSubcriptionQuery(subscription, 'dataQuery');
+      return data;
+    }
+
+
     static * processSubscriptions(){
         logger.info('Processing dataset subs');
         logger.info('Getting datasetsQuery subscriptions');
@@ -25,74 +115,7 @@ class DatasetService {
         logger.info('Iterate over subs');
         for (let i = 0; i < subscriptions.length; i++) {
             const subscription = subscriptions[i];
-            logger.info('Iterate over datasetsQuery of each subs');
-            for (let j = 0; j < subscription.datasetsQuery.length; j++) {
-                try {
-                    const datasetQuery = subscription.datasetsQuery[j];
-                    // for each subs, each dataset query -> get dataset, get geostoreId from area and finally exec the desired query
-                    const dataset = yield DatasetService.getDataset(datasetQuery.id);
-                    if (!dataset) {
-                        logger.error('Error getting dataset of subs');
-                        break;
-                    }
-                    // geostore from different sources
-                    let geostoreId = null;
-                    if (subscription.params.area) {
-                        geostoreId = yield DatasetService.getGeostoreIdByArea(subscription.params.area);
-                    } else if (subscription.params.geostore) {
-                        geostoreId = subscription.params.geostore;
-                    } else {
-                        geostoreId = yield DatasetService.getGeostoreIdByParams(subscription.params);
-                    }
-                    if (!geostoreId) {
-                        logger.error('Error getting geostore of area');
-                        break;
-                    }
-                    const result = yield DatasetService.executeQuery(dataset.subscribable[datasetQuery.type].subscriptionQuery, datasetQuery.lastSentDate, new Date(), geostoreId, dataset.tableName, datasetQuery.threshold);
-                    if (!result) {
-                        logger.error('Error processing subs query');
-                        break;
-                    } else {
-                        logger.debug('Result: ', result);
-                        try {
-                            if (result.data && result.data.length === 1 && result.data[0].value && result.data[0].value > 0) {
-                                // sending mail
-                                if (subscription.resource.type === 'EMAIL') {
-
-                                        const data = {
-                                            value: result.data[0].value,
-                                            name: dataset.name,
-                                            beginDate: datasetQuery.lastSentDate.toISOString().slice(0, 10),
-                                            endDate: new Date().toISOString().slice(0, 10)
-                                        };
-                                        logger.debug('Sending mail with data', data );
-                                        MailService.sendMail('dataset', data , [{ address: subscription.resource.content }]);
-
-                                } else {
-                                    // @TODO resource.type === 'WEBHOOK'?
-                                }
-                                // update subs
-                                if (dataset.mainDateField) {
-                                  subscription.datasetsQuery[j].lastSentDate = yield DatasetService.getLastDateFromDataset(dataset.slug, dataset.mainDateField);
-                                } else {
-                                  subscription.datasetsQuery[j].lastSentDate = new Date();
-                                }
-                                subscription.datasetsQuery[j].historical = subscription.datasetsQuery[j].historical.concat([{
-                                  value: result.data[0].value,
-                                  date: new Date()
-                                }]);
-                                yield subscriptions[i].save();
-                                logger.debug('Finished subscription');
-                            }
-                        } catch (e) {
-                            logger.error(e);
-                            break;
-                        }
-                    }
-                } catch (e) {
-                    logger.error(e);
-                }
-            }
+            yield DatasetService.runSubcriptionQuery(subscription, 'subscriptionQuery');
         }
     }
 
@@ -221,7 +244,7 @@ class DatasetService {
 
     static * getLastDateFromDataset(datasetSlug, datasetMainDateField){
 
-        const query = `select max(${datasetMainDateField}) as lastdate from ${datasetSlug})`;
+        const query = `select max(${datasetMainDateField}) as lastdate from ${datasetSlug}`;
         logger.debug('Doing query: ', query);
         try {
             const result = yield ctRegisterMicroservice.requestToMicroservice({

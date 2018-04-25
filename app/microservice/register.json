@@ -20,6 +20,15 @@
             "baseUrl": "#(service.uri)",
             "path": "/api/v1/subscriptions"
         }]
+    },{
+        "url": "/v1/subscriptions/:id/data",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/:id/data"
+        }]
     }, {
         "url": "/v1/subscriptions/:id",
         "method": "DELETE",

@@ -7,6 +7,7 @@ const coRequest = require('co-request');
 const Subscription = require('models/subscription');
 const SubscriptionService = require('services/subscriptionService');
 const UpdateService = require('services/updateService');
+const DatasetService = require('services/datasetService');
 const imageService = require('services/imageService');
 const StatisticsService = require('services/statisticsService');
 const mailService = require('services/mailService');
@@ -34,6 +35,19 @@ class SubscriptionsRouter {
       this.body = yield SubscriptionService.getSubscriptionForUser(id, user.id);
     } catch (err) {
       logger.error(err);
+    }
+  }
+
+  static * getSubscriptionData() {
+    logger.debug(JSON.parse(this.request.query.loggedUser));
+    var user = JSON.parse(this.request.query.loggedUser),
+      id = this.params.id;
+    try {
+      const subscription = yield SubscriptionService.getSubscriptionForUser(id, user.id);
+      this.body = { data: yield DatasetService.processSubscriptionData(subscription.data.id) };
+    } catch (err) {
+      logger.error(err);
+      this.throw(404, 'Subscription not found');
     }
   }
 
@@ -251,6 +265,7 @@ const existSubscription = function* (next) {
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', SubscriptionsRouter.getSubscriptions);
 router.get('/:id', existSubscription, SubscriptionsRouter.getSubscription);
+router.get('/:id/data', existSubscription, SubscriptionsRouter.getSubscriptionData);
 router.get('/:id/confirm', existSubscription, SubscriptionsRouter.confirmSubscription);
 router.get('/:id/send_confirmation', existSubscription, SubscriptionsRouter.sendConfirmation);
 router.get('/:id/unsubscribe', existSubscription, SubscriptionsRouter.unsubscribeSubscription);
