@@ -101,11 +101,15 @@ class StatisticsService {
 
     const subscriptions = yield SubscriptionModel.find(filter);
     const usersCache = {};
+    const data = [];
     for (let i = 0, length = subscriptions.length; i < length; i++) {
       if (!usersCache[subscriptions[i].userId]) {
         usersCache[subscriptions[i].userId] = yield StatisticsService.getUser(subscriptions[i].userId);
       }
-      subscriptions[i].userId = usersCache[subscriptions[i].userId];
+      let subs = subscriptions[i].toJSON();
+      subs.user = usersCache[subscriptions[i].userId];
+      data.push(subs);
+      
     }
     logger.info('usersCache', usersCache);
     return subscriptions;
