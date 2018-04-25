@@ -71,6 +71,45 @@ class StatisticsService {
     return topSubs;
   }
 
+  static * getUser(userId) {
+    try {
+      const result = yield ctRegisterMicroservice.requestToMicroservice({
+        uri: `/user/${userId}`,
+        method: 'GET',
+        json: true
+      });
+
+      return yield deserializer(result);
+    } catch (err) {
+      logger.error('Error obtaining users:', err);
+      throw new GenericError(500, 'Error obtaining data');
+    }
+
+  }
+
+  static * infoByUserSubscriptions(startDate, endDate, application) {
+    logger.debug(`Obtaining  subscriptions with startDate ${startDate} and endDate ${endDate} and application ${application}`);
+    const info = {};
+
+    const filter = {
+      createdAt: {
+        $gte: startDate,
+        $lt: endDate
+      },
+      application
+    };
+
+    const subscriptions = yield SubscriptionModel.find(filter);
+    const usersCache = {};
+    for (let i = 0, length = subscriptions.length; i < length; i++) {
+      if (!usersCache[subscriptions[i].userId]) {
+        usersCache[subscriptions[i].userId] = yield StatisticsService.getUser(subscriptions[i].userId);
+      }
+      subscriptions[i].user = usersCache[subscriptions[i].userId];
+    }
+    return subscriptions;
+  }
+
   static * infoGroupSubscriptions(startDate, endDate, application) {
     logger.debug(`Obtaining group subscriptions with startDate ${startDate} and endDate ${endDate} and application ${application}`);
     const info = {};

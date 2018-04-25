@@ -61,7 +61,7 @@ spec:
           - name: FLAGSHIP_URL
             value: http://www.globalforestwatch.org
           - name: RW_FLAGSHIP_URL
-            value: http://staging.resourcewatch.org
+            value: http://resourcewatch.org
           - name: API_GATEWAY_EXTERNAL_URL
             value: http://production-api.globalforestwatch.org
           - name: API_URL

@@ -102,6 +102,15 @@
             "path": "/api/v1/subscriptions/statistics-group"
         }]
     }, {
+        "url": "/v1/subscriptions/statistics-by-user",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/statistics-by-user"
+        }]
+    }, {
         "url": "/v1/subscriptions/check-hook",
         "method": "POST",
         "authenticated": false,
