@@ -107,6 +107,7 @@ class StatisticsService {
       }
       subscriptions[i].user = usersCache[subscriptions[i].userId];
     }
+    logger.info('usersCache', usersCache);
     return subscriptions;
   }
 
