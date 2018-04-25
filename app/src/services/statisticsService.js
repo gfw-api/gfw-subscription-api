@@ -105,7 +105,7 @@ class StatisticsService {
       if (!usersCache[subscriptions[i].userId]) {
         usersCache[subscriptions[i].userId] = yield StatisticsService.getUser(subscriptions[i].userId);
       }
-      subscriptions[i].user = usersCache[subscriptions[i].userId];
+      subscriptions[i].userId = usersCache[subscriptions[i].userId];
     }
     logger.info('usersCache', usersCache);
     return subscriptions;
