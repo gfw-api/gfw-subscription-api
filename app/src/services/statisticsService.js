@@ -81,7 +81,9 @@ class StatisticsService {
 
       return yield deserializer(result);
     } catch (err) {
-      logger.error('Error obtaining users:', err);
+      if (err.statusCode !== 404) {
+        logger.error('Error obtaining users:', err);
+      }
       return null;
     }
 
@@ -112,7 +114,7 @@ class StatisticsService {
       
     }
     logger.info('usersCache', usersCache);
-    return subscriptions;
+    return data;
   }
 
   static * infoGroupSubscriptions(startDate, endDate, application) {
