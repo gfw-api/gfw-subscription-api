@@ -82,7 +82,7 @@ class StatisticsService {
       return yield deserializer(result);
     } catch (err) {
       logger.error('Error obtaining users:', err);
-      throw new GenericError(500, 'Error obtaining data');
+      return null;
     }
 
   }
