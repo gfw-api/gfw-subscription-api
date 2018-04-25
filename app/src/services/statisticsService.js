@@ -113,7 +113,6 @@ class StatisticsService {
       data.push(subs);
       
     }
-    logger.info('usersCache', usersCache);
     return data;
   }
 
