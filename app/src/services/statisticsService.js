@@ -81,8 +81,10 @@ class StatisticsService {
 
       return yield deserializer(result);
     } catch (err) {
-      logger.error('Error obtaining users:', err);
-      throw new GenericError(500, 'Error obtaining data');
+      if (err.statusCode !== 404) {
+        logger.error('Error obtaining users:', err);
+      }
+      return null;
     }
 
   }
@@ -101,13 +103,17 @@ class StatisticsService {
 
     const subscriptions = yield SubscriptionModel.find(filter);
     const usersCache = {};
+    const data = [];
     for (let i = 0, length = subscriptions.length; i < length; i++) {
       if (!usersCache[subscriptions[i].userId]) {
         usersCache[subscriptions[i].userId] = yield StatisticsService.getUser(subscriptions[i].userId);
       }
-      subscriptions[i].user = usersCache[subscriptions[i].userId];
+      let subs = subscriptions[i].toJSON();
+      subs.user = usersCache[subscriptions[i].userId];
+      data.push(subs);
+
     }
-    return subscriptions;
+    return data;
   }
 
   static * infoGroupSubscriptions(startDate, endDate, application) {
@@ -144,16 +150,16 @@ class StatisticsService {
             wdpas: {},
             countryTop: {
               name: null,
-              value: 0 
+              value: 0
             },
             regionTop: {
               nameRegion: null,
               nameCountry: null,
-              value: 0 
+              value: 0
             },
             wdpaTop: {
               id: null,
-              value: 0 
+              value: 0
             }
           };
         }

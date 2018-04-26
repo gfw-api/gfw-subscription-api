@@ -55,12 +55,15 @@ class DatasetService {
                   logger.debug('Result: ', result);
                   try {
                       if (result.data && result.data.length === 1 && result.data[0].value && result.data[0].value > 0) {
+                          // getting metadata first
+                          const metadata = yield DatasetService.getMetadata(datasetQuery.id);
                           // sending mail
                           if (subscription.resource.type === 'EMAIL') {
 
                                   const data = {
                                       value: result.data[0].value,
                                       name: dataset.name,
+                                      metadata,
                                       beginDate: datasetQuery.lastSentDate.toISOString().slice(0, 10),
                                       endDate: new Date().toISOString().slice(0, 10)
                                   };
@@ -119,14 +122,28 @@ class DatasetService {
         }
     }
 
-    static * getDataset(idDataset){
+    static * getDataset(datasetId){
         try {
             const result = yield ctRegisterMicroservice.requestToMicroservice({
-                uri: `/dataset/${idDataset}`,
+                uri: `/dataset/${datasetId}`,
                 method: 'GET',
                 json: true
             });
             return result.data.attributes;
+        } catch(error) {
+            logger.error(error);
+            return null;
+        }
+    }
+
+    static * getMetadata(datasetId){
+        try {
+            const result = yield ctRegisterMicroservice.requestToMicroservice({
+                uri: `/dataset/${datasetId}/metadata`,
+                method: 'GET',
+                json: true
+            });
+            return result.data;
         } catch(error) {
             logger.error(error);
             return null;
