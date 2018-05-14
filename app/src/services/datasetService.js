@@ -25,7 +25,7 @@ class DatasetService {
               const dataset = yield DatasetService.getDataset(datasetQuery.id);
               if (!dataset) {
                   logger.error('Error getting dataset of subs');
-                  break;
+                  continue;
               }
               // geostore from different sources
               let geostoreId = null;
@@ -38,7 +38,7 @@ class DatasetService {
               }
               if (!geostoreId) {
                   logger.error('Error getting geostore of area');
-                  break;
+                  continue;
               }
               const result = yield DatasetService.executeQuery(dataset.subscribable[datasetQuery.type][queryType], datasetQuery.lastSentDate, new Date(), geostoreId, dataset.tableName, datasetQuery.threshold);
               // for data endpoint
@@ -50,7 +50,7 @@ class DatasetService {
               }
               if (!result) {
                   logger.error('Error processing subs query');
-                  break;
+                  continue;
               } else {
                   logger.debug('Result: ', result);
                   try {
@@ -94,7 +94,7 @@ class DatasetService {
                       }
                   } catch (e) {
                       logger.error(e);
-                      break;
+                      continue;
                   }
               }
           } catch (e) {
