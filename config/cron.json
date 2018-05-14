@@ -49,7 +49,7 @@
 }, {
   "name": "Dataset",
   "dataset": "dataset",
-  "crontab": "00 * * * * 0-6"
+  "crontab": "00 15 12 * * 0-6"
 }, {
   "name": "Forma250",
   "dataset": "forma250GFW",
