@@ -56,7 +56,7 @@ class DatasetService {
                   try {
                       if (result.data && result.data.length === 1 && result.data[0].value && result.data[0].value > 0) {
                           // getting metadata first
-                          const metadata = yield DatasetService.getMetadata(datasetQuery.id);
+                          const metadata = yield DatasetService.getMetadata(datasetQuery.id, subscription.application, subscription.language);
                           // sending mail
                           if (subscription.resource.type === 'EMAIL') {
                                   const areaName = subscription.params.area ? yield DatasetService.getAreaName(subscription.params.area) : '';
@@ -64,9 +64,7 @@ class DatasetService {
                                       subject: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
                                       datasetName: dataset.name,
                                       datasetId: datasetQuery.id,
-                                      datasetSummary: metadata.map((el) => {
-                                        return (el.attributes.info && el.attributes.info.functions) ? el.attributes.info.functions : '';
-                                      }).join(),
+                                      datasetSummary: metadata[0].attributes.info.functions,
                                       areaId: subscription.params.area ? subscription.params.area : '',
                                       areaName: areaName,
                                       alertName: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
@@ -144,10 +142,10 @@ class DatasetService {
         }
     }
 
-    static * getMetadata(datasetId){
+    static * getMetadata(datasetId, application, language){
         try {
             const result = yield ctRegisterMicroservice.requestToMicroservice({
-                uri: `/dataset/${datasetId}/metadata`,
+                uri: `/dataset/${datasetId}/metadata?application=${application}&language=${language}`,
                 method: 'GET',
                 json: true
             });
