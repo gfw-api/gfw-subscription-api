@@ -61,11 +61,18 @@ class DatasetService {
                           if (subscription.resource.type === 'EMAIL') {
 
                                   const data = {
-                                      value: result.data[0].value,
-                                      name: dataset.name,
-                                      metadata,
-                                      beginDate: datasetQuery.lastSentDate.toISOString().slice(0, 10),
-                                      endDate: new Date().toISOString().slice(0, 10)
+                                      subject: subscription.name,
+                                      datasetName: dataset.name,
+                                      datasetId: datasetQuery.id,
+                                      datasetSummary: metadata.map((el) => {
+                                        return (el.attributes.info && el.attributes.info.functions) ? el.attributes.info.functions : '';
+                                      }).join(),
+                                      areaId: subscription.params.area ? subscription.params.area : '',
+                                      areaName: subscription.params.area ? yield DatasetService.getAreaName(subscription.params.area) : '',
+                                      alertType: datasetQuery.type,
+                                      alertBeginDate: datasetQuery.lastSentDate.toISOString().slice(0, 10),
+                                      alertEndDate: new Date().toISOString().slice(0, 10),
+                                      alertResult: result.data[0].value
                                   };
                                   logger.debug('Sending mail with data', data );
                                   MailService.sendMail('dataset', data , [{ address: subscription.resource.content }]);
@@ -191,6 +198,22 @@ class DatasetService {
                 logger.error(error);
                 return null;
             }
+        } catch(error) {
+            logger.error(error);
+            return null;
+        }
+    }
+
+    static * getAreaName(idArea){
+        try {
+            logger.info('Obtaining area with id: ', idArea);
+            const result = yield ctRegisterMicroservice.requestToMicroservice({
+                uri: `/area/${idArea}`,
+                method: 'GET',
+                json: true
+            });
+            const area = yield deserializer(result);
+            return area.name;
         } catch(error) {
             logger.error(error);
             return null;
