@@ -59,23 +59,24 @@ class DatasetService {
                           const metadata = yield DatasetService.getMetadata(datasetQuery.id);
                           // sending mail
                           if (subscription.resource.type === 'EMAIL') {
-
+                                  const areaName = subscription.params.area ? yield DatasetService.getAreaName(subscription.params.area) : '';
                                   const data = {
-                                      subject: subscription.name,
+                                      subject: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
                                       datasetName: dataset.name,
                                       datasetId: datasetQuery.id,
                                       datasetSummary: metadata.map((el) => {
                                         return (el.attributes.info && el.attributes.info.functions) ? el.attributes.info.functions : '';
                                       }).join(),
                                       areaId: subscription.params.area ? subscription.params.area : '',
-                                      areaName: subscription.params.area ? yield DatasetService.getAreaName(subscription.params.area) : '',
+                                      areaName: areaName,
+                                      alertName: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
                                       alertType: datasetQuery.type,
                                       alertBeginDate: datasetQuery.lastSentDate.toISOString().slice(0, 10),
                                       alertEndDate: new Date().toISOString().slice(0, 10),
                                       alertResult: result.data[0].value
                                   };
                                   logger.debug('Sending mail with data', data );
-                                  MailService.sendMail('dataset', data , [{ address: subscription.resource.content }]);
+                                  MailService.sendMail('dataset', data, [{ address: subscription.resource.content }], 'rw'); // sender='rw'
 
                           } else {
                               // @TODO resource.type === 'WEBHOOK'?

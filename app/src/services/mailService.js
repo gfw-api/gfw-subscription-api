@@ -19,11 +19,12 @@ class MailService {
         this.asynClient = this.asynClient.toChannel(CHANNEL);
     }
 
-    sendMail(template, data, recipients){
+    sendMail(template, data, recipients, sender='gfw'){
         this.asynClient.emit(JSON.stringify({
             template: template,
             data: data,
-            recipients: recipients
+            recipients: recipients,
+            sender: sender
         }));
     }
 }
