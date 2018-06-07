@@ -46,7 +46,7 @@ class DatasetService {
                 const queryDataObject = {};
                 queryDataObject[`${datasetQuery.id}`] = {
                     type: datasetQuery.type,
-                    timestamp: Date.now(),
+                    timestamp: datasetQuery.lastSentDate,
                     data: result.data
                 };
                 queryData.push(queryDataObject);
