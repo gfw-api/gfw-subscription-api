@@ -26,7 +26,8 @@ class SubscriptionService {
             datasets: subscription.datasets,
             datasetsQuery: subscription.datasetsQuery,
             application: subscription.application || 'gfw',
-            language: subscription.language
+            language: subscription.language,
+            env: subscription.env || 'production'
         };
     }
 
@@ -131,10 +132,11 @@ class SubscriptionService {
         return subscriptions;
     }
 
-    static * getSubscriptionsForUser(userId, application) {
+    static * getSubscriptionsForUser(userId, application, env) {
         let subscriptions = yield Subscription.find({
             userId: userId,
-            application
+            application,
+            env
         }).exec();
 
         return SubscriptionSerializer.serialize(subscriptions);

@@ -65,7 +65,11 @@ spec:
             value: http://staging-api.globalforestwatch.org
           - name: API_URL
             value: http://staging-api.globalforestwatch.org
-          - name: RW_FLAGSHIP_URL
+          - name: RW_FLAGSHIP_URL_PREPRODUCTION
+            value: http://preproduction.resourcewatch.org
+          - name: RW_FLAGSHIP_URL_PRODUCTION
+            value: http://resourcewatch.org
+          - name: RW_FLAGSHIP_URL_STAGING
             value: http://staging.resourcewatch.org
           - name: CARTODB_USER
             valueFrom:
@@ -95,6 +99,7 @@ spec:
             value: localhost
           - name: REDIS_PORT_6379_TCP_PORT
             value: "6379"
+            
 
         ports:
           - containerPort: 3600

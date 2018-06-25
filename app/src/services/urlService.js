@@ -2,6 +2,7 @@
 
 var config = require('config');
 const BASE_URL = config.get('apiGateway.externalUrl');
+const logger = require('logger');
 
 class UrlService {
 
@@ -10,9 +11,10 @@ class UrlService {
     return config.get('gfw.flagshipUrl') + path;
   }
 
-  static flagshipUrlRW(path) {
+  static flagshipUrlRW(path, env='production') {
     if (!path) { path = ''; }
-    return config.get('rw.flagshipUrl') + path;
+    logger.info('config', config.get('rw.flagshipUrl'));
+    return config.get(`rw.flagshipUrl.${env}`) + path;
   }
 
   static confirmationUrl(subscription) {

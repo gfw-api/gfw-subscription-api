@@ -55,7 +55,7 @@ class SubscriptionsRouter {
     var user = JSON.parse(this.request.query.loggedUser);
 
     try {
-      this.body = yield SubscriptionService.getSubscriptionsForUser(user.id, this.query.application || 'gfw');
+      this.body = yield SubscriptionService.getSubscriptionsForUser(user.id, this.query.application || 'gfw', this.query.env || 'production');
     } catch (err) {
       logger.error(err);
     }
@@ -95,10 +95,11 @@ class SubscriptionsRouter {
   static * confirmSubscription() {
     logger.info('Confirming subscription by id %s', this.params.id);
     try {
-      yield SubscriptionService.confirmSubscription(
+      const subscription = yield SubscriptionService.confirmSubscription(
         this.params.id);
       if (this.query.application && this.query.application === 'rw'){
-        this.redirect(UrlService.flagshipUrlRW('/myrw/areas'));
+
+        this.redirect(UrlService.flagshipUrlRW( '/myrw/areas', subscription.data.attributes.env));
       } else {
         this.redirect(UrlService.flagshipUrl('/my_gfw/subscriptions?subscription_confirmed=true'));
       }
