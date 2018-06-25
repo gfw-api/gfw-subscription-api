@@ -44,7 +44,11 @@ class DatasetService {
               // for data endpoint
               if (queryType === 'dataQuery') {
                 const queryDataObject = {};
-                queryDataObject[`${datasetQuery.id}-${datasetQuery.type}`] = result.data;
+                queryDataObject[`${datasetQuery.id}`] = {
+                    type: datasetQuery.type,
+                    timestamp: datasetQuery.lastSentDate,
+                    data: result.data
+                };
                 queryData.push(queryDataObject);
                 continue; // not sending emails if dataQuery
               }
