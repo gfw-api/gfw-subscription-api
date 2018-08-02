@@ -78,7 +78,11 @@ class DatasetService {
                                       alertResult: result.data[0].value
                                   };
                                   logger.debug('Sending mail with data', data );
-                                  MailService.sendMail('dataset', data, [{ address: subscription.resource.content }], 'rw'); // sender='rw'
+                                  let template = 'dataset';
+                                  if (subscription.env && subscription.env !== 'production') {
+                                    template += `-${subscription.env}`;
+                                  }
+                                  MailService.sendMail(template, data, [{ address: subscription.resource.content }], 'rw'); // sender='rw'
 
                           } else {
                               // @TODO resource.type === 'WEBHOOK'?

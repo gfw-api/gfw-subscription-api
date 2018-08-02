@@ -4,7 +4,11 @@
       "apiUrl": "API_URL"
     },
     "rw": {
-      "flagshipUrl": "RW_FLAGSHIP_URL"
+        "flagshipUrl": {
+            "staging": "RW_FLAGSHIP_URL_STAGING",
+            "production": "RW_FLAGSHIP_URL_PRODUCTION",
+            "preproduction": "RW_FLAGSHIP_URL_PREPRODUCTION"
+        }
     },
     "apiGateway":{
         "uri": "API_GATEWAY_URI",

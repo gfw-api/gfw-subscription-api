@@ -43,7 +43,8 @@ var Subscription = new Schema({
   language: {type: String, trim: true, required: false, default: 'en'},
   createdAt: {type: Date, required: true, default: Date.now},
   updateAt: {type: Date, required: false, default: Date.now},
-  application: { type: String, required: true, default: 'gfw', trim: true }
+  application: { type: String, required: true, default: 'gfw', trim: true },
+  env: { type: String, required: true, default: 'production' }
 });
 
 Subscription.methods.publish = function*(layerConfig, begin, end) {

@@ -61,8 +61,12 @@ spec:
             value: sergio.gordillo@vizzuality.com,abarrett@wri.org,charlie.hofmann@wri.org,mweisse@wri.org,raul.requero@vizzuality.com
           - name: FLAGSHIP_URL
             value: http://www.globalforestwatch.org
-          - name: RW_FLAGSHIP_URL
+          - name: RW_FLAGSHIP_URL_PREPRODUCTION
+            value: http://preproduction.resourcewatch.org
+          - name: RW_FLAGSHIP_URL_PRODUCTION
             value: http://resourcewatch.org
+          - name: RW_FLAGSHIP_URL_STAGING
+            value: http://staging.resourcewatch.org
           - name: API_GATEWAY_EXTERNAL_URL
             value: http://production-api.globalforestwatch.org
           - name: API_URL
