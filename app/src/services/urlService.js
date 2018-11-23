@@ -6,24 +6,28 @@ const logger = require('logger');
 
 class UrlService {
 
-  static flagshipUrl(path) {
-    if (!path) { path = ''; }
-    return config.get('gfw.flagshipUrl') + path;
-  }
+    static flagshipUrl(path) {
+        if (!path) {
+            path = '';
+        }
+        return config.get('gfw.flagshipUrl') + path;
+    }
 
-  static flagshipUrlRW(path, env='production') {
-    if (!path) { path = ''; }
-    logger.info('config', config.get('rw.flagshipUrl'));
-    return config.get(`rw.flagshipUrl.${env}`) + path;
-  }
+    static flagshipUrlRW(path, env = 'production') {
+        if (!path) {
+            path = '';
+        }
+        logger.info('config', config.get('rw.flagshipUrl'));
+        return config.get(`rw.flagshipUrl.${env}`) + path;
+    }
 
-  static confirmationUrl(subscription) {
-      return BASE_URL + '/subscriptions/' + subscription._id + '/confirm?application=' + subscription.application;
-  }
+    static confirmationUrl(subscription) {
+        return BASE_URL + '/subscriptions/' + subscription._id + '/confirm?application=' + subscription.application;
+    }
 
-  static unsubscribeUrl(subscription) {
-      return BASE_URL + '/subscriptions/' + subscription._id + '/unsubscribe?redirect=true';
-  }
+    static unsubscribeUrl(subscription) {
+        return BASE_URL + '/subscriptions/' + subscription._id + '/unsubscribe?redirect=true';
+    }
 
 }
 

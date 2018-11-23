@@ -13,11 +13,15 @@
     },
     "apiGateway": {
         "uri": "http://192.168.1.109:8000/gateway/service",
-        "queue": "redis://mymachine:6379"
+        "queue": "redis://mymachine:6379",
+        "externalUrl": "http://mymachine:9000",
+        "queueName": "mail",
+        "queueProvider":"redis",
+        "queueUrl": "redis://mymachine:6379"
     },
     "redisLocal": {
-        "host": null,
-        "port": null
+        "host": "mymachine",
+        "port": "6379"
     },
     "mongodb": {
         "database": "gfw_subscription_db",
@@ -32,5 +36,9 @@
     },
     "mails":{
         "statsRecipients": "sergio.gordillo@vizzuality.com,raul.requero@vizzuality.com"
+    },
+    "gfw": {
+        "flagshipUrl": "http://staging.globalforestwatch.org",
+        "apiUrl": "http://mymachine:9000"
     }
 }

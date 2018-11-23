@@ -2,13 +2,12 @@
 
 class StoryPresenter {
 
-  static * transform(results, layer, subscription) {
-    results.alert_count = results.list.length;
+    static* transform(results, layer, subscription) {
+        results.alert_count = results.list.length;
 
-    
 
-    return results;
-  }
+        return results;
+    }
 
 }
 

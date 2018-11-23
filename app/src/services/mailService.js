@@ -6,7 +6,7 @@ var AsyncClient = require('vizz.async-client');
 const CHANNEL = config.get('apiGateway.queueName');
 
 class MailService {
-    constructor(){
+    constructor() {
         logger.debug('Initializing queue with provider %s ', config.get('apiGateway.queueProvider'));
         switch (config.get('apiGateway.queueProvider').toLowerCase()) {
             case AsyncClient.REDIS:
@@ -19,7 +19,7 @@ class MailService {
         this.asynClient = this.asynClient.toChannel(CHANNEL);
     }
 
-    sendMail(template, data, recipients, sender='gfw'){
+    sendMail(template, data, recipients, sender = 'gfw') {
         this.asynClient.emit(JSON.stringify({
             template: template,
             data: data,

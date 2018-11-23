@@ -5,3 +5,5 @@ prod.env
 *.u*~
 .vscode
 .idea
+.nyc_output
+coverage

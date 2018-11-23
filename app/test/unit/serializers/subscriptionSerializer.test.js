@@ -1,8 +1,9 @@
-'use strict';
-var logger = require('logger');
-var should = require('should');
-var assert = require('assert');
-var SubscriptionSerializer = require('serializers/subscriptionSerializer');
+const logger = require('logger');
+const chai = require('chai');
+const assert = require('assert');
+const SubscriptionSerializer = require('serializers/subscriptionSerializer');
+
+const should = chai.should();
 
 describe('Subscription serializer test', function() {
   var story = {
@@ -19,7 +20,7 @@ describe('Subscription serializer test', function() {
 
   it('Generate correct jsonapi response of the story', function() {
     let response = SubscriptionSerializer.serialize(story);
-    response.should.not.be.a.Array();
+    response.should.not.be.an('array');
     response.should.have.property('data');
 
     let data = response.data;

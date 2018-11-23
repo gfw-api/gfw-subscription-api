@@ -23,6 +23,7 @@
     },
     "mongodb": {
         "host": "MONGO_PORT_27017_TCP_ADDR",
+        "database": "MONGO_PORT_27017_TCP_DATABASE",
         "port": "MONGO_PORT_27017_TCP_PORT"
     },
     "migrate":{

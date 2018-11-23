@@ -1,8 +1,9 @@
-'use strict';
-var logger = require('logger');
-var should = require('should');
-var assert = require('assert');
-var errorSerializer = require('serializers/errorSerializer');
+const logger = require('logger');
+const chai = require('chai');
+const assert = require('assert');
+const errorSerializer = require('serializers/errorSerializer');
+
+const should = chai.should();
 
 describe('Error serializer test', function() {
     var data = [
@@ -21,7 +22,7 @@ describe('Error serializer test', function() {
     it('Generate correct jsonapi response', function() {
       let response = errorSerializer.serializeValidationBodyErrors(data);
 
-      response.should.not.be.a.Array();
+      response.should.not.be.an('array');
       response.should.have.property('errors');
       response.errors.should.have.length(2);
 
@@ -31,12 +32,12 @@ describe('Error serializer test', function() {
       error.should.have.property('title');
       error.should.have.property('detail');
       error.should.have.property('code');
-      error.detail.should.be.a.String();
-      error.title.should.be.a.String();
-      error.code.should.be.a.String();
-      error.source.should.be.a.Object();
+      error.detail.should.be.a('string');
+      error.title.should.be.a('string');
+      error.code.should.be.a('string');
+      error.source.should.be.a('object');
       error.source.should.have.property('parameter');
-      error.source.parameter.should.be.a.String();
+      error.source.parameter.should.be.a('string');
     });
 
     after(function*() {
