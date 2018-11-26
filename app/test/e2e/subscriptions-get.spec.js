@@ -2,7 +2,8 @@
 const nock = require('nock');
 const chai = require('chai');
 const Subscription = require('models/subscription');
-const { createSubscription } = require('./utils');
+const { createSubscription, getUUID } = require('./utils');
+const { ROLES } = require('./test.constants');
 
 const { getTestServer } = require('./test-server');
 
@@ -22,40 +23,60 @@ describe('Get subscriptions tests', () => {
         Subscription.remove({}).exec();
     });
 
-    it('Get all subscriptions as an anonymous user should be successful and return an empty list (empty db)', async () => {
+    it('Get all subscriptions as an anonymous user should return an "unauthorized" error with matching 401 HTTP code', async () => {
         const response = await requester.get(`/api/v1/subscriptions`).send();
+
+        response.status.should.equal(401);
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(401);
+        response.body.errors[0].should.have.property('detail').and.equal('Unauthorized');
+    });
+
+    it('Get all subscriptions as an authenticated user should return an empty list', async () => {
+        const response = await requester
+            .get(`/api/v1/subscriptions`)
+            .query({ loggedUser: JSON.stringify(ROLES.USER) })
+            .send();
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(0);
-        response.body.should.have.property('links').and.be.an('object');
     });
 
     it('Get all subscriptions should be successful and return a list of subscriptions (populated db)', async () => {
-        const subscriptionOne = await new Subscription(createSubscription()).save();
-        const subscriptionTwo = await new Subscription(createSubscription()).save();
+        const subscriptionOne = await new Subscription(createSubscription(ROLES.USER.id)).save();
+        const subscriptionTwo = await new Subscription(createSubscription(ROLES.USER.id)).save();
+        await new Subscription(createSubscription(getUUID())).save();
 
-        const response = await requester.get(`/api/v1/subscriptions`).send();
+        const response = await requester
+            .get(`/api/v1/subscriptions`)
+            .query({ loggedUser: JSON.stringify(ROLES.USER), application: 'rw' })
+            .send();
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(2);
-        response.body.should.have.property('links').and.be.an('object');
 
         const responseSubscriptionOne = response.body.data[0];
         const responseSubscriptionTwo = response.body.data[1];
 
-        subscriptionOne.name.should.equal(responseSubscriptionOne.attributes.name);
-        subscriptionOne.dataset.should.equal(responseSubscriptionOne.attributes.dataset);
-        subscriptionOne.userId.should.equal(responseSubscriptionOne.attributes.userId);
-        subscriptionOne.slug.should.equal(responseSubscriptionOne.attributes.slug);
-        subscriptionOne.sourceUrl.should.equal(responseSubscriptionOne.attributes.sourceUrl);
-        subscriptionOne.queryUrl.should.equal(responseSubscriptionOne.attributes.queryUrl);
+        responseSubscriptionOne.id.should.equal(subscriptionOne.id);
+        responseSubscriptionOne.attributes.name.should.equal(subscriptionOne.name);
+        responseSubscriptionOne.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionOne.datasets[0]);
+        responseSubscriptionOne.attributes.datasetsQuery.should.be.an('array').and.length(0);
+        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({});
+        responseSubscriptionOne.attributes.userId.should.equal(subscriptionOne.userId);
+        responseSubscriptionOne.attributes.confirmed.should.equal(subscriptionOne.confirmed);
+        responseSubscriptionOne.attributes.resource.should.be.an('object')
+        responseSubscriptionOne.attributes.resource.type.should.equal('EMAIL');
 
-        subscriptionTwo.name.should.equal(responseSubscriptionTwo.attributes.name);
-        subscriptionTwo.dataset.should.equal(responseSubscriptionTwo.attributes.dataset);
-        subscriptionTwo.userId.should.equal(responseSubscriptionTwo.attributes.userId);
-        subscriptionTwo.slug.should.equal(responseSubscriptionTwo.attributes.slug);
-        subscriptionTwo.sourceUrl.should.equal(responseSubscriptionTwo.attributes.sourceUrl);
-        subscriptionTwo.queryUrl.should.equal(responseSubscriptionTwo.attributes.queryUrl);
+        responseSubscriptionTwo.id.should.equal(subscriptionTwo.id);
+        responseSubscriptionTwo.attributes.name.should.equal(subscriptionTwo.name);
+        responseSubscriptionTwo.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionTwo.datasets[0]);
+        responseSubscriptionTwo.attributes.datasetsQuery.should.be.an('array').and.length(0);
+        responseSubscriptionTwo.attributes.params.should.be.an('object').and.deep.equal({});
+        responseSubscriptionTwo.attributes.userId.should.equal(subscriptionTwo.userId);
+        responseSubscriptionTwo.attributes.confirmed.should.equal(subscriptionTwo.confirmed);
+        responseSubscriptionTwo.attributes.resource.should.be.an('object')
+        responseSubscriptionTwo.attributes.resource.type.should.equal('EMAIL');
     });
 
     afterEach(() => {

@@ -51,7 +51,11 @@ class SubscriptionsRouter {
     }
 
     static* getSubscriptions() {
-        var user = JSON.parse(this.request.query.loggedUser);
+        if (!this.request.query.loggedUser) {
+            this.throw(401, 'Unauthorized');
+        }
+
+        const user = JSON.parse(this.request.query.loggedUser);
 
         try {
             this.body = yield SubscriptionService.getSubscriptionsForUser(user.id, this.query.application || 'gfw', this.query.env || 'production');
