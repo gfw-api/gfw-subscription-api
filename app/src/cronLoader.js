@@ -1,25 +1,19 @@
-'use strict';
-
-var co = require('co');
-var logger = require('logger');
-var moment = require('moment');
-var CronJob = require('cron').CronJob;
-var config = require('config');
-var UpdateService = require('services/updateService');
-
-var taskConfig = require('../../config/cron.json');
-
-var SubscriptionEvent = require('models/subscriptionEvent');
+const co = require('co');
+const logger = require('logger');
+const moment = require('moment');
+const CronJob = require('cron').CronJob;
+const config = require('config');
+const UpdateService = require('services/updateService');
+const AsyncClient = require('vizz.async-client');
+const taskConfig = require('../../config/cron.json');
 
 const CHANNEL = 'subscription_alerts';
-var AsyncClient = require('vizz.async-client');
-var asynClient = new AsyncClient(AsyncClient.REDIS, {
+let asyncClient = new AsyncClient(AsyncClient.REDIS, {
     url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
-});
-asynClient = asynClient.toChannel(CHANNEL);
+}).toChannel(CHANNEL);
 
 
-var load = function () {
+const load = function () {
     logger.info('Running crons');
     taskConfig.forEach(function (task) {
 
@@ -32,7 +26,7 @@ var load = function () {
             co(function* () {
                 logger.info('Publishing ' + task.dataset);
                 if (task.dataset === 'dataset') {
-                    asynClient.emit(JSON.stringify({
+                    asyncClient.emit(JSON.stringify({
                         layer_slug: task.dataset
                     }));
                     return;
@@ -41,7 +35,7 @@ var load = function () {
                     logger.info(`Checking if dataset '${task.dataset}' was updated`);
                     let result = yield UpdateService.checkUpdated(task.dataset);
                     if (result.updated) {
-                        asynClient.emit(JSON.stringify({
+                        asyncClient.emit(JSON.stringify({
                             layer_slug: task.dataset,
                             begin_date: new Date(result.beginDate),
                             end_date: new Date(result.endDate)
@@ -53,7 +47,7 @@ var load = function () {
                     let beginData = moment().subtract(task.gap.value, task.gap.measure).subtract(task.periodicity.value, task.periodicity.measure).toDate();
                     let endDate = moment().subtract(task.gap.value, task.gap.measure).toDate();
 
-                    asynClient.emit(JSON.stringify({
+                    asyncClient.emit(JSON.stringify({
                         layer_slug: task.dataset,
                         begin_date: beginData,
                         end_date: endDate

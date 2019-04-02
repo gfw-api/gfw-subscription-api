@@ -4,9 +4,8 @@
   "description": "Global Forest Watch - Subscription API",
   "main": "app/index.js",
   "scripts": {
-    "develop": "docker-compose -f docker-compose-develop.yml build && docker-compose -f docker-compose-develop.yml up",
-    "migrate": "NODE_PATH=app/src node app/src/migrate/migrate.js",
-    "start": "NODE_PATH=app/src node app/index.js",
+    "migrate": "NODE_PATH=app/src node $NODE_DEBUG_OPTION app/src/migrate/migrate.js",
+    "start": "NODE_PATH=app/src node $NODE_DEBUG_OPTION app/index.js",
     "test": "NODE_PATH=app/src node $NODE_DEBUG_OPTION ./node_modules/.bin/grunt --gruntfile app/Gruntfile.js test",
     "coverage": "NODE_PATH=app/src node $NODE_DEBUG_OPTION ./node_modules/.bin/grunt --gruntfile app/Gruntfile.js nyc"
   },
@@ -14,14 +13,33 @@
     "type": "git",
     "url": "git+https://github.com/Vizzuality/gfw-subscription-api.git"
   },
-  "author": "raul.requero@vizzuality.com",
+  "author": {
+    "name": "Vizzuality",
+    "email": "hello@vizzuality.com",
+    "url": "http://vizzuality.com/"
+  },
+  "contributors": [
+    {
+      "name": "Raul Requero"
+    },
+    {
+      "name": "Sergio Gordillo"
+    },
+    {
+      "name": "Enrique Cornejo"
+    },
+    {
+      "name": "Tiago Garcia",
+      "url": "https://github.com/tiagojsag"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Vizzuality/gfw-subscription-api/issues"
   },
   "homepage": "https://github.com/Vizzuality/gfw-subscription-api#readme",
   "engines": {
-    "node": ">5.7.0"
+    "node": ">=7.6"
   },
   "dependencies": {
     "aws-sdk": "^2.90.0",
@@ -47,6 +65,7 @@
     "moment": "^2.13.0",
     "mongoose": "4.4.6",
     "mustache": "^2.2.1",
+    "sleep": "^6.0.0",
     "turf-explode": "^3.0.12",
     "url": "0.11.0",
     "vizz.async-client": "^1.0.0"
@@ -71,7 +90,7 @@
     "grunt-notify": "^0.4.5",
     "grunt-simple-nyc": "^2.0.0",
     "load-grunt-tasks": "^4.0.0",
-    "mocha": "^6.0.2",
+    "mocha": "5.2.0",
     "nock": "^10.0.6",
     "nyc": "^13.3.0"
   }

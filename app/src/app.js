@@ -8,19 +8,31 @@ const bodyParser = require('koa-body-parser');
 const loader = require('loader');
 const validate = require('koa-validate');
 const ErrorSerializer = require('serializers/errorSerializer');
+const sleep = require('sleep');
 
 const mongoose = require('mongoose');
 const mongoUri = process.env.MONGO_URI || 'mongodb://' + config.get('mongodb.host') + ':' + config.get('mongodb.port') + '/' + config.get('mongodb.database');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const cronLoader = require('cronLoader');
 
+let retries = 10;
 
 async function init() {
     return new Promise((resolve, reject) => {
         async function onDbReady(err) {
             if (err) {
-                logger.error(err);
-                reject(new Error(err));
+                if (retries >= 0) {
+                    retries--;
+                    logger.error(`Failed to connect to MongoDB uri ${mongoUri}, retrying...`);
+                    sleep.sleep(5);
+                    mongoose.connect(mongoUri, { useNewUrlParser: true }, onDbReady);
+                } else {
+                    logger.error('MongoURI', mongoUri);
+                    logger.error(err);
+                    reject(new Error(err));
+                }
+
+                return;
             }
 
             // instance of koa
@@ -40,8 +52,12 @@ async function init() {
                 try {
                     yield next;
                 } catch (err) {
-                    logger.error(err);
                     this.status = err.status || 500;
+                    if (this.status >= 500) {
+                        logger.error(err);
+                    } else {
+                        logger.info(err);
+                    }
                     this.body = ErrorSerializer.serializeError(this.status, err.message);
                     if (process.env.NODE_ENV === 'prod' && this.status === 500) {
                         this.body = 'Unexpected error';

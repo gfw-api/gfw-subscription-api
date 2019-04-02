@@ -1,0 +1,36 @@
+language: node_js
+services:
+  - mongodb
+  - redis
+node_js:
+  - "7.6"
+  - "11.6"
+cache:
+  directories:
+  - "node_modules"
+env:
+  global:
+    - CC_TEST_REPORTER_ID=5ce29b8570f7714ec7afd30a3ce89dedcff6af43d16dd0872e26237f2678b8a5
+    - API_VERSION=v1
+    - API_GATEWAY_EXTERNAL_URL=http://127.0.0.1:9000
+    - CT_URL=http://127.0.0.1:9000
+    - CT_REGISTER_MODE=auto
+    - CT_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
+    - LOCAL_URL=http://127.0.0.1:8431
+    - NODE_ENV=test
+    - HOST_IP=localhost
+    - PORT=8431
+    - REDIS_PORT_6379_TCP_ADDR=localhost
+    - MONGO_PORT_27017_TCP_ADDR=127.0.0.1
+    - MONGO_PORT_27017_TCP_PORT=27017
+    - MONGO_PORT_27017_TCP_DATABASE=gfw_subscription_db_test
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+script:
+  - npm test
+  - npm run coverage
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT

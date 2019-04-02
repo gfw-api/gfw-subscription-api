@@ -7,3 +7,5 @@ prod.env
 .idea
 .nyc_output
 coverage
+
+dev.env

@@ -17,15 +17,6 @@ module.exports = function (grunt) {
         },
 
         mochaTest: {
-            unit: {
-                options: {
-                    reporter: 'spec',
-                    quiet: false, // Optionally suppress output to standard out (defaults to false)
-                    clearRequireCache: true, // Optionally clear the require cache before running tests (defaults to false)
-                    require: 'co-mocha'
-                },
-                src: ['app/test/unit/**/*.test.js']
-            },
             e2e: {
                 options: {
                     reporter: 'spec',
@@ -44,30 +35,11 @@ module.exports = function (grunt) {
                 files: [
                     'app/src/**/*.js',
                 ],
-                tasks: ['jshint:js', 'mochaTest:unit', 'express:dev'],
+                tasks: ['express:dev'],
                 options: {
                     spawn: false
                 }
-            },
-            unitTest: {
-                files: [
-                    'app/test/unit/**/*.test.js',
-                ],
-                tasks: ['jshint:jsTest', 'mochaTest:unit'],
-                options: {
-                    spawn: false
-                }
-            },
-            e2eTest: {
-                files: [
-                    'app/test/unit/**/*.spec.js',
-                ],
-                tasks: ['jshint:jsTest', 'mochaTest:e2e'],
-                options: {
-                    spawn: false
-                }
-            },
-
+            }
         },
         nyc: {
             cover: {
@@ -84,7 +56,7 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask('test', ['mochaTest:unit', 'mochaTest:e2e']);
+    grunt.registerTask('test', ['mochaTest:e2e']);
 
     grunt.registerTask('serve', ['express:dev', 'watch']);
 

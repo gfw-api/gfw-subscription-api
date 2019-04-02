@@ -1,8 +1,3 @@
-'use strict';
-
-var logger = require('logger');
-var JSONAPISerializer = require('jsonapi-serializer').Serializer;
-
 class ErrorSerializer {
 
     static serializeValidationError(data, typeParam) {
