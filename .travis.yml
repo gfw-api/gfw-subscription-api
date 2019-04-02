@@ -14,7 +14,7 @@ env:
     - API_VERSION=v1
     - API_GATEWAY_EXTERNAL_URL=http://127.0.0.1:9000
     - API_GATEWAY_URL=http://127.0.0.1:9000
-    - API_GATEWAY_QUEUE_URL=http://127.0.0.1:8431
+    - API_GATEWAY_QUEUE_URL=redis://127.0.0.1:6379
     - API_URL=http://127.0.0.1:9000
     - CT_URL=http://127.0.0.1:9000
     - CT_REGISTER_MODE=auto
