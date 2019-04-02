@@ -25,7 +25,7 @@ const PRESENTER_MAP = {
     'forma250GFW': Forma250GFWPresenter,
 };
 
-var decorateWithName = function(results, subscription) {
+var decorateWithName = function (results, subscription) {
     if (!_.isEmpty(subscription.name)) {
         results.alert_name = subscription.name;
     } else {
@@ -35,7 +35,7 @@ var decorateWithName = function(results, subscription) {
     return results;
 };
 
-var summaryForLayer = function(layer) {
+var summaryForLayer = function (layer) {
     let meta = layer.meta;
     if (meta === undefined) {
         return '';
@@ -48,7 +48,7 @@ var summaryForLayer = function(layer) {
     //Available data from ${meta.timescale}, updated ${updatePeriod}`;
 };
 
-var decorateWithMetadata = function(results, layer) {
+var decorateWithMetadata = function (results, layer) {
     if (!layer.meta) {
         return results;
     }
@@ -59,7 +59,7 @@ var decorateWithMetadata = function(results, layer) {
     return results;
 };
 
-var decorateWithDates = function(results, begin, end) {
+var decorateWithDates = function (results, begin, end) {
     begin = moment(begin).format('YYYY-MM-DD');
     end = moment(end).format('YYYY-MM-DD');
     results.alert_date_begin = begin;
@@ -68,7 +68,7 @@ var decorateWithDates = function(results, begin, end) {
     return results;
 };
 
-var decorateWithLinks = function(results, subscription, layer, begin, end) {
+var decorateWithLinks = function (results, subscription, layer, begin, end) {
     results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
     results.subscriptions_url = UrlService.flagshipUrl('/my_gfw/subscriptions');
     results.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
@@ -76,7 +76,7 @@ var decorateWithLinks = function(results, subscription, layer, begin, end) {
     return results;
 };
 
-var decorateWithArea = function(results, subscription) {
+var decorateWithArea = function (results, subscription) {
     let params = subscription.params || {};
 
     if (params.iso && params.iso.country) {
@@ -99,8 +99,8 @@ class AnalysisResultsPresenter {
         return results;
     }
 
-    static * render(results, subscription, layer, begin, end) {
-        try{
+    static* render(results, subscription, layer, begin, end) {
+        try {
             let Presenter = PRESENTER_MAP[layer.slug];
 
             if (Presenter) {
@@ -114,7 +114,7 @@ class AnalysisResultsPresenter {
             results = decorateWithDates(results, begin, end);
 
             return results;
-        } catch(err){
+        } catch (err) {
             logger.error(err);
             throw err;
         }

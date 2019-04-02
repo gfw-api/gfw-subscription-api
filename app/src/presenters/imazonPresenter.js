@@ -4,7 +4,7 @@ const imageService = require('services/imageService');
 
 class ImazonPresenter {
 
-    static * transform(results, layer, subscription, begin, end) {
+    static* transform(results, layer, subscription, begin, end) {
 
         results.alert_count_degradation = 0;
         results.alert_count_deforestation = 0;

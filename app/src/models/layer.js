@@ -3,8 +3,8 @@
 // var microserviceClient = require('vizz.microservice-client');
 var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
-var deserializer = function(obj) {
-    return function(callback) {
+var deserializer = function (obj) {
+    return function (callback) {
         new JSONAPIDeserializer({}).deserialize(obj, callback);
     };
 };
@@ -49,15 +49,15 @@ const LAYERS = [{
     name: 'umd_as_it_happens_idn',
     slug: 'glad-alerts',
     subscription: true
-},{
+}, {
     name: 'story',
     slug: 'story',
     subscription: true
-},{
+}, {
     name: 'forma-alerts',
     slug: 'forma-alerts',
     subscription: true
-},{
+}, {
     name: 'forma250GFW',
     slug: 'forma250GFW',
     subscription: true
@@ -65,10 +65,10 @@ const LAYERS = [{
 
 class Layer {
 
-    static * findBySlug(slug) {
+    static* findBySlug(slug) {
         // This code is valid until the refactor is made
-        for(let i = 0, length = LAYERS.length; i < length; i++){
-            if(LAYERS[i].slug === slug) {
+        for (let i = 0, length = LAYERS.length; i < length; i++) {
+            if (LAYERS[i].slug === slug) {
                 return LAYERS[i];
             }
         }

@@ -4,15 +4,15 @@ var logger = require('logger');
 
 class GenericAdapter {
 
-  constructor(results) {
-    this.results = results;
-  }
+    constructor(results) {
+        this.results = results;
+    }
 
-  transform() {
-    return {
-      value: this.results.value
-    };
-  }
+    transform() {
+        return {
+            value: this.results.value
+        };
+    }
 
 }
 
