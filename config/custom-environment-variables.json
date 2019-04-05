@@ -1,4 +1,7 @@
 {
+    "logger": {
+        "level": "LOGGER_LEVEL"
+    },
     "gfw": {
       "flagshipUrl": "FLAGSHIP_URL",
       "apiUrl": "API_URL"
