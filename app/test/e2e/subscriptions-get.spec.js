@@ -4,8 +4,10 @@ const chai = require('chai');
 const Subscription = require('models/subscription');
 const { createSubscription, getUUID } = require('./utils');
 const { ROLES } = require('./test.constants');
-
 const { getTestServer } = require('./test-server');
+
+nock.disableNetConnect();
+nock.enableNetConnect(process.env.HOST_IP);
 
 const should = chai.should();
 
@@ -75,8 +77,12 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionTwo.attributes.params.should.be.an('object').and.deep.equal({});
         responseSubscriptionTwo.attributes.userId.should.equal(subscriptionTwo.userId);
         responseSubscriptionTwo.attributes.confirmed.should.equal(subscriptionTwo.confirmed);
-        responseSubscriptionTwo.attributes.resource.should.be.an('object')
+        responseSubscriptionTwo.attributes.resource.should.be.an('object');
         responseSubscriptionTwo.attributes.resource.type.should.equal('EMAIL');
+
+        process.on('unhandledRejection', (error) => {
+            should.fail(error);
+        });
     });
 
     afterEach(() => {

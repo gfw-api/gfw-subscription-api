@@ -1,13 +1,10 @@
-'use strict';
+const _ = require('lodash');
+const logger = require('logger');
+const Subscription = require('models/subscription');
+const SubscriptionSerializer = require('serializers/subscriptionSerializer');
 
-var _ = require('lodash');
-var logger = require('logger');
-var Subscription = require('models/subscription');
-var SubscriptionSerializer = require('serializers/subscriptionSerializer');
-var config = require('config');
-
-var mailService = require('services/mailService');
-var UrlService = require('services/urlService');
+const mailService = require('services/mailService');
+const UrlService = require('services/urlService');
 
 class SubscriptionService {
 

@@ -1,6 +1,5 @@
-'use strict';
-var logger = require('logger');
-var mailService = require('services/mailService');
+const logger = require('logger');
+const mailService = require('services/mailService');
 
 const DEFAULT_TEMPLATE = 'forest-change-notification';
 const TEMPLATE_MAP = {

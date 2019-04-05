@@ -3,10 +3,9 @@
 const logger = require('logger');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const LastUpdate = require('models/lastUpdate');
-var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
+const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
-
-var deserializer = function (obj) {
+const deserializer = function (obj) {
     return function (callback) {
         new JSONAPIDeserializer({ keyForAttribute: 'camelCase' }).deserialize(obj, callback);
     };
