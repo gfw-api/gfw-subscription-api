@@ -1,6 +1,5 @@
 const config = require('config');
 const logger = require('logger');
-const path = require('path');
 const koa = require('koa');
 const koaLogger = require('koa-logger');
 const koaQs = require('koa-qs');
@@ -36,7 +35,7 @@ async function init() {
             }
 
             // instance of koa
-            var app = koa();
+            const app = koa();
 
             //if environment is dev then load koa-logger
             if (process.env.NODE_ENV === 'dev') {
@@ -73,11 +72,11 @@ async function init() {
             loader.loadRoutes(app);
 
             //Instance of http module
-            var server = require('http').Server(app.callback());
+            const server = require('http').Server(app.callback());
 
             // get port of environment, if not exist obtain of the config.
             // In production environment, the port must be declared in environment variable
-            var port = process.env.PORT || config.get('service.port');
+            const port = process.env.PORT || config.get('service.port');
 
             server.listen(port, function () {
 

@@ -1,8 +1,6 @@
-'use strict';
-
-var config = require('config');
-var logger = require('logger');
-var AsyncClient = require('vizz.async-client');
+const config = require('config');
+const logger = require('logger');
+const AsyncClient = require('vizz.async-client');
 const CHANNEL = config.get('apiGateway.queueName');
 
 class MailService {
