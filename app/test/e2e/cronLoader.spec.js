@@ -30,9 +30,11 @@ describe('Foo', () => {
         }
     });
 
-    it('Test viirs-active-fires', async () => {
-
+    beforeEach(() => {
         channelSubscribe.client.removeAllListeners('message');
+    });
+
+    it('Test viirs-active-fires', async () => {
         channelSubscribe.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
@@ -84,7 +86,6 @@ describe('Foo', () => {
                 ]
             });
 
-        channelSubscribe.client.removeAllListeners('message');
         channelSubscribe.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
@@ -108,7 +109,6 @@ describe('Foo', () => {
     });
 
     it('Test story', async () => {
-        channelSubscribe.client.removeAllListeners('message');
         channelSubscribe.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
@@ -132,7 +132,6 @@ describe('Foo', () => {
     });
 
     it('Test forma-alerts', async () => {
-        channelSubscribe.client.removeAllListeners('message');
         channelSubscribe.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
@@ -156,7 +155,6 @@ describe('Foo', () => {
     });
 
     it('Test dataset', async () => {
-        channelSubscribe.client.removeAllListeners('message');
         channelSubscribe.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
@@ -172,7 +170,6 @@ describe('Foo', () => {
     });
 
     it('Test forma250GFW', async () => {
-        channelSubscribe.client.removeAllListeners('message');
         channelSubscribe.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
@@ -196,6 +193,8 @@ describe('Foo', () => {
     });
 
     afterEach(() => {
+        channelSubscribe.client.removeAllListeners('message');
+
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
         }
