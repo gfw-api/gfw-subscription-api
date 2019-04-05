@@ -22,7 +22,7 @@ const channelSubscribe = asyncClientSubscriber.toChannel(CHANNEL);
 channelSubscribe.subscribe();
 
 
-describe('Foo', () => {
+describe('CronLoader task queueing', () => {
 
     before(() => {
         if (process.env.NODE_ENV !== 'test') {

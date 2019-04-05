@@ -1,14 +1,11 @@
-'use strict';
+const config = require('config');
+const logger = require('logger');
+const AsyncClient = require('vizz.async-client');
 
-var config = require('config');
-var logger = require('logger');
-var sleep = require('co-sleep');
-var AsyncClient = require('vizz.async-client');
-
-var SubscriptionService = require('services/subscriptionService');
-var DatasetService = require('services/datasetService');
-var MessageProcessor = require('services/messageProcessor');
-var EmailPublisher = require('publishers/emailPublisher');
+const SubscriptionService = require('services/subscriptionService');
+const DatasetService = require('services/datasetService');
+const MessageProcessor = require('services/messageProcessor');
+const EmailPublisher = require('publishers/emailPublisher');
 
 const STATS_MAILS = config.get('mails.statsRecipients').split(',');
 const CHANNEL = 'subscription_alerts';
@@ -16,12 +13,12 @@ const CHANNEL = 'subscription_alerts';
 class AlertQueue {
     constructor() {
         logger.debug('Initializing queue with provider %s ', `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`);
-        this.asynClient = new AsyncClient(AsyncClient.REDIS, {
+        this.asyncClient = new AsyncClient(AsyncClient.REDIS, {
             url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
         });
 
 
-        var channel = this.asynClient.toChannel(CHANNEL);
+        const channel = this.asyncClient.toChannel(CHANNEL);
         channel.on('message', this.processMessage.bind(this));
         channel.subscribe();
     }
