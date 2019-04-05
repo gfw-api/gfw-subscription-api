@@ -21,7 +21,7 @@ env:
     - CT_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
     - LOCAL_URL=http://127.0.0.1:8431
     - NODE_ENV=test
-    - HOST_IP=localhost
+    - HOST_IP=127.0.0.1
     - PORT=8431
     - REDIS_PORT_6379_TCP_ADDR=localhost
     - MONGO_PORT_27017_TCP_ADDR=127.0.0.1
