@@ -28,13 +28,16 @@ describe('CronLoader task queueing', () => {
         if (process.env.NODE_ENV !== 'test') {
             throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
         }
+        if (config.get('settings.loadCron') && config.get('settings.loadCron') !== 'false') {
+            throw Error(`Running the test suite with cron enabled is not supported. You can disable cron by setting the LOAD_CRON env variable to false.`);
+        }
     });
 
     beforeEach(() => {
         channelSubscribe.client.removeAllListeners('message');
     });
 
-    it('Test viirs-active-fires', async () => {
+    it('Test viirs-active-fires cron task queues the expected message', async () => {
         channelSubscribe.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
@@ -55,7 +58,7 @@ describe('CronLoader task queueing', () => {
         });
     });
 
-    it('Test imazon-alerts', async () => {
+    it('Test imazon-alerts cron task queues the expected message', async () => {
         requester = await getTestServer();
 
         nock(process.env.CT_URL)
@@ -108,7 +111,7 @@ describe('CronLoader task queueing', () => {
         });
     });
 
-    it('Test story', async () => {
+    it('Test story cron task queues the expected message', async () => {
         channelSubscribe.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
@@ -131,7 +134,7 @@ describe('CronLoader task queueing', () => {
         });
     });
 
-    it('Test forma-alerts', async () => {
+    it('Test forma-alerts cron task queues the expected message', async () => {
         channelSubscribe.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
@@ -154,7 +157,7 @@ describe('CronLoader task queueing', () => {
         });
     });
 
-    it('Test dataset', async () => {
+    it('Test dataset cron task queues the expected message', async () => {
         channelSubscribe.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
@@ -169,7 +172,7 @@ describe('CronLoader task queueing', () => {
         });
     });
 
-    it('Test forma250GFW', async () => {
+    it('Test forma250GFW cron task queues the expected message', async () => {
         channelSubscribe.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 

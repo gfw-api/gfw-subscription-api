@@ -1,17 +1,17 @@
-'use strict';
-var logger = require('logger');
-var AnalysisClassifier = require('services/analysisClassifier');
+const logger = require('logger');
+const AnalysisClassifier = require('services/analysisClassifier');
+const coRequest = require('co-request');
 
 const ctRegisterMicroservice = require('ct-register-microservice-node');
-var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
-var deserializer = function (obj) {
+const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
+const deserializer = function (obj) {
     return function (callback) {
         new JSONAPIDeserializer({ keyForAttribute: 'camelCase' }).deserialize(obj, callback);
     };
 };
 
-var moment = require('moment');
-var formatDate = function (date) {
+const moment = require('moment');
+const formatDate = function (date) {
     return moment(date).format('YYYY-MM-DD');
 };
 
@@ -22,7 +22,7 @@ class AnalysisService {
         logger.info('Executing analysis for', layerSlug, begin, end);
 
         let period = formatDate(begin) + ',' + formatDate(end),
-            query = { period: period };
+            query = { period };
 
         if (subscription.params.geostore) {
             query.geostore = subscription.params.geostore;
@@ -35,6 +35,19 @@ class AnalysisService {
             url = '/' + layerSlug + path;
         logger.debug('subscription id: ', subscription._id, 'Url ', url, 'and query ', query);
         try {
+            // let caca = ctRegisterMicroservice.requestToMicroservice({
+            //     uri: url,
+            //     method: 'GET',
+            //     json: true,
+            //     qs: query
+            // });
+            //
+            // let result = yield coRequest({
+            //     uri: caca.url.href,
+            //     method: 'GET',
+            //     json: true,
+            //     headers: caca.headers
+            // });
             let result = yield ctRegisterMicroservice.requestToMicroservice({
                 uri: url,
                 method: 'GET',
@@ -46,8 +59,6 @@ class AnalysisService {
             logger.error(e);
             return null;
         }
-
-
     }
 
 }

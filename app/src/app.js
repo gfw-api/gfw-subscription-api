@@ -98,8 +98,9 @@ async function init() {
                     process.exit(1);
                 });
 
-
-                cronLoader.load();
+                if (config.get('settings.loadCron') && config.get('settings.loadCron') !== 'false') {
+                    cronLoader.load();
+                }
             });
 
             logger.info('Server started in ', process.env.PORT);

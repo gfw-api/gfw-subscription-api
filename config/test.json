@@ -4,5 +4,8 @@
         "level": "debug",
         "toFile": false,
         "dirLogFile": null
+    },
+    "settings": {
+        "loadCron": false
     }
 }

@@ -113,9 +113,7 @@ class SubscriptionService {
     }
 
     static* getSubscriptionById(id) {
-        let subscription = yield Subscription.where({
-            _id: id
-        }).findOne();
+        let subscription = yield Subscription.findById(id.toString());
         return subscription;
     }
 

@@ -40,5 +40,8 @@
     "gfw": {
         "flagshipUrl": "http://staging.globalforestwatch.org",
         "apiUrl": "http://mymachine:9000"
+    },
+    "settings": {
+        "loadCron": true
     }
 }
