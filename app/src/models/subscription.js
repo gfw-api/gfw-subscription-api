@@ -52,7 +52,7 @@ Subscription.methods.publish = function* (layerConfig, begin, end) {
         return;
     }
 
-    var results = yield AnalysisService.execute(
+    let results = yield AnalysisService.execute(
         this, layerConfig.slug, begin, end);
     if (!results) {
         logger.info('Results is null. Returning');
@@ -69,7 +69,7 @@ Subscription.methods.publish = function* (layerConfig, begin, end) {
         results, this, layer, begin, end);
 
     yield alertPublishers[this.resource.type].publish(this, results, layer);
-    logger.info('Saving stadistic');
+    logger.info('Saving statistic');
     yield new Stadistic({ slug: layerConfig.slug }).save();
     return true;
 

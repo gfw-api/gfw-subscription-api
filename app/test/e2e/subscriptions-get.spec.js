@@ -67,7 +67,7 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ "geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw" });
         responseSubscriptionOne.attributes.userId.should.equal(subscriptionOne.userId);
         responseSubscriptionOne.attributes.confirmed.should.equal(subscriptionOne.confirmed);
-        responseSubscriptionOne.attributes.resource.should.be.an('object')
+        responseSubscriptionOne.attributes.resource.should.be.an('object');
         responseSubscriptionOne.attributes.resource.type.should.equal('EMAIL');
 
         responseSubscriptionTwo.id.should.equal(subscriptionTwo.id);

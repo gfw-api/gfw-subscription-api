@@ -35,19 +35,6 @@ class AnalysisService {
             url = '/' + layerSlug + path;
         logger.debug('subscription id: ', subscription._id, 'Url ', url, 'and query ', query);
         try {
-            // let caca = ctRegisterMicroservice.requestToMicroservice({
-            //     uri: url,
-            //     method: 'GET',
-            //     json: true,
-            //     qs: query
-            // });
-            //
-            // let result = yield coRequest({
-            //     uri: caca.url.href,
-            //     method: 'GET',
-            //     json: true,
-            //     headers: caca.headers
-            // });
             let result = yield ctRegisterMicroservice.requestToMicroservice({
                 uri: url,
                 method: 'GET',

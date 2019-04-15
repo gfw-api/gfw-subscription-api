@@ -57,7 +57,7 @@ spec:
                   name: mssecrets
                   key: API_VERSION
           - name: STATS_RECIPIENTS
-            value: sergio.gordillo@vizzuality.com,abarrett@wri.org,charlie.hofmann@wri.org,mweisse@wri.org,raul.requero@vizzuality.com
+            value: abarrett@wri.org,charlie.hofmann@wri.org,mweisse@wri.org
           - name: FLAGSHIP_URL
             value: http://www.globalforestwatch.org
           - name: RW_FLAGSHIP_URL_PREPRODUCTION

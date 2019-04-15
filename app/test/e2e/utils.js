@@ -4,7 +4,7 @@ const createSubscription = (userId, datasetUuid = null) => {
     const uuid = getUUID();
 
     return {
-        name: `Widget ${uuid}`,
+        name: `Subscription ${uuid}`,
         datasets: [datasetUuid || getUUID()],
         userId,
         application: 'rw',
@@ -12,6 +12,10 @@ const createSubscription = (userId, datasetUuid = null) => {
         confirmed: true,
         params: {
             geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw'
+        },
+        resource: {
+            content: 'subscription-receipient@vizzuality.com',
+            type: 'EMAIL'
         }
     };
 };

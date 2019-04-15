@@ -21,8 +21,8 @@ class MailService {
         this.asyncClient.emit(JSON.stringify({
             template: template,
             data: data,
-            recipients: recipients,
-            sender: sender
+            recipients,
+            sender
         }));
     }
 }

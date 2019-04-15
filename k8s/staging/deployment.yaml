@@ -58,7 +58,7 @@ spec:
                   name: mssecrets
                   key: API_VERSION
           - name: STATS_RECIPIENTS
-            value: sergio.gordillo@vizzuality.com,abarrett@wri.org,charlie.hofmann@wri.org,mweisse@wri.org,raul.requero@vizzuality.com
+            value: abarrett@wri.org,charlie.hofmann@wri.org,mweisse@wri.org
           - name: FLAGSHIP_URL
             value: http://staging.globalforestwatch.org
           - name: API_GATEWAY_EXTERNAL_URL
@@ -99,7 +99,7 @@ spec:
             value: localhost
           - name: REDIS_PORT_6379_TCP_PORT
             value: "6379"
-            
+
 
         ports:
           - containerPort: 3600
