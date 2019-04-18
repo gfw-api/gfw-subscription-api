@@ -1,12 +1,11 @@
-'use strict';
-var logger = require('logger');
-var Mustache = require('mustache');
+const logger = require('logger');
+const Mustache = require('mustache');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
-var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
-var request = require('co-request');
-var CartoDB = require('cartodb');
-var config = require('config');
-var explode = require('turf-explode');
+const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
+const request = require('co-request');
+const CartoDB = require('cartodb');
+const config = require('config');
+const explode = require('turf-explode');
 const AWS = require('aws-sdk');
 
 const geoQuery = require('services/imageService/geoQuery.json');
@@ -20,7 +19,7 @@ const LAYERS_PARAMS_MAP = {
     'imazon-alerts': imazonAlertsTemplate
 };
 
-var deserializer = function (obj) {
+const deserializer = function (obj) {
     return function (callback) {
         new JSONAPIDeserializer({
             keyForAttribute: 'camelCase'
@@ -28,7 +27,7 @@ var deserializer = function (obj) {
     };
 };
 
-var executeThunk = function (client, sql, params) {
+const executeThunk = function (client, sql, params) {
     return function (callback) {
         client.execute(sql, params).done(function (data) {
             callback(null, data);
@@ -68,10 +67,14 @@ function* getQuery(subscription) {
             });
 
             let geostore = yield deserializer(result);
-            console.log(JSON.stringify(geostore.geojson.features[0].geometry));
-            return Mustache.render(geoQuery.WORLD, {
+            logger.debug('Geostore geometry: ' + JSON.stringify(geostore.geojson.features[0].geometry));
+            const renderedQuery = Mustache.render(geoQuery.WORLD, {
                 geojson: JSON.stringify(geostore.geojson.features[0].geometry).replace(/"/g, '\\"')
             });
+
+            logger.debug('Query: ' + renderedQuery);
+
+            return renderedQuery;
         } catch (e) {
             logger.error(e);
             return null;
@@ -182,7 +185,7 @@ function* getS3Url(imageKey, staticImage) {
 
 function* getImageUrl(layergroupid, bbox) {
     const imageKey = `${layergroupid}_${bbox}.png`;
-    const staticImage = yield getCartoStaticImage(`http://wri-01.cartodb.com/api/v1/map/static/bbox/${layergroupid}/${bbox}/700/450.png`);
+    const staticImage = yield getCartoStaticImage(`http://${process.env.CARTODB_USER}.cartodb.com/api/v1/map/static/bbox/${layergroupid}/${bbox}/700/450.png`);
     return yield getS3Url(imageKey, staticImage);
 }
 
@@ -206,7 +209,7 @@ class ImageService {
 
         let template = Mustache.render(JSON.stringify(LAYERS_PARAMS_MAP[slug]), config).replace(/\s\s+/g, ' ').trim();
         let result = yield request({
-            url: 'https://wri-01.cartodb.com/api/v1/map',
+            url: `https://${process.env.CARTODB_USER}.cartodb.com/api/v1/map`,
             method: 'POST',
             body: template,
             headers: {

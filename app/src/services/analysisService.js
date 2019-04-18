@@ -1,6 +1,5 @@
 const logger = require('logger');
 const AnalysisClassifier = require('services/analysisClassifier');
-const coRequest = require('co-request');
 
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;

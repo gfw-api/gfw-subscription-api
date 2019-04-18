@@ -14,7 +14,7 @@ const createSubscription = (userId, datasetUuid = null) => {
             geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw'
         },
         resource: {
-            content: 'subscription-receipient@vizzuality.com',
+            content: 'subscription-recipient@vizzuality.com',
             type: 'EMAIL'
         }
     };

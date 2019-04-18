@@ -1,10 +1,8 @@
-'use strict';
+const moment = require('moment');
+const _ = require('lodash');
+const logger = require('logger');
 
-var moment = require('moment'),
-    _ = require('lodash');
-var logger = require('logger');
-
-var VIIRSPresenter = require('presenters/viirsPresenter'),
+const VIIRSPresenter = require('presenters/viirsPresenter'),
     GLADPresenter = require('presenters/gladPresenter'),
     TerraiPresenter = require('presenters/terraiPresenter'),
     StoryPresenter = require('presenters/storyPresenter'),
@@ -12,7 +10,7 @@ var VIIRSPresenter = require('presenters/viirsPresenter'),
     FormaPresenter = require('presenters/formaPresenter'),
     Forma250GFWPresenter = require('presenters/forma250GFWPresenter');
 
-var UrlService = require('services/urlService'),
+const UrlService = require('services/urlService'),
     AlertUrlService = require('services/alertUrlService');
 
 const PRESENTER_MAP = {
@@ -25,7 +23,7 @@ const PRESENTER_MAP = {
     'forma250GFW': Forma250GFWPresenter,
 };
 
-var decorateWithName = function (results, subscription) {
+const decorateWithName = function (results, subscription) {
     if (!_.isEmpty(subscription.name)) {
         results.alert_name = subscription.name;
     } else {
@@ -35,7 +33,7 @@ var decorateWithName = function (results, subscription) {
     return results;
 };
 
-var summaryForLayer = function (layer) {
+const summaryForLayer = function (layer) {
     let meta = layer.meta;
     if (meta === undefined) {
         return '';
@@ -48,7 +46,7 @@ var summaryForLayer = function (layer) {
     //Available data from ${meta.timescale}, updated ${updatePeriod}`;
 };
 
-var decorateWithMetadata = function (results, layer) {
+const decorateWithMetadata = function (results, layer) {
     if (!layer.meta) {
         return results;
     }
@@ -59,7 +57,7 @@ var decorateWithMetadata = function (results, layer) {
     return results;
 };
 
-var decorateWithDates = function (results, begin, end) {
+const decorateWithDates = function (results, begin, end) {
     begin = moment(begin).format('YYYY-MM-DD');
     end = moment(end).format('YYYY-MM-DD');
     results.alert_date_begin = begin;
@@ -68,7 +66,7 @@ var decorateWithDates = function (results, begin, end) {
     return results;
 };
 
-var decorateWithLinks = function (results, subscription, layer, begin, end) {
+const decorateWithLinks = function (results, subscription, layer, begin, end) {
     results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
     results.subscriptions_url = UrlService.flagshipUrl('/my_gfw/subscriptions');
     results.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
@@ -76,7 +74,7 @@ var decorateWithLinks = function (results, subscription, layer, begin, end) {
     return results;
 };
 
-var decorateWithArea = function (results, subscription) {
+const decorateWithArea = function (results, subscription) {
     let params = subscription.params || {};
 
     if (params.iso && params.iso.country) {

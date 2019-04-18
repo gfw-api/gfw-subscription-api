@@ -1,6 +1,4 @@
-'use strict';
-
-var _ = require('lodash');
+const _ = require('lodash');
 
 const GENERIC_ADAPTER = require('adapters/genericAdapter');
 const GladAdapter = require('adapters/gladAdapter');

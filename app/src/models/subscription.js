@@ -55,13 +55,13 @@ Subscription.methods.publish = function* (layerConfig, begin, end) {
     let results = yield AnalysisService.execute(
         this, layerConfig.slug, begin, end);
     if (!results) {
-        logger.info('Results is null. Returning');
+        logger.info('Results are null. Returning');
         return;
     }
     logger.debug('Results obtained', results);
     results = AnalysisResultsAdapter.transform(results, layer);
     if (AnalysisResultsAdapter.isZero(results)) {
-        logger.info('Not send subscription. Is zero value');
+        logger.info('Zero value result, not sending subscription');
         return false;
     }
 
