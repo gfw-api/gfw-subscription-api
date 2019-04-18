@@ -1,7 +1,6 @@
-'use strict';
-var logger = require('logger');
-var imageService = require('services/imageService');
-var analysisService = require('services/analysisService');
+const logger = require('logger');
+const imageService = require('services/imageService');
+const analysisService = require('services/analysisService');
 
 
 class VIIRSPresenter {
@@ -28,7 +27,7 @@ class VIIRSPresenter {
                     throw err;
                 }
             }
-            logger.debug('Alerts formated', alertsFormat);
+            logger.debug('Alerts formatted', alertsFormat);
             results.alerts = alertsFormat;
         }
         results.alert_count = results.value;

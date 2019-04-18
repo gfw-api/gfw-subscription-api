@@ -1,5 +1,3 @@
-'use strict';
-
 const Router = require('koa-router');
 const UrlService = require('services/urlService');
 const logger = require('logger');
@@ -19,10 +17,10 @@ const router = new Router({
 
 const CHANNEL = 'subscription_alerts';
 const AsyncClient = require('vizz.async-client');
-let asynClient = new AsyncClient(AsyncClient.REDIS, {
+let asyncClient = new AsyncClient(AsyncClient.REDIS, {
     url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
 });
-asynClient = asynClient.toChannel(CHANNEL);
+asyncClient = asyncClient.toChannel(CHANNEL);
 
 class SubscriptionsRouter {
     static* getSubscription() {
@@ -179,7 +177,7 @@ class SubscriptionsRouter {
         logger.info(`Checking if '${dataset}' was updating`);
 
         if (result.updated) {
-            asynClient.emit(JSON.stringify({
+            asyncClient.emit(JSON.stringify({
                 layer_slug: dataset,
                 begin_date: new Date(result.beginDate),
                 end_date: new Date(result.endDate)

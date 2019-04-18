@@ -1,9 +1,6 @@
-'use strict';
+const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
-// var microserviceClient = require('vizz.microservice-client');
-var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
-
-var deserializer = function (obj) {
+const deserializer = function (obj) {
     return function (callback) {
         new JSONAPIDeserializer({}).deserialize(obj, callback);
     };
@@ -66,28 +63,12 @@ const LAYERS = [{
 class Layer {
 
     static* findBySlug(slug) {
-        // This code is valid until the refactor is made
         for (let i = 0, length = LAYERS.length; i < length; i++) {
             if (LAYERS[i].slug === slug) {
                 return LAYERS[i];
             }
         }
         return null;
-
-        // Correct code but also front not support new layerspec
-        // let result = yield microserviceClient.requestToMicroservice({
-        //   uri: '/layers/' + slug,
-        //   method: 'GET',
-        //   json: true
-        // });
-        //
-        // if (result.statusCode !== 200) {
-        //   console.error('Error obtaining layer:');
-        //   console.error(result.body);
-        //   return null;
-        // }
-        //
-        // return yield deserializer(result.body);
     }
 
 }

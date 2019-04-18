@@ -1,15 +1,22 @@
 const getUUID = () => Math.random().toString(36).substring(7);
 
-const createSubscription = (userId) => {
+const createSubscription = (userId, datasetUuid = null) => {
     const uuid = getUUID();
-    const datasetUuid = getUUID();
 
     return {
-        name: `Widget ${uuid}`,
-        datasets: [ datasetUuid ],
-        userId: userId,
+        name: `Subscription ${uuid}`,
+        datasets: [datasetUuid || getUUID()],
+        userId,
         application: 'rw',
         env: 'production',
+        confirmed: true,
+        params: {
+            geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw'
+        },
+        resource: {
+            content: 'subscription-recipient@vizzuality.com',
+            type: 'EMAIL'
+        }
     };
 };
 

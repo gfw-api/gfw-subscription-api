@@ -64,17 +64,17 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionOne.attributes.name.should.equal(subscriptionOne.name);
         responseSubscriptionOne.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionOne.datasets[0]);
         responseSubscriptionOne.attributes.datasetsQuery.should.be.an('array').and.length(0);
-        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({});
+        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ "geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw" });
         responseSubscriptionOne.attributes.userId.should.equal(subscriptionOne.userId);
         responseSubscriptionOne.attributes.confirmed.should.equal(subscriptionOne.confirmed);
-        responseSubscriptionOne.attributes.resource.should.be.an('object')
+        responseSubscriptionOne.attributes.resource.should.be.an('object');
         responseSubscriptionOne.attributes.resource.type.should.equal('EMAIL');
 
         responseSubscriptionTwo.id.should.equal(subscriptionTwo.id);
         responseSubscriptionTwo.attributes.name.should.equal(subscriptionTwo.name);
         responseSubscriptionTwo.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionTwo.datasets[0]);
         responseSubscriptionTwo.attributes.datasetsQuery.should.be.an('array').and.length(0);
-        responseSubscriptionTwo.attributes.params.should.be.an('object').and.deep.equal({});
+        responseSubscriptionTwo.attributes.params.should.be.an('object').and.deep.equal({"geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw"});
         responseSubscriptionTwo.attributes.userId.should.equal(subscriptionTwo.userId);
         responseSubscriptionTwo.attributes.confirmed.should.equal(subscriptionTwo.confirmed);
         responseSubscriptionTwo.attributes.resource.should.be.an('object');

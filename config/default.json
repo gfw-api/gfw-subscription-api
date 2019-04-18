@@ -35,10 +35,13 @@
         "user": null
     },
     "mails":{
-        "statsRecipients": "sergio.gordillo@vizzuality.com,raul.requero@vizzuality.com"
+        "statsRecipients": "info@vizzuality.com"
     },
     "gfw": {
         "flagshipUrl": "http://staging.globalforestwatch.org",
         "apiUrl": "http://mymachine:9000"
+    },
+    "settings": {
+        "loadCron": true
     }
 }

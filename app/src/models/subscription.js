@@ -1,24 +1,22 @@
-'use strict';
-
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var logger = require('logger');
-var LastUpdate = require('models/lastUpdate');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const logger = require('logger');
+const co = require('co');
 
 const ALERT_TYPES = ['EMAIL', 'URL'];
-var alertPublishers = {};
+const alertPublishers = {};
 ALERT_TYPES.forEach(function (type) {
-    var typePublisher = require('publishers/' + type.toLowerCase() + 'Publisher');
+    const typePublisher = require('publishers/' + type.toLowerCase() + 'Publisher');
     alertPublishers[type] = typePublisher;
 });
 
-var Layer = require('models/layer');
-var AnalysisService = require('services/analysisService');
-var AnalysisResultsAdapter = require('adapters/analysisResultsAdapter');
-var AnalysisResultsPresenter = require('presenters/analysisResultsPresenter');
-var Stadistic = require('models/stadistic');
+const Layer = require('models/layer');
+const AnalysisService = require('services/analysisService');
+const AnalysisResultsAdapter = require('adapters/analysisResultsAdapter');
+const AnalysisResultsPresenter = require('presenters/analysisResultsPresenter');
+const Stadistic = require('models/stadistic');
 
-var Subscription = new Schema({
+const Subscription = new Schema({
     name: { type: String, required: false, trim: true },
     confirmed: { type: Boolean, required: false, default: false },
     resource: {
@@ -49,21 +47,21 @@ var Subscription = new Schema({
 
 Subscription.methods.publish = function* (layerConfig, begin, end) {
     logger.info('Publishing subscription with data', layerConfig, begin, end);
-    var layer = yield Layer.findBySlug(layerConfig.name);
+    let layer = yield Layer.findBySlug(layerConfig.name);
     if (!layer) {
         return;
     }
 
-    var results = yield AnalysisService.execute(
+    let results = yield AnalysisService.execute(
         this, layerConfig.slug, begin, end);
     if (!results) {
-        logger.info('Results is null. Returning');
+        logger.info('Results are null. Returning');
         return;
     }
     logger.debug('Results obtained', results);
     results = AnalysisResultsAdapter.transform(results, layer);
     if (AnalysisResultsAdapter.isZero(results)) {
-        logger.info('Not send subscription. Is zero value');
+        logger.info('Zero value result, not sending subscription');
         return false;
     }
 
@@ -71,7 +69,7 @@ Subscription.methods.publish = function* (layerConfig, begin, end) {
         results, this, layer, begin, end);
 
     yield alertPublishers[this.resource.type].publish(this, results, layer);
-    logger.info('Saving stadistic');
+    logger.info('Saving statistic');
     yield new Stadistic({ slug: layerConfig.slug }).save();
     return true;
 
