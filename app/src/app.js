@@ -8,8 +8,10 @@ const loader = require('loader');
 const validate = require('koa-validate');
 const ErrorSerializer = require('serializers/errorSerializer');
 const sleep = require('sleep');
-
 const mongoose = require('mongoose');
+
+mongoose.Promise = require('bluebird');
+
 const mongoUri = process.env.MONGO_URI || 'mongodb://' + config.get('mongodb.host') + ':' + config.get('mongodb.port') + '/' + config.get('mongodb.database');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const cronLoader = require('cronLoader');
@@ -24,7 +26,9 @@ async function init() {
                     retries--;
                     logger.error(`Failed to connect to MongoDB uri ${mongoUri}, retrying...`);
                     sleep.sleep(5);
-                    mongoose.connect(mongoUri, { useNewUrlParser: true }, onDbReady);
+                    mongoose.connect(mongoUri, {
+                        useNewUrlParser: true, useMongoClient: true
+                    }, onDbReady);
                 } else {
                     logger.error('MongoURI', mongoUri);
                     logger.error(err);
@@ -108,7 +112,7 @@ async function init() {
         }
 
         logger.info(`Connecting to MongoDB URL ${mongoUri}`);
-        mongoose.connect(mongoUri, onDbReady);
+        mongoose.connect(mongoUri, { useMongoClient: true }, onDbReady);
     });
 }
 

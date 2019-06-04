@@ -190,4 +190,4 @@ var onDbReady = function () {
         process.exit();
     });
 };
-mongoose.connect(mongoUri, onDbReady);
+mongoose.connect(mongoUri, { useMongoClient: true }, onDbReady);

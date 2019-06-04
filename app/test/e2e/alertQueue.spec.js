@@ -42,8 +42,8 @@ describe('AlertQueue ', () => {
 
         requester = await getTestServer();
 
-        Subscription.remove({}).exec();
-        Stadistic.remove({}).exec();
+        await Subscription.remove({}).exec();
+        await Stadistic.remove({}).exec();
     });
 
     it('Test viirs-active-fires message received with actual data triggers emails being queued and a statistic being collected', async () => {
