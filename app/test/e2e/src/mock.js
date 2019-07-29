@@ -1,4 +1,5 @@
 const nock = require('nock');
+const config = require('config');
 const {
     mockDataset, MOCK_FILE, MOCK_USERS
 } = require('./test.constants');
@@ -19,15 +20,15 @@ const createMockUsersWithRange = (startDate, endDate) => nock(process.env.CT_URL
     .get(`/v1/user/obtain/all-users?start=${startDate.toISOString().substring(0, 10)}&end=${endDate.toISOString().substring(0, 10)}`)
     .reply(200, { data: MOCK_USERS });
 
-const createMockSendConfirmationSUB = () => nock(process.env.FLAGSHIP_URL)
+const createMockSendConfirmationSUB = () => nock(config.get('gfw.flagshipUrl'))
     .get('/my_gfw/subscriptions')
     .reply(200, { mockMessage: 'Should redirect' });
 
-const createMockConfirmSUB = () => nock(process.env.FLAGSHIP_URL)
+const createMockConfirmSUB = () => nock(config.get('gfw.flagshipUrl'))
     .get('/my_gfw/subscriptions?subscription_confirmed=true')
     .reply(200, { mockMessage: 'Should redirect' });
 
-const createMockUnsubscribeSUB = () => nock(process.env.FLAGSHIP_URL)
+const createMockUnsubscribeSUB = () => nock(config.get('gfw.flagshipUrl'))
     .get('/my_gfw/subscriptions?unsubscription_confirmed=true')
     .reply(200, { mockMessage: 'Should redirect' });
 
