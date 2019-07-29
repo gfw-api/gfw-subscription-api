@@ -11,22 +11,27 @@ const mailService = require('services/mailService');
 const MockService = require('services/mockService');
 const GenericError = require('errors/genericError');
 const config = require('config');
+const { get } = require('lodash');
+
 const router = new Router({
     prefix: '/subscriptions'
 });
+const mongoose = require('mongoose');
 
 const CHANNEL = 'subscription_alerts';
 const AsyncClient = require('vizz.async-client');
+
 let asyncClient = new AsyncClient(AsyncClient.REDIS, {
     url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
 });
 asyncClient = asyncClient.toChannel(CHANNEL);
 
 class SubscriptionsRouter {
+
     static* getSubscription() {
         logger.debug(JSON.parse(this.request.query.loggedUser));
-        var user = JSON.parse(this.request.query.loggedUser),
-            id = this.params.id;
+        const user = JSON.parse(this.request.query.loggedUser);
+        const { id } = this.params;
 
         try {
             this.body = yield SubscriptionService.getSubscriptionForUser(id, user.id);
@@ -37,8 +42,8 @@ class SubscriptionsRouter {
 
     static* getSubscriptionData() {
         logger.debug(JSON.parse(this.request.query.loggedUser));
-        var user = JSON.parse(this.request.query.loggedUser),
-            id = this.params.id;
+        const user = JSON.parse(this.request.query.loggedUser);
+        const { id } = this.params;
         try {
             const subscription = yield SubscriptionService.getSubscriptionForUser(id, user.id);
             this.body = { data: yield DatasetService.processSubscriptionData(subscription.data.id) };
@@ -49,10 +54,6 @@ class SubscriptionsRouter {
     }
 
     static* getSubscriptions() {
-        if (!this.request.query.loggedUser) {
-            this.throw(401, 'Unauthorized');
-        }
-
         const user = JSON.parse(this.request.query.loggedUser);
 
         try {
@@ -81,7 +82,7 @@ class SubscriptionsRouter {
     static* createSubscription() {
         logger.info('Creating subscription with body', this.request.body);
         try {
-            let message = SubscriptionsRouter.validateSubscription(this.request.body);
+            const message = SubscriptionsRouter.validateSubscription(this.request.body);
             if (message) {
                 this.throw(400, message);
                 return;
@@ -97,7 +98,8 @@ class SubscriptionsRouter {
         logger.info('Confirming subscription by id %s', this.params.id);
         try {
             const subscription = yield SubscriptionService.confirmSubscription(
-                this.params.id);
+                this.params.id
+            );
             if (this.query.application && this.query.application === 'rw') {
 
                 this.redirect(UrlService.flagshipUrlRW('/myrw/areas', subscription.data.attributes.env));
@@ -111,10 +113,10 @@ class SubscriptionsRouter {
 
     static* sendConfirmation() {
         logger.info('Resending confirmation email for subscription with id %s', this.params.id);
-        var user = JSON.parse(this.request.query.loggedUser),
-            id = this.params.id;
+        const user = JSON.parse(this.request.query.loggedUser);
+        const { id } = this.params;
 
-        let subscription = yield Subscription.where({
+        const subscription = yield Subscription.where({
             _id: id,
             userId: user.id
         }).findOne();
@@ -122,7 +124,7 @@ class SubscriptionsRouter {
         try {
             SubscriptionService.sendConfirmation(subscription);
             logger.info('Redirect to ', this.headers.referer);
-            this.redirect(config.get('gfw.flagshipUrl') + '/my_gfw/subscriptions');
+            this.redirect(`${config.get('gfw.flagshipUrl')}/my_gfw/subscriptions`);
         } catch (err) {
             logger.error(err);
         }
@@ -130,18 +132,28 @@ class SubscriptionsRouter {
 
     static* updateSubscription() {
         logger.info('Update subscription by id %s', this.params.id);
+
         try {
+            const message = SubscriptionsRouter.validateSubscription(this.request.body);
+            if (message) {
+                this.throw(400, message);
+                return;
+            }
+
             this.body = yield SubscriptionService.updateSubscription(
-                this.params.id, this.request.body.loggedUser.id, this.request.body);
+                this.params.id, this.request.body.loggedUser.id, this.request.body
+            );
         } catch (err) {
             logger.error(err);
+            throw err;
         }
     }
 
     static* unsubscribeSubscription() {
         logger.info('Unsubscribing subscription by id %s', this.params.id);
-        let subscription = yield SubscriptionService.deleteSubscriptionById(
-            this.params.id);
+        const subscription = yield SubscriptionService.deleteSubscriptionById(
+            this.params.id
+        );
 
         if (!subscription) {
             logger.error('Subscription not found');
@@ -150,7 +162,8 @@ class SubscriptionsRouter {
         }
         if (this.query.redirect) {
             this.redirect(UrlService.flagshipUrl(
-                '/my_gfw/subscriptions?unsubscription_confirmed=true'));
+                '/my_gfw/subscriptions?unsubscription_confirmed=true'
+            ));
             return;
         }
         this.body = subscription;
@@ -158,8 +171,9 @@ class SubscriptionsRouter {
 
     static* deleteSubscription() {
         logger.info('Deleting subscription by id %s', this.params.id);
-        let subscription = yield SubscriptionService.deleteSubscriptionById(
-            this.params.id, JSON.parse(this.request.query.loggedUser).id);
+        const subscription = yield SubscriptionService.deleteSubscriptionById(
+            this.params.id, JSON.parse(this.request.query.loggedUser).id
+        );
 
         if (!subscription) {
             logger.error('Subscription not found');
@@ -171,9 +185,9 @@ class SubscriptionsRouter {
     }
 
     static* notifyUpdates() {
-        const dataset = this.params.dataset;
+        const { dataset } = this.params;
         logger.info(`Notify '${dataset}' was updated`);
-        let result = yield UpdateService.checkUpdated(dataset);
+        const result = yield UpdateService.checkUpdated(dataset);
         logger.info(`Checking if '${dataset}' was updating`);
 
         if (result.updated) {
@@ -242,7 +256,7 @@ const isAdmin = function* (next) {
         loggedUser = this.query.loggedUser ? JSON.parse(this.query.loggedUser) : null;
     }
     if (!loggedUser) {
-        this.throw(403, 'Not authorized');
+        this.throw(401, 'Not authorized');
         return;
     }
     if (loggedUser.role !== 'ADMIN') {
@@ -256,8 +270,30 @@ const isAdmin = function* (next) {
     yield next;
 };
 
-const existSubscription = function* (next) {
-    const subscription = yield Subscription.findById(this.params.id);
+const existSubscription = isForUser => function* (next) {
+    const { id } = this.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        this.throw(400, 'ID is not valid');
+    }
+
+    let subscription;
+
+    if (isForUser) {
+        let user = this.request.query.loggedUser || this.request.body.loggedUser;
+
+        if (typeof user === 'string') {
+            user = JSON.parse(user);
+        }
+
+        subscription = yield Subscription.findOne({
+            _id: id,
+            userId: user.id,
+        });
+    } else {
+        subscription = yield Subscription.findById(id);
+    }
+
     if (!subscription) {
         this.throw(404, 'Subscription not found');
         return;
@@ -265,15 +301,43 @@ const existSubscription = function* (next) {
     yield next;
 };
 
+const isLoggedUserRequired = (from = 'query') => function* (next) {
+    const loggedUser = get(this.request[from], 'loggedUser');
+
+    if (!loggedUser) {
+        this.throw(401, 'Not authorized');
+        return;
+    }
+
+    if (from === 'query') {
+        try {
+            const parsedLoggedUser = JSON.parse(loggedUser);
+            if (typeof parsedLoggedUser !== 'object') {
+                this.throw(401, 'Not valid loggedUser, it should be json a valid object string in query');
+            } else if (!parsedLoggedUser.role) {
+                this.throw(401, 'Not valid loggedUser, it should be json a valid object string in query');
+            }
+        } catch (err) {
+            if (err.status && err.message) {
+                this.throw(err.status, err.message);
+            } else {
+                this.throw(401, 'Not valid loggedUser, it should be a json string in query');
+            }
+        }
+    }
+
+    yield next;
+};
+
 router.post('/', SubscriptionsRouter.createSubscription);
-router.get('/', SubscriptionsRouter.getSubscriptions);
-router.get('/:id', existSubscription, SubscriptionsRouter.getSubscription);
-router.get('/:id/data', existSubscription, SubscriptionsRouter.getSubscriptionData);
-router.get('/:id/confirm', existSubscription, SubscriptionsRouter.confirmSubscription);
-router.get('/:id/send_confirmation', existSubscription, SubscriptionsRouter.sendConfirmation);
-router.get('/:id/unsubscribe', existSubscription, SubscriptionsRouter.unsubscribeSubscription);
-router.patch('/:id', existSubscription, SubscriptionsRouter.updateSubscription);
-router.delete('/:id', existSubscription, SubscriptionsRouter.deleteSubscription);
+router.get('/', isLoggedUserRequired(), SubscriptionsRouter.getSubscriptions);
+router.get('/:id', isLoggedUserRequired(), existSubscription(true), SubscriptionsRouter.getSubscription); // not done
+router.get('/:id/data', isLoggedUserRequired(), existSubscription(true), SubscriptionsRouter.getSubscriptionData);
+router.get('/:id/confirm', existSubscription(), SubscriptionsRouter.confirmSubscription);
+router.get('/:id/send_confirmation', isLoggedUserRequired(), existSubscription(true), SubscriptionsRouter.sendConfirmation);
+router.get('/:id/unsubscribe', existSubscription(), SubscriptionsRouter.unsubscribeSubscription);
+router.patch('/:id', isLoggedUserRequired('body'), existSubscription(true), SubscriptionsRouter.updateSubscription);
+router.delete('/:id', isLoggedUserRequired(), existSubscription(true), SubscriptionsRouter.deleteSubscription);
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
 router.get('/statistics-group', isAdmin, SubscriptionsRouter.statisticsGroup);
