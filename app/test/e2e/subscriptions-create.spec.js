@@ -2,8 +2,8 @@
 const nock = require('nock');
 const chai = require('chai');
 const Subscription = require('models/subscription');
-const { ROLES } = require('./test.constants');
-const { getTestServer } = require('./test-server');
+const { ROLES } = require('./src/test.constants');
+const { getTestServer } = require('./src/test-server');
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);

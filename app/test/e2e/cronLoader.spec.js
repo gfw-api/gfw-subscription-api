@@ -2,7 +2,7 @@ const chai = require('chai');
 const nock = require('nock');
 const AsyncClient = require('vizz.async-client');
 const config = require('config');
-const { getTestServer } = require('./test-server');
+const { getTestServer } = require('./src/test-server');
 const cronLoader = require('../../src/cronLoader');
 const taskConfig = require('../../../config/cron.json');
 
