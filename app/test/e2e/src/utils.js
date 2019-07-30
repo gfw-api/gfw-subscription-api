@@ -19,7 +19,7 @@ const createSubscription = (userId, datasetUuid = null, data = {}) => {
         name: `Subscription ${uuid}`,
         datasets: [datasetUuid || getUUID()],
         userId,
-        application: 'rw',
+        application: 'gfw',
         env: 'production',
         confirmed: true,
         params: {
