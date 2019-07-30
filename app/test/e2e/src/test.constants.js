@@ -224,7 +224,7 @@ const ROLES = {
 const SUBSCRIPTION_TO_UPDATE = {
     name: `Subscription test`,
     datasets: [Math.random().toString(36).substring(7)],
-    application: 'rw',
+    application: 'gfw',
     env: 'preproduction',
     confirmed: false,
     language: 'en',
