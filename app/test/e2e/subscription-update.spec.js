@@ -10,6 +10,9 @@ const {
 const {
     ensureCorrectError, createSubInDB, getUUID, createAuthCases
 } = require('./src/utils');
+const chai = require('chai');
+
+const should = chai.should();
 
 const prefix = '/api/v1/subscriptions';
 

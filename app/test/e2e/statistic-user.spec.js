@@ -8,6 +8,9 @@ const {
 const { ROLES, MOCK_USER_IDS, MOCK_USERS } = require('./src/test.constants');
 const { createMockUsers } = require('./src/mock');
 const { createSubscriptions, getUserAsSingleObject } = require('./src/helpers/statistic');
+const chai = require('chai');
+
+const should = chai.should();
 
 const url = '/api/v1/subscriptions/statistics-by-user';
 

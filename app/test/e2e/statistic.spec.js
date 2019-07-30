@@ -15,6 +15,9 @@ const {
 } = require('./src/utils');
 const { createMockUsersWithRange } = require('./src/mock');
 const { createSubscriptions, createExpectedGroupStatistics, createStatistics } = require('./src/helpers/statistic');
+const chai = require('chai');
+
+const should = chai.should();
 
 const url = '/api/v1/subscriptions/statistics';
 

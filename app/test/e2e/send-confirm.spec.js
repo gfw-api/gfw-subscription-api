@@ -10,6 +10,9 @@ const {
 const { createMockSendConfirmationSUB } = require('./src/mock');
 const { ROLES } = require('./src/test.constants');
 const { createRequest } = require('./src/test-server');
+const chai = require('chai');
+
+const should = chai.should();
 
 const prefix = '/api/v1/subscriptions';
 

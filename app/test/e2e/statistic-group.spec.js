@@ -9,6 +9,9 @@ const {
 const { ROLES } = require('./src/test.constants');
 const { createMockUsersWithRange } = require('./src/mock');
 const { createSubscriptions, createExpectedGroupStatistics } = require('./src/helpers/statistic');
+const chai = require('chai');
+
+const should = chai.should();
 
 const url = '/api/v1/subscriptions/statistics-group';
 
