@@ -1,36 +1,47 @@
 {
-    "logger": {
-        "name": "gfw-subscription-api-DEV",
-        "level": "debug",
-        "toFile": false,
-        "dirLogFile": null
-    },
-    "service": {
-        "id": "gfw-subscription-api_1.0.0",
-        "name": "GFW SUBSCRIPTION API",
-        "uri": "http://192.168.1.109:3200",
-        "port": 3600
-    },
-    "apiGateway": {
-        "uri": "http://192.168.1.109:8000/gateway/service",
-        "queue": "redis://mymachine:6379"
-    },
-    "redisLocal": {
-        "host": null,
-        "port": null
-    },
-    "mongodb": {
-        "database": "gfw_subscription_db",
-        "host": "192.168.1.109",
-        "port": 32780
-    },
-    "migrate": {
-        "uri": ""
-    },
-    "cartoDB":{
-        "user": null
-    },
-    "mails":{
-        "statsRecipients": "sergio.gordillo@vizzuality.com,raul.requero@vizzuality.com"
-    }
+  "logger": {
+    "name": "gfw-subscription-api-DEV",
+    "level": "debug",
+    "toFile": false,
+    "dirLogFile": null
+  },
+  "service": {
+    "id": "gfw-subscription-api_1.0.0",
+    "name": "GFW SUBSCRIPTION API",
+    "uri": "http://192.168.1.109:3200",
+    "port": 3600
+  },
+  "apiGateway": {
+    "uri": "http://192.168.1.109:8000/gateway/service",
+    "queue": "redis://mymachine:6379",
+    "externalUrl": "http://mymachine:9000",
+    "queueName": "mail",
+    "queueProvider": "redis",
+    "queueUrl": "redis://mymachine:6379"
+  },
+  "redisLocal": {
+    "host": "mymachine",
+    "port": "6379"
+  },
+  "mongodb": {
+    "database": "gfw_subscription_db",
+    "host": "localhost",
+    "port": 27017
+  },
+  "migrate": {
+    "uri": ""
+  },
+  "cartoDB": {
+    "user": null
+  },
+  "mails": {
+    "statsRecipients": "info@vizzuality.com"
+  },
+  "gfw": {
+    "flagshipUrl": "http://staging.globalforestwatch.org",
+    "apiUrl": "http://mymachine:9000"
+  },
+  "settings": {
+    "loadCron": true
+  }
 }

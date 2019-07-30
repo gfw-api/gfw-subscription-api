@@ -1,8 +1,11 @@
 {
-    "logger": {
-        "name": "gfw-subscription-api-TEST",
-        "level": "debug",
-        "toFile": false,
-        "dirLogFile": null
-    }
+  "logger": {
+    "name": "gfw-subscription-api-TEST",
+    "level": "debug",
+    "toFile": false,
+    "dirLogFile": null
+  },
+  "settings": {
+    "loadCron": false
+  }
 }

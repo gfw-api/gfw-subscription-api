@@ -13,7 +13,7 @@ let Subscription = require('models/subscription');
 
 // var microserviceClient = require('vizz.microservice-client');
 
-var obtainData = function*(cursor) {
+var obtainData = function* (cursor) {
     let url = uriMigrate;
     if (cursor) {
         url += '?cursor=' + cursor;
@@ -38,7 +38,7 @@ var obtainData = function*(cursor) {
 };
 
 let cacheUsers = {};
-var obtainNewUserId = function*(userId) {
+var obtainNewUserId = function* (userId) {
     try {
         logger.info('Obtaining user with data', userId);
         if (cacheUsers[userId]) {
@@ -58,7 +58,7 @@ var obtainNewUserId = function*(userId) {
     }
 };
 
-var createGeoJSON = function*(geojsonParam) {
+var createGeoJSON = function* (geojsonParam) {
     try {
         logger.info('Creating geostore');
         let json = {
@@ -95,14 +95,14 @@ var oldDatasets = {
     'alerts/sad': 'imazon-alerts'
 };
 
-var tranformDataset = function(oldDataset) {
+var tranformDataset = function (oldDataset) {
     if (oldDatasets[oldDataset]) {
         return oldDatasets[oldDataset];
     }
     return oldDataset;
 };
 
-var transformAndSaveData = function*(data) {
+var transformAndSaveData = function* (data) {
     logger.info('Saving data');
     if (data) {
         for (let i = 0, length = data.length; i < length; i++) {
@@ -117,16 +117,16 @@ var transformAndSaveData = function*(data) {
                 let language = data[i].language || 'en';
 
                 if (!data[i].params.iso && !data[i].params.id1 && !data[i].params.wdpaid && !data[i].params.use && !data[i].params.useid && !data[i].params.ifl && !data[i].params.fl_id1 && !data[i].params.geostore) {
-                    if(!data[i].params.geom){
+                    if (!data[i].params.geom) {
                         continue;
-                     }
-                     let geostore = yield createGeoJSON(data[i].params.geom);
-                     if(!geostore.body.data){
+                    }
+                    let geostore = yield createGeoJSON(data[i].params.geom);
+                    if (!geostore.body.data) {
                         logger.error('Is not correct');
                         logger.error(data[i].params.geom);
                         continue;
-                     }
-                     data[i].geostore = geostore.body.data.id;
+                    }
+                    data[i].geostore = geostore.body.data.id;
                 }
 
                 yield new Subscription({
@@ -163,7 +163,7 @@ var transformAndSaveData = function*(data) {
     }
 };
 
-var migrate = function*() {
+var migrate = function* () {
     logger.info('Obtaining data');
     var data = yield obtainData();
 
@@ -175,19 +175,19 @@ var migrate = function*() {
         yield transformAndSaveData(data.subscriptions);
         if (data.cursor) {
             data = yield obtainData(data.cursor);
-        } else  {
+        } else {
             data = null;
         }
     }
 
     logger.debug('Finished migration');
 };
-var onDbReady = function() {
-    co(function*() {
+var onDbReady = function () {
+    co(function* () {
         logger.info('Starting migration');
 
         yield migrate();
         process.exit();
     });
 };
-mongoose.connect(mongoUri, onDbReady);
+mongoose.connect(mongoUri, { useMongoClient: true }, onDbReady);

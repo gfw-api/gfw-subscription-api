@@ -1,8 +1,8 @@
 {
-    "logger": {
-        "name": "gfw-subscription-api",
-        "level": "warn",
-        "toFile": false,
-        "dirLogFile": null
-    }
+  "logger": {
+    "name": "gfw-subscription-api",
+    "level": "warn",
+    "toFile": false,
+    "dirLogFile": null
+  }
 }

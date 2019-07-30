@@ -1,13 +1,10 @@
-'use strict';
+const _ = require('lodash');
+const logger = require('logger');
+const Subscription = require('models/subscription');
+const SubscriptionSerializer = require('serializers/subscriptionSerializer');
 
-var _ = require('lodash');
-var logger = require('logger');
-var Subscription = require('models/subscription');
-var SubscriptionSerializer = require('serializers/subscriptionSerializer');
-var config = require('config');
-
-var mailService = require('services/mailService');
-var UrlService = require('services/urlService');
+const mailService = require('services/mailService');
+const UrlService = require('services/urlService');
 
 class SubscriptionService {
 
@@ -31,7 +28,7 @@ class SubscriptionService {
         };
     }
 
-    static * createSubscription(data) {
+    static* createSubscription(data) {
         logger.info('Creating subscription with data ', data);
         data.userId = data.loggedUser.id;
 
@@ -40,11 +37,11 @@ class SubscriptionService {
         delete subscriptionFormatted.createdAt;
         delete subscriptionFormatted.updatedAt;
         if (subscriptionFormatted.resource.type === 'URL') {
-          subscriptionFormatted.confirmed = true;
+            subscriptionFormatted.confirmed = true;
         }
         let subscription = yield new Subscription(subscriptionFormatted).save();
         if (subscriptionFormatted.resource.type !== 'URL') {
-          SubscriptionService.sendConfirmation(subscription);
+            SubscriptionService.sendConfirmation(subscription);
         }
 
         return SubscriptionSerializer.serialize(subscription);
@@ -70,7 +67,7 @@ class SubscriptionService {
         }
     }
 
-    static * confirmSubscription(id) {
+    static* confirmSubscription(id) {
         let subscription = yield Subscription.where({
             _id: id,
         }).findOne();
@@ -82,14 +79,14 @@ class SubscriptionService {
             SubscriptionService.formatSubscription(subscription));
     }
 
-    static * updateSubscription(id, userId, data) {
+    static* updateSubscription(id, userId, data) {
         let subscription = yield Subscription.where({
             _id: id,
             userId: userId
         }).findOne();
         let attributes = _.omitBy(data, _.isNil);
         attributes = _.omit(attributes, 'loggedUser');
-        _.each(attributes, function(value, attribute) {
+        _.each(attributes, function (value, attribute) {
             subscription[attribute] = value;
         });
 
@@ -98,7 +95,7 @@ class SubscriptionService {
         return SubscriptionSerializer.serialize(subscription);
     }
 
-    static * deleteSubscriptionById(id) {
+    static* deleteSubscriptionById(id) {
         let subscription = yield Subscription.where({
             _id: id,
         }).findOneAndRemove();
@@ -106,7 +103,7 @@ class SubscriptionService {
         return SubscriptionSerializer.serialize(subscription);
     }
 
-    static * getSubscriptionForUser(id, userId) {
+    static* getSubscriptionForUser(id, userId) {
         let subscription = yield Subscription.where({
             _id: id,
             userId: userId
@@ -115,14 +112,12 @@ class SubscriptionService {
         return SubscriptionSerializer.serialize(subscription);
     }
 
-    static * getSubscriptionById(id) {
-        let subscription = yield Subscription.where({
-            _id: id
-        }).findOne();
+    static* getSubscriptionById(id) {
+        let subscription = yield Subscription.findById(id.toString());
         return subscription;
     }
 
-    static * getSubscriptionsByLayer(layerSlug) {
+    static* getSubscriptionsByLayer(layerSlug) {
         let subscriptions = yield Subscription.find({
             datasets: {
                 $in: [layerSlug]
@@ -132,7 +127,7 @@ class SubscriptionService {
         return subscriptions;
     }
 
-    static * getSubscriptionsForUser(userId, application, env) {
+    static* getSubscriptionsForUser(userId, application, env) {
         let subscriptions = yield Subscription.find({
             userId: userId,
             application,

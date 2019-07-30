@@ -1,30 +1,28 @@
-'use strict';
-
-var config = require('config');
-var logger = require('logger');
-var AsyncClient = require('vizz.async-client');
+const config = require('config');
+const logger = require('logger');
+const AsyncClient = require('vizz.async-client');
 const CHANNEL = config.get('apiGateway.queueName');
 
 class MailService {
-    constructor(){
+    constructor() {
         logger.debug('Initializing queue with provider %s ', config.get('apiGateway.queueProvider'));
         switch (config.get('apiGateway.queueProvider').toLowerCase()) {
             case AsyncClient.REDIS:
-                this.asynClient = new AsyncClient(AsyncClient.REDIS, {
+                this.asyncClient = new AsyncClient(AsyncClient.REDIS, {
                     url: config.get('apiGateway.queueUrl')
                 });
                 break;
             default:
         }
-        this.asynClient = this.asynClient.toChannel(CHANNEL);
+        this.asyncClient = this.asyncClient.toChannel(CHANNEL);
     }
 
-    sendMail(template, data, recipients, sender='gfw'){
-        this.asynClient.emit(JSON.stringify({
+    sendMail(template, data, recipients, sender = 'gfw') {
+        this.asyncClient.emit(JSON.stringify({
             template: template,
             data: data,
-            recipients: recipients,
-            sender: sender
+            recipients,
+            sender
         }));
     }
 }

@@ -1,10 +1,7 @@
-'use strict';
+const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
-// var microserviceClient = require('vizz.microservice-client');
-var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
-
-var deserializer = function(obj) {
-    return function(callback) {
+const deserializer = function (obj) {
+    return function (callback) {
         new JSONAPIDeserializer({}).deserialize(obj, callback);
     };
 };
@@ -49,15 +46,15 @@ const LAYERS = [{
     name: 'umd_as_it_happens_idn',
     slug: 'glad-alerts',
     subscription: true
-},{
+}, {
     name: 'story',
     slug: 'story',
     subscription: true
-},{
+}, {
     name: 'forma-alerts',
     slug: 'forma-alerts',
     subscription: true
-},{
+}, {
     name: 'forma250GFW',
     slug: 'forma250GFW',
     subscription: true
@@ -65,29 +62,13 @@ const LAYERS = [{
 
 class Layer {
 
-    static * findBySlug(slug) {
-        // This code is valid until the refactor is made
-        for(let i = 0, length = LAYERS.length; i < length; i++){
-            if(LAYERS[i].slug === slug) {
+    static* findBySlug(slug) {
+        for (let i = 0, length = LAYERS.length; i < length; i++) {
+            if (LAYERS[i].slug === slug) {
                 return LAYERS[i];
             }
         }
         return null;
-
-        // Correct code but also front not support new layerspec
-        // let result = yield microserviceClient.requestToMicroservice({
-        //   uri: '/layers/' + slug,
-        //   method: 'GET',
-        //   json: true
-        // });
-        //
-        // if (result.statusCode !== 200) {
-        //   console.error('Error obtaining layer:');
-        //   console.error(result.body);
-        //   return null;
-        // }
-        //
-        // return yield deserializer(result.body);
     }
 
 }

@@ -4,15 +4,15 @@ var logger = require('logger');
 
 class Forma250Adapter {
 
-  constructor(results) {
-    this.results = results;
-  }
+    constructor(results) {
+        this.results = results;
+    }
 
-  transform() {
-    return {
-      value: this.results.alertCounts
-    };
-  }
+    transform() {
+        return {
+            value: this.results.alertCounts
+        };
+    }
 
 }
 

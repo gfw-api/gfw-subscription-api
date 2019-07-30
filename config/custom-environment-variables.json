@@ -1,37 +1,44 @@
 {
-    "gfw": {
-      "flagshipUrl": "FLAGSHIP_URL",
-      "apiUrl": "API_URL"
-    },
-    "rw": {
-        "flagshipUrl": {
-            "staging": "RW_FLAGSHIP_URL_STAGING",
-            "production": "RW_FLAGSHIP_URL_PRODUCTION",
-            "preproduction": "RW_FLAGSHIP_URL_PREPRODUCTION"
-        }
-    },
-    "apiGateway":{
-        "uri": "API_GATEWAY_URI",
-        "externalUrl": "API_GATEWAY_EXTERNAL_URL",
-        "queueUrl": "API_GATEWAY_QUEUE_URL",
-        "queueProvider": "API_GATEWAY_QUEUE_PROVIDER",
-        "queueName": "API_GATEWAY_QUEUE_NAME"
-    },
-    "redisLocal": {
-        "host": "REDIS_PORT_6379_TCP_ADDR",
-        "port": "REDIS_PORT_6379_TCP_PORT"
-    },
-    "mongodb": {
-        "host": "MONGO_PORT_27017_TCP_ADDR",
-        "port": "MONGO_PORT_27017_TCP_PORT"
-    },
-    "migrate":{
-        "uri": "MIGRATE_URI"
-    },
-    "cartoDB":{
-        "user": "CARTODB_USER"
-    },
-    "mails":{
-        "statsRecipients": "STATS_RECIPIENTS"
+  "logger": {
+    "level": "LOGGER_LEVEL"
+  },
+  "gfw": {
+    "flagshipUrl": "FLAGSHIP_URL",
+    "apiUrl": "API_URL"
+  },
+  "rw": {
+    "flagshipUrl": {
+      "staging": "RW_FLAGSHIP_URL_STAGING",
+      "production": "RW_FLAGSHIP_URL_PRODUCTION",
+      "preproduction": "RW_FLAGSHIP_URL_PREPRODUCTION"
     }
+  },
+  "apiGateway": {
+    "uri": "API_GATEWAY_URI",
+    "externalUrl": "API_GATEWAY_EXTERNAL_URL",
+    "queueUrl": "API_GATEWAY_QUEUE_URL",
+    "queueProvider": "API_GATEWAY_QUEUE_PROVIDER",
+    "queueName": "API_GATEWAY_QUEUE_NAME"
+  },
+  "redisLocal": {
+    "host": "REDIS_PORT_6379_TCP_ADDR",
+    "port": "REDIS_PORT_6379_TCP_PORT"
+  },
+  "mongodb": {
+    "host": "MONGO_PORT_27017_TCP_ADDR",
+    "database": "MONGO_PORT_27017_TCP_DATABASE",
+    "port": "MONGO_PORT_27017_TCP_PORT"
+  },
+  "migrate": {
+    "uri": "MIGRATE_URI"
+  },
+  "cartoDB": {
+    "user": "CARTODB_USER"
+  },
+  "mails": {
+    "statsRecipients": "STATS_RECIPIENTS"
+  },
+  "settings": {
+    "loadCron": "LOAD_CRON"
+  }
 }

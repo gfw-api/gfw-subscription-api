@@ -1,10 +1,47 @@
-test:
-  extends:
-    file: base.yml
-    service: base
-  ports:
-    - "3600"
-  container_name: gfw-subscription-api-test
-  environment:
-    NODE_ENV: test
-  command: test
+version: "3"
+services:
+  test:
+    build: .
+    ports:
+      - "35726:35726"
+    container_name: gfw-subscription-api-test
+    environment:
+      API_GATEWAY_EXTERNAL_URL: http://127.0.0.1:9000
+      API_GATEWAY_QUEUE_NAME: mail
+      API_GATEWAY_QUEUE_PROVIDER: redis
+      API_GATEWAY_QUEUE_URL: redis://redis:6379
+      API_GATEWAY_URL: http://mymachine:9000
+      API_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
+      API_URL: http://mymachine:9000
+      API_VERSION: v1
+      CARTODB_USER: wri-01
+      CT_REGISTER_MODE: auto
+      CT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
+      CT_URL: http://controltower:9000
+      FLAGSHIP_URL: http://staging.globalforestwatch.org
+      HOST_IP: 127.0.0.1
+      LOCAL_URL: http://mymachine:3600
+      MIGRATE_URI: <migrateuri>
+      MONGO_PORT_27017_TCP_ADDR: mongo
+      MONGO_PORT_27017_TCP_PORT: 27017
+      NODE_ENV: test
+      NODE_PATH: app/src
+      PORT: 35726
+      REDIS_PORT_6379_TCP_ADDR: redis
+    command: test
+    depends_on:
+      - mongo
+      - redis
+
+  redis:
+    image: redis
+    container_name: gfw-subscriptions-api-redis
+    ports:
+      - "6379"
+
+  mongo:
+    image: mongo
+    container_name: gfw-subscription-mongo
+    command: --smallfiles
+    ports:
+      - "27017"
