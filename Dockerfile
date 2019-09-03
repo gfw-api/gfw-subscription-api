@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:7.6
+FROM mhart/alpine-node:12.9
 MAINTAINER info@vizzuality.com
 
 ENV NAME gfw-subscription-api
