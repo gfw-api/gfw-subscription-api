@@ -15,7 +15,7 @@ var deserializer = function (obj) {
 
 class DatasetService {
 
-    static* runSubcriptionQuery(subscription, queryType) {
+    static* runSubscriptionQuery(subscription, queryType) {
         logger.info('Iterate over datasetsQuery of each subs');
         const queryData = [];
         for (let j = 0; j < subscription.datasetsQuery.length; j++) {
@@ -78,7 +78,7 @@ class DatasetService {
                                     alertResult: result.data[0].value
                                 };
                                 logger.debug('Sending mail with data', data);
-                                let template = 'dataset';
+                                let template = 'dataset-rw';
                                 if (subscription.env && subscription.env !== 'production') {
                                     template += `-${subscription.env}`;
                                 }
@@ -117,7 +117,7 @@ class DatasetService {
     // for data endpoint
     static* processSubscriptionData(subscriptionId) {
         const subscription = yield Subscription.findById(subscriptionId).exec();
-        const data = yield DatasetService.runSubcriptionQuery(subscription, 'dataQuery');
+        const data = yield DatasetService.runSubscriptionQuery(subscription, 'dataQuery');
         return data;
     }
 
@@ -132,7 +132,7 @@ class DatasetService {
         logger.info('Iterate over subs');
         for (let i = 0; i < subscriptions.length; i++) {
             const subscription = subscriptions[i];
-            yield DatasetService.runSubcriptionQuery(subscription, 'subscriptionQuery');
+            yield DatasetService.runSubscriptionQuery(subscription, 'subscriptionQuery');
         }
     }
 
