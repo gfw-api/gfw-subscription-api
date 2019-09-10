@@ -3,9 +3,9 @@ const bunyan = require('bunyan');
 
 const streams = [
     {
-    //     stream: process.stdout,
-    //     level: config.get('logger.level') || 'debug'
-    // }, {
+        stream: process.stdout,
+        level: config.get('logger.level') || 'debug'
+    }, {
         stream: process.stderr,
         level: 'warn'
     },
