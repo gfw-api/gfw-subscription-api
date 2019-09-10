@@ -18,6 +18,13 @@ class UrlService {
             path = '';
         }
         logger.info('config', config.get('rw.flagshipUrl'));
+
+        if (!['production', 'staging', 'preproduction'].includes(env)) {
+            logger.warn(`invalid env requested: ${env}. Overriding with staging`);
+
+            env = 'staging';
+        }
+
         return config.get(`rw.flagshipUrl.${env}`) + path;
     }
 
