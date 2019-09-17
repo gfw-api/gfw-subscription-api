@@ -48,7 +48,7 @@ class SubscriptionService {
     }
 
     static sendConfirmation(subscription) {
-        logger.info('Sending confirmation email', subscription);
+        logger.info('Sending confirmation email', subscription.toJSON());
         if (subscription.resource.type === 'EMAIL') {
             let language = subscription.language.toLowerCase().replace(/_/g, '-');
             let application = subscription.application || 'gfw';

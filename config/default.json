@@ -13,7 +13,6 @@
   },
   "apiGateway": {
     "uri": "http://192.168.1.109:8000/gateway/service",
-    "queue": "redis://mymachine:6379",
     "externalUrl": "http://mymachine:9000",
     "queueName": "mail",
     "queueProvider": "redis",

@@ -270,7 +270,7 @@ const isAdmin = function* (next) {
     yield next;
 };
 
-const existSubscription = isForUser => function* (next) {
+const subscriptionExists = isForUser => function* (next) {
     const { id } = this.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -331,13 +331,13 @@ const isLoggedUserRequired = (from = 'query') => function* (next) {
 
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', isLoggedUserRequired(), SubscriptionsRouter.getSubscriptions);
-router.get('/:id', isLoggedUserRequired(), existSubscription(true), SubscriptionsRouter.getSubscription); // not done
-router.get('/:id/data', isLoggedUserRequired(), existSubscription(true), SubscriptionsRouter.getSubscriptionData);
-router.get('/:id/confirm', existSubscription(), SubscriptionsRouter.confirmSubscription);
-router.get('/:id/send_confirmation', isLoggedUserRequired(), existSubscription(true), SubscriptionsRouter.sendConfirmation);
-router.get('/:id/unsubscribe', existSubscription(), SubscriptionsRouter.unsubscribeSubscription);
-router.patch('/:id', isLoggedUserRequired('body'), existSubscription(true), SubscriptionsRouter.updateSubscription);
-router.delete('/:id', isLoggedUserRequired(), existSubscription(true), SubscriptionsRouter.deleteSubscription);
+router.get('/:id', isLoggedUserRequired(), subscriptionExists(true), SubscriptionsRouter.getSubscription); // not done
+router.get('/:id/data', isLoggedUserRequired(), subscriptionExists(true), SubscriptionsRouter.getSubscriptionData);
+router.get('/:id/confirm', subscriptionExists(), SubscriptionsRouter.confirmSubscription);
+router.get('/:id/send_confirmation', isLoggedUserRequired(), subscriptionExists(true), SubscriptionsRouter.sendConfirmation);
+router.get('/:id/unsubscribe', subscriptionExists(), SubscriptionsRouter.unsubscribeSubscription);
+router.patch('/:id', isLoggedUserRequired('body'), subscriptionExists(true), SubscriptionsRouter.updateSubscription);
+router.delete('/:id', isLoggedUserRequired(), subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
 router.get('/statistics-group', isAdmin, SubscriptionsRouter.statisticsGroup);

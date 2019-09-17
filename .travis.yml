@@ -3,8 +3,8 @@ services:
   - mongodb
   - redis
 node_js:
-  - "7.6"
-  - "11.6"
+  - "node"
+  - "12.9"
 cache:
   directories:
   - "node_modules"
