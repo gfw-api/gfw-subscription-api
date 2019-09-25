@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
-const { getTestServer } = require('./src/test-server');
+const { getTestServer } = require('./utils/test-server');
 const {
     createAuthCases, ensureCorrectError, getDateWithDecreaseYear, getDateWithIncreaseYear
-} = require('./src/utils');
-const { ROLES, MOCK_USER_IDS, MOCK_USERS } = require('./src/test.constants');
-const { createMockUsers } = require('./src/mock');
-const { createSubscriptions, getUserAsSingleObject } = require('./src/helpers/statistic');
+} = require('./utils/helpers');
+const { ROLES, MOCK_USER_IDS, MOCK_USERS } = require('./utils/test.constants');
+const { createMockUsers } = require('./utils/mock');
+const { createSubscriptions, getUserAsSingleObject } = require('./utils/helpers/statistic');
 const chai = require('chai');
 
 const should = chai.should();

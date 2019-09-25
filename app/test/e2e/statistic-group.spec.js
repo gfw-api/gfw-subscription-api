@@ -2,13 +2,13 @@
 const nock = require('nock');
 const Subscription = require('models/subscription');
 const Statistic = require('models/stadistic');
-const { getTestServer } = require('./src/test-server');
+const { getTestServer } = require('./utils/test-server');
 const {
     createAuthCases, ensureCorrectError, getDateWithDecreaseYear, getDateWithIncreaseYear
-} = require('./src/utils');
-const { ROLES } = require('./src/test.constants');
-const { createMockUsersWithRange } = require('./src/mock');
-const { createSubscriptions, createExpectedGroupStatistics } = require('./src/helpers/statistic');
+} = require('./utils/helpers');
+const { ROLES } = require('./utils/test.constants');
+const { createMockUsersWithRange } = require('./utils/mock');
+const { createSubscriptions, createExpectedGroupStatistics } = require('./utils/helpers/statistic');
 const chai = require('chai');
 
 const should = chai.should();

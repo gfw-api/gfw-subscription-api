@@ -2,11 +2,11 @@
 const nock = require('nock');
 const Subscription = require('models/subscription');
 const { omit } = require('lodash');
-const { createRequest } = require('./src/test-server');
-const { MOCK_USER_IDS, ROLES } = require('./src/test.constants');
+const { createRequest } = require('./utils/test-server');
+const { MOCK_USER_IDS, ROLES } = require('./utils/test.constants');
 const {
     ensureCorrectError, createSubInDB, getUUID, createAuthCases
-} = require('./src/utils');
+} = require('./utils/helpers');
 const chai = require('chai');
 
 const should = chai.should();

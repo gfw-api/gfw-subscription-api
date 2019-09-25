@@ -2,7 +2,7 @@ const chai = require('chai');
 const nock = require('nock');
 const config = require('config');
 const co = require('co');
-const { getTestServer } = require('./src/test-server');
+const { getTestServer } = require('./utils/test-server');
 const taskConfig = require('../../../config/cron.json');
 const moment = require('moment');
 const Subscription = require('models/subscription');
@@ -11,8 +11,8 @@ const fs = require('fs');
 const path = require('path');
 const AsyncClient = require('vizz.async-client');
 
-const { createSubscription } = require('./src/utils');
-const { ROLES } = require('./src/test.constants');
+const { createSubscription } = require('./utils/helpers');
+const { ROLES } = require('./utils/test.constants');
 
 const AlertQueue = require('../../src/queues/alertQueue');
 nock.disableNetConnect();

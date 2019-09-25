@@ -3,13 +3,13 @@ const nock = require('nock');
 const { expect } = require('chai');
 const Subscription = require('models/subscription');
 const { omit } = require('lodash');
-const { getTestServer } = require('./src/test-server');
+const { getTestServer } = require('./utils/test-server');
 const {
     MOCK_USER_IDS, TEST_SUBSCRIPTIONS, SUBSCRIPTION_TO_UPDATE, ROLES
-} = require('./src/test.constants');
+} = require('./utils/test.constants');
 const {
     ensureCorrectError, createSubInDB, getUUID, createAuthCases
-} = require('./src/utils');
+} = require('./utils/helpers');
 const chai = require('chai');
 
 const should = chai.should();
