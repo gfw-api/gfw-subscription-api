@@ -6,13 +6,13 @@ const {
     getUUID,
     createAuthCases,
     ensureCorrectError,
-} = require('./src/utils');
+} = require('./utils/helpers');
 const {
     createMockDataset,
     createMockQuery
-} = require('./src/mock');
-const { ROLES, MOCK_FILE } = require('./src/test.constants');
-const { createRequest } = require('./src/test-server');
+} = require('./utils/mock');
+const { ROLES, MOCK_FILE } = require('./utils/test.constants');
+const { createRequest } = require('./utils/test-server');
 const chai = require('chai');
 
 const should = chai.should();

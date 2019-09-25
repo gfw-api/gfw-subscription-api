@@ -14,7 +14,7 @@ let asyncClient = new AsyncClient(AsyncClient.REDIS, {
 
 const getTask = function (task) {
     co(function* () {
-        logger.info('Publishing ' + task.dataset);
+        logger.info('[cronLoader] Publishing ' + task.dataset);
         if (task.dataset === 'dataset') {
             asyncClient.emit(JSON.stringify({
                 layer_slug: task.dataset
@@ -25,11 +25,16 @@ const getTask = function (task) {
             logger.info(`Checking if dataset '${task.dataset}' was updated`);
             let result = yield UpdateService.checkUpdated(task.dataset);
             if (result.updated) {
-                asyncClient.emit(JSON.stringify({
+
+                logger.info(`[cronLoader] Emitting message: ${message} for dataset ${task.dataset}`);
+
+                const message = JSON.stringify({
                     layer_slug: task.dataset,
                     begin_date: new Date(result.beginDate),
                     end_date: new Date(result.endDate)
-                }));
+                });
+
+                asyncClient.emit(message);
             } else {
                 logger.info(`${task.dataset} was not updated`);
             }
@@ -37,11 +42,15 @@ const getTask = function (task) {
             let beginData = moment().subtract(task.gap.value, task.gap.measure).subtract(task.periodicity.value, task.periodicity.measure).toDate();
             let endDate = moment().subtract(task.gap.value, task.gap.measure).toDate();
 
-            asyncClient.emit(JSON.stringify({
+            const message = JSON.stringify({
                 layer_slug: task.dataset,
                 begin_date: beginData,
                 end_date: endDate
-            }));
+            });
+
+            logger.info(`[cronLoader] Emitting message: ${message} for dataset ${task.dataset}`);
+
+            asyncClient.emit(message);
         }
     }).then(function () {
     }, function (err) {
@@ -57,7 +66,11 @@ const load = function () {
 
         logger.info('Creating cron task for ' + task.name);
 
-        return new CronJob(task.crontab, getTask(task), null, true, 'Europe/London');
+        const onDone = () => {
+            logger.info(`[cronLoader] cron task ${task.name} finished successfully`)
+        };
+
+        return new CronJob(task.crontab, getTask(task), onDone, true, 'Europe/London');
     });
 };
 

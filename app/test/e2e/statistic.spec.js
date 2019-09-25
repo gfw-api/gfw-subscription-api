@@ -5,16 +5,16 @@ const Statistic = require('models/stadistic');
 const {
     ROLES,
     MOCK_USERS,
-} = require('./src/test.constants');
-const { getTestServer } = require('./src/test-server');
+} = require('./utils/test.constants');
+const { getTestServer } = require('./utils/test-server');
 const {
     createAuthCases,
     ensureCorrectError,
     getDateWithDecreaseYear,
     getDateWithIncreaseYear,
-} = require('./src/utils');
-const { createMockUsersWithRange } = require('./src/mock');
-const { createSubscriptions, createExpectedGroupStatistics, createStatistics } = require('./src/helpers/statistic');
+} = require('./utils/helpers');
+const { createMockUsersWithRange } = require('./utils/mock');
+const { createSubscriptions, createExpectedGroupStatistics, createStatistics } = require('./utils/helpers/statistic');
 const chai = require('chai');
 
 const should = chai.should();
