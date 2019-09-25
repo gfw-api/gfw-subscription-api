@@ -12,6 +12,7 @@ const CHANNEL = 'subscription_alerts';
 
 class AlertQueue {
     constructor() {
+        logger.info('Initializing AlertQueue listener');
         logger.debug('Initializing queue with provider %s ', `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`);
         this.asyncClient = new AsyncClient(AsyncClient.REDIS, {
             url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
@@ -24,7 +25,9 @@ class AlertQueue {
     }
 
     * processMessage(channel, message) {
-        logger.info('Processing alert');
+        logger.info('Processing alert message');
+        logger.debug(`Processing alert message: ${message}`);
+
         if (JSON.parse(message).layer_slug === 'dataset') {
             yield DatasetService.processSubscriptions();
             return;
