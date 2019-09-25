@@ -133,20 +133,15 @@ class SubscriptionsRouter {
     static* updateSubscription() {
         logger.info('Update subscription by id %s', this.params.id);
 
-        try {
-            const message = SubscriptionsRouter.validateSubscription(this.request.body);
-            if (message) {
-                this.throw(400, message);
-                return;
-            }
-
-            this.body = yield SubscriptionService.updateSubscription(
-                this.params.id, this.request.body.loggedUser.id, this.request.body
-            );
-        } catch (err) {
-            logger.error(err);
-            throw err;
+        const message = SubscriptionsRouter.validateSubscription(this.request.body);
+        if (message) {
+            this.throw(400, message);
+            return;
         }
+
+        this.body = yield SubscriptionService.updateSubscription(
+            this.params.id, this.request.body.loggedUser.id, this.request.body
+        );
     }
 
     static* unsubscribeSubscription() {

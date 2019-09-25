@@ -1,4 +1,4 @@
-const { createSubInDB, createStatistic, getUUID } = require('../utils');
+const { createSubInDB, createStatistic, getUUID } = require('../helpers');
 const { TEST_SUBSCRIPTIONS, MOCK_USER_IDS, MOCK_USERS } = require('../test.constants');
 
 // creating five subscriptions which are in searched range, and one which is not.

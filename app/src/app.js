@@ -104,7 +104,11 @@ async function init() {
 
                 if (config.get('settings.loadCron') && config.get('settings.loadCron') !== 'false') {
                     cronLoader.load();
-                }
+                    logger.info('[app] Cron tasks loaded')
+                } else {
+                    logger.info('[app] Skipping cron loading per configuration')
+                };
+
             });
 
             logger.info('Server started in ', process.env.PORT);

@@ -6,10 +6,10 @@ const {
     ensureCorrectError,
     createAuthCases,
     getUUID,
-} = require('./src/utils');
-const { createMockSendConfirmationSUB } = require('./src/mock');
-const { ROLES } = require('./src/test.constants');
-const { createRequest } = require('./src/test-server');
+} = require('./utils/helpers');
+const { createMockSendConfirmationSUB } = require('./utils/mock');
+const { ROLES } = require('./utils/test.constants');
+const { createRequest } = require('./utils/test-server');
 const chai = require('chai');
 
 const should = chai.should();
