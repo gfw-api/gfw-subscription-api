@@ -8,7 +8,8 @@ module.exports = (function () {
     const logger = require('logger');
     const mount = require('koa-mount');
 
-    const loadAPI = function (app, path, pathApi) {
+    const loadRoutes = function (app, path = routersPath, pathApi) {
+        logger.debug('Loading routes...');
         const routesFiles = fs.readdirSync(path);
         let existIndexRouter = false;
         routesFiles.forEach(function (file) {
@@ -35,7 +36,7 @@ module.exports = (function () {
             } else {
                 // is folder
                 const newPathAPI = pathApi ? (pathApi + '/' + file) : '/' + file;
-                loadAPI(app, newPath, newPathAPI);
+                loadRoutes(app, newPath, newPathAPI);
             }
         });
         if (existIndexRouter) {
@@ -48,9 +49,11 @@ module.exports = (function () {
                 app.use(require(newPath).middleware());
             }
         }
+
+        logger.debug('Loaded routes correctly!');
     };
 
-    const loadQueue = function (app, path) {
+    const loadQueues = function (app, path = queuesPath) {
         logger.debug('Loading queues...');
         const routesFiles = fs.readdirSync(path);
         routesFiles.forEach(function (file) {
@@ -68,20 +71,15 @@ module.exports = (function () {
                 }
             } else {
                 // is folder
-                loadQueue(app, newPath);
+                loadQueues(app, newPath);
             }
         });
-    };
-
-    const loadRoutes = function (app) {
-        logger.debug('Loading routes...');
-        loadAPI(app, routersPath);
-        loadQueue(app, queuesPath);
         logger.debug('Loaded routes correctly!');
     };
 
     return {
-        loadRoutes: loadRoutes
+        loadRoutes,
+        loadQueues
     };
 
 }());

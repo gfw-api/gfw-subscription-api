@@ -1,6 +1,6 @@
 const chai = require('chai');
 const nock = require('nock');
-const AsyncClient = require('vizz.async-client');
+const redis = require("redis");
 const config = require('config');
 const { getTestServer } = require('./utils/test-server');
 const cronLoader = require('../../src/cronLoader');
@@ -14,12 +14,10 @@ chai.use(require('chai-datetime'));
 
 let requester;
 
-const asyncClientSubscriber = new AsyncClient(AsyncClient.REDIS, {
-    url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
-});
-const CHANNEL = 'subscription_alerts';
-const channelSubscribe = asyncClientSubscriber.toChannel(CHANNEL);
-channelSubscribe.subscribe();
+const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
+
+const redisClient = redis.createClient({ url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}` });
+redisClient.subscribe(CHANNEL);
 
 
 describe('CronLoader task queueing', () => {
@@ -34,11 +32,11 @@ describe('CronLoader task queueing', () => {
     });
 
     beforeEach(() => {
-        channelSubscribe.client.removeAllListeners('message');
+        redisClient.removeAllListeners('message');
     });
 
     it('Test viirs-active-fires cron task queues the expected message', async () => {
-        channelSubscribe.on('message', function* (channel, message) {
+        redisClient.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('viirs-active-fires');
@@ -89,7 +87,7 @@ describe('CronLoader task queueing', () => {
                 ]
             });
 
-        channelSubscribe.on('message', function* (channel, message) {
+        redisClient.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('imazon-alerts');
@@ -112,7 +110,7 @@ describe('CronLoader task queueing', () => {
     });
 
     it('Test story cron task queues the expected message', async () => {
-        channelSubscribe.on('message', function* (channel, message) {
+        redisClient.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('story');
@@ -135,7 +133,7 @@ describe('CronLoader task queueing', () => {
     });
 
     it('Test forma-alerts cron task queues the expected message', async () => {
-        channelSubscribe.on('message', function* (channel, message) {
+        redisClient.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('forma-alerts');
@@ -158,7 +156,7 @@ describe('CronLoader task queueing', () => {
     });
 
     it('Test dataset cron task queues the expected message', async () => {
-        channelSubscribe.on('message', function* (channel, message) {
+        redisClient.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('dataset');
@@ -173,7 +171,7 @@ describe('CronLoader task queueing', () => {
     });
 
     it('Test forma250GFW cron task queues the expected message', async () => {
-        channelSubscribe.on('message', function* (channel, message) {
+        redisClient.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('forma250GFW');
@@ -196,7 +194,7 @@ describe('CronLoader task queueing', () => {
     });
 
     afterEach(() => {
-        channelSubscribe.client.removeAllListeners('message');
+        redisClient.removeAllListeners('message');
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
