@@ -73,7 +73,9 @@ const load = function () {
             logger.info(`[cronLoader] cron task ${task.name} finished successfully`)
         };
 
-        return new CronJob(task.crontab, getTask(task), onDone, true, 'Europe/London');
+        return new CronJob(task.crontab, () => {
+            getTask(task)
+        }, onDone, true, 'Europe/London');
     });
 };
 
