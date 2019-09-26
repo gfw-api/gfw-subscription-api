@@ -35,7 +35,7 @@
     "co-request": "^1.0.0",
     "co-sleep": "0.0.1",
     "config": "1.19.0",
-    "cron": "~1.1.0",
+    "cron": "^1.7.2",
     "ct-register-microservice-node": "^2.1.7",
     "jsonapi-serializer": "^3.6.5",
     "julian": "0.2.0",
