@@ -13,14 +13,15 @@ const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
 class AlertQueue {
     constructor() {
         logger.info('[AlertQueue] Initializing AlertQueue listener');
-        logger.debug('[AlertQueue] Initializing queue with provider %s ', `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`);
+        logger.debug('[AlertQueue] Initializing queue with provider %s ', config.get('redis.url'));
 
-        const redisClient = redis.createClient({ url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}` });
+        const redisClient = redis.createClient({ url: config.get('redis.url') });
+        redisClient.subscribe(CHANNEL);
+
         redisClient.on('message', this.processMessage.bind(this));
         // redisClient.on('message', (channel, message) => {
         //     console.log("sub channel " + channel + ": " + message);
         // });
-        redisClient.subscribe(CHANNEL);
 
         logger.info('[AlertQueue] AlertQueue listener initialized');
     }

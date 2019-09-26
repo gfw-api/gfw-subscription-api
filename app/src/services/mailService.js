@@ -8,7 +8,7 @@ class MailService {
         logger.debug('[MailService] Initializing mail queue');
 
         this.redisClient = redis.createClient({
-            url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
+            url: config.get('redis.url')
         });
     }
 

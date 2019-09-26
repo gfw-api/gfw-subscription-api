@@ -100,6 +100,6 @@ It is necessary to define these environment variables:
 
 * API_GATEWAY_URI => Gateway Service API URL
 * NODE_ENV => Environment (prod, staging, dev)
-* API_GATEWAY_QUEUE_URL => Url of async queue
+* REDIS_URL => Url of async queue
 * API_GATEWAY_QUEUE_PROVIDER => redis (only support redis)
 * SELF_REGISTRY => on/off to set auto registry in API Gateway
