@@ -9,7 +9,7 @@ services:
       API_GATEWAY_EXTERNAL_URL: http://127.0.0.1:9000
       API_GATEWAY_QUEUE_NAME: mail
       API_GATEWAY_QUEUE_PROVIDER: redis
-      API_GATEWAY_QUEUE_URL: redis://redis:6379
+      REDIS_URL: redis://redis:6379
       API_GATEWAY_URL: http://mymachine:9000
       API_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
       API_URL: http://mymachine:9000

@@ -4,19 +4,20 @@ const moment = require('moment');
 const CronJob = require('cron').CronJob;
 const config = require('config');
 const UpdateService = require('services/updateService');
-const AsyncClient = require('vizz.async-client');
+const redis = require("redis");
 const taskConfig = require('../../config/cron.json');
 
-const CHANNEL = 'subscription_alerts';
-let asyncClient = new AsyncClient(AsyncClient.REDIS, {
-    url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
-}).toChannel(CHANNEL);
+const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
+
+let redisClient = redis.createClient({
+    url: config.get('redis.url')
+});
 
 const getTask = function (task) {
     co(function* () {
         logger.info('[cronLoader] Publishing ' + task.dataset);
         if (task.dataset === 'dataset') {
-            asyncClient.emit(JSON.stringify({
+            redisClient.publish(CHANNEL, JSON.stringify({
                 layer_slug: task.dataset
             }));
             return;
@@ -34,7 +35,7 @@ const getTask = function (task) {
                     end_date: new Date(result.endDate)
                 });
 
-                asyncClient.emit(message);
+                redisClient.publish(CHANNEL, message);
             } else {
                 logger.info(`${task.dataset} was not updated`);
             }
@@ -50,7 +51,9 @@ const getTask = function (task) {
 
             logger.info(`[cronLoader] Emitting message: ${message} for dataset ${task.dataset}`);
 
-            asyncClient.emit(message);
+            const emissionResult = redisClient.publish(CHANNEL, message);
+
+            return emissionResult;
         }
     }).then(function () {
     }, function (err) {
@@ -70,7 +73,9 @@ const load = function () {
             logger.info(`[cronLoader] cron task ${task.name} finished successfully`)
         };
 
-        return new CronJob(task.crontab, getTask(task), onDone, true, 'Europe/London');
+        return new CronJob(task.crontab, () => {
+            getTask(task)
+        }, onDone, true, 'Europe/London');
     });
 };
 

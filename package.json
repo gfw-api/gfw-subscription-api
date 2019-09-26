@@ -35,7 +35,7 @@
     "co-request": "^1.0.0",
     "co-sleep": "0.0.1",
     "config": "1.19.0",
-    "cron": "~1.1.0",
+    "cron": "^1.7.2",
     "ct-register-microservice-node": "^2.1.7",
     "jsonapi-serializer": "^3.6.5",
     "julian": "0.2.0",
@@ -52,11 +52,11 @@
     "moment": "^2.13.0",
     "mongoose": "4.13.18",
     "mustache": "^2.2.1",
+    "redis": "^2.8.0",
     "request-promise": "^4.2.4",
     "sleep": "^6.1.0",
     "turf-explode": "^3.0.12",
-    "url": "0.11.0",
-    "vizz.async-client": "^2.0.0"
+    "url": "0.11.0"
   },
   "devDependencies": {
     "co-mocha": "^1.2.2",

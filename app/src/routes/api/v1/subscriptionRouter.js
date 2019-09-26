@@ -12,19 +12,18 @@ const MockService = require('services/mockService');
 const GenericError = require('errors/genericError');
 const config = require('config');
 const { get } = require('lodash');
+const redis = require("redis");
 
 const router = new Router({
     prefix: '/subscriptions'
 });
 const mongoose = require('mongoose');
 
-const CHANNEL = 'subscription_alerts';
-const AsyncClient = require('vizz.async-client');
+const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
 
-let asyncClient = new AsyncClient(AsyncClient.REDIS, {
-    url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
-});
-asyncClient = asyncClient.toChannel(CHANNEL);
+const redisClient = redis.createClient({ url: config.get('redis.url') });
+
+redisClient.subscribe(CHANNEL);
 
 class SubscriptionsRouter {
 
@@ -183,10 +182,10 @@ class SubscriptionsRouter {
         const { dataset } = this.params;
         logger.info(`Notify '${dataset}' was updated`);
         const result = yield UpdateService.checkUpdated(dataset);
-        logger.info(`Checking if '${dataset}' was updating`);
+        logger.info(`Checking if '${dataset}' was updated`);
 
         if (result.updated) {
-            asyncClient.emit(JSON.stringify({
+            redisClient.publish(CHANNEL, JSON.stringify({
                 layer_slug: dataset,
                 begin_date: new Date(result.beginDate),
                 end_date: new Date(result.endDate)

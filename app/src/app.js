@@ -75,6 +75,9 @@ async function init() {
             //load routes
             loader.loadRoutes(app);
 
+            //load queues
+            loader.loadQueues(app);
+
             //Instance of http module
             const server = require('http').Server(app.callback());
 

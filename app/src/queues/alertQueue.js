@@ -1,6 +1,6 @@
 const config = require('config');
 const logger = require('logger');
-const AsyncClient = require('vizz.async-client');
+const redis = require("redis");
 
 const SubscriptionService = require('services/subscriptionService');
 const DatasetService = require('services/datasetService');
@@ -8,25 +8,27 @@ const MessageProcessor = require('services/messageProcessor');
 const EmailPublisher = require('publishers/emailPublisher');
 
 const STATS_MAILS = config.get('mails.statsRecipients').split(',');
-const CHANNEL = 'subscription_alerts';
+const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
 
 class AlertQueue {
     constructor() {
-        logger.info('Initializing AlertQueue listener');
-        logger.debug('Initializing queue with provider %s ', `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`);
-        this.asyncClient = new AsyncClient(AsyncClient.REDIS, {
-            url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
-        });
+        logger.info('[AlertQueue] Initializing AlertQueue listener');
+        logger.debug('[AlertQueue] Initializing queue with provider %s ', config.get('redis.url'));
 
+        const redisClient = redis.createClient({ url: config.get('redis.url') });
+        redisClient.subscribe(CHANNEL);
 
-        const channel = this.asyncClient.toChannel(CHANNEL);
-        channel.on('message', this.processMessage.bind(this));
-        channel.subscribe();
+        redisClient.on('message', this.processMessage.bind(this));
+        // redisClient.on('message', (channel, message) => {
+        //     console.log("sub channel " + channel + ": " + message);
+        // });
+
+        logger.info('[AlertQueue] AlertQueue listener initialized');
     }
 
     * processMessage(channel, message) {
-        logger.info('Processing alert message');
-        logger.debug(`Processing alert message: ${message}`);
+        logger.info('[AlertQueue] Processing alert message');
+        logger.debug(`[AlertQueue] Processing alert message: ${message}`);
 
         if (JSON.parse(message).layer_slug === 'dataset') {
             yield DatasetService.processSubscriptions();
@@ -37,11 +39,11 @@ class AlertQueue {
             begin = MessageProcessor.getBeginDate(message),
             end = MessageProcessor.getEndDate(message);
 
-        logger.debug('Params in message', layerSlug, begin, end);
+        logger.debug('[AlertQueue] Params in message', layerSlug, begin, end);
         let subscriptions = yield SubscriptionService.getSubscriptionsByLayer(
             layerSlug);
-        logger.debug('Subscriptions obtained', subscriptions);
-        logger.info('Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
+        logger.debug('[AlertQueue] Subscriptions obtained', subscriptions);
+        logger.info('[AlertQueue] Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
         try {
             let mailCounter = 0;
             let users = [];
