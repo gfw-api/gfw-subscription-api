@@ -9,7 +9,7 @@ const Subscription = require('models/subscription');
 const Stadistic = require('models/stadistic');
 const fs = require('fs');
 const path = require('path');
-const AsyncClient = require('vizz.async-client');
+const redis = require("redis");
 
 const { createSubscription } = require('./utils/helpers');
 const { ROLES } = require('./utils/test.constants');
@@ -23,12 +23,9 @@ chai.use(require('chai-datetime'));
 
 let requester;
 
-const asyncClientSubscriber = new AsyncClient(AsyncClient.REDIS, {
-    url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
-});
 const CHANNEL = config.get('apiGateway.queueName');
-const channelSubscribe = asyncClientSubscriber.toChannel(CHANNEL);
-channelSubscribe.subscribe();
+const redisClient = redis.createClient({ url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}` });
+redisClient.subscribe(CHANNEL);
 
 describe('AlertQueue ', () => {
 
@@ -377,7 +374,7 @@ describe('AlertQueue ', () => {
             should.fail(error);
         });
 
-        channelSubscribe.on('message', function* (channel, message) {
+        redisClient.on('message', function* (channel, message) {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('template');
@@ -441,7 +438,7 @@ describe('AlertQueue ', () => {
 
 
     afterEach(() => {
-        channelSubscribe.client.removeAllListeners('message');
+        redisClient.removeAllListeners('message');
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);

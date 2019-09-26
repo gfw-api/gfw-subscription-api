@@ -52,11 +52,11 @@
     "moment": "^2.13.0",
     "mongoose": "4.13.18",
     "mustache": "^2.2.1",
+    "redis": "^2.8.0",
     "request-promise": "^4.2.4",
     "sleep": "^6.1.0",
     "turf-explode": "^3.0.12",
-    "url": "0.11.0",
-    "vizz.async-client": "^2.0.0"
+    "url": "0.11.0"
   },
   "devDependencies": {
     "co-mocha": "^1.2.2",
