@@ -90,7 +90,7 @@ spec:
             value: redis
           - name: API_GATEWAY_QUEUE_NAME
             value: mail_prod
-          - name: API_GATEWAY_QUEUE_URL
+          - name: REDIS_URL
             valueFrom:
                 secretKeyRef:
                   name: dbsecrets
@@ -102,14 +102,5 @@ spec:
 
         ports:
           - containerPort: 3600
-
-      - name: redis
-        image: redis
-        ports:
-         - containerPort: 6379
-        resources:
-         requests:
-           memory: "0Mi"
-           cpu: "0m"
 
       restartPolicy: Always

@@ -16,12 +16,10 @@
   "apiGateway": {
     "uri": "API_GATEWAY_URI",
     "externalUrl": "API_GATEWAY_EXTERNAL_URL",
-    "queueUrl": "API_GATEWAY_QUEUE_URL",
     "queueName": "API_GATEWAY_QUEUE_NAME"
   },
-  "redisLocal": {
-    "host": "REDIS_PORT_6379_TCP_ADDR",
-    "port": "REDIS_PORT_6379_TCP_PORT"
+  "redis": {
+    "url": "REDIS_URL"
   },
   "mongodb": {
     "host": "MONGO_PORT_27017_TCP_ADDR",

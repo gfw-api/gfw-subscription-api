@@ -10,7 +10,7 @@ const taskConfig = require('../../config/cron.json');
 const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
 
 let redisClient = redis.createClient({
-    url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}`
+    url: config.get('redis.url')
 });
 
 const getTask = function (task) {

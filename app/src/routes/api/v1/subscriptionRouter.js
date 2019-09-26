@@ -21,7 +21,7 @@ const mongoose = require('mongoose');
 
 const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
 
-const redisClient = redis.createClient({ url: `redis://${config.get('redisLocal.host')}:${config.get('redisLocal.port')}` });
+const redisClient = redis.createClient({ url: config.get('redis.url') });
 
 redisClient.subscribe(CHANNEL);
 

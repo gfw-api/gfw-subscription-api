@@ -14,7 +14,7 @@ services:
       NODE_ENV: dev
       CARTODB_USER: wri-01
       FLAGSHIP_URL: http://staging.globalforestwatch.org
-      API_GATEWAY_QUEUE_URL: redis://redis:6379
+      REDIS_URL: redis://redis:6379
       API_GATEWAY_QUEUE_PROVIDER: redis
       API_GATEWAY_QUEUE_NAME: mail
       REDIS_PORT_6379_TCP_ADDR: redis
