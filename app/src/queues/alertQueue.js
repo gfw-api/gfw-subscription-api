@@ -1,6 +1,7 @@
 const config = require('config');
 const logger = require('logger');
 const redis = require("redis");
+const co = require("co");
 
 const SubscriptionService = require('services/subscriptionService');
 const DatasetService = require('services/datasetService');
@@ -18,10 +19,7 @@ class AlertQueue {
         const redisClient = redis.createClient({ url: config.get('redis.url') });
         redisClient.subscribe(CHANNEL);
 
-        redisClient.on('message', this.processMessage.bind(this));
-        // redisClient.on('message', (channel, message) => {
-        //     console.log("sub channel " + channel + ": " + message);
-        // });
+        redisClient.on('message', co.wrap(this.processMessage.bind(this)));
 
         logger.info('[AlertQueue] AlertQueue listener initialized');
     }
