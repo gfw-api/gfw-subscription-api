@@ -103,7 +103,7 @@ class SubscriptionsRouter {
 
                 this.redirect(UrlService.flagshipUrlRW('/myrw/areas', subscription.data.attributes.env));
             } else {
-                this.redirect(UrlService.flagshipUrl('/my_gfw/subscriptions?subscription_confirmed=true'));
+                this.redirect(UrlService.flagshipUrl('/my-gfw'));
             }
         } catch (err) {
             logger.error(err);
@@ -123,7 +123,7 @@ class SubscriptionsRouter {
         try {
             SubscriptionService.sendConfirmation(subscription);
             logger.info('Redirect to ', this.headers.referer);
-            this.redirect(`${config.get('gfw.flagshipUrl')}/my_gfw/subscriptions`);
+            this.redirect(`${config.get('gfw.flagshipUrl')}/my-gfw`);
         } catch (err) {
             logger.error(err);
         }
@@ -156,7 +156,7 @@ class SubscriptionsRouter {
         }
         if (this.query.redirect) {
             this.redirect(UrlService.flagshipUrl(
-                '/my_gfw/subscriptions?unsubscription_confirmed=true'
+                '/my-gfw'
             ));
             return;
         }

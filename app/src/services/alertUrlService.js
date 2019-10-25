@@ -13,52 +13,43 @@ const ALLOWED_PARAMS = [
     'fit_to_geom'
 ];
 
-const getIso = function (subscription) {
-    let params = subscription.params || {};
-
-    if (params.iso && params.iso.country) {
-        let iso = params.iso.country;
-
-        if (params.iso.region) {
-            iso += `-${params.iso.region}`;
-        }
-
-        return iso;
-    } else {
-        return 'ALL';
-    }
-};
-
 class AlertUrlService {
 
     static generate(subscription, layer, begin, end) {
         let query = {
-            begin: moment(begin).format('YYYY-MM-DD'),
-            end: moment(end).format('YYYY-MM-DD'),
-            fit_to_geom: true
+            map: {
+                canBound: true,
+                datasets: [
+                    {
+                        dataset: 'fdc8dc1b-2728-4a79-b23f-b09485052b8d',
+                        layers: [
+                            '6f6798e6-39ec-4163-979e-182a74ca65ee',
+                            'c5d1e010-383a-4713-9aaa-44f728c0571c'
+                        ],
+                        boundary: true
+                    },
+                    {
+                        dataset: layer.dataset,
+                        layers: layer.layers,
+                        timelineParams: {
+                            startDate: moment(begin).format('YYYY-MM-DD'),
+                            endDate: moment(end).format('YYYY-MM-DD'),
+                            trimEndDate: moment(end).format('YYYY-MM-DD')
+                        }
+                    }
+                ]
+            },
+            mainMap: {
+                showAnalysis: true
+            }
         };
-        let iso = getIso(subscription);
 
-        if (subscription.params.geostore) {
-            query.geostore = subscription.params.geostore;
-        }
-        if (subscription.params.use) {
-            query.use = subscription.params.use;
-            query.useid = subscription.params.useid;
-            iso = 'ALL';
-        }
-        if (subscription.params.wdpaid) {
-            query.wdpaid = subscription.params.wdpaid;
-            iso = 'ALL';
-        }
-
-        let existingUrlParams = _.pick(subscription.params, ALLOWED_PARAMS);
+        const existingUrlParams = _.pick(subscription.params, ALLOWED_PARAMS);
         query = _.omitBy(Object.assign(query, existingUrlParams), _.isNil);
 
-        let baselayer = layer.name,
-            querystring = qs.stringify(query);
+        const querystring = qs.stringify(query);
 
-        return `${BASE_URL}/map/3/0/0/${iso}/grayscale/${baselayer}?${querystring}`;
+        return `${BASE_URL}/map/aoi/${subscription.id}?${querystring}`;
     }
 
 }

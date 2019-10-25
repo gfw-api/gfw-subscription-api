@@ -68,7 +68,7 @@ const decorateWithDates = function (results, begin, end) {
 
 const decorateWithLinks = function (results, subscription, layer, begin, end) {
     results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
-    results.subscriptions_url = UrlService.flagshipUrl('/my_gfw/subscriptions');
+    results.subscriptions_url = UrlService.flagshipUrl('/my-gfw');
     results.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
 
     return results;
