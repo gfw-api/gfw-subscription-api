@@ -436,17 +436,16 @@ describe('AlertQueue ', () => {
         statistic.should.have.property('createdAt').and.be.a('date');
     });
 
+    afterEach(async () => {
+        await Subscription.remove({}).exec();
+        await Stadistic.remove({}).exec();
 
-    afterEach(() => {
+
         redisClient.removeAllListeners('message');
+        process.removeAllListeners('unhandledRejection');
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
         }
-    });
-
-    after(() => {
-        Subscription.remove({}).exec();
-        Stadistic.remove({}).exec();
     });
 });

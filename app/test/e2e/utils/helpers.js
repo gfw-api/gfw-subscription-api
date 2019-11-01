@@ -1,5 +1,6 @@
 const Statistic = require('models/stadistic');
 const Subscription = require('models/subscription');
+const UrlService = require('services/urlService');
 const { ROLES } = require('./test.constants');
 
 const getUUID = () => Math.random().toString(36).substring(7);
@@ -92,6 +93,24 @@ const createAuthCases = (url, initMethod, providedRequester) => {
     };
 };
 
+const sleep = async ms => new Promise(res => setTimeout(res, ms));
+
+const validRedisMessage = (data = {}) => async (channel, message) => {
+    const { application, template } = data;
+
+    const subscription = await Subscription.findOne({});
+
+    const messageData = JSON.parse(message);
+
+    messageData.should.instanceOf(Object);
+    messageData.template.should.equal(template);
+    messageData.should.have.property('data');
+    messageData.data.confirmation_url.should.equal(UrlService.confirmationUrl(subscription));
+    messageData.recipients.should.instanceOf(Array).and.have.length(1);
+    messageData.recipients[0].address = subscription.resource.content;
+    messageData.sender.should.equal(application);
+};
+
 module.exports = {
     createSubscription,
     getUUID,
@@ -100,5 +119,7 @@ module.exports = {
     createStatistic,
     getDateWithIncreaseYear,
     getDateWithDecreaseYear,
-    createAuthCases
+    createAuthCases,
+    sleep,
+    validRedisMessage
 };
