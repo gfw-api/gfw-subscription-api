@@ -1,5 +1,3 @@
-'use strict';
-
 const imageService = require('services/imageService');
 
 class ImazonPresenter {

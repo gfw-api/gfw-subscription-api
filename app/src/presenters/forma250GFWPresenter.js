@@ -1,5 +1,3 @@
-'use strict';
-
 class Forma250GFWPresenter {
 
     static* transform(results, layer, subscription) {

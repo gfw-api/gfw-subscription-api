@@ -1,4 +1,3 @@
-'use strict';
 var logger = require('logger');
 const coRequest = require('co-request');
 

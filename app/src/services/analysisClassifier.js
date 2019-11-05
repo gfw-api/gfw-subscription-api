@@ -1,5 +1,3 @@
-'use strict';
-
 class AnalysisClassifier {
 
     static pathFor(subscription, layerSlug) {

@@ -1,5 +1,3 @@
-'use strict';
-
 var logger = require('logger');
 var config = require('config');
 var UrlService = require('services/urlService');

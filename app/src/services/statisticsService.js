@@ -1,4 +1,3 @@
-'use strict';
 const logger = require('logger');
 const SubscriptionModel = require('models/subscription');
 const StadisticModel = require('models/stadistic');

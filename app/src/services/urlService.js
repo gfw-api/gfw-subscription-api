@@ -1,5 +1,3 @@
-'use strict';
-
 var config = require('config');
 const BASE_URL = config.get('apiGateway.externalUrl');
 const logger = require('logger');

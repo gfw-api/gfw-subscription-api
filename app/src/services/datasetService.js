@@ -1,5 +1,3 @@
-'use strict';
-
 const Subscription = require('models/subscription');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const MailService = require('services/mailService');

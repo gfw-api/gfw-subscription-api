@@ -1,4 +1,3 @@
-'use strict';
 var config = require('config');
 var sleep = require('co-sleep');
 var request = require('co-request');

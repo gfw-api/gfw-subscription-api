@@ -1,5 +1,3 @@
-'use strict';
-
 class StoryPresenter {
 
     static* transform(results, layer, subscription) {
