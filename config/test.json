@@ -5,6 +5,13 @@
     "toFile": false,
     "dirLogFile": null
   },
+  "rw": {
+    "flagshipUrl": {
+      "staging": "RW_FLAGSHIP_URL_STAGING",
+      "production": "/test",
+      "preproduction": "RW_FLAGSHIP_URL_PREPRODUCTION"
+    }
+  },
   "settings": {
     "loadCron": false
   }
