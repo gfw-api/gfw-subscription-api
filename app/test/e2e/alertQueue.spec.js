@@ -439,6 +439,7 @@ describe('AlertQueue ', () => {
 
     afterEach(() => {
         redisClient.removeAllListeners('message');
+        process.removeAllListeners('unhandledRejection');
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);

@@ -50,15 +50,20 @@ describe('Confirm subscription endpoint', () => {
         ensureCorrectError(response.body, 'ID is not valid');
     });
 
-    it('Confirming subscription should redirect to flagship (happy case)', async () => {
+    it('Confirming subscription should redirect to flagship and update subscription to confirmed (happy case)', async () => {
         createMockConfirmSUB();
-        const createdSubscription = await new Subscription(createSubscription(ROLES.USER.id)).save();
+        const createdSubscription = await new Subscription(
+            createSubscription(ROLES.USER.id, null, { confirmed: false })
+        ).save();
         const response = await subscription
             .get(`/${createdSubscription._id}/confirm`)
             .query({ loggedUser: JSON.stringify(ROLES.USER), application: 'test' })
             .send();
         response.status.should.equal(200);
         response.body.mockMessage.should.equal('Should redirect');
+
+        const updateSubscription = await Subscription.findById(createdSubscription._id);
+        updateSubscription.confirmed.should.equal(true);
     });
 
     afterEach(() => {

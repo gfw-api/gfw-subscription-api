@@ -24,8 +24,8 @@ const createMockSendConfirmationSUB = () => nock(config.get('gfw.flagshipUrl'))
     .get('/my_gfw/subscriptions')
     .reply(200, { mockMessage: 'Should redirect' });
 
-const createMockConfirmSUB = () => nock(config.get('gfw.flagshipUrl'))
-    .get('/my_gfw/subscriptions?subscription_confirmed=true')
+const createMockConfirmSUB = (url = '/my_gfw/subscriptions?subscription_confirmed=true', host = config.get('gfw.flagshipUrl')) => nock(host)
+    .get(url)
     .reply(200, { mockMessage: 'Should redirect' });
 
 const createMockUnsubscribeSUB = () => nock(config.get('gfw.flagshipUrl'))
@@ -40,6 +40,10 @@ const createMockUsers = (userIDS) => {
     userIDS.map(userID => createMock(MOCK_USERS.find(user => user.id === userID)));
 };
 
+const createMockLatestDataset = (datasetID, date) => nock(process.env.CT_URL)
+    .get(`/v1/${datasetID}/latest`)
+    .reply(200, { data: {date} });
+
 module.exports = {
     createMockUnsubscribeSUB,
     createMockSendConfirmationSUB,
@@ -47,5 +51,6 @@ module.exports = {
     createMockConfirmSUB,
     createMockQuery,
     createMockUsersWithRange,
-    createMockUsers
+    createMockUsers,
+    createMockLatestDataset
 };
