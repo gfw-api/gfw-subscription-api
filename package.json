@@ -50,7 +50,7 @@
     "koa-validate": "0.2.11",
     "lodash": "^4.17.15",
     "moment": "^2.13.0",
-    "mongoose": "4.13.18",
+    "mongoose": "5.7.5",
     "mustache": "^2.2.1",
     "redis": "^2.8.0",
     "request-promise": "^4.2.4",
