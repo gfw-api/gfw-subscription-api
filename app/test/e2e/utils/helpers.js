@@ -93,8 +93,6 @@ const createAuthCases = (url, initMethod, providedRequester) => {
     };
 };
 
-const sleep = async ms => new Promise(res => setTimeout(res, ms));
-
 const validRedisMessage = (data = {}) => async (channel, message) => {
     const { application, template } = data;
 
@@ -120,6 +118,5 @@ module.exports = {
     getDateWithIncreaseYear,
     getDateWithDecreaseYear,
     createAuthCases,
-    sleep,
     validRedisMessage
 };

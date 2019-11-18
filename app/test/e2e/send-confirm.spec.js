@@ -4,12 +4,12 @@ const Subscription = require('models/subscription');
 const config = require('config');
 const chai = require('chai');
 const redis = require('redis');
+const { sleep } = require('sleep');
 const {
     createSubscription,
     ensureCorrectError,
     createAuthCases,
     getUUID,
-    sleep,
     validRedisMessage
 } = require('./utils/helpers');
 const { createMockSendConfirmationSUB } = require('./utils/mock');
@@ -63,7 +63,7 @@ describe('Send confirmation endpoint', () => {
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
 
-        await sleep(1000);
+        sleep(1);
     });
 
     it('Sending confirm subscription should return not found when subscription doesn\'t exist', async () => {
@@ -76,7 +76,7 @@ describe('Send confirmation endpoint', () => {
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
 
-        await sleep(1000);
+        sleep(1);
     });
 
     it('Sending confirm subscription should return bad request when id is not valid', async () => {
@@ -89,7 +89,7 @@ describe('Send confirmation endpoint', () => {
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'ID is not valid');
 
-        await sleep(1000);
+        sleep(1);
     });
 
     it('Sending confirmation subscription should redirect to flagship and emit a redis message (happy case)', async () => {
