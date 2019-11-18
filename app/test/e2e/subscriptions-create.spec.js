@@ -5,8 +5,9 @@ const Subscription = require('models/subscription');
 const config = require('config');
 const redis = require('redis');
 const { ROLES } = require('./utils/test.constants');
+const { sleep } = require('sleep');
 const { getTestServer } = require('./utils/test-server');
-const { sleep, validRedisMessage } = require('./utils/helpers');
+const { validRedisMessage } = require('./utils/helpers');
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -45,7 +46,7 @@ describe('Create subscriptions tests', function () {
         response.body.errors[0].should.have.property('status').and.equal(400);
         response.body.errors[0].should.have.property('detail').and.equal('Datasets or datasetsQuery required');
 
-        await sleep(1000);
+        sleep(1);
     });
 
     it('Create a subscription with no language should return a 400 error', async () => {
@@ -63,7 +64,7 @@ describe('Create subscriptions tests', function () {
         response.body.errors[0].should.have.property('status').and.equal(400);
         response.body.errors[0].should.have.property('detail').and.equal('Language required');
 
-        await sleep(1000);
+        sleep(1);
     });
 
     it('Create a subscription with no resource should return a 400 error', async () => {
@@ -82,7 +83,7 @@ describe('Create subscriptions tests', function () {
         response.body.errors[0].should.have.property('status').and.equal(400);
         response.body.errors[0].should.have.property('detail').and.equal('Resource required');
 
-        await sleep(1000);
+        sleep(1);
     });
 
     it('Create a subscription with no params should return a 400 error', async () => {
@@ -105,7 +106,7 @@ describe('Create subscriptions tests', function () {
         response.body.errors[0].should.have.property('status').and.equal(400);
         response.body.errors[0].should.have.property('detail').and.equal('Params required');
 
-        await sleep(1000);
+        sleep(1);
     });
 
     it('Create a subscription with the basic required fields should return a 200, create a subscription and emit a redis message (happy Case)', async () => {
@@ -281,14 +282,14 @@ describe('Create subscriptions tests', function () {
         responseSubscription.attributes.should.have.property('params').and.deep.equal(subscriptionOne.params);
         responseSubscription.attributes.resource.should.have.property('type').and.equal(subscriptionOne.resource.type);
 
-        await sleep(1000);
+        sleep(1);
     });
 
-    afterEach(() => {
+    afterEach(async () => {
         process.removeAllListeners('unhandledRejection');
         this.channel.removeAllListeners('message');
 
-        Subscription.remove({}).exec();
+        await Subscription.remove({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
