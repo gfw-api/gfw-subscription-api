@@ -31,7 +31,7 @@ describe('Confirm subscription endpoint', () => {
 
         nock.cleanAll();
 
-        Subscription.remove({}).exec();
+      await Subscription.deleteMany({}).exec();
     });
 
     it('Confirming subscription should return not found when subscription doesn\'t exist', async () => {
@@ -66,8 +66,8 @@ describe('Confirm subscription endpoint', () => {
         updateSubscription.confirmed.should.equal(true);
     });
 
-    afterEach(() => {
-        Subscription.remove({}).exec();
+    afterEach(async () => {
+      await Subscription.deleteMany({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);

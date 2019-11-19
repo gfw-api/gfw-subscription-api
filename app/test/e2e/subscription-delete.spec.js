@@ -31,7 +31,7 @@ describe('Delete subscription endpoint', () => {
 
         nock.cleanAll();
 
-        Subscription.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 
     it('Deleting subscription without provide loggedUser should fall', authCases.isLoggedUserRequired());
@@ -92,8 +92,8 @@ describe('Delete subscription endpoint', () => {
         expect(subscriptions).to.be.length(0);
     });
 
-    afterEach(() => {
-        Subscription.remove({}).exec();
+    afterEach(async () => {
+        await Subscription.deleteMany({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);

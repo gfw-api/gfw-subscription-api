@@ -29,7 +29,7 @@ describe('Create subscriptions tests', function () {
 
         requester = await getTestServer();
 
-        Subscription.remove({}).exec();
+      await Subscription.deleteMany({}).exec();
     });
 
     it('Create a subscription with no dataset or datasetsQuery should return a 400 error', async () => {

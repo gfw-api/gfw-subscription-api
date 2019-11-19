@@ -446,8 +446,8 @@ describe('AlertQueue ', () => {
         }
     });
 
-    after(() => {
-        Subscription.remove({}).exec();
-        Stadistic.remove({}).exec();
+    after(async () => {
+        await Subscription.deleteMany({}).exec();
+        await Stadistic.deleteMany({}).exec();
     });
 });

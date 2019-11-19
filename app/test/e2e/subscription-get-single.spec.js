@@ -30,7 +30,7 @@ describe('Get subscription by id endpoint', () => {
         subscription = await createRequest(prefix, 'get');
         authCases.setRequester(subscription);
 
-        Subscription.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 
     it('Getting subscription by id without provide loggedUser should fall', authCases.isLoggedUserRequired());
@@ -97,8 +97,8 @@ describe('Get subscription by id endpoint', () => {
         data.attributes.should.deep.equal(expectedSubscription);
     });
 
-    afterEach(() => {
-        Subscription.remove({}).exec();
+    afterEach(async () => {
+        await Subscription.deleteMany({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
