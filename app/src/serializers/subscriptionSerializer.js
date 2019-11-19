@@ -1,9 +1,7 @@
-'use strict';
 
-var logger = require('logger');
-var JSONAPISerializer = require('jsonapi-serializer').Serializer;
+const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
-var subscriptionSerializer = new JSONAPISerializer('subscription', {
+const subscriptionSerializer = new JSONAPISerializer('subscription', {
     attributes: [
         'name', 'createdAt', 'updatedAt', 'userId', 'geostoreId',
         'resource', 'datasets', 'params', 'confirmed', 'language', 'datasetsQuery', 'env'
@@ -21,16 +19,18 @@ var subscriptionSerializer = new JSONAPISerializer('subscription', {
         attributes: ['iso', 'id1', 'wdpaid', 'use', 'useid', 'geostore', 'area']
     },
 
-    typeForAttribute: function (attribute) {
+    typeForAttribute(attribute) {
         return attribute;
     },
     keyForAttribute: 'camelCase'
 });
 
 class SubscriptionSerializer {
+
     static serialize(data) {
         return subscriptionSerializer.serialize(data);
     }
+
 }
 
 module.exports = SubscriptionSerializer;

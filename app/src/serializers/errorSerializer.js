@@ -1,9 +1,10 @@
 class ErrorSerializer {
 
     static serializeValidationError(data, typeParam) {
-        let keys = Object.keys(data);
+        const keys = Object.keys(data);
         let message = '';
         switch (typeParam) {
+
             case 'body':
                 message = 'Invalid body parameter';
                 break;
@@ -12,6 +13,7 @@ class ErrorSerializer {
                 break;
             default:
                 message = '';
+
         }
         return {
             source: {
@@ -24,25 +26,26 @@ class ErrorSerializer {
     }
 
     static serializeValidationBodyErrors(data) {
-        let errors = [];
+        const errors = [];
         if (data) {
-            for (let i = 0, length = data.length; i < length; i++) {
+            for (let i = 0, { length } = data; i < length; i++) {
                 errors.push(ErrorSerializer.serializeValidationError(data[i], 'body'));
             }
         }
         return {
-            errors: errors
+            errors
         };
     }
 
     static serializeError(status, message) {
         return {
             errors: [{
-                status: status,
+                status,
                 detail: message
             }]
         };
     }
+
 }
 
 module.exports = ErrorSerializer;

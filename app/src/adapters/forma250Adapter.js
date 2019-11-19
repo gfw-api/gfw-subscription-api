@@ -1,7 +1,3 @@
-'use strict';
-
-var logger = require('logger');
-
 class Forma250Adapter {
 
     constructor(results) {

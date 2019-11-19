@@ -1,14 +1,14 @@
-'use strict';
+
 const logger = require('logger');
 const analysisService = require('services/analysisService');
 const imageService = require('services/imageService');
 
 class FormaPresenter {
 
-    static* transform(results, layer, subscription, begin, end) {
-        let alerts = yield analysisService.execute(subscription, layer.slug, begin, end, true);
+    static async transform(results, layer, subscription, begin, end) {
+        const alerts = await analysisService.execute(subscription, layer.slug, begin, end, true);
         if (alerts && alerts.length && alerts.length > 0) {
-            let alertsFormat = [];
+            const alertsFormat = [];
             let length = 10;
             if (alerts.length < 10) {
                 length = alerts.length;
@@ -29,10 +29,11 @@ class FormaPresenter {
             }
             results.alerts = alertsFormat;
         }
-        results.map_image = yield imageService.overviewImage(subscription, layer.slug, begin, end);
+        results.map_image = await imageService.overviewImage(subscription, layer.slug, begin, end);
         results.alert_count = results.value;
         return results;
     }
+
 }
 
 module.exports = FormaPresenter;

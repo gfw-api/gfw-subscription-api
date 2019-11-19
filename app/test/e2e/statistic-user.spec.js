@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
+const chai = require('chai');
 const { getTestServer } = require('./utils/test-server');
 const {
     createAuthCases, ensureCorrectError, getDateWithDecreaseYear, getDateWithIncreaseYear
@@ -8,7 +9,6 @@ const {
 const { ROLES, MOCK_USER_IDS, MOCK_USERS } = require('./utils/test.constants');
 const { createMockUsers } = require('./utils/mock');
 const { createSubscriptions, getUserAsSingleObject } = require('./utils/helpers/statistic');
-const chai = require('chai');
 
 const should = chai.should();
 
@@ -27,8 +27,6 @@ describe('Subscription statistic by user endpoint', () => {
             throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
         }
 
-        nock.cleanAll();
-
         statistic = await getTestServer();
         authCases.setRequester(statistic);
 
@@ -46,8 +44,8 @@ describe('Subscription statistic by user endpoint', () => {
     it('Getting statistic by user without start date should fall', async () => {
         const response = await statistic
             .get(url)
-            .query({ end: new Date(), application: 'gfw' })
-            .send({ loggedUser: ROLES.ADMIN });
+            .query({ end: new Date(), application: 'gfw', loggedUser: JSON.stringify(ROLES.ADMIN) });
+
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'Start date required');
     });
@@ -55,8 +53,8 @@ describe('Subscription statistic by user endpoint', () => {
     it('Getting statistic by user without end date should fall', async () => {
         const response = await statistic
             .get(url)
-            .query({ start: new Date(), application: 'gfw' })
-            .send({ loggedUser: ROLES.ADMIN });
+            .query({ start: new Date(), application: 'gfw', loggedUser: JSON.stringify(ROLES.ADMIN) });
+
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'End date required');
     });
@@ -64,8 +62,8 @@ describe('Subscription statistic by user endpoint', () => {
     it('Getting statistic by user without application should fall', async () => {
         const response = await statistic
             .get(url)
-            .query({ start: new Date(), end: new Date() })
-            .send({ loggedUser: ROLES.ADMIN });
+            .query({ start: new Date(), end: new Date(), loggedUser: JSON.stringify(ROLES.ADMIN) });
+
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'Application required');
     });
@@ -85,17 +83,18 @@ describe('Subscription statistic by user endpoint', () => {
 
         const response = await statistic
             .get(url)
-            .query({ start: startDate, end: endDate, application: 'gfw' })
-            .send({ loggedUser: ROLES.ADMIN });
+            .query({
+                start: startDate, end: endDate, application: 'gfw', loggedUser: JSON.stringify(ROLES.ADMIN)
+            });
 
-        const subscriptionsWithUser = subscriptionsInSearchedRange.map(([key, subscription]) => Object.assign({},
-            subscription._doc,
-            {
-                _id: subscription._id.toString(),
-                createdAt: subscription.createdAt.toISOString(),
-                updateAt: subscription.updateAt.toISOString(),
-                user: getUserAsSingleObject(subscription.userId),
-            }));
+        const subscriptionsWithUser = subscriptionsInSearchedRange.map(([key, subscription]) => ({
+            // eslint-disable-next-line no-underscore-dangle
+            ...subscription._doc,
+            _id: subscription._id.toString(),
+            createdAt: subscription.createdAt.toISOString(),
+            updateAt: subscription.updateAt.toISOString(),
+            user: getUserAsSingleObject(subscription.userId),
+        }));
 
         response.status.should.equal(200);
         response.body.should.deep.equal(subscriptionsWithUser);

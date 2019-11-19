@@ -1,4 +1,4 @@
-const Statistic = require('models/stadistic');
+const Statistic = require('models/statistic');
 const Subscription = require('models/subscription');
 const UrlService = require('services/urlService');
 const { ROLES } = require('./test.constants');
@@ -10,13 +10,13 @@ const ensureCorrectError = (body, errMessage) => {
     body.errors[0].should.have.property('detail').and.equal(errMessage);
 };
 
-const getDateWithIncreaseYear = years => new Date(new Date().setFullYear(new Date().getFullYear() + years));
-const getDateWithDecreaseYear = years => new Date(new Date().setFullYear(new Date().getFullYear() - years));
+const getDateWithIncreaseYear = (years) => new Date(new Date().setFullYear(new Date().getFullYear() + years));
+const getDateWithDecreaseYear = (years) => new Date(new Date().setFullYear(new Date().getFullYear() - years));
 
 const createSubscription = (userId, datasetUuid = null, data = {}) => {
     const uuid = getUUID();
 
-    return Object.assign({}, {
+    return {
         name: `Subscription ${uuid}`,
         datasets: [datasetUuid || getUUID()],
         userId,
@@ -29,8 +29,9 @@ const createSubscription = (userId, datasetUuid = null, data = {}) => {
         resource: {
             content: 'subscription-recipient@vizzuality.com',
             type: 'EMAIL'
-        }
-    }, data);
+        },
+        ...data
+    };
 };
 
 const createSubInDB = (userId, datasetUuid = null, data = {}) => new Subscription(createSubscription(userId, datasetUuid, data)).save();
@@ -72,14 +73,14 @@ const createAuthCases = (url, initMethod, providedRequester) => {
 
     const isLoggedUserJSONString = (method = initMethod) => async () => {
         const response = await requester[method](url).query({ loggedUser: USER }).send();
-        response.status.should.equal(401);
-        ensureCorrectError(response.body, 'Not valid loggedUser, it should be a json string in query');
+        response.status.should.equal(400);
+        ensureCorrectError(response.body, 'Invalid user token');
     };
 
     const isLoggedUserJSONObject = (method = initMethod) => async () => {
         const response = await requester[method](url).query({ loggedUser: '[]' }).send();
         response.status.should.equal(401);
-        ensureCorrectError(response.body, 'Not valid loggedUser, it should be json a valid object string in query');
+        ensureCorrectError(response.body, 'Not authorized');
     };
 
     return {

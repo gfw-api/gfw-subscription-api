@@ -5,11 +5,11 @@ const analysisService = require('services/analysisService');
 
 class VIIRSPresenter {
 
-    static* transform(results, layer, subscription, begin, end) {
+    static async transform(results, layer, subscription, begin, end) {
         logger.debug('Obtaining fires');
-        let alerts = yield analysisService.execute(subscription, layer.slug, begin, end, true);
+        const alerts = await analysisService.execute(subscription, layer.slug, begin, end, true);
         if (alerts && alerts.length && alerts.length > 0) {
-            let alertsFormat = [];
+            const alertsFormat = [];
             let length = 10;
             if (alerts.length < 10) {
                 length = alerts.length;
@@ -31,7 +31,7 @@ class VIIRSPresenter {
             results.alerts = alertsFormat;
         }
         results.alert_count = results.value;
-        results.map_image = yield imageService.overviewImage(subscription, layer.slug, begin, end);
+        results.map_image = await imageService.overviewImage(subscription, layer.slug, begin, end);
         return results;
     }
 

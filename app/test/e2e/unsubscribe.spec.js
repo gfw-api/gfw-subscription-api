@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
+const chai = require('chai');
 const {
     createSubscription,
     ensureCorrectError,
@@ -8,7 +9,6 @@ const {
 const { createMockUnsubscribeSUB } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 const { createRequest } = require('./utils/test-server');
-const chai = require('chai');
 
 const should = chai.should();
 

@@ -4,8 +4,8 @@ const chai = require('chai');
 const Subscription = require('models/subscription');
 const config = require('config');
 const redis = require('redis');
-const { ROLES } = require('./utils/test.constants');
 const { sleep } = require('sleep');
+const { ROLES } = require('./utils/test.constants');
 const { getTestServer } = require('./utils/test-server');
 const { validRedisMessage } = require('./utils/helpers');
 
@@ -18,7 +18,7 @@ const CHANNEL = config.get('apiGateway.queueName');
 
 let requester;
 
-describe('Create subscriptions tests', function () {
+describe('Create subscriptions tests', () => {
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
             throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
@@ -29,7 +29,7 @@ describe('Create subscriptions tests', function () {
 
         requester = await getTestServer();
 
-      await Subscription.deleteMany({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 
     it('Create a subscription with no dataset or datasetsQuery should return a 400 error', async () => {
@@ -151,7 +151,7 @@ describe('Create subscriptions tests', function () {
         responseSubscription.attributes.resource.should.have.property('content').and.equal(subscriptionOne.resource.content);
         responseSubscription.attributes.resource.should.have.property('type').and.equal(subscriptionOne.resource.type);
 
-        process.on('unhandledRejection', err => should.fail(err));
+        process.on('unhandledRejection', (err) => should.fail(err));
     });
 
     it('Create a subscription with the basic required fields with language = "RU" should return a 200, create a subscription and emit a redis message (happy case)', async () => {
@@ -196,7 +196,7 @@ describe('Create subscriptions tests', function () {
         responseSubscription.attributes.resource.should.have.property('content').and.equal(subscriptionOne.resource.content);
         responseSubscription.attributes.resource.should.have.property('type').and.equal(subscriptionOne.resource.type);
 
-        process.on('unhandledRejection', err => should.fail(err));
+        process.on('unhandledRejection', (err) => should.fail(err));
     });
 
     it('Create a subscription with the basic required fields with application = "test" should return a 200, create a subscription and emit a redis message(happy case)', async () => {
@@ -242,7 +242,7 @@ describe('Create subscriptions tests', function () {
         responseSubscription.attributes.resource.should.have.property('content').and.equal(subscriptionOne.resource.content);
         responseSubscription.attributes.resource.should.have.property('type').and.equal(subscriptionOne.resource.type);
 
-        process.on('unhandledRejection', err => should.fail(err));
+        process.on('unhandledRejection', (err) => should.fail(err));
     });
 
     it('Create a subscription with the basic required fields with resource_type = "URL" should return a 200, create a subscription, and don\'t emit a redis message (happy case)', async () => {
@@ -289,7 +289,7 @@ describe('Create subscriptions tests', function () {
         process.removeAllListeners('unhandledRejection');
         this.channel.removeAllListeners('message');
 
-        await Subscription.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);

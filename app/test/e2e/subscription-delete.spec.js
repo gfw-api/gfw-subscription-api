@@ -3,12 +3,12 @@ const nock = require('nock');
 const Subscription = require('models/subscription');
 const { expect } = require('chai');
 const { omit } = require('lodash');
+const chai = require('chai');
 const { createRequest } = require('./utils/test-server');
 const { ROLES: { USER } } = require('./utils/test.constants');
 const {
     ensureCorrectError, createSubInDB, getUUID, createAuthCases
 } = require('./utils/helpers');
-const chai = require('chai');
 
 const should = chai.should();
 
@@ -28,8 +28,6 @@ describe('Delete subscription endpoint', () => {
 
         subscription = await createRequest(prefix, 'delete');
         authCases.setRequester(subscription);
-
-        nock.cleanAll();
 
         await Subscription.deleteMany({}).exec();
     });
@@ -83,9 +81,8 @@ describe('Delete subscription endpoint', () => {
         data.should.have.property('attributes').and.instanceOf(Object);
 
         // omit fields which are not present to user from response body and convert the createdAt to ISO string
-        const expectedSubscription = omit(Object.assign({}, createdSubscription._doc, {
-            createdAt: createdSubscription.createdAt.toISOString(),
-        }), ['_id', 'updateAt', 'application', '__v']);
+        // eslint-disable-next-line no-underscore-dangle
+        const expectedSubscription = omit({ ...createdSubscription._doc, createdAt: createdSubscription.createdAt.toISOString(), }, ['_id', 'updateAt', 'application', '__v']);
         data.attributes.should.deep.equal(expectedSubscription);
 
         const subscriptions = await Subscription.find({});

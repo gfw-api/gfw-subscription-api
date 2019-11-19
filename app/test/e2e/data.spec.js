@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
+const chai = require('chai');
 const {
     createSubInDB,
     getUUID,
@@ -13,7 +14,6 @@ const {
 } = require('./utils/mock');
 const { ROLES, MOCK_FILE } = require('./utils/test.constants');
 const { createRequest } = require('./utils/test-server');
-const chai = require('chai');
 
 const should = chai.should();
 
@@ -31,8 +31,6 @@ describe('Get subscription endpoint', () => {
         if (process.env.NODE_ENV !== 'test') {
             throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
         }
-
-        nock.cleanAll();
 
         subscription = await createRequest(prefix, 'get');
         authCases.setRequester(subscription);
@@ -91,6 +89,7 @@ describe('Get subscription endpoint', () => {
             .get(`/${createdSubscription._id}/data`)
             .query({ loggedUser: JSON.stringify(ROLES.USER), application: 'rw' })
             .send();
+
         response.status.should.equal(200);
         response.body.data[0].should.have.property(datasetID).and.instanceOf(Object);
         response.body.data[0][datasetID].type.should.equal('dataset');
