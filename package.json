@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/Vizzuality/gfw-subscription-api#readme",
   "engines": {
-    "node": ">=12.9"
+    "node": "~12"
   },
   "dependencies": {
     "aws-sdk": "^2.90.0",
@@ -59,15 +59,16 @@
     "url": "0.11.0"
   },
   "devDependencies": {
-    "co-mocha": "^1.2.2",
     "babel-eslint": "^10.0.3",
     "chai": "^4.2.0",
-    "chai-http": "^4.3.0",
     "chai-datetime": "^1.5.0",
+    "chai-http": "^4.3.0",
+    "co-mocha": "^1.2.2",
     "eslint": "^6.3.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-mocha": "^6.2.1",
     "eslint-plugin-react": "^7.14.3",
     "grunt": "^1.0.4",
     "grunt-apidoc": "^0.11.0",
@@ -79,9 +80,22 @@
     "grunt-mocha-test": "^0.13.3",
     "grunt-notify": "^0.4.5",
     "grunt-simple-nyc": "^3.0.0",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.4.3",
     "load-grunt-tasks": "^5.1.0",
     "mocha": "^6.2.0",
     "nock": "^10.0.6",
     "nyc": "^14.1.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }
