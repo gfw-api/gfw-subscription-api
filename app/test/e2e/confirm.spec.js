@@ -2,6 +2,7 @@
 const nock = require('nock');
 const config = require('config');
 const Subscription = require('models/subscription');
+const chai = require('chai');
 const {
     createSubscription,
     ensureCorrectError,
@@ -9,7 +10,6 @@ const {
 const { createMockConfirmSUB } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 const { createRequest } = require('./utils/test-server');
-const chai = require('chai');
 
 const should = chai.should();
 
@@ -18,7 +18,7 @@ const prefix = '/api/v1/subscriptions';
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-let subscription;
+let requester;
 
 describe('Confirm subscription endpoint', () => {
 
@@ -27,15 +27,15 @@ describe('Confirm subscription endpoint', () => {
             throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
         }
 
-        subscription = await createRequest(prefix, 'get');
+        requester = await createRequest(prefix, 'get');
 
         nock.cleanAll();
 
-      await Subscription.deleteMany({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 
     it('Confirming subscription should return not found when subscription doesn\'t exist', async () => {
-        const response = await subscription
+        const response = await requester
             .get('/41224d776a326fb40f000001/confirm')
             .send();
         response.status.should.equal(404);
@@ -43,7 +43,7 @@ describe('Confirm subscription endpoint', () => {
     });
 
     it('Confirming subscription should return bad request when id is not valid', async () => {
-        const response = await subscription
+        const response = await requester
             .get('/123/confirm')
             .send();
         response.status.should.equal(400);
@@ -55,10 +55,12 @@ describe('Confirm subscription endpoint', () => {
         const createdSubscription = await new Subscription(
             createSubscription(ROLES.USER.id, null, { confirmed: false })
         ).save();
-        const response = await subscription
+
+        const response = await requester
             .get(`/${createdSubscription._id}/confirm`)
             .query({ loggedUser: JSON.stringify(ROLES.USER), application: 'test' })
             .send();
+
         response.status.should.equal(200);
         response.body.mockMessage.should.equal('Should redirect');
 
@@ -67,7 +69,7 @@ describe('Confirm subscription endpoint', () => {
     });
 
     afterEach(async () => {
-      await Subscription.deleteMany({}).exec();
+        await Subscription.deleteMany({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);

@@ -1,4 +1,4 @@
-const mockDataset = id => ({
+const mockDataset = (id) => ({
     id,
     type: 'dataset',
     attributes: {

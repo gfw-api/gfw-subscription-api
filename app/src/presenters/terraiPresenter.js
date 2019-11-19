@@ -1,22 +1,22 @@
-'use strict';
+
 const logger = require('logger');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 
 class TerraiPresenter {
 
-    static* transform(results, layer, subscription) {
+    static async transform(results) {
         results.alert_count = results.value;
-        let uri = '/query' + results.downloadUrls.csv.split('download')[1];
+        let uri = `/query${results.downloadUrls.csv.split('download')[1]}`;
         uri = uri.replace('ORDER BY year, day', ' ORDER BY day DESC, year DESC LIMIT 10').replace(/&format=(csv|json|xml)/g, '');
 
         logger.info('Last alerts endpoint ', uri);
         try {
-            let alerts = yield ctRegisterMicroservice.requestToMicroservice({
-                uri: uri,
+            const alerts = await ctRegisterMicroservice.requestToMicroservice({
+                uri,
                 method: 'GET',
                 json: true
             });
-            results.alerts = alerts.data.map(el => {
+            results.alerts = alerts.data.map((el) => {
                 const date = new Date(new Date(el.year, 0, 1).getTime() + el.day * 24 * 3600 * 1000)
                     .toISOString()
                     .split('T');

@@ -38,12 +38,10 @@ describe('Send confirmation endpoint', () => {
         this.channel = redis.createClient({ url: config.get('redis.url') });
         this.channel.subscribe(CHANNEL);
 
-        nock.cleanAll();
-
         subscription = await createRequest(prefix, 'get');
         authCases.setRequester(subscription);
 
-      await Subscription.deleteMany({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 
     it('Sending confirm subscription without provide loggedUser should fall', authCases.isLoggedUserRequired());
@@ -108,7 +106,7 @@ describe('Send confirmation endpoint', () => {
         response.status.should.equal(200);
         response.body.mockMessage.should.equal('Should redirect');
 
-        process.on('unhandledRejection', err => should.fail(err));
+        process.on('unhandledRejection', (err) => should.fail(err));
     });
 
     afterEach(async () => {

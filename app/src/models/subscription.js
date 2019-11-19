@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 const logger = require('logger');
-const co = require('co');
 
 const ALERT_TYPES = ['EMAIL', 'URL'];
 const alertPublishers = {};
-ALERT_TYPES.forEach(function (type) {
-    const typePublisher = require('publishers/' + type.toLowerCase() + 'Publisher');
+ALERT_TYPES.forEach((type) => {
+    // eslint-disable-next-line import/no-dynamic-require
+    const typePublisher = require(`publishers/${type.toLowerCase()}Publisher`);
     alertPublishers[type] = typePublisher;
 });
 
@@ -14,16 +15,18 @@ const Layer = require('models/layer');
 const AnalysisService = require('services/analysisService');
 const AnalysisResultsAdapter = require('adapters/analysisResultsAdapter');
 const AnalysisResultsPresenter = require('presenters/analysisResultsPresenter');
-const Stadistic = require('models/stadistic');
+const Statistic = require('models/statistic');
 
 const Subscription = new Schema({
     name: { type: String, required: false, trim: true },
     confirmed: { type: Boolean, required: false, default: false },
     resource: {
-        type: { type: String, trim: true, enum: ALERT_TYPES, default: ALERT_TYPES[0] },
+        type: {
+            type: String, trim: true, enum: ALERT_TYPES, default: ALERT_TYPES[0]
+        },
         content: { type: String, trim: true }
     },
-    datasets: { type: Array, 'default': [] },
+    datasets: { type: Array, default: [] },
     datasetsQuery: [{
         _id: false,
         id: { type: String, required: false, trim: true },
@@ -38,25 +41,32 @@ const Subscription = new Schema({
     }],
     params: { type: Schema.Types.Mixed, default: {} },
     userId: { type: String, trim: true, required: false },
-    language: { type: String, trim: true, required: false, default: 'en' },
+    language: {
+        type: String, trim: true, required: false, default: 'en'
+    },
     createdAt: { type: Date, required: true, default: Date.now },
     updateAt: { type: Date, required: false, default: Date.now },
-    application: { type: String, required: true, default: 'gfw', trim: true },
+    application: {
+        type: String, required: true, default: 'gfw', trim: true
+    },
     env: { type: String, required: true, default: 'production' }
 });
 
-Subscription.methods.publish = function* (layerConfig, begin, end) {
+// this cant be converted to an arrow function, as it will change the behavior of things and cause tests to rightfully fail
+// eslint-disable-next-line func-names
+Subscription.methods.publish = async function (layerConfig, begin, end) {
     logger.info('Publishing subscription with data', layerConfig, begin, end);
-    let layer = yield Layer.findBySlug(layerConfig.name);
+    const layer = await Layer.findBySlug(layerConfig.name);
     if (!layer) {
-        return;
+        return null;
     }
 
-    let results = yield AnalysisService.execute(
-        this, layerConfig.slug, begin, end);
+    let results = await AnalysisService.execute(
+        this, layerConfig.slug, begin, end
+    );
     if (!results) {
         logger.info('Results are null. Returning');
-        return;
+        return null;
     }
     logger.debug('Results obtained', results);
     results = AnalysisResultsAdapter.transform(results, layer);
@@ -65,14 +75,15 @@ Subscription.methods.publish = function* (layerConfig, begin, end) {
         return false;
     }
 
-    results = yield AnalysisResultsPresenter.render(
-        results, this, layer, begin, end);
+    results = await AnalysisResultsPresenter.render(
+        results, this, layer, begin, end
+    );
 
-    yield alertPublishers[this.resource.type].publish(this, results, layer);
+    await alertPublishers[this.resource.type].publish(this, results, layer);
     logger.info('Saving statistic');
-    yield new Stadistic({ slug: layerConfig.slug }).save();
-    return true;
+    await new Statistic({ slug: layerConfig.slug }).save();
 
+    return true;
 };
 
 module.exports = mongoose.model('Subscription', Subscription);

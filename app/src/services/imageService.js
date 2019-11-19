@@ -2,7 +2,7 @@ const logger = require('logger');
 const Mustache = require('mustache');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
-const request = require('co-request');
+const request = require('request-promise-native');
 const CartoDB = require('cartodb');
 const config = require('config');
 const explode = require('turf-explode');
@@ -19,60 +19,52 @@ const LAYERS_PARAMS_MAP = {
     'imazon-alerts': imazonAlertsTemplate
 };
 
-const deserializer = function (obj) {
-    return function (callback) {
-        new JSONAPIDeserializer({
-            keyForAttribute: 'camelCase'
-        }).deserialize(obj, callback);
-    };
-};
+const executeThunk = (client, sql, params) => (
+    new Promise((resolve, reject) => {
+        client.execute(sql, params).done((data) => resolve(data)).error((err) => reject(err));
+    }));
 
-const executeThunk = function (client, sql, params) {
-    return function (callback) {
-        client.execute(sql, params).done(function (data) {
-            callback(null, data);
-        }).error(function (err) {
-            callback(err, null);
-        });
-    };
-};
-
-function* getQuery(subscription) {
+async function getQuery(subscription) {
     if (subscription.params.iso && subscription.params.iso.country) {
         if (!subscription.params.iso.region) {
             return Mustache.render(geoQuery.ISO, {
                 iso: subscription.params.iso.country
             });
-        } else {
-            return Mustache.render(geoQuery.ID1, {
-                iso: subscription.params.iso.country,
-                id1: subscription.params.iso.region
-            });
         }
-    } else if (subscription.params.wdpaid) {
+        return Mustache.render(geoQuery.ID1, {
+            iso: subscription.params.iso.country,
+            id1: subscription.params.iso.region
+        });
+
+    }
+    if (subscription.params.wdpaid) {
         return Mustache.render(geoQuery.WDPA, {
             wdpaid: subscription.params.wdpaid
         });
-    } else if (subscription.params.use) {
+    }
+    if (subscription.params.use) {
         return Mustache.render(geoQuery.USE, {
             use_table: subscription.params.use,
             pid: subscription.params.useid
         });
-    } else if (subscription.params.geostore) {
+    }
+    if (subscription.params.geostore) {
         try {
-            let result = yield ctRegisterMicroservice.requestToMicroservice({
-                uri: '/geostore/' + subscription.params.geostore,
+            const result = await ctRegisterMicroservice.requestToMicroservice({
+                uri: `/geostore/${subscription.params.geostore}`,
                 method: 'GET',
                 json: true
             });
 
-            let geostore = yield deserializer(result);
-            logger.debug('Geostore geometry: ' + JSON.stringify(geostore.geojson.features[0].geometry));
+            const geostore = await new JSONAPIDeserializer({
+                keyForAttribute: 'camelCase'
+            }).deserialize(result);
+            logger.debug(`Geostore geometry: ${JSON.stringify(geostore.geojson.features[0].geometry)}`);
             const renderedQuery = Mustache.render(geoQuery.WORLD, {
                 geojson: JSON.stringify(geostore.geojson.features[0].geometry).replace(/"/g, '\\"')
             });
 
-            logger.debug('Query: ' + renderedQuery);
+            logger.debug(`Query: ${renderedQuery}`);
 
             return renderedQuery;
         } catch (e) {
@@ -81,44 +73,51 @@ function* getQuery(subscription) {
         }
 
     }
+
+    return null;
 }
 
-function* getBBoxQuery(client, subscription) {
+async function getBBoxQuery(client, subscription) {
     if (subscription.params.iso && subscription.params.iso.country) {
         if (!subscription.params.iso.region) {
 
-            let data = yield executeThunk(client, geoQuery.ISO_BBOX, {
+            const data = await executeThunk(client, geoQuery.ISO_BBOX, {
                 iso: subscription.params.iso.country
             });
             return data.rows[0].bbox;
-        } else {
-            let data = yield executeThunk(client, geoQuery.ID1_BBOX, {
-                iso: subscription.params.iso.country,
-                id1: subscription.params.iso.region
-            });
-            return data.rows[0].bbox;
         }
-    } else if (subscription.params.wdpaid) {
-        let data = yield executeThunk(client, geoQuery.WDPA_BBOX, {
+        const data = await executeThunk(client, geoQuery.ID1_BBOX, {
+            iso: subscription.params.iso.country,
+            id1: subscription.params.iso.region
+        });
+        return data.rows[0].bbox;
+
+    }
+    if (subscription.params.wdpaid) {
+        const data = await executeThunk(client, geoQuery.WDPA_BBOX, {
             wdpaid: subscription.params.wdpaid
         });
         return data.rows[0].bbox;
-    } else if (subscription.params.use) {
-        let data = yield executeThunk(client, geoQuery.USE_BBOX, {
+    }
+    if (subscription.params.use) {
+        const data = await executeThunk(client, geoQuery.USE_BBOX, {
             use_table: subscription.params.use,
             pid: subscription.params.useid
         });
         return data.rows[0].bbox;
-    } else if (subscription.params.geostore) {
+    }
+    if (subscription.params.geostore) {
         try {
-            let result = yield ctRegisterMicroservice.requestToMicroservice({
-                uri: '/geostore/' + subscription.params.geostore,
+            const result = await ctRegisterMicroservice.requestToMicroservice({
+                uri: `/geostore/${subscription.params.geostore}`,
                 method: 'GET',
                 json: true
             });
 
-            let geostore = yield deserializer(result);
-            let data = yield executeThunk(client, geoQuery.WORLD_BBOX, {
+            const geostore = await new JSONAPIDeserializer({
+                keyForAttribute: 'camelCase'
+            }).deserialize(result);
+            const data = await executeThunk(client, geoQuery.WORLD_BBOX, {
                 geojson: JSON.stringify(geostore.geojson.features[0].geometry)
 
             });
@@ -128,52 +127,59 @@ function* getBBoxQuery(client, subscription) {
             return null;
         }
     }
+
+    return null;
 }
 
 function getBBoxOfGeojson(geojson) {
-    let points = explode(geojson);
-    let minx = 360, miny = 360;
-    let maxx = -360, maxy = -360;
-    for (let i = 0, length = points.features.length; i < length; i++) {
-        let point = points.features[i].geometry.coordinates;
+    const points = explode(geojson);
+    let minx = 360;
+    let
+        miny = 360;
+    let maxx = -360;
+    let
+        maxy = -360;
+    for (let i = 0, { length } = points.features; i < length; i++) {
+        const point = points.features[i].geometry.coordinates;
         if (minx > point[0]) {
-            minx = point[0];
+            [minx] = point;
         }
         if (maxx < point[0]) {
-            maxx = point[0];
+            [maxx] = point;
         }
         if (miny > point[1]) {
-            miny = point[1];
+            [, miny] = point;
         }
         if (maxy < point[1]) {
-            maxy = point[1];
+            [, maxy] = point;
         }
     }
     return `${minx},${miny},${maxx},${maxy}`;
 }
 
-function* getCartoStaticImage(url) {
-    return yield request({
-        url: url,
+async function getCartoStaticImage(url) {
+    return request({
+        url,
         method: 'GET',
         encoding: null,
         headers: {
             'Content-Type': 'image/png'
-        }
+        },
+        resolveWithFullResponse: true
     });
 }
 
-function* getS3Url(imageKey, staticImage) {
+async function getS3Url(imageKey, staticImage) {
     const s3 = new AWS.S3();
 
-    return yield new Promise(function (fulfill, reject) {
+    return new Promise((fulfill) => {
         s3.upload({
             Bucket: 'gfw2stories',
             Key: `map_preview/${imageKey}`,
             ContentType: staticImage.headers['content-type'],
             ACL: 'public-read',
             Body: staticImage.body
-        }, function (err, data) {
+        }, (err, data) => {
             if (err !== null) {
                 fulfill(null);
             } else {
@@ -183,53 +189,56 @@ function* getS3Url(imageKey, staticImage) {
     });
 }
 
-function* getImageUrl(layergroupid, bbox) {
+async function getImageUrl(layergroupid, bbox) {
     const imageKey = `${layergroupid}_${bbox}.png`;
-    const staticImage = yield getCartoStaticImage(`http://${process.env.CARTODB_USER}.cartodb.com/api/v1/map/static/bbox/${layergroupid}/${bbox}/700/450.png`);
-    return yield getS3Url(imageKey, staticImage);
+    const staticImage = await getCartoStaticImage(`http://${process.env.CARTODB_USER}.cartodb.com/api/v1/map/static/bbox/${layergroupid}/${bbox}/700/450.png`);
+    return getS3Url(imageKey, staticImage);
 }
 
 class ImageService {
+
     constructor() {
         this.client = new CartoDB.SQL({
             user: config.get('cartoDB.user')
         });
     }
 
-    * overviewImage(subscription, slug, begin, end) {
-        let query = yield getQuery(subscription);
+    async overviewImage(subscription, slug, begin, end) {
+        const query = await getQuery(subscription);
         if (!query) {
             return null;
         }
-        let config = {
+        const mustacheConfig = {
             begin: begin.toISOString().slice(0, 10),
             end: end.toISOString().slice(0, 10),
-            'query': query
+            query
         };
 
-        let template = Mustache.render(JSON.stringify(LAYERS_PARAMS_MAP[slug]), config).replace(/\s\s+/g, ' ').trim();
-        let result = yield request({
+        const template = Mustache.render(JSON.stringify(LAYERS_PARAMS_MAP[slug]), mustacheConfig).replace(/\s\s+/g, ' ').trim();
+        const result = await request({
             url: `https://${process.env.CARTODB_USER}.cartodb.com/api/v1/map`,
             method: 'POST',
             body: template,
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            resolveWithFullResponse: true
         });
         if (result.statusCode !== 200) {
-            console.error('Error obtaining layergroupid');
-            console.error(result.body);
+            logger.info('Error obtaining layergroupid');
+            logger.info(result.body);
             return null;
         }
         result.body = JSON.parse(result.body);
         if (result.body.layergroupid) {
-            let queryBBox = yield getBBoxQuery(this.client, subscription);
-            let bbox = getBBoxOfGeojson(JSON.parse(queryBBox));
-            return yield getImageUrl(result.body.layergroupid, bbox);
-        } else {
-            return null;
+            const queryBBox = await getBBoxQuery(this.client, subscription);
+            const bbox = getBBoxOfGeojson(JSON.parse(queryBBox));
+            return getImageUrl(result.body.layergroupid, bbox);
         }
+        return null;
+
     }
+
 }
 
 module.exports = new ImageService();

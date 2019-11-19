@@ -3,6 +3,7 @@ const nock = require('nock');
 const { expect } = require('chai');
 const Subscription = require('models/subscription');
 const { omit } = require('lodash');
+const chai = require('chai');
 const { getTestServer } = require('./utils/test-server');
 const {
     MOCK_USER_IDS, TEST_SUBSCRIPTIONS, SUBSCRIPTION_TO_UPDATE, ROLES
@@ -10,7 +11,6 @@ const {
 const {
     ensureCorrectError, createSubInDB, getUUID, createAuthCases
 } = require('./utils/helpers');
-const chai = require('chai');
 
 const should = chai.should();
 
@@ -37,11 +37,11 @@ const updateSubscription = async ({
 
     return requester
         .patch(`${prefix}/${subID || subscription._id}`)
-        .send(Object.assign(
-            {},
-            subToUpdate,
-            { loggedUser: ROLES.USER }
-        ));
+        .send({
+
+            ...subToUpdate,
+            loggedUser: ROLES.USER
+        });
 };
 
 describe('Update subscription endpoint', () => {
@@ -49,8 +49,6 @@ describe('Update subscription endpoint', () => {
         if (process.env.NODE_ENV !== 'test') {
             throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
         }
-
-        nock.cleanAll();
 
         requester = await getTestServer();
         authCases.setRequester(requester);
@@ -129,17 +127,19 @@ describe('Update subscription endpoint', () => {
         data.attributes.should.deep.equal(expectedAttributes);
 
         const subscriptionFromDB = await Subscription.findOne({ _id: subscription._id });
-        const expectedSubscription = Object.assign(
-            {},
-            subscription._doc,
-            SUBSCRIPTION_TO_UPDATE,
-            { __v: 1 }
-        );
-        const actualSubscription = Object.assign(
-            {},
-            subscriptionFromDB._doc,
-            { createdAt: subscriptionFromDB.createdAt.toISOString() }
-        );
+        const expectedSubscription = {
+
+            // eslint-disable-next-line no-underscore-dangle
+            ...subscription._doc,
+            ...SUBSCRIPTION_TO_UPDATE,
+            __v: 1
+        };
+        const actualSubscription = {
+
+            // eslint-disable-next-line no-underscore-dangle
+            ...subscriptionFromDB._doc,
+            createdAt: subscriptionFromDB.createdAt.toISOString()
+        };
 
         actualSubscription.should.deep.equal(expectedSubscription);
     });

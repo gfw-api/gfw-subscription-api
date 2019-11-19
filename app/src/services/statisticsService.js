@@ -1,30 +1,26 @@
-'use strict';
+/* eslint-disable operator-assignment */
+
 const logger = require('logger');
 const SubscriptionModel = require('models/subscription');
-const StadisticModel = require('models/stadistic');
+const StatisticModel = require('models/statistic');
 const GenericError = require('errors/genericError');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 
-var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
-var deserializer = function (obj) {
-    return function (callback) {
-        new JSONAPIDeserializer({
-            keyForAttribute: 'camelCase'
-        }).deserialize(obj, callback);
-    };
-};
+const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
 class StatisticsService {
 
-    static* getUsers(startDate, endDate) {
+    static async getUsers(startDate, endDate) {
         try {
-            const result = yield ctRegisterMicroservice.requestToMicroservice({
+            const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: `/user/obtain/all-users?start=${startDate.toISOString().substring(0, 10)}&end=${endDate.toISOString().substring(0, 10)}`,
                 method: 'GET',
                 json: true
             });
 
-            return yield deserializer(result);
+            return await new JSONAPIDeserializer({
+                keyForAttribute: 'camelCase'
+            }).deserialize(result);
         } catch (err) {
             logger.error('Error obtaining users:', err);
             throw new GenericError(500, 'Error obtaining data');
@@ -32,7 +28,7 @@ class StatisticsService {
 
     }
 
-    static* getTopSubscriptions(startDate, endDate) {
+    static async getTopSubscriptions(startDate, endDate) {
         logger.debug(`Obtaining getTopSubscriptions with startDate ${startDate} and endDate ${endDate}`);
         const topSubs = {};
         const defaultFilter = {
@@ -41,45 +37,52 @@ class StatisticsService {
                 $lt: endDate
             }
         };
-        topSubs.geostore = yield SubscriptionModel.count(Object.assign({}, defaultFilter, {
+        topSubs.geostore = await SubscriptionModel.count({
+            ...defaultFilter,
             'params.geostore': {
                 $ne: null
             }
-        }));
-        topSubs.country = yield SubscriptionModel.count(Object.assign({}, defaultFilter, {
+        });
+        topSubs.country = await SubscriptionModel.count({
+            ...defaultFilter,
             'params.iso.country': {
                 $ne: null
             },
             'params.iso.region': null
-        }));
-        topSubs.region = yield SubscriptionModel.count(Object.assign({}, defaultFilter, {
+        });
+        topSubs.region = await SubscriptionModel.count({
+            ...defaultFilter,
             'params.iso.region': {
                 $ne: null
             }
-        }));
-        topSubs.wdpa = yield SubscriptionModel.count(Object.assign({}, defaultFilter, {
+        });
+        topSubs.wdpa = await SubscriptionModel.count({
+            ...defaultFilter,
             'params.wdpaid': {
                 $ne: null
             }
-        }));
-        topSubs.use = yield SubscriptionModel.count(Object.assign({}, defaultFilter, {
+        });
+        topSubs.use = await SubscriptionModel.count({
+            ...defaultFilter,
             'params.use': {
                 $ne: null
             }
-        }));
+        });
 
         return topSubs;
     }
 
-    static* getUser(userId) {
+    static async getUser(userId) {
         try {
-            const result = yield ctRegisterMicroservice.requestToMicroservice({
+            const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: `/user/${userId}`,
                 method: 'GET',
                 json: true
             });
 
-            return yield deserializer(result);
+            return await new JSONAPIDeserializer({
+                keyForAttribute: 'camelCase'
+            }).deserialize(result);
         } catch (err) {
             if (err.statusCode !== 404) {
                 logger.error('Error obtaining users:', err);
@@ -89,10 +92,8 @@ class StatisticsService {
 
     }
 
-    static* infoByUserSubscriptions(startDate, endDate, application) {
+    static async infoByUserSubscriptions(startDate, endDate, application) {
         logger.debug(`Obtaining  subscriptions with startDate ${startDate} and endDate ${endDate} and application ${application}`);
-        const info = {};
-
         const filter = {
             createdAt: {
                 $gte: startDate,
@@ -101,14 +102,14 @@ class StatisticsService {
             application
         };
 
-        const subscriptions = yield SubscriptionModel.find(filter);
+        const subscriptions = await SubscriptionModel.find(filter);
         const usersCache = {};
         const data = [];
-        for (let i = 0, length = subscriptions.length; i < length; i++) {
+        for (let i = 0, { length } = subscriptions; i < length; i++) {
             if (!usersCache[subscriptions[i].userId]) {
-                usersCache[subscriptions[i].userId] = yield StatisticsService.getUser(subscriptions[i].userId);
+                usersCache[subscriptions[i].userId] = await StatisticsService.getUser(subscriptions[i].userId);
             }
-            let subs = subscriptions[i].toJSON();
+            const subs = subscriptions[i].toJSON();
             subs.user = usersCache[subscriptions[i].userId];
             data.push(subs);
 
@@ -116,10 +117,8 @@ class StatisticsService {
         return data;
     }
 
-    static* infoGroupSubscriptions(startDate, endDate, application) {
+    static async infoGroupSubscriptions(startDate, endDate, application) {
         logger.debug(`Obtaining group subscriptions with startDate ${startDate} and endDate ${endDate} and application ${application}`);
-        const info = {};
-
         const filter = {
             createdAt: {
                 $gte: startDate,
@@ -131,12 +130,12 @@ class StatisticsService {
             application
         };
 
-        const subscriptions = yield SubscriptionModel.find(filter);
+        const subscriptions = await SubscriptionModel.find(filter);
         const data = {};
         logger.debug('Subscriptions', subscriptions.length);
-        subscriptions.forEach(sub => {
+        subscriptions.forEach((sub) => {
             logger.debug('Iterating subs', sub);
-            sub.datasets.forEach(dat => {
+            sub.datasets.forEach((dat) => {
                 logger.debug('Iterating dataset', data);
                 if (!data[dat]) {
                     data[dat] = {
@@ -208,7 +207,7 @@ class StatisticsService {
         return data;
     }
 
-    static* infoSubscriptions(startDate, endDate) {
+    static async infoSubscriptions(startDate, endDate) {
         logger.debug(`Obtaining infoSubscriptions with startDate ${startDate} and endDate ${endDate}`);
         const info = {};
 
@@ -219,8 +218,8 @@ class StatisticsService {
             }
         };
 
-        info.numSubscriptions = yield SubscriptionModel.count(defaultFilter);
-        info.totalSubscriptions = yield SubscriptionModel.count();
+        info.numSubscriptions = await SubscriptionModel.count(defaultFilter);
+        info.totalSubscriptions = await SubscriptionModel.count();
         logger.debug(SubscriptionModel.aggregate([{
             $group: {
                 _id: '$userId'
@@ -233,7 +232,7 @@ class StatisticsService {
                 }
             }
         }]));
-        info.usersWithSubscriptions = yield SubscriptionModel.aggregate([{
+        info.usersWithSubscriptions = await SubscriptionModel.aggregate([{
             $group: {
                 _id: '$userId'
             }
@@ -248,17 +247,17 @@ class StatisticsService {
         if (info.usersWithSubscriptions) {
             info.usersWithSubscriptions = info.usersWithSubscriptions[0].count;
         }
-        info.totalEmailsSentInThisQ = yield StadisticModel.count(defaultFilter);
-        info.totalEmailsSended = yield StadisticModel.count();
+        info.totalEmailsSentInThisQ = await StatisticModel.count(defaultFilter);
+        info.totalEmailsSended = await StatisticModel.count();
 
         return info;
     }
 
-    static* getNewUsersWithSubs(startDate, endDate, users) {
+    static async getNewUsersWithSubs(startDate, endDate, users) {
         let usersCount = 0;
         if (users) {
-            for (let i = 0, length = users.length; i < length; i++) {
-                usersCount += yield SubscriptionModel.count({
+            for (let i = 0, { length } = users; i < length; i++) {
+                usersCount += await SubscriptionModel.count({
                     userId: users[i].id
                 });
             }
@@ -266,12 +265,12 @@ class StatisticsService {
         return usersCount;
     }
 
-    static* getStatistics(startDate, endDate, application = 'gfw') {
-        const users = yield StatisticsService.getUsers(startDate, endDate);
-        const topSubs = yield StatisticsService.getTopSubscriptions(startDate, endDate);
-        const info = yield StatisticsService.infoSubscriptions(startDate, endDate);
-        const groupStatistics = yield StatisticsService.infoGroupSubscriptions(startDate, endDate, application);
-        const usersWithSubscription = yield StatisticsService.getNewUsersWithSubs(startDate, endDate, users);
+    static async getStatistics(startDate, endDate, application = 'gfw') {
+        const users = await StatisticsService.getUsers(startDate, endDate);
+        const topSubs = await StatisticsService.getTopSubscriptions(startDate, endDate);
+        const info = await StatisticsService.infoSubscriptions(startDate, endDate);
+        const groupStatistics = await StatisticsService.infoGroupSubscriptions(startDate, endDate, application);
+        const usersWithSubscription = await StatisticsService.getNewUsersWithSubs(startDate, endDate, users);
         return {
             topSubscriptions: topSubs,
             info,

@@ -1,6 +1,5 @@
 const nock = require('nock');
 const chai = require('chai');
-const logger = require('koa-logger');
 const chaiHttp = require('chai-http');
 
 let requester;
@@ -12,6 +11,11 @@ chai.use(chaiHttp);
 const getTestServer = async function getTestServer() {
     if (requester) {
         return requester;
+    }
+
+    if (createdServer) {
+        createdServer.close();
+        createdServer = null;
     }
 
     nock(process.env.CT_URL)
@@ -28,7 +32,11 @@ const getTestServer = async function getTestServer() {
 
 
 const createRequest = async (prefix, method) => {
-    if (!createdServer) {
+    if (!createdServer && !requester) {
+        nock(process.env.CT_URL)
+            .post(`/api/v1/microservice`)
+            .reply(200);
+
         const serverPromise = require('../../../src/app');
         const { server } = await serverPromise();
         createdServer = server;
@@ -36,7 +44,7 @@ const createRequest = async (prefix, method) => {
     const newRequest = chai.request(createdServer).keepOpen();
     const oldHandler = newRequest[method];
 
-    newRequest[method] = url => oldHandler(prefix + url);
+    newRequest[method] = (url) => oldHandler(prefix + url);
 
     return newRequest;
 };

@@ -1,11 +1,11 @@
-'use strict';
 
-var config = require('config');
+const config = require('config');
+
 const BASE_URL = config.get('gfw.flagshipUrl');
 
-var qs = require('querystring'),
-    moment = require('moment'),
-    _ = require('lodash');
+const qs = require('querystring');
+const moment = require('moment');
+const _ = require('lodash');
 
 const ALLOWED_PARAMS = [
     'tab', 'geojson', 'geostore', 'wdpaid', 'begin', 'end', 'threshold',
@@ -13,8 +13,8 @@ const ALLOWED_PARAMS = [
     'fit_to_geom'
 ];
 
-const getIso = function (subscription) {
-    let params = subscription.params || {};
+const getIso = (subscription) => {
+    const params = subscription.params || {};
 
     if (params.iso && params.iso.country) {
         let iso = params.iso.country;
@@ -24,9 +24,9 @@ const getIso = function (subscription) {
         }
 
         return iso;
-    } else {
-        return 'ALL';
     }
+    return 'ALL';
+
 };
 
 class AlertUrlService {
@@ -52,11 +52,11 @@ class AlertUrlService {
             iso = 'ALL';
         }
 
-        let existingUrlParams = _.pick(subscription.params, ALLOWED_PARAMS);
+        const existingUrlParams = _.pick(subscription.params, ALLOWED_PARAMS);
         query = _.omitBy(Object.assign(query, existingUrlParams), _.isNil);
 
-        let baselayer = layer.name,
-            querystring = qs.stringify(query);
+        const baselayer = layer.name;
+        const querystring = qs.stringify(query);
 
         return `${BASE_URL}/map/3/0/0/${iso}/grayscale/${baselayer}?${querystring}`;
     }

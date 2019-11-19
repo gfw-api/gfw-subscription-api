@@ -2,12 +2,12 @@
 const nock = require('nock');
 const Subscription = require('models/subscription');
 const { omit } = require('lodash');
+const chai = require('chai');
 const { createRequest } = require('./utils/test-server');
 const { MOCK_USER_IDS, ROLES } = require('./utils/test.constants');
 const {
     ensureCorrectError, createSubInDB, getUUID, createAuthCases
 } = require('./utils/helpers');
-const chai = require('chai');
 
 const should = chai.should();
 
@@ -24,8 +24,6 @@ describe('Get subscription by id endpoint', () => {
         if (process.env.NODE_ENV !== 'test') {
             throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
         }
-
-        nock.cleanAll();
 
         subscription = await createRequest(prefix, 'get');
         authCases.setRequester(subscription);
@@ -90,9 +88,8 @@ describe('Get subscription by id endpoint', () => {
         data.should.have.property('attributes').and.instanceOf(Object);
 
         // omit fields which are not present to user from response body and convert the createdAt to ISO string
-        const expectedSubscription = omit(Object.assign({}, createSubscription._doc, {
-            createdAt: createSubscription.createdAt.toISOString(),
-        }), ['_id', 'updateAt', 'application', '__v']);
+        // eslint-disable-next-line no-underscore-dangle
+        const expectedSubscription = omit({ ...createSubscription._doc, createdAt: createSubscription.createdAt.toISOString(), }, ['_id', 'updateAt', 'application', '__v']);
 
         data.attributes.should.deep.equal(expectedSubscription);
     });

@@ -1,28 +1,22 @@
-'use strict';
-
+/* eslint-disable no-continue */
 const Subscription = require('models/subscription');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const MailService = require('services/mailService');
-var JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
+const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 const julian = require('julian');
 const logger = require('logger');
 
-var deserializer = function (obj) {
-    return function (callback) {
-        new JSONAPIDeserializer({ keyForAttribute: 'camelCase' }).deserialize(obj, callback);
-    };
-};
-
 class DatasetService {
 
-    static* runSubscriptionQuery(subscription, queryType) {
+    // eslint-disable-next-line consistent-return
+    static async runSubscriptionQuery(subscription, queryType) {
         logger.info('Iterate over datasetsQuery of each subs');
         const queryData = [];
         for (let j = 0; j < subscription.datasetsQuery.length; j++) {
             try {
                 const datasetQuery = subscription.datasetsQuery[j];
                 // for each subs, each dataset query -> get dataset, get geostoreId from area and finally exec the desired query
-                const dataset = yield DatasetService.getDataset(datasetQuery.id);
+                const dataset = await DatasetService.getDataset(datasetQuery.id);
                 if (!dataset) {
                     logger.error('Error getting dataset of subs');
                     continue;
@@ -30,17 +24,25 @@ class DatasetService {
                 // geostore from different sources
                 let geostoreId = null;
                 if (subscription.params.area) {
-                    geostoreId = yield DatasetService.getGeostoreIdByArea(subscription.params.area);
+                    geostoreId = await DatasetService.getGeostoreIdByArea(subscription.params.area);
                 } else if (subscription.params.geostore) {
                     geostoreId = subscription.params.geostore;
                 } else {
-                    geostoreId = yield DatasetService.getGeostoreIdByParams(subscription.params);
+                    geostoreId = await DatasetService.getGeostoreIdByParams(subscription.params);
                 }
                 if (!geostoreId) {
                     logger.error('Error getting geostore of area');
                     continue;
                 }
-                const result = yield DatasetService.executeQuery(dataset.subscribable[datasetQuery.type][queryType], datasetQuery.lastSentDate, new Date(), geostoreId, dataset.tableName, datasetQuery.threshold);
+
+                const result = await DatasetService.executeQuery(
+                    dataset.subscribable[datasetQuery.type][queryType],
+                    datasetQuery.lastSentDate,
+                    new Date(),
+                    geostoreId,
+                    dataset.tableName,
+                    datasetQuery.threshold
+                );
                 // for data endpoint
                 if (queryType === 'dataQuery') {
                     const queryDataObject = {};
@@ -60,17 +62,17 @@ class DatasetService {
                     try {
                         if (result.data && result.data.length === 1 && result.data[0].value && result.data[0].value > 0) {
                             // getting metadata first
-                            const metadata = yield DatasetService.getMetadata(datasetQuery.id, subscription.application, subscription.language);
+                            const metadata = await DatasetService.getMetadata(datasetQuery.id, subscription.application, subscription.language);
                             // sending mail
                             if (subscription.resource.type === 'EMAIL') {
-                                const areaName = subscription.params.area ? yield DatasetService.getAreaName(subscription.params.area) : '';
+                                const areaName = subscription.params.area ? await DatasetService.getAreaName(subscription.params.area) : '';
                                 const data = {
                                     subject: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
                                     datasetName: dataset.name,
                                     datasetId: datasetQuery.id,
                                     datasetSummary: metadata[0].attributes.info.functions,
                                     areaId: subscription.params.area ? subscription.params.area : '',
-                                    areaName: areaName,
+                                    areaName,
                                     alertName: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
                                     alertType: datasetQuery.type,
                                     alertBeginDate: datasetQuery.lastSentDate.toISOString().slice(0, 10),
@@ -89,7 +91,7 @@ class DatasetService {
                             }
                             // update subs
                             if (dataset.mainDateField) {
-                                subscription.datasetsQuery[j].lastSentDate = yield DatasetService.getLastDateFromDataset(dataset.slug, dataset.mainDateField);
+                                subscription.datasetsQuery[j].lastSentDate = await DatasetService.getLastDateFromDataset(dataset.slug, dataset.mainDateField);
                             } else {
                                 subscription.datasetsQuery[j].lastSentDate = new Date();
                             }
@@ -97,7 +99,7 @@ class DatasetService {
                                 value: result.data[0].value,
                                 date: new Date()
                             }]);
-                            yield subscription.save();
+                            await subscription.save();
                             logger.debug('Finished subscription');
                         }
                     } catch (e) {
@@ -115,30 +117,30 @@ class DatasetService {
     }
 
     // for data endpoint
-    static* processSubscriptionData(subscriptionId) {
-        const subscription = yield Subscription.findById(subscriptionId).exec();
-        const data = yield DatasetService.runSubscriptionQuery(subscription, 'dataQuery');
+    static async processSubscriptionData(subscriptionId) {
+        const subscription = await Subscription.findById(subscriptionId).exec();
+        const data = await DatasetService.runSubscriptionQuery(subscription, 'dataQuery');
         return data;
     }
 
 
-    static* processSubscriptions() {
+    static async processSubscriptions() {
         logger.info('Processing dataset subs');
         logger.info('Getting datasetsQuery subscriptions');
-        const subscriptions = yield Subscription.find({
+        const subscriptions = await Subscription.find({
             confirmed: true,
             datasetsQuery: { $exists: true, $not: { $size: 0 } }
         }).exec();
         logger.info('Iterate over subs');
         for (let i = 0; i < subscriptions.length; i++) {
             const subscription = subscriptions[i];
-            yield DatasetService.runSubscriptionQuery(subscription, 'subscriptionQuery');
+            await DatasetService.runSubscriptionQuery(subscription, 'subscriptionQuery');
         }
     }
 
-    static* getDataset(datasetId) {
+    static async getDataset(datasetId) {
         try {
-            const result = yield ctRegisterMicroservice.requestToMicroservice({
+            const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: `/dataset/${datasetId}`,
                 method: 'GET',
                 json: true
@@ -150,9 +152,9 @@ class DatasetService {
         }
     }
 
-    static* getMetadata(datasetId, application, language) {
+    static async getMetadata(datasetId, application, language) {
         try {
-            const result = yield ctRegisterMicroservice.requestToMicroservice({
+            const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: `/dataset/${datasetId}/metadata?application=${application}&language=${language}`,
                 method: 'GET',
                 json: true
@@ -164,16 +166,18 @@ class DatasetService {
         }
     }
 
-    static* getGeostoreIdByArea(idArea) {
+    static async getGeostoreIdByArea(idArea) {
         try {
             logger.info('Obtaining area with id: ', idArea);
-            const result = yield ctRegisterMicroservice.requestToMicroservice({
+            const areaResult = await ctRegisterMicroservice.requestToMicroservice({
                 uri: `/area/${idArea}`,
                 method: 'GET',
                 json: true
             });
 
-            const area = yield deserializer(result);
+            const area = await new JSONAPIDeserializer({
+                keyForAttribute: 'camelCase'
+            }).deserialize(areaResult);
             logger.info('Area Result', area);
             if (area.geostore) {
                 return area.geostore;
@@ -183,23 +187,23 @@ class DatasetService {
                 uri += `/use/${area.use.name}/${area.use.id}`;
             } else if (area.wdpaid) {
                 uri += `/wdpa/${area.wdpaid}`;
-            } else {
-                if (area.iso) {
-                    if (area.iso && area.iso.region) {
-                        uri += `/admin/${area.iso.country}/${area.iso.region}`;
-                    } else {
-                        uri += `/admin/${area.iso.country}`;
-                    }
+            } else if (area.iso) {
+                if (area.iso && area.iso.region) {
+                    uri += `/admin/${area.iso.country}/${area.iso.region}`;
+                } else {
+                    uri += `/admin/${area.iso.country}`;
                 }
             }
             try {
                 logger.info('Uri', uri);
-                const result = yield ctRegisterMicroservice.requestToMicroservice({
-                    uri: uri,
+                const result = await ctRegisterMicroservice.requestToMicroservice({
+                    uri,
                     method: 'GET',
                     json: true
                 });
-                const geostore = yield deserializer(result);
+                const geostore = await new JSONAPIDeserializer({
+                    keyForAttribute: 'camelCase'
+                }).deserialize(result);
                 return geostore.id;
             } catch (error) {
                 logger.error(error);
@@ -211,15 +215,17 @@ class DatasetService {
         }
     }
 
-    static* getAreaName(idArea) {
+    static async getAreaName(idArea) {
         try {
             logger.info('Obtaining area with id: ', idArea);
-            const result = yield ctRegisterMicroservice.requestToMicroservice({
+            const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: `/area/${idArea}`,
                 method: 'GET',
                 json: true
             });
-            const area = yield deserializer(result);
+            const area = await new JSONAPIDeserializer({
+                keyForAttribute: 'camelCase'
+            }).deserialize(result);
             return area.name;
         } catch (error) {
             logger.error(error);
@@ -227,30 +233,30 @@ class DatasetService {
         }
     }
 
-    static* getGeostoreIdByParams(params) {
+    static async getGeostoreIdByParams(params) {
         try {
             let uri = '/geostore';
             if (params.use && params.useid) {
                 uri += `/use/${params.use}/${params.useid}`;
             } else if (params.wdpaid) {
                 uri += `/wdpa/${params.wdpaid}`;
-            } else {
-                if (params.iso && params.iso.country) {
-                    if (params.iso && params.iso.region) {
-                        uri += `/admin/${params.iso.country}/${params.iso.region}`;
-                    } else {
-                        uri += `/admin/${params.iso.country}`;
-                    }
+            } else if (params.iso && params.iso.country) {
+                if (params.iso && params.iso.region) {
+                    uri += `/admin/${params.iso.country}/${params.iso.region}`;
+                } else {
+                    uri += `/admin/${params.iso.country}`;
                 }
             }
             try {
                 logger.info('Uri', uri);
-                const result = yield ctRegisterMicroservice.requestToMicroservice({
-                    uri: uri,
+                const result = await ctRegisterMicroservice.requestToMicroservice({
+                    uri,
                     method: 'GET',
                     json: true
                 });
-                const geostore = yield deserializer(result);
+                const geostore = await new JSONAPIDeserializer({
+                    keyForAttribute: 'camelCase'
+                }).deserialize(result);
                 return geostore.id;
             } catch (error) {
                 logger.error(error);
@@ -262,17 +268,19 @@ class DatasetService {
         }
     }
 
-    static* executeQuery(query, beginDate, endDate, geostoreId, tableName, threshold) {
+    static async executeQuery(query, beginDate, endDate, geostoreId, tableName, threshold) {
 
-        let julianDayBegin = julian.toJulianDay(beginDate);
-        let yearBegin = beginDate.getFullYear();
-        let julianDayEnd = julian.toJulianDay(endDate);
-        let yearEnd = endDate.getFullYear();
-        let finalQuery = query.replace('{{begin}}', beginDate.toISOString().slice(0, 10)).replace('{{end}}', endDate.toISOString().slice(0, 10))
-            .replace('{{julianDayBegin}}', julianDayBegin).replace('{{yearBegin}}', yearBegin).replace('{{julianDayEnd}}', julianDayEnd).replace('{{yearEnd}}', yearEnd);
+        const julianDayBegin = julian.toJulianDay(beginDate);
+        const yearBegin = beginDate.getFullYear();
+        const julianDayEnd = julian.toJulianDay(endDate);
+        const yearEnd = endDate.getFullYear();
+        const finalQuery = query.replace('{{begin}}', beginDate.toISOString().slice(0, 10)).replace('{{end}}', endDate.toISOString().slice(0, 10))
+            .replace('{{julianDayBegin}}', julianDayBegin).replace('{{yearBegin}}', yearBegin)
+            .replace('{{julianDayEnd}}', julianDayEnd)
+            .replace('{{yearEnd}}', yearEnd);
         logger.debug('Doing query: ', finalQuery);
         try {
-            const result = yield ctRegisterMicroservice.requestToMicroservice({
+            const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: '/query',
                 qs: {
                     sql: finalQuery,
@@ -289,12 +297,12 @@ class DatasetService {
         }
     }
 
-    static* getLastDateFromDataset(datasetSlug, datasetMainDateField) {
+    static async getLastDateFromDataset(datasetSlug, datasetMainDateField) {
 
         const query = `select max(${datasetMainDateField}) as lastdate from ${datasetSlug}`;
         logger.debug('Doing query: ', query);
         try {
-            const result = yield ctRegisterMicroservice.requestToMicroservice({
+            const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: '/query',
                 qs: {
                     sql: query

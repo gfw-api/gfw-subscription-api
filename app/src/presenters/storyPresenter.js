@@ -1,8 +1,7 @@
-'use strict';
 
 class StoryPresenter {
 
-    static* transform(results, layer, subscription) {
+    static async transform(results) {
         results.alert_count = results.list.length;
 
 

@@ -4,7 +4,7 @@ const {
     mockDataset, MOCK_FILE, MOCK_USERS
 } = require('./test.constants');
 
-const createMockDataset = id => nock(process.env.CT_URL)
+const createMockDataset = (id) => nock(process.env.CT_URL)
     .get(`/v1/dataset/${id}`)
     .reply(200, {
         data: mockDataset(id)
@@ -33,16 +33,16 @@ const createMockUnsubscribeSUB = () => nock(config.get('gfw.flagshipUrl'))
     .reply(200, { mockMessage: 'Should redirect' });
 
 const createMockUsers = (userIDS) => {
-    const createMock = user => nock(process.env.CT_URL)
+    const createMock = (user) => nock(process.env.CT_URL)
         .get(`/v1/user/${user.id}`)
         .reply(200, { data: user });
 
-    userIDS.map(userID => createMock(MOCK_USERS.find(user => user.id === userID)));
+    userIDS.map((userID) => createMock(MOCK_USERS.find((user) => user.id === userID)));
 };
 
 const createMockLatestDataset = (datasetID, date) => nock(process.env.CT_URL)
     .get(`/v1/${datasetID}/latest`)
-    .reply(200, { data: {date} });
+    .reply(200, { data: { date } });
 
 module.exports = {
     createMockUnsubscribeSUB,

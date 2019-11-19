@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
-const Statistic = require('models/stadistic');
+const Statistic = require('models/statistic');
+const chai = require('chai');
 const {
     ROLES,
     MOCK_USERS,
@@ -15,7 +16,6 @@ const {
 } = require('./utils/helpers');
 const { createMockUsersWithRange } = require('./utils/mock');
 const { createSubscriptions, createExpectedGroupStatistics, createStatistics } = require('./utils/helpers/statistic');
-const chai = require('chai');
 
 const should = chai.should();
 
@@ -34,13 +34,11 @@ describe('Subscription statistic endpoint', () => {
             throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
         }
 
-        nock.cleanAll();
-
         statistic = await getTestServer();
         authCases.setRequester(statistic);
 
-      await Subscription.deleteMany({}).exec();
-        Statistic.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
+        Statistic.deleteMany({}).exec();
     });
 
     it('Getting statistic without provide loggedUser should fall', authCases.isLoggedUserRequired());
@@ -52,13 +50,18 @@ describe('Subscription statistic endpoint', () => {
     it('Getting statistic while being authenticated as ADMIN but with wrong apps should fall', authCases.isRightAppRequired());
 
     it('Getting statistic without start date should fall', async () => {
-        const response = await statistic.get(url).query({ end: new Date() }).send({ loggedUser: ROLES.ADMIN });
+        const response = await statistic.get(url)
+            .query({ end: new Date(), loggedUser: JSON.stringify(ROLES.ADMIN) });
+
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'Start date required');
     });
 
     it('Getting statistic without end date should fall', async () => {
-        const response = await statistic.get(url).query({ start: new Date() }).send({ loggedUser: ROLES.ADMIN });
+        const response = await statistic
+            .get(url)
+            .query({ start: new Date(), loggedUser: JSON.stringify(ROLES.ADMIN) });
+
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'End date required');
     });
@@ -82,8 +85,7 @@ describe('Subscription statistic endpoint', () => {
 
         const response = await statistic
             .get(url)
-            .query({ start: startDate, end: endDate })
-            .send({ loggedUser: ROLES.ADMIN });
+            .query({ start: startDate, end: endDate, loggedUser: JSON.stringify(ROLES.ADMIN) });
 
         response.status.should.equal(200);
 

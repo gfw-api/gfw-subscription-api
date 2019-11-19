@@ -1,6 +1,3 @@
-'use strict';
-const logger = require('logger');
-
 const MOCK_DATA = {
     'viirs-active-fires': {
         layerSlug: 'viirs-active-fires',
@@ -43,7 +40,7 @@ const MOCK_DATA = {
         },
         map_image: 'https://gfw2stories.s3.amazonaws.com/map_preview/b5f2e3e52e1412c003c787aa0f2007ce%3A1500987953812_-74.9882431030273%2C-34.7470817565917%2C-27.8472194671629%2C6.2648777961731.png',
     },
-    'story': {
+    story: {
         layerSlug: 'story',
         alert_name: 'Brazil Alerts',
         selected_area: 'ISO Code: BRA',
@@ -55,6 +52,7 @@ const MOCK_DATA = {
         alert_count: 25,
         stories: [{
             title: 'Murder in the Forest',
+            // eslint-disable-next-line max-len
             description: 'Last updated in July 19, 2016 Last night I received the revolting news that Eusébio Ka’apor was cowardly murdered by loggers at Centro do Guilherme, Maranhão State, as a retaliation to the Ka’apor monitoring and surveillance, which resulted in the closure of all invasion roads at Alto Turiaçú Indigenous Territory',
             url: 'http://www.globalforestwatch.org/stories/425',
             image: 'http://gfw2stories.s3.amazonaws.com/uploads/14690228334704e26fbed5044e02012cf33c267c6f9bekaapor1.jpeg'
@@ -78,7 +76,7 @@ const MOCK_DATA = {
         }],
         map_image: 'https://gfw2stories.s3.amazonaws.com/map_preview/b5f2e3e52e1412c003c787aa0f2007ce%3A1500987953812_-74.9882431030273%2C-34.7470817565917%2C-27.8472194671629%2C6.2648777961731.png',
     },
-    'forma250GFW': {
+    forma250GFW: {
         layerSlug: 'forma250GFW',
         alert_name: 'Brazil Alerts',
         selected_area: 'ISO Code: BRA',
@@ -165,9 +163,11 @@ const MOCK_DATA = {
 
 class MockService {
 
-    * getMock(slug) {
+    // eslint-disable-next-line class-methods-use-this
+    getMock(slug) {
         return MOCK_DATA[slug] ? MOCK_DATA[slug] : MOCK_DATA['viirs-active-fires'];
     }
+
 }
 
 module.exports = new MockService();
