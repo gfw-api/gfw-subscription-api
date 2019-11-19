@@ -43,7 +43,7 @@ describe('Send confirmation endpoint', () => {
         subscription = await createRequest(prefix, 'get');
         authCases.setRequester(subscription);
 
-        Subscription.remove({}).exec();
+      await Subscription.deleteMany({}).exec();
     });
 
     it('Sending confirm subscription without provide loggedUser should fall', authCases.isLoggedUserRequired());
@@ -111,10 +111,10 @@ describe('Send confirmation endpoint', () => {
         process.on('unhandledRejection', err => should.fail(err));
     });
 
-    afterEach(() => {
+    afterEach(async () => {
         process.removeAllListeners('unhandledRejection');
         this.channel.removeAllListeners('message');
-        Subscription.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);

@@ -22,7 +22,7 @@ describe('Get subscriptions tests', () => {
 
         requester = await getTestServer();
 
-        Subscription.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 
     it('Get all subscriptions as an anonymous user should return an "unauthorized" error with matching 401 HTTP code', async () => {
@@ -236,8 +236,14 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions with application and app filter should be successful and return a list of subscriptions for that env and application (no matches, populated db)', async () => {
-        await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw', env: 'production' })).save();
-        await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'gfw', env: 'production' })).save();
+        await new Subscription(createSubscription(ROLES.USER.id, null, {
+            application: 'rw',
+            env: 'production'
+        })).save();
+        await new Subscription(createSubscription(ROLES.USER.id, null, {
+            application: 'gfw',
+            env: 'production'
+        })).save();
         await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw', env: 'staging' })).save();
 
         await new Subscription(createSubscription(getUUID())).save();
@@ -256,8 +262,14 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions with application and app filter should be successful and return a list of subscriptions for that env and application (populated db)', async () => {
-        await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw', env: 'production' })).save();
-        const subscriptionTwo = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'gfw', env: 'production' })).save();
+        await new Subscription(createSubscription(ROLES.USER.id, null, {
+            application: 'rw',
+            env: 'production'
+        })).save();
+        const subscriptionTwo = await new Subscription(createSubscription(ROLES.USER.id, null, {
+            application: 'gfw',
+            env: 'production'
+        })).save();
         await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw', env: 'staging' })).save();
 
         await new Subscription(createSubscription(getUUID())).save();
@@ -287,11 +299,11 @@ describe('Get subscriptions tests', () => {
         });
     });
 
-    afterEach(() => {
+    afterEach(async () => {
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
         }
 
-        Subscription.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 });

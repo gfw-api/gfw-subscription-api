@@ -55,7 +55,7 @@ describe('Update subscription endpoint', () => {
         requester = await getTestServer();
         authCases.setRequester(requester);
 
-        Subscription.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 
     it('Updating subscription without being authenticated should fall', authCases.isLoggedUserRequired());
@@ -144,8 +144,8 @@ describe('Update subscription endpoint', () => {
         actualSubscription.should.deep.equal(expectedSubscription);
     });
 
-    afterEach(() => {
-        Subscription.remove({}).exec();
+    afterEach(async () => {
+        await Subscription.deleteMany({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);

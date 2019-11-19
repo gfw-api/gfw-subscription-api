@@ -39,7 +39,7 @@ describe('Subscription statistic endpoint', () => {
         statistic = await getTestServer();
         authCases.setRequester(statistic);
 
-        Subscription.remove({}).exec();
+      await Subscription.deleteMany({}).exec();
         Statistic.remove({}).exec();
     });
 
@@ -111,9 +111,9 @@ describe('Subscription statistic endpoint', () => {
         response.body.should.deep.equal(expectedBody);
     });
 
-    afterEach(() => {
-        Statistic.remove({}).exec();
-        Subscription.remove({}).exec();
+    afterEach(async () => {
+        await Statistic.deleteMany({}).exec();
+        await Subscription.deleteMany({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
