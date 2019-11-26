@@ -23,8 +23,6 @@ const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
 
 const redisClient = redis.createClient({ url: config.get('redis.url') });
 
-redisClient.subscribe(CHANNEL);
-
 class SubscriptionsRouter {
 
     static getUser(ctx) {
