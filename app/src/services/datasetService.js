@@ -66,9 +66,10 @@ class DatasetService {
                             // sending mail
                             if (subscription.resource.type === 'EMAIL') {
                                 const areaName = subscription.params.area ? await DatasetService.getAreaName(subscription.params.area) : '';
+                                const datasetName = metadata[0].attributes.info.name || dataset.attributes.name || dataset.name;
                                 const data = {
                                     subject: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
-                                    datasetName: dataset.name,
+                                    datasetName,
                                     datasetId: datasetQuery.id,
                                     datasetSummary: metadata[0].attributes.info.functions,
                                     areaId: subscription.params.area ? subscription.params.area : '',
