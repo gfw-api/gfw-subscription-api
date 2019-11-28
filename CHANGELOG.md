@@ -1,3 +1,6 @@
+# 28/11/2019
+- Use dataset's metadata name field on subscription emails, instead of dataset's name
+
 # 19/11/2019
 
 - Add additional tests
