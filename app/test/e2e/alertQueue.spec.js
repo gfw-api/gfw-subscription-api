@@ -397,7 +397,7 @@ describe('AlertQueue ', () => {
                     jsonMessage.data.should.have.property('map_image').and.equal(null);
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my_gfw/subscriptions');
-                    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`http://${process.env.HOST_IP}:9000/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);
+                    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);
                     jsonMessage.data.should.have.property('value').and.equal(3578);
 
                     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
