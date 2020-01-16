@@ -5,6 +5,7 @@ const MailService = require('services/mailService');
 const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 const julian = require('julian');
 const logger = require('logger');
+const request = require('request');
 
 class DatasetService {
 
@@ -63,33 +64,43 @@ class DatasetService {
                         if (result.data && result.data.length === 1 && result.data[0].value && result.data[0].value > 0) {
                             // getting metadata first
                             const metadata = await DatasetService.getMetadata(datasetQuery.id, subscription.application, subscription.language);
-                            // sending mail
+                            const areaName = subscription.params.area ? await DatasetService.getAreaName(subscription.params.area) : '';
+                            const datasetName = metadata[0].attributes.info.name || dataset.attributes.name || dataset.name;
+                            const data = {
+                                subject: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
+                                datasetName,
+                                datasetId: datasetQuery.id,
+                                datasetSummary: metadata[0].attributes.info.functions,
+                                areaId: subscription.params.area ? subscription.params.area : '',
+                                areaName,
+                                alertName: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
+                                alertType: datasetQuery.type,
+                                alertBeginDate: datasetQuery.lastSentDate.toISOString().slice(0, 10),
+                                alertEndDate: new Date().toISOString().slice(0, 10),
+                                alertResult: result.data[0].value
+                            };
+
+                            // Execute EMAIL notification - sending an email
                             if (subscription.resource.type === 'EMAIL') {
-                                const areaName = subscription.params.area ? await DatasetService.getAreaName(subscription.params.area) : '';
-                                const datasetName = metadata[0].attributes.info.name || dataset.attributes.name || dataset.name;
-                                const data = {
-                                    subject: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
-                                    datasetName,
-                                    datasetId: datasetQuery.id,
-                                    datasetSummary: metadata[0].attributes.info.functions,
-                                    areaId: subscription.params.area ? subscription.params.area : '',
-                                    areaName,
-                                    alertName: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
-                                    alertType: datasetQuery.type,
-                                    alertBeginDate: datasetQuery.lastSentDate.toISOString().slice(0, 10),
-                                    alertEndDate: new Date().toISOString().slice(0, 10),
-                                    alertResult: result.data[0].value
-                                };
                                 logger.debug('Sending mail with data', data);
                                 let template = 'dataset-rw';
                                 if (subscription.env && subscription.env !== 'production') {
                                     template += `-${subscription.env}`;
                                 }
                                 MailService.sendMail(template, data, [{ address: subscription.resource.content }], 'rw'); // sender='rw'
-
-                            } else {
-                                // @TODO resource.type === 'WEBHOOK'?
                             }
+
+                            // Execute URL notification - POSTing to webhook
+                            if (subscription.resource.type === 'URL') {
+                                // POST to URL configured in subscription.resource.content
+                                request.post(subscription.resource.content, { json: data }, (error, res, body) => {
+                                    logger.debug('Response received from POST to subscription web-hook: ', res.statusCode, body);
+                                    if (error) {
+                                        logger.error('Error POSTing to subscription web-hook: ', error);
+                                    }
+                                });
+                            }
+
                             // update subs
                             if (dataset.mainDateField) {
                                 subscription.datasetsQuery[j].lastSentDate = await DatasetService.getLastDateFromDataset(dataset.slug, dataset.mainDateField);

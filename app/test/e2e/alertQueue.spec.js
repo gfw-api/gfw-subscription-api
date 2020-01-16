@@ -439,17 +439,103 @@ describe('AlertQueue ', () => {
         statistic.should.have.property('createdAt').and.be.a('date');
     });
 
+    it('Dataset messages received when resource type is EMAIL trigger an email being queued', async () => {
+        await new Subscription(createSubscription(ROLES.USER.id, 'viirs-active-fires', {
+            datasetsQuery: [{ id: 'viirs-active-fires', type: 'dataset' }],
+            resource: {
+                content: 'subscription-recipient@vizzuality.com',
+                type: 'EMAIL'
+            },
+        })).save();
 
-    afterEach(() => {
+        nock(process.env.CT_URL)
+            .get('/v1/dataset/viirs-active-fires')
+            .reply(200, {
+                data: {
+                    attributes: {
+                        subscribable: { dataset: { subscriptionQuery: '' } },
+                        tableName: 'test',
+                    }
+                }
+            });
+
+        nock(process.env.CT_URL)
+            .get('/v1/query')
+            .query(() => true)
+            .reply(200, { data: [{ value: 10000 }] });
+
+        nock(process.env.CT_URL)
+            .get('/v1/dataset/viirs-active-fires/metadata')
+            .query(() => true)
+            .reply(200, { data: [{ attributes: { info: { name: 'metatest' } } }] });
+
+        process.on('unhandledRejection', (error) => { should.fail(error); });
+
+        redisClient.on('message', (channel, message) => {
+            const jsonMessage = JSON.parse(message);
+            jsonMessage.should.have.property('template');
+            if (jsonMessage.template === 'dataset-rw') {
+                jsonMessage.should.have.property('sender').and.equal('rw');
+                jsonMessage.should.have.property('data').and.be.a('object');
+                jsonMessage.should.have.property('recipients').and.be.a('array').and.have.length(1);
+                jsonMessage.recipients[0].should.have.property('address').and.equal('subscription-recipient@vizzuality.com');
+            } else {
+                should.fail('Unsupported message type: ', jsonMessage.template);
+            }
+        });
+
+        await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
+    });
+
+    it('Dataset messages received when resource type is URl trigger a POST request to a web-hook URL', async () => {
+        await new Subscription(createSubscription(ROLES.USER.id, 'viirs-active-fires', {
+            datasetsQuery: [{ id: 'viirs-active-fires', type: 'dataset' }],
+            resource: {
+                content: 'http://www.webhook.com',
+                type: 'URL'
+            },
+        })).save();
+
+        nock(process.env.CT_URL)
+            .get('/v1/dataset/viirs-active-fires')
+            .reply(200, {
+                data: {
+                    attributes: {
+                        subscribable: { dataset: { subscriptionQuery: '' } },
+                        tableName: 'test',
+                    }
+                }
+            });
+
+        nock(process.env.CT_URL)
+            .get('/v1/query')
+            .query(() => true)
+            .reply(200, { data: [{ value: 10000 }] });
+
+        nock(process.env.CT_URL)
+            .get('/v1/dataset/viirs-active-fires/metadata')
+            .query(() => true)
+            .reply(200, { data: [{ attributes: { info: { name: 'metatest' } } }] });
+
+        // If this mock is not used (i.e., the web-hook is not called), the test will fail
+        nock('http://www.webhook.com')
+            .post('/')
+            .query(() => true)
+            .reply(200, { received: true });
+
+        process.on('unhandledRejection', (error) => { should.fail(error); });
+
+        await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
+    });
+
+    afterEach(async () => {
         redisClient.removeAllListeners('message');
         process.removeAllListeners('unhandledRejection');
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
         }
-    });
 
-    after(async () => {
         await Subscription.deleteMany({}).exec();
         await Statistic.deleteMany({}).exec();
     });
