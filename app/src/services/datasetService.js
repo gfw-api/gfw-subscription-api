@@ -95,9 +95,9 @@ class DatasetService {
                                 // POST to URL configured in subscription.resource.content
                                 request.post(subscription.resource.content, { json: data }, (error, res, body) => {
                                     if (res && res.statusCode < 400) {
-                                        logger.info(`Successfully POSTed to subscription web-hook with status code ${res.statusCode}:`, data, body);
+                                        logger.info(`Successfully POSTed to subscription web-hook with status code ${res.statusCode}:`, subscription, body);
                                     } else if (res && res.statusCode >= 400) {
-                                        logger.debug(`POST to subscription web-hook returned error status code ${res.statusCode}`, data, body);
+                                        logger.debug(`POST to subscription web-hook returned error status code ${res.statusCode}`, subscription, body);
                                     }
 
                                     if (error) {
