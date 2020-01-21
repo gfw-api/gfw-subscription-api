@@ -101,7 +101,7 @@ class DatasetService {
                                     }
 
                                     if (error) {
-                                        logger.error('Error POSTing to subscription web-hook: ', error);
+                                        logger.warn('Error POSTing to subscription web-hook: ', error);
                                     }
                                 });
                             }
