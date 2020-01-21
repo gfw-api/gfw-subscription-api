@@ -487,13 +487,10 @@ describe('AlertQueue ', () => {
         await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
     });
 
-    it('Dataset messages received when resource type is URl trigger a POST request to a web-hook URL', async () => {
+    const createDatasetWithWebHook = async (url) => {
         await new Subscription(createSubscription(ROLES.USER.id, 'viirs-active-fires', {
             datasetsQuery: [{ id: 'viirs-active-fires', type: 'dataset' }],
-            resource: {
-                content: 'http://www.webhook.com',
-                type: 'URL'
-            },
+            resource: { content: url, type: 'URL' },
         })).save();
 
         nock(process.env.CT_URL)
@@ -516,12 +513,33 @@ describe('AlertQueue ', () => {
             .get('/v1/dataset/viirs-active-fires/metadata')
             .query(() => true)
             .reply(200, { data: [{ attributes: { info: { name: 'metatest' } } }] });
+    };
+
+    it('All goes well when a dataset Redis message is received for a subscription with an invalid resource type URL', async () => {
+        await createDatasetWithWebHook('invalidURL');
+
+        process.on('unhandledRejection', (error) => { should.fail(error); });
+
+        await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
+    });
+
+    it('All goes well when a dataset Redis message is received for a subscription with a valid resource type URL that returns 4XX codes', async () => {
+        await createDatasetWithWebHook('http://www.webhook.com');
 
         // If this mock is not used (i.e., the web-hook is not called), the test will fail
-        nock('http://www.webhook.com')
-            .post('/')
-            .query(() => true)
-            .reply(200, { received: true });
+        nock('http://www.webhook.com').post('/').query(() => true).reply(400);
+
+        process.on('unhandledRejection', (error) => { should.fail(error); });
+
+        await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
+    });
+
+
+    it('POST request to a web-hook URL triggered when a dataset Redis message is received for a subscription with a valid resource type URL (happy case)', async () => {
+        await createDatasetWithWebHook('http://www.webhook.com');
+
+        // If this mock is not used (i.e., the web-hook is not called), the test will fail
+        nock('http://www.webhook.com').post('/').query(() => true).reply(200, { received: true });
 
         process.on('unhandledRejection', (error) => { should.fail(error); });
 
