@@ -1,6 +1,7 @@
 const Statistic = require('models/statistic');
 const Subscription = require('models/subscription');
 const UrlService = require('services/urlService');
+const nock = require('nock');
 const { ROLES } = require('./test.constants');
 
 const getUUID = () => Math.random().toString(36).substring(7);
@@ -110,6 +111,34 @@ const validRedisMessage = (data = {}) => async (channel, message) => {
     messageData.sender.should.equal(application);
 };
 
+const createDatasetWithWebHook = async (url) => {
+    await new Subscription(createSubscription(ROLES.USER.id, 'viirs-active-fires', {
+        datasetsQuery: [{ id: 'viirs-active-fires', type: 'dataset' }],
+        resource: { content: url, type: 'URL' },
+    })).save();
+
+    nock(process.env.CT_URL)
+        .get('/v1/dataset/viirs-active-fires')
+        .reply(200, {
+            data: {
+                attributes: {
+                    subscribable: { dataset: { subscriptionQuery: '' } },
+                    tableName: 'test',
+                }
+            }
+        });
+
+    nock(process.env.CT_URL)
+        .get('/v1/query')
+        .query(() => true)
+        .reply(200, { data: [{ value: 10000 }] });
+
+    nock(process.env.CT_URL)
+        .get('/v1/dataset/viirs-active-fires/metadata')
+        .query(() => true)
+        .reply(200, { data: [{ attributes: { info: { name: 'metatest' } } }] });
+};
+
 module.exports = {
     createSubscription,
     getUUID,
@@ -119,5 +148,6 @@ module.exports = {
     getDateWithIncreaseYear,
     getDateWithDecreaseYear,
     createAuthCases,
-    validRedisMessage
+    validRedisMessage,
+    createDatasetWithWebHook
 };

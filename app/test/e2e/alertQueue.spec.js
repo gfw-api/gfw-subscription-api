@@ -10,7 +10,7 @@ const redis = require('redis');
 const taskConfig = require('../../../config/cron.json');
 const { getTestServer } = require('./utils/test-server');
 
-const { createSubscription } = require('./utils/helpers');
+const { createSubscription, createDatasetWithWebHook } = require('./utils/helpers');
 const { ROLES } = require('./utils/test.constants');
 
 const AlertQueue = require('../../src/queues/alert.queue');
@@ -486,34 +486,6 @@ describe('AlertQueue ', () => {
 
         await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
     });
-
-    const createDatasetWithWebHook = async (url) => {
-        await new Subscription(createSubscription(ROLES.USER.id, 'viirs-active-fires', {
-            datasetsQuery: [{ id: 'viirs-active-fires', type: 'dataset' }],
-            resource: { content: url, type: 'URL' },
-        })).save();
-
-        nock(process.env.CT_URL)
-            .get('/v1/dataset/viirs-active-fires')
-            .reply(200, {
-                data: {
-                    attributes: {
-                        subscribable: { dataset: { subscriptionQuery: '' } },
-                        tableName: 'test',
-                    }
-                }
-            });
-
-        nock(process.env.CT_URL)
-            .get('/v1/query')
-            .query(() => true)
-            .reply(200, { data: [{ value: 10000 }] });
-
-        nock(process.env.CT_URL)
-            .get('/v1/dataset/viirs-active-fires/metadata')
-            .query(() => true)
-            .reply(200, { data: [{ attributes: { info: { name: 'metatest' } } }] });
-    };
 
     it('All goes well when a dataset Redis message is received for a subscription with an invalid resource type URL', async () => {
         await createDatasetWithWebHook('invalidURL');
