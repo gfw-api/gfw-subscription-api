@@ -1,3 +1,6 @@
+# 22/01/2020
+- Add support for webhook-based subscription notifications.
+
 # 28/11/2019
 - Use dataset's metadata name field on subscription emails, instead of dataset's name
 
