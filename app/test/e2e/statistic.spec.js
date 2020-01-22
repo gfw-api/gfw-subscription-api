@@ -113,6 +113,84 @@ describe('Subscription statistic endpoint', () => {
         response.body.should.deep.equal(expectedBody);
     });
 
+    it('Getting statistic filtering by application should return the right results (happy case)', async () => {
+        const outRangeDate = getDateWithDecreaseYear(4);
+        const startDate = getDateWithDecreaseYear(1);
+        const endDate = getDateWithIncreaseYear(1);
+
+        createMockUsersWithRange(startDate, endDate);
+
+        const subscriptions = await createSubscriptions(outRangeDate);
+        const statistics = await createStatistics(outRangeDate);
+
+        const totalSubscriptions = Object.keys(subscriptions).length;
+        const totalSubscriptionsInSearchedRange = Object.keys(subscriptions).length - 1;
+        const totalUsers = MOCK_USERS.length;
+        const totalUsersWithSub = MOCK_USERS.length - 1;
+        const totalStatistics = statistics.length;
+        const totalStatisticsInSearchedRange = statistics.length - 1;
+
+        // Fetch GFW statistics
+        const gfwResponse = await statistic.get(url)
+            .query({
+                start: startDate,
+                end: endDate,
+                loggedUser: JSON.stringify(ROLES.ADMIN),
+                application: 'gfw',
+            });
+
+        gfwResponse.status.should.equal(200);
+        gfwResponse.body.should.have.property('info').and.instanceOf(Object);
+        gfwResponse.body.should.have.property('topSubscriptions').and.instanceOf(Object);
+        gfwResponse.body.should.have.property('groupStatistics').and.instanceOf(Object);
+        gfwResponse.body.should.deep.equal({
+            topSubscriptions: {
+                geostore: 1, country: 1, region: 1, wdpa: 1, use: 1
+            },
+            info: {
+                numSubscriptions: totalSubscriptionsInSearchedRange,
+                usersWithSubscriptions: totalUsersWithSub,
+                totalEmailsSentInThisQ: totalStatisticsInSearchedRange,
+                totalEmailsSended: totalStatistics,
+                totalSubscriptions,
+            },
+            usersWithSubscription: totalUsersWithSub,
+            newUsers: totalUsers,
+            groupStatistics: createExpectedGroupStatistics(subscriptions, gfwResponse.body.groupStatistics),
+        });
+
+        createMockUsersWithRange(startDate, endDate);
+
+        // Fetch RW statistics
+        const rwResponse = await statistic.get(url)
+            .query({
+                start: startDate,
+                end: endDate,
+                loggedUser: JSON.stringify(ROLES.ADMIN),
+                application: 'rw',
+            });
+
+        rwResponse.status.should.equal(200);
+        rwResponse.body.should.have.property('info').and.instanceOf(Object);
+        rwResponse.body.should.have.property('topSubscriptions').and.instanceOf(Object);
+        rwResponse.body.should.have.property('groupStatistics').and.instanceOf(Object);
+        rwResponse.body.should.deep.equal({
+            topSubscriptions: {
+                geostore: 0, country: 0, region: 0, wdpa: 0, use: 0
+            },
+            info: {
+                numSubscriptions: 0,
+                usersWithSubscriptions: 0,
+                totalEmailsSentInThisQ: 0,
+                totalEmailsSended: totalStatistics,
+                totalSubscriptions,
+            },
+            usersWithSubscription: 0,
+            newUsers: totalUsers,
+            groupStatistics: {},
+        });
+    });
+
     afterEach(async () => {
         await Statistic.deleteMany({}).exec();
         await Subscription.deleteMany({}).exec();
