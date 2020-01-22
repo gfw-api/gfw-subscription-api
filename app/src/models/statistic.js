@@ -4,6 +4,9 @@ const { Schema } = mongoose;
 
 const Statistic = new Schema({
     slug: { type: String, required: true, trim: true },
+    application: {
+        type: String, required: true, trim: true, default: 'gfw'
+    },
     createdAt: { type: Date, required: true, default: Date.now }
 });
 

@@ -208,7 +208,7 @@ class SubscriptionsRouter {
         logger.info('Obtaining statistics');
         ctx.assert(ctx.query.start, 400, 'Start date required');
         ctx.assert(ctx.query.end, 400, 'End date required');
-        ctx.body = await StatisticsService.getStatistics(new Date(ctx.query.start), new Date(ctx.query.end));
+        ctx.body = await StatisticsService.getStatistics(new Date(ctx.query.start), new Date(ctx.query.end), ctx.query.application);
     }
 
     static async statisticsGroup(ctx) {
