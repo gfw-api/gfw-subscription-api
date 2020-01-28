@@ -37,8 +37,9 @@ const createSubscription = (userId, datasetUuid = null, data = {}) => {
 
 const createSubInDB = (userId, datasetUuid = null, data = {}) => new Subscription(createSubscription(userId, datasetUuid, data)).save();
 
-const createStatistic = (createdAt = new Date()) => new Statistic({
+const createStatistic = (createdAt = new Date(), application = 'gfw') => new Statistic({
     slug: 'viirs-active-fires',
+    application,
     createdAt,
 }).save();
 
