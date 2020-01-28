@@ -81,7 +81,10 @@ Subscription.methods.publish = async function (layerConfig, begin, end) {
 
     await alertPublishers[this.resource.type].publish(this, results, layer);
     logger.info('Saving statistic');
-    await new Statistic({ slug: layerConfig.slug }).save();
+    await new Statistic({
+        slug: layerConfig.slug,
+        application: this.application,
+    }).save();
 
     return true;
 };

@@ -74,7 +74,7 @@ describe('Subscription statistic endpoint', () => {
         createMockUsersWithRange(startDate, endDate);
 
         const subscriptions = await createSubscriptions(outRangeDate);
-        const statistics = await createStatistics(outRangeDate);
+        const statistics = await createStatistics(outRangeDate, 'gfw');
 
         const totalSubscriptions = Object.keys(subscriptions).length;
         const totalSubscriptionsInSearchedRange = Object.keys(subscriptions).length - 1;
@@ -121,7 +121,7 @@ describe('Subscription statistic endpoint', () => {
         createMockUsersWithRange(startDate, endDate);
 
         const subscriptions = await createSubscriptions(outRangeDate);
-        const statistics = await createStatistics(outRangeDate);
+        const statistics = await createStatistics(outRangeDate, 'gfw');
 
         const totalSubscriptions = Object.keys(subscriptions).length;
         const totalSubscriptionsInSearchedRange = Object.keys(subscriptions).length - 1;

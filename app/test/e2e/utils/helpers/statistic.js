@@ -16,11 +16,11 @@ const createSubscriptions = async (outRangeDate) => {
 };
 
 // creating two statistics which are in searched range, and one which is not.
-const createStatistics = (outRangeDate) => {
+const createStatistics = (outRangeDate, application) => {
     const statisticData = [
-        createStatistic(),
-        createStatistic(),
-        createStatistic(outRangeDate)
+        createStatistic(undefined, application),
+        createStatistic(undefined, application),
+        createStatistic(outRangeDate, application)
     ];
     return Promise.all(statisticData.map((createStat) => createStat));
 };
