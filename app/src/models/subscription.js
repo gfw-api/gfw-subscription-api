@@ -46,7 +46,7 @@ const Subscription = new Schema({
     },
     createdAt: { type: Date, required: true, default: Date.now },
     updateAt: { type: Date, required: false, default: Date.now },
-    application: { type: String, required: true, trim: true },
+    application: { type: String, trim: true },
     env: { type: String, required: true, default: 'production' }
 });
 
@@ -79,11 +79,7 @@ Subscription.methods.publish = async function (layerConfig, begin, end) {
 
     await alertPublishers[this.resource.type].publish(this, results, layer);
     logger.info('Saving statistic');
-    await new Statistic({
-        slug: layerConfig.slug,
-        application: this.application,
-    }).save();
-
+    await new Statistic({ slug: layerConfig.slug, application: this.application }).save();
     return true;
 };
 
