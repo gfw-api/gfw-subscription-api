@@ -27,6 +27,14 @@ nock.enableNetConnect(process.env.HOST_IP);
 let statistic;
 const authCases = createAuthCases(url, 'get');
 
+const assertOKStatisticsResponse = (response, expectedBody) => {
+    response.status.should.equal(200);
+    response.body.should.have.property('info').and.instanceOf(Object);
+    response.body.should.have.property('topSubscriptions').and.instanceOf(Object);
+    response.body.should.have.property('groupStatistics').and.instanceOf(Object);
+    response.body.should.deep.equal(expectedBody);
+};
+
 describe('Subscription statistic endpoint', () => {
 
     before(async () => {
@@ -83,17 +91,13 @@ describe('Subscription statistic endpoint', () => {
         const totalStatistics = statistics.length;
         const totalStatisticsInSearchedRange = statistics.length - 1;
 
-        const response = await statistic
-            .get(url)
-            .query({ start: startDate, end: endDate, loggedUser: JSON.stringify(ROLES.ADMIN) });
+        const response = await statistic.get(url).query({
+            start: startDate,
+            end: endDate,
+            loggedUser: JSON.stringify(ROLES.ADMIN),
+        });
 
-        response.status.should.equal(200);
-
-        response.body.should.have.property('info').and.instanceOf(Object);
-        response.body.should.have.property('topSubscriptions').and.instanceOf(Object);
-        response.body.should.have.property('groupStatistics').and.instanceOf(Object);
-
-        const expectedBody = {
+        assertOKStatisticsResponse(response, {
             // created subscriptions has each type once, so there is one everywhere in topSubscriptions
             topSubscriptions: {
                 geostore: 1, country: 1, region: 1, wdpa: 1, use: 1
@@ -108,12 +112,10 @@ describe('Subscription statistic endpoint', () => {
             usersWithSubscription: totalUsersWithSub,
             newUsers: totalUsers,
             groupStatistics: createExpectedGroupStatistics(subscriptions, response.body.groupStatistics),
-        };
-
-        response.body.should.deep.equal(expectedBody);
+        });
     });
 
-    it('Getting statistic filtering by application should return the right results (happy case)', async () => {
+    it('Getting statistic filtering by application "gfw" should return the right results (happy case)', async () => {
         const outRangeDate = getDateWithDecreaseYear(4);
         const startDate = getDateWithDecreaseYear(1);
         const endDate = getDateWithIncreaseYear(1);
@@ -131,19 +133,14 @@ describe('Subscription statistic endpoint', () => {
         const totalStatisticsInSearchedRange = statistics.length - 1;
 
         // Fetch GFW statistics
-        const gfwResponse = await statistic.get(url)
-            .query({
-                start: startDate,
-                end: endDate,
-                loggedUser: JSON.stringify(ROLES.ADMIN),
-                application: 'gfw',
-            });
+        const gfwResponse = await statistic.get(url).query({
+            start: startDate,
+            end: endDate,
+            loggedUser: JSON.stringify(ROLES.ADMIN),
+            application: 'gfw',
+        });
 
-        gfwResponse.status.should.equal(200);
-        gfwResponse.body.should.have.property('info').and.instanceOf(Object);
-        gfwResponse.body.should.have.property('topSubscriptions').and.instanceOf(Object);
-        gfwResponse.body.should.have.property('groupStatistics').and.instanceOf(Object);
-        gfwResponse.body.should.deep.equal({
+        assertOKStatisticsResponse(gfwResponse, {
             topSubscriptions: {
                 geostore: 1, country: 1, region: 1, wdpa: 1, use: 1
             },
@@ -158,23 +155,31 @@ describe('Subscription statistic endpoint', () => {
             newUsers: totalUsers,
             groupStatistics: createExpectedGroupStatistics(subscriptions, gfwResponse.body.groupStatistics),
         });
+    });
+
+    it('Getting statistic filtering by application "rw" should return the right results (happy case)', async () => {
+        const outRangeDate = getDateWithDecreaseYear(4);
+        const startDate = getDateWithDecreaseYear(1);
+        const endDate = getDateWithIncreaseYear(1);
+
+        const subscriptions = await createSubscriptions(outRangeDate);
+        const statistics = await createStatistics(outRangeDate, 'gfw');
+
+        const totalSubscriptions = Object.keys(subscriptions).length;
+        const totalUsers = MOCK_USERS.length;
+        const totalStatistics = statistics.length;
 
         createMockUsersWithRange(startDate, endDate);
 
         // Fetch RW statistics
-        const rwResponse = await statistic.get(url)
-            .query({
-                start: startDate,
-                end: endDate,
-                loggedUser: JSON.stringify(ROLES.ADMIN),
-                application: 'rw',
-            });
+        const rwResponse = await statistic.get(url).query({
+            start: startDate,
+            end: endDate,
+            loggedUser: JSON.stringify(ROLES.ADMIN),
+            application: 'rw',
+        });
 
-        rwResponse.status.should.equal(200);
-        rwResponse.body.should.have.property('info').and.instanceOf(Object);
-        rwResponse.body.should.have.property('topSubscriptions').and.instanceOf(Object);
-        rwResponse.body.should.have.property('groupStatistics').and.instanceOf(Object);
-        rwResponse.body.should.deep.equal({
+        assertOKStatisticsResponse(rwResponse, {
             topSubscriptions: {
                 geostore: 0, country: 0, region: 0, wdpa: 0, use: 0
             },
