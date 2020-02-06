@@ -1,29 +1,24 @@
-'use strict';
-
 const logger = require('logger');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const LastUpdate = require('models/lastUpdate');
 const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
-const deserializer = function (obj) {
-    return function (callback) {
-        new JSONAPIDeserializer({ keyForAttribute: 'camelCase' }).deserialize(obj, callback);
-    };
-};
-
 class UpdateService {
-    static* checkUpdated(dataset) {
+
+    static async checkUpdated(dataset) {
         logger.info(`Checking if dataset ${dataset} was updated`);
         try {
-            let result = yield ctRegisterMicroservice.requestToMicroservice({
+            const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: `/${dataset}/latest`,
                 method: 'GET',
                 json: true
             });
 
-            let latest = yield deserializer(result);
+            const latest = await new JSONAPIDeserializer({
+                keyForAttribute: 'camelCase'
+            }).deserialize(result);
             logger.debug('Obtaining last updated');
-            let lastUpdated = yield LastUpdate.findOne({ dataset: dataset }).exec();
+            const lastUpdated = await LastUpdate.findOne({ dataset }).exec();
             logger.debug('Last updated', lastUpdated);
 
             if (!lastUpdated || new Date(lastUpdated.date) >= new Date(latest[0].date)) {
@@ -38,7 +33,7 @@ class UpdateService {
             }
 
             logger.debug('Saving lastupdates', dataset, latest[0].date);
-            yield LastUpdate.update({ dataset: dataset }, { date: latest[0].date }).exec();
+            await LastUpdate.update({ dataset }, { date: latest[0].date }).exec();
 
             return {
                 beginDate: lastUpdated.date,
@@ -53,6 +48,7 @@ class UpdateService {
         }
 
     }
+
 }
 
 module.exports = UpdateService;

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
+const chai = require('chai');
 const {
     createSubscription,
     ensureCorrectError,
@@ -8,7 +9,6 @@ const {
 const { createMockUnsubscribeSUB } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 const { createRequest } = require('./utils/test-server');
-const chai = require('chai');
 
 const should = chai.should();
 
@@ -29,7 +29,7 @@ describe('Unsubscribe endpoint', () => {
 
         subscription = await createRequest(prefix, 'get');
 
-        Subscription.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 
     it('Unsubscribe should return not found when subscription doesn\'t exist', async () => {
@@ -85,8 +85,8 @@ describe('Unsubscribe endpoint', () => {
         response.body.mockMessage.should.equal('Should redirect');
     });
 
-    afterEach(() => {
-        Subscription.remove({}).exec();
+    afterEach(async () => {
+        await Subscription.deleteMany({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);

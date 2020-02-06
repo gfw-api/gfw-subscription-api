@@ -22,17 +22,18 @@ const createStatistics = (outRangeDate) => {
         createStatistic(),
         createStatistic(outRangeDate)
     ];
-    return Promise.all(statisticData.map(createStat => createStat));
+    return Promise.all(statisticData.map((createStat) => createStat));
 };
 
 const getUserAsSingleObject = (userID) => {
     // remove last user id, because the last user hasn't subscription;
-    const user = MOCK_USERS.find(_user => _user.id === userID);
-    return Object.assign(
-        {},
-        user.attributes,
-        { id: user.id, createdAt: user.attributes.createdAt.toISOString() }
-    );
+    const user = MOCK_USERS.find((_user) => _user.id === userID);
+    return {
+
+        ...user.attributes,
+        id: user.id,
+        createdAt: user.attributes.createdAt.toISOString()
+    };
 };
 
 const createExpectedGroupStatistics = (subscriptions, actualGroupStatistic) => {
@@ -46,41 +47,40 @@ const createExpectedGroupStatistics = (subscriptions, actualGroupStatistic) => {
     const wdpaDatasetID = subWithWdpas.datasets[0];
 
     return {
-        [geostoreDatasetID]: Object.assign({},
-            actualGroupStatistic[geostoreDatasetID],
-            { geostore: 1 }),
-        [regionDatasetID]: Object.assign({},
-            actualGroupStatistic[regionDatasetID],
-            {
-                regions: {
-                    test: 1,
-                },
-                regionTop: {
-                    nameRegion: subWithRegion.params.iso.region,
-                    value: 1,
-                }
-            }),
-        [countryDatasetID]: Object.assign({},
-            actualGroupStatistic[countryDatasetID],
-            {
-                country: 1,
-                countryTop: {
-                    name: subWithCountry.params.iso.country,
-                    value: 1
-                }
-            }),
-        [useDatasetID]: Object.assign({},
-            actualGroupStatistic[useDatasetID],
-            { use: 1 }),
-        [wdpaDatasetID]: Object.assign({},
-            actualGroupStatistic[wdpaDatasetID],
-            {
-                wdpa: 1,
-                wdpaTop: {
-                    id: subWithWdpas.params.wdpaid,
-                    value: 1,
-                }
-            })
+        [geostoreDatasetID]: {
+            ...actualGroupStatistic[geostoreDatasetID],
+            geostore: 1
+        },
+        [regionDatasetID]: {
+            ...actualGroupStatistic[regionDatasetID],
+            regions: {
+                test: 1,
+            },
+            regionTop: {
+                nameRegion: subWithRegion.params.iso.region,
+                value: 1,
+            }
+        },
+        [countryDatasetID]: {
+            ...actualGroupStatistic[countryDatasetID],
+            country: 1,
+            countryTop: {
+                name: subWithCountry.params.iso.country,
+                value: 1
+            }
+        },
+        [useDatasetID]: {
+            ...actualGroupStatistic[useDatasetID],
+            use: 1
+        },
+        [wdpaDatasetID]: {
+            ...actualGroupStatistic[wdpaDatasetID],
+            wdpa: 1,
+            wdpaTop: {
+                id: subWithWdpas.params.wdpaid,
+                value: 1,
+            }
+        }
     };
 };
 

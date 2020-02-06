@@ -1,14 +1,12 @@
-'use strict';
 
-var logger = require('logger');
-var config = require('config');
-var UrlService = require('services/urlService');
+const logger = require('logger');
+const UrlService = require('services/urlService');
 
 const DOMAIN_IMAGE = 'http://gfw2stories.s3.amazonaws.com/uploads/';
 
-var searchImage = function (story) {
+const searchImage = (story) => {
     if (story.media) {
-        for (let i = 0, length = story.media.length; i < length; i++) {
+        for (let i = 0, { length } = story.media; i < length; i++) {
             if (story.media[i].previewUrl) {
                 return DOMAIN_IMAGE + story.media[i].previewUrl;
             }
@@ -24,13 +22,13 @@ class StoryAdapter {
     }
 
     transform() {
-        let stories = [];
+        const stories = [];
         if (this.results && this.results.length > 0) {
-            for (let i = 0, length = this.results.length; i < length; i++) {
+            for (let i = 0, { length } = this.results; i < length; i++) {
                 stories.push({
                     title: this.results[i].title,
                     description: this.results[i].details ? this.results[i].details.substring(0, 350) : '',
-                    url: UrlService.flagshipUrl('/stories/' + this.results[i].id),
+                    url: UrlService.flagshipUrl(`/stories/${this.results[i].id}`),
                     image: searchImage(this.results[i])
                 });
 
@@ -40,7 +38,7 @@ class StoryAdapter {
         return {
             list: this.results,
             value: this.results.length,
-            stories: stories
+            stories
         };
     }
 

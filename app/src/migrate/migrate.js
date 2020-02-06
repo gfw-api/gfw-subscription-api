@@ -1,33 +1,33 @@
-'use strict';
-var config = require('config');
-var sleep = require('co-sleep');
-var request = require('co-request');
-var logger = require('logger');
-var co = require('co');
-var mongoose = require('mongoose');
+const config = require('config');
+const sleep = require('sleep');
+const request = require('request-promise-native');
+const logger = require('logger');
+const mongoose = require('mongoose');
+const Subscription = require('models/subscription');
 
-var uriMigrate = process.env.MIGRATE_URI || config.get('migrate.uri');
-var mongoUri = process.env.MONGO_URI || 'mongodb://' + config.get('mongodb.host') + ':' + config.get('mongodb.port') + '/' + config.get('mongodb.database');
+const mongooseOptions = require('../../../config/mongoose');
 
-let Subscription = require('models/subscription');
+const uriMigrate = process.env.MIGRATE_URI || config.get('migrate.uri');
 
-var obtainData = function* (cursor) {
+const mongoUri = process.env.MONGO_URI || `mongodb://${config.get('mongodb.host')}:${config.get('mongodb.port')}/${config.get('mongodb.database')}`;
+
+const obtainData = async (cursor) => {
     let url = uriMigrate;
     if (cursor) {
-        url += '?cursor=' + cursor;
+        url += `?cursor=${cursor}`;
     }
     logger.debug('Doing request to ', url);
-    var response = yield request({
-        url: url,
+    let response = await request({
+        url,
         method: 'GET',
         json: true
     });
     if (response.statusCode !== 200) {
         logger.error(response);
         logger.info('Waiting 5 seconds and trying');
-        yield sleep(5000);
-        response = yield request({
-            url: url,
+        await sleep(5000);
+        response = await request({
+            url,
             method: 'GET',
             json: true
         });
@@ -35,14 +35,14 @@ var obtainData = function* (cursor) {
     return response.body;
 };
 
-let cacheUsers = {};
-var obtainNewUserId = function* (userId) {
+const cacheUsers = {};
+const obtainNewUserId = async (userId) => {
     try {
         logger.info('Obtaining user with data', userId);
         if (cacheUsers[userId]) {
             return cacheUsers[userId];
         }
-        // let result = yield microserviceClient.requestToMicroservice({
+        // let result = await microserviceClient.requestToMicroservice({
         //     uri: '/user/oldId/' + userId,
         //     method: 'GET',
         //     json: true
@@ -54,18 +54,18 @@ var obtainNewUserId = function* (userId) {
     } catch (e) {
         logger.error(e);
     }
+    return null;
 };
-
-var createGeoJSON = function* (geojsonParam) {
+const createGeoJSON = async (geojsonParam) => {
     try {
         logger.info('Creating geostore');
-        let json = {
+        const json = {
             geojson: geojsonParam
         };
         if (typeof geojsonParam === 'string') {
             json.geojson = JSON.parse(geojsonParam);
         }
-        // let result = yield microserviceClient.requestToMicroservice({
+        // let result = await microserviceClient.requestToMicroservice({
         //     uri: '/geostore',
         //     method: 'POST',
         //     body: json,
@@ -83,7 +83,7 @@ logger.info('Setting info', process.env.API_GATEWAY_URL_MIGRATE);
 //     apiGatewayUrl: process.env.API_GATEWAY_URL_MIGRATE
 // });
 
-var oldDatasets = {
+const oldDatasets = {
     'alerts/treeloss': 'umd-loss-gain',
     'alerts/terra': 'terrai-alerts',
     'alerts/glad': 'glad-alerts',
@@ -93,48 +93,59 @@ var oldDatasets = {
     'alerts/sad': 'imazon-alerts'
 };
 
-var tranformDataset = function (oldDataset) {
+const tranformDataset = (oldDataset) => {
     if (oldDatasets[oldDataset]) {
         return oldDatasets[oldDataset];
     }
     return oldDataset;
 };
 
-var transformAndSaveData = function* (data) {
+const transformAndSaveData = async (data) => {
     logger.info('Saving data');
     if (data) {
-        for (let i = 0, length = data.length; i < length; i++) {
+        for (let i = 0, { length } = data; i < length; i++) {
             if (data[i].confirmed) {
                 //  logger.debug('Saving data', data[i]);
                 let userId = null;
                 if (data[i].user_id) {
-                    userId = yield obtainNewUserId(data[i].user_id);
+                    userId = await obtainNewUserId(data[i].user_id);
                 } else {
                     logger.info('Subscription without user_id');
                 }
-                let language = data[i].language || 'en';
+                const language = data[i].language || 'en';
 
-                if (!data[i].params.iso && !data[i].params.id1 && !data[i].params.wdpaid && !data[i].params.use && !data[i].params.useid && !data[i].params.ifl && !data[i].params.fl_id1 && !data[i].params.geostore) {
+                if (
+                    !data[i].params.iso
+                    && !data[i].params.id1
+                    && !data[i].params.wdpaid
+                    && !data[i].params.use
+                    && !data[i].params.useid
+                    && !data[i].params.ifl
+                    && !data[i].params.fl_id1
+                    && !data[i].params.geostore
+                ) {
                     if (!data[i].params.geom) {
+                        // eslint-disable-next-line no-continue
                         continue;
                     }
-                    let geostore = yield createGeoJSON(data[i].params.geom);
+                    const geostore = await createGeoJSON(data[i].params.geom);
                     if (!geostore.body.data) {
                         logger.error('Is not correct');
                         logger.error(data[i].params.geom);
+                        // eslint-disable-next-line no-continue
                         continue;
                     }
                     data[i].geostore = geostore.body.data.id;
                 }
 
-                yield new Subscription({
+                await new Subscription({
                     name: data[i].name,
                     confirmed: data[i].confirmed,
                     resource: {
                         type: 'EMAIL',
                         content: data[i].email
                     },
-                    userId: userId,
+                    userId,
                     createdAt: data[i].created,
                     datasets: [tranformDataset(data[i].topic)],
                     language: language.toLowerCase(),
@@ -157,22 +168,19 @@ var transformAndSaveData = function* (data) {
             }
         }
     } else {
-        logger.ingo('Empty list');
+        logger.info('Empty list');
     }
 };
-
-var migrate = function* () {
+const migrate = async () => {
     logger.info('Obtaining data');
-    var data = yield obtainData();
+    let data = await obtainData();
 
     while (data) {
         logger.debug('Obtained data');
 
-        let element = null;
-        let model, idConn = null;
-        yield transformAndSaveData(data.subscriptions);
+        await transformAndSaveData(data.subscriptions);
         if (data.cursor) {
-            data = yield obtainData(data.cursor);
+            data = await obtainData(data.cursor);
         } else {
             data = null;
         }
@@ -180,12 +188,12 @@ var migrate = function* () {
 
     logger.debug('Finished migration');
 };
-var onDbReady = function () {
-    co(function* () {
-        logger.info('Starting migration');
 
-        yield migrate();
-        process.exit();
-    });
+const onDbReady = async () => {
+    logger.info('Starting migration');
+
+    await migrate();
+    process.exit();
 };
-mongoose.connect(mongoUri, { useMongoClient: true }, onDbReady);
+
+mongoose.connect(mongoUri, mongooseOptions, onDbReady);

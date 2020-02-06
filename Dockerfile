@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:12.9
+FROM mhart/alpine-node:12
 MAINTAINER info@vizzuality.com
 
 ENV NAME gfw-subscription-api
@@ -9,11 +9,11 @@ RUN addgroup $USER && adduser -s /bin/bash -D -G $USER $USER
 RUN apk update && apk upgrade && \
     apk add --no-cache --update bash git openssh python build-base
 
-RUN npm install -g grunt-cli bunyan pm2
+RUN yarn global add grunt-cli bunyan pm2
 
 RUN mkdir -p /opt/$NAME
 COPY package.json /opt/$NAME/package.json
-RUN cd /opt/$NAME && npm install
+RUN cd /opt/$NAME && yarn install
 
 COPY entrypoint.sh /opt/$NAME/entrypoint.sh
 COPY config /opt/$NAME/config

@@ -22,7 +22,7 @@ describe('Get subscriptions tests', () => {
 
         requester = await getTestServer();
 
-        Subscription.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 
     it('Get all subscriptions as an anonymous user should return an "unauthorized" error with matching 401 HTTP code', async () => {
@@ -64,7 +64,7 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionOne.attributes.name.should.equal(subscriptionOne.name);
         responseSubscriptionOne.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionOne.datasets[0]);
         responseSubscriptionOne.attributes.datasetsQuery.should.be.an('array').and.length(0);
-        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ "geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw" });
+        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw' });
         responseSubscriptionOne.attributes.userId.should.equal(subscriptionOne.userId);
         responseSubscriptionOne.attributes.confirmed.should.equal(subscriptionOne.confirmed);
         responseSubscriptionOne.attributes.resource.should.be.an('object');
@@ -74,7 +74,7 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionTwo.attributes.name.should.equal(subscriptionTwo.name);
         responseSubscriptionTwo.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionTwo.datasets[0]);
         responseSubscriptionTwo.attributes.datasetsQuery.should.be.an('array').and.length(0);
-        responseSubscriptionTwo.attributes.params.should.be.an('object').and.deep.equal({ "geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw" });
+        responseSubscriptionTwo.attributes.params.should.be.an('object').and.deep.equal({ geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw' });
         responseSubscriptionTwo.attributes.userId.should.equal(subscriptionTwo.userId);
         responseSubscriptionTwo.attributes.confirmed.should.equal(subscriptionTwo.confirmed);
         responseSubscriptionTwo.attributes.resource.should.be.an('object');
@@ -107,7 +107,7 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionOne.attributes.name.should.equal(subscriptionOne.name);
         responseSubscriptionOne.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionOne.datasets[0]);
         responseSubscriptionOne.attributes.datasetsQuery.should.be.an('array').and.length(0);
-        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ "geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw" });
+        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw' });
         responseSubscriptionOne.attributes.userId.should.equal(subscriptionOne.userId);
         responseSubscriptionOne.attributes.confirmed.should.equal(subscriptionOne.confirmed);
         responseSubscriptionOne.attributes.resource.should.be.an('object');
@@ -117,7 +117,7 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionTwo.attributes.name.should.equal(subscriptionTwo.name);
         responseSubscriptionTwo.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionTwo.datasets[0]);
         responseSubscriptionTwo.attributes.datasetsQuery.should.be.an('array').and.length(0);
-        responseSubscriptionTwo.attributes.params.should.be.an('object').and.deep.equal({ "geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw" });
+        responseSubscriptionTwo.attributes.params.should.be.an('object').and.deep.equal({ geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw' });
         responseSubscriptionTwo.attributes.userId.should.equal(subscriptionTwo.userId);
         responseSubscriptionTwo.attributes.confirmed.should.equal(subscriptionTwo.confirmed);
         responseSubscriptionTwo.attributes.resource.should.be.an('object');
@@ -149,7 +149,7 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionOne.attributes.name.should.equal(subscriptionThree.name);
         responseSubscriptionOne.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionThree.datasets[0]);
         responseSubscriptionOne.attributes.datasetsQuery.should.be.an('array').and.length(0);
-        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ "geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw" });
+        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw' });
         responseSubscriptionOne.attributes.userId.should.equal(subscriptionThree.userId);
         responseSubscriptionOne.attributes.confirmed.should.equal(subscriptionThree.confirmed);
         responseSubscriptionOne.attributes.resource.should.be.an('object');
@@ -182,7 +182,7 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionOne.attributes.name.should.equal(subscriptionOne.name);
         responseSubscriptionOne.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionOne.datasets[0]);
         responseSubscriptionOne.attributes.datasetsQuery.should.be.an('array').and.length(0);
-        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ "geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw" });
+        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw' });
         responseSubscriptionOne.attributes.userId.should.equal(subscriptionOne.userId);
         responseSubscriptionOne.attributes.confirmed.should.equal(subscriptionOne.confirmed);
         responseSubscriptionOne.attributes.resource.should.be.an('object');
@@ -192,7 +192,7 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionTwo.attributes.name.should.equal(subscriptionTwo.name);
         responseSubscriptionTwo.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionTwo.datasets[0]);
         responseSubscriptionTwo.attributes.datasetsQuery.should.be.an('array').and.length(0);
-        responseSubscriptionTwo.attributes.params.should.be.an('object').and.deep.equal({ "geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw" });
+        responseSubscriptionTwo.attributes.params.should.be.an('object').and.deep.equal({ geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw' });
         responseSubscriptionTwo.attributes.userId.should.equal(subscriptionTwo.userId);
         responseSubscriptionTwo.attributes.confirmed.should.equal(subscriptionTwo.confirmed);
         responseSubscriptionTwo.attributes.resource.should.be.an('object');
@@ -224,7 +224,7 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionOne.attributes.name.should.equal(subscriptionThree.name);
         responseSubscriptionOne.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionThree.datasets[0]);
         responseSubscriptionOne.attributes.datasetsQuery.should.be.an('array').and.length(0);
-        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ "geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw" });
+        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw' });
         responseSubscriptionOne.attributes.userId.should.equal(subscriptionThree.userId);
         responseSubscriptionOne.attributes.confirmed.should.equal(subscriptionThree.confirmed);
         responseSubscriptionOne.attributes.resource.should.be.an('object');
@@ -236,8 +236,14 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions with application and app filter should be successful and return a list of subscriptions for that env and application (no matches, populated db)', async () => {
-        await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw', env: 'production' })).save();
-        await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'gfw', env: 'production' })).save();
+        await new Subscription(createSubscription(ROLES.USER.id, null, {
+            application: 'rw',
+            env: 'production'
+        })).save();
+        await new Subscription(createSubscription(ROLES.USER.id, null, {
+            application: 'gfw',
+            env: 'production'
+        })).save();
         await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw', env: 'staging' })).save();
 
         await new Subscription(createSubscription(getUUID())).save();
@@ -256,8 +262,14 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions with application and app filter should be successful and return a list of subscriptions for that env and application (populated db)', async () => {
-        await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw', env: 'production' })).save();
-        const subscriptionTwo = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'gfw', env: 'production' })).save();
+        await new Subscription(createSubscription(ROLES.USER.id, null, {
+            application: 'rw',
+            env: 'production'
+        })).save();
+        const subscriptionTwo = await new Subscription(createSubscription(ROLES.USER.id, null, {
+            application: 'gfw',
+            env: 'production'
+        })).save();
         await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw', env: 'staging' })).save();
 
         await new Subscription(createSubscription(getUUID())).save();
@@ -276,7 +288,7 @@ describe('Get subscriptions tests', () => {
         responseSubscriptionOne.attributes.name.should.equal(subscriptionTwo.name);
         responseSubscriptionOne.attributes.datasets.should.be.an('array').and.length(1).and.contains(subscriptionTwo.datasets[0]);
         responseSubscriptionOne.attributes.datasetsQuery.should.be.an('array').and.length(0);
-        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ "geostore": "agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw" });
+        responseSubscriptionOne.attributes.params.should.be.an('object').and.deep.equal({ geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw' });
         responseSubscriptionOne.attributes.userId.should.equal(subscriptionTwo.userId);
         responseSubscriptionOne.attributes.confirmed.should.equal(subscriptionTwo.confirmed);
         responseSubscriptionOne.attributes.resource.should.be.an('object');
@@ -287,11 +299,11 @@ describe('Get subscriptions tests', () => {
         });
     });
 
-    afterEach(() => {
+    afterEach(async () => {
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
         }
 
-        Subscription.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 });

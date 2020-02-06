@@ -1,6 +1,6 @@
 const chai = require('chai');
 const nock = require('nock');
-const redis = require("redis");
+const redis = require('redis');
 const config = require('config');
 const { getTestServer } = require('./utils/test-server');
 const cronLoader = require('../../src/cronLoader');
@@ -12,8 +12,6 @@ nock.enableNetConnect(process.env.HOST_IP);
 const should = chai.should();
 chai.use(require('chai-datetime'));
 
-let requester;
-
 const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
 
 const redisClient = redis.createClient({ url: config.get('redis.url') });
@@ -22,13 +20,16 @@ redisClient.subscribe(CHANNEL);
 
 describe('CronLoader task queueing', () => {
 
-    before(() => {
+    before(async () => {
         if (process.env.NODE_ENV !== 'test') {
             throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
         }
         if (config.get('settings.loadCron') && config.get('settings.loadCron') !== 'false') {
             throw Error(`Running the test suite with cron enabled is not supported. You can disable cron by setting the LOAD_CRON env variable to false.`);
         }
+
+        // Needed to set config values for the CT integration lib
+        await getTestServer();
     });
 
     beforeEach(() => {
@@ -36,7 +37,7 @@ describe('CronLoader task queueing', () => {
     });
 
     it('Test viirs-active-fires cron task queues the expected message', async () => {
-        redisClient.on('message', function* (channel, message) {
+        redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('viirs-active-fires');
@@ -48,8 +49,8 @@ describe('CronLoader task queueing', () => {
             new Date(jsonMessage.end_date).should.equalDate(new Date());
         });
 
-        const task = taskConfig.find(e => e.dataset === 'viirs-active-fires');
-        cronLoader.getTask(task);
+        const task = taskConfig.find((e) => e.dataset === 'viirs-active-fires');
+        await cronLoader.getTask(task);
 
         process.on('unhandledRejection', (error) => {
             should.fail(error);
@@ -57,37 +58,37 @@ describe('CronLoader task queueing', () => {
     });
 
     it('Test imazon-alerts cron task queues the expected message', async () => {
-        requester = await getTestServer();
+        await getTestServer();
 
         nock(process.env.CT_URL)
             .get('/v1/imazon-alerts/latest')
             .reply(200, {
                 data: [
                     {
-                        type: "imazon-latest",
-                        id: "undefined",
+                        type: 'imazon-latest',
+                        id: 'undefined',
                         attributes: {
-                            "date": "2018-12-31T00:00:00Z"
+                            date: '2018-12-31T00:00:00Z'
                         }
                     },
                     {
-                        type: "imazon-latest",
-                        id: "undefined",
+                        type: 'imazon-latest',
+                        id: 'undefined',
                         attributes: {
-                            date: "2018-11-30T00:00:00Z"
+                            date: '2018-11-30T00:00:00Z'
                         }
                     },
                     {
-                        type: "imazon-latest",
-                        id: "undefined",
+                        type: 'imazon-latest',
+                        id: 'undefined',
                         attributes: {
-                            date: "2018-10-31T00:00:00Z"
+                            date: '2018-10-31T00:00:00Z'
                         }
                     }
                 ]
             });
 
-        redisClient.on('message', function* (channel, message) {
+        redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('imazon-alerts');
@@ -101,7 +102,7 @@ describe('CronLoader task queueing', () => {
             new Date(jsonMessage.begin_date).should.beforeDate(new Date(jsonMessage.end_date));
         });
 
-        const task = taskConfig.find(e => e.dataset === 'imazon-alerts');
+        const task = taskConfig.find((e) => e.dataset === 'imazon-alerts');
         cronLoader.getTask(task);
 
         process.on('unhandledRejection', (error) => {
@@ -110,7 +111,7 @@ describe('CronLoader task queueing', () => {
     });
 
     it('Test story cron task queues the expected message', async () => {
-        redisClient.on('message', function* (channel, message) {
+        redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('story');
@@ -124,7 +125,7 @@ describe('CronLoader task queueing', () => {
             new Date(jsonMessage.begin_date).should.beforeDate(new Date(jsonMessage.end_date));
         });
 
-        const task = taskConfig.find(e => e.dataset === 'story');
+        const task = taskConfig.find((e) => e.dataset === 'story');
         cronLoader.getTask(task);
 
         process.on('unhandledRejection', (error) => {
@@ -133,7 +134,7 @@ describe('CronLoader task queueing', () => {
     });
 
     it('Test forma-alerts cron task queues the expected message', async () => {
-        redisClient.on('message', function* (channel, message) {
+        redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('forma-alerts');
@@ -147,7 +148,7 @@ describe('CronLoader task queueing', () => {
             new Date(jsonMessage.begin_date).should.beforeDate(new Date(jsonMessage.end_date));
         });
 
-        const task = taskConfig.find(e => e.dataset === 'forma-alerts');
+        const task = taskConfig.find((e) => e.dataset === 'forma-alerts');
         cronLoader.getTask(task);
 
         process.on('unhandledRejection', (error) => {
@@ -156,13 +157,13 @@ describe('CronLoader task queueing', () => {
     });
 
     it('Test dataset cron task queues the expected message', async () => {
-        redisClient.on('message', function* (channel, message) {
+        redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('dataset');
         });
 
-        const task = taskConfig.find(e => e.dataset === 'dataset');
+        const task = taskConfig.find((e) => e.dataset === 'dataset');
         cronLoader.getTask(task);
 
         process.on('unhandledRejection', (error) => {
@@ -171,7 +172,7 @@ describe('CronLoader task queueing', () => {
     });
 
     it('Test forma250GFW cron task queues the expected message', async () => {
-        redisClient.on('message', function* (channel, message) {
+        redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('forma250GFW');
@@ -185,7 +186,7 @@ describe('CronLoader task queueing', () => {
             new Date(jsonMessage.begin_date).should.beforeDate(new Date(jsonMessage.end_date));
         });
 
-        const task = taskConfig.find(e => e.dataset === 'forma250GFW');
+        const task = taskConfig.find((e) => e.dataset === 'forma250GFW');
         cronLoader.getTask(task);
 
         process.on('unhandledRejection', (error) => {
