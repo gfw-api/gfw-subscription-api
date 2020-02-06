@@ -35,13 +35,11 @@ services:
 
   redis:
     image: redis
-    container_name: gfw-subscriptions-api-redis
     ports:
       - "6379"
 
   mongo:
     image: mongo:3.4
-    container_name: gfw-subscription-mongo
     command: --smallfiles
     ports:
       - "27017"
