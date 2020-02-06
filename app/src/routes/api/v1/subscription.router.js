@@ -249,6 +249,25 @@ class SubscriptionsRouter {
         ctx.body = await StatisticsService.infoByUserSubscriptions(new Date(ctx.query.start), new Date(ctx.query.end), ctx.query.application);
     }
 
+    static async findByIds(ctx) {
+        logger.info(`[SubscriptionsRouter] Getting all subscriptions with ids`, ctx.request.body);
+        if (ctx.request && ctx.request.body && ctx.request.body && ctx.request.body.ids.length > 0) {
+            const subscriptions = await SubscriptionService.getSubscriptionsByIds(ctx.request.body.ids);
+            ctx.body = { data: subscriptions };
+        } else {
+            ctx.body = { data: [] };
+        }
+    }
+
+    static async findUserSubscriptions(ctx) {
+        const { userId } = ctx.params;
+        const application = ctx.query.application || 'gfw';
+        const env = ctx.query.env || 'production';
+        logger.info(`[SubscriptionsRouter] Getting all subscriptions for user with id`, userId);
+        const subscriptions = await SubscriptionService.getSubscriptionsForUser(userId, application, env);
+        ctx.body = { data: subscriptions };
+    }
+
 }
 
 const isAdmin = async (ctx, next) => {
@@ -331,5 +350,7 @@ router.patch('/:id', isLoggedUserRequired, subscriptionExists(true), Subscriptio
 router.delete('/:id', isLoggedUserRequired, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.post('/check-hook', SubscriptionsRouter.checkHook);
+router.get('/user/:userId', SubscriptionsRouter.findUserSubscriptions);
+router.post('/find-by-ids', SubscriptionsRouter.findByIds);
 
 module.exports = router;

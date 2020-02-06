@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const logger = require('logger');
+const mongoose = require('mongoose');
 const Subscription = require('models/subscription');
 const SubscriptionSerializer = require('serializers/subscriptionSerializer');
 
@@ -30,7 +31,9 @@ class SubscriptionService {
 
     static async createSubscription(data) {
         logger.info('Creating subscription with data ', data);
-        data.userId = data.loggedUser.id;
+        data.userId = data.loggedUser.id === 'microservice'
+            ? data.userId || data.loggedUser.id
+            : data.loggedUser.id;
 
         const subscriptionFormatted = SubscriptionService.formatSubscription(data);
         logger.debug('Creating subscription ', subscriptionFormatted);
@@ -139,6 +142,10 @@ class SubscriptionService {
         }).exec();
 
         return SubscriptionSerializer.serialize(subscriptions);
+    }
+
+    static async getSubscriptionsByIds(ids) {
+        return Subscription.find({ _id: { $in: ids.map((id) => mongoose.Types.ObjectId(id)) } });
     }
 
 }
