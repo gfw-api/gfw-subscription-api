@@ -4,6 +4,7 @@ metadata:
   namespace: gfw
   labels:
     name: {name}
+    app: gfw
   name: {name}
 spec:
   revisionHistoryLimit: 2

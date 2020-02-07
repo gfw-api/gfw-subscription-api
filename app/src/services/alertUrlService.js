@@ -1,11 +1,11 @@
-'use strict';
 
-var config = require('config');
+const config = require('config');
+
 const BASE_URL = config.get('gfw.flagshipUrl');
 
-var qs = require('querystring'),
-    moment = require('moment'),
-    _ = require('lodash');
+const qs = require('querystring');
+const moment = require('moment');
+const _ = require('lodash');
 
 const ALLOWED_PARAMS = [
     'tab', 'geojson', 'geostore', 'wdpaid', 'begin', 'end', 'threshold',

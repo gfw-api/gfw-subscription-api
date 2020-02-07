@@ -1,14 +1,13 @@
-'use strict';
-var logger = require('logger');
-const coRequest = require('co-request');
+const logger = require('logger');
+const request = require('request-promise-native');
 
 
 class UrlPublisher {
 
-    static* publish(subscription, results, layer) {
+    static async publish(subscription, results) {
         logger.info('Publishing webhook with results', results, '. Doing request POST to ', subscription.resource.content);
         try {
-            yield coRequest({
+            await request({
                 uri: subscription.resource.content,
                 method: 'POST',
                 body: results,

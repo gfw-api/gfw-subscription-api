@@ -1,7 +1,6 @@
-'use strict';
 
-var logger = require('logger');
-var config = require('config');
+const config = require('config');
+
 const BASE_URL_API = config.get('gfw.apiUrl');
 
 class TerraiAdapter {

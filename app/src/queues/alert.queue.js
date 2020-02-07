@@ -1,7 +1,6 @@
 const config = require('config');
 const logger = require('logger');
-const redis = require("redis");
-const co = require("co");
+const redis = require('redis');
 
 const SubscriptionService = require('services/subscriptionService');
 const DatasetService = require('services/datasetService');
@@ -12,6 +11,7 @@ const STATS_MAILS = config.get('mails.statsRecipients').split(',');
 const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
 
 class AlertQueue {
+
     constructor() {
         logger.info('[AlertQueue] Initializing AlertQueue listener');
         logger.debug('[AlertQueue] Initializing queue with provider %s ', config.get('redis.url'));
@@ -19,37 +19,38 @@ class AlertQueue {
         const redisClient = redis.createClient({ url: config.get('redis.url') });
         redisClient.subscribe(CHANNEL);
 
-        redisClient.on('message', co.wrap(this.processMessage.bind(this)));
+        redisClient.on('message', AlertQueue.processMessage);
 
         logger.info('[AlertQueue] AlertQueue listener initialized');
     }
 
-    * processMessage(channel, message) {
+    static async processMessage(channel, message) {
         logger.info('[AlertQueue] Processing alert message');
         logger.debug(`[AlertQueue] Processing alert message: ${message}`);
 
         if (JSON.parse(message).layer_slug === 'dataset') {
-            yield DatasetService.processSubscriptions();
+            await DatasetService.processSubscriptions();
             return;
         }
 
-        let layerSlug = MessageProcessor.getLayerSlug(message),
-            begin = MessageProcessor.getBeginDate(message),
-            end = MessageProcessor.getEndDate(message);
+        const layerSlug = MessageProcessor.getLayerSlug(message);
+        const begin = MessageProcessor.getBeginDate(message);
+        const end = MessageProcessor.getEndDate(message);
 
         logger.debug('[AlertQueue] Params in message', layerSlug, begin, end);
-        let subscriptions = yield SubscriptionService.getSubscriptionsByLayer(
-            layerSlug);
+        const subscriptions = await SubscriptionService.getSubscriptionsByLayer(
+            layerSlug
+        );
         logger.debug('[AlertQueue] Subscriptions obtained', subscriptions);
         logger.info('[AlertQueue] Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
         try {
             let mailCounter = 0;
-            let users = [];
-            for (let i = 0, length = subscriptions.length; i < length; i++) {
+            const users = [];
+            for (let i = 0, { length } = subscriptions; i < length; i++) {
                 try {
-                    let subscription = yield SubscriptionService.getSubscriptionById(subscriptions[i]._id);
-                    let layer = { name: layerSlug, slug: layerSlug };
-                    let sent = yield subscription.publish(layer, begin, end);
+                    const subscription = await SubscriptionService.getSubscriptionById(subscriptions[i]._id);
+                    const layer = { name: layerSlug, slug: layerSlug };
+                    const sent = await subscription.publish(layer, begin, end);
                     if (sent) {
                         mailCounter++;
                         users.push({
@@ -63,7 +64,7 @@ class AlertQueue {
                 }
             }
 
-            EmailPublisher.sendStats(STATS_MAILS, { counter: mailCounter, users: users, dataset: layerSlug });
+            EmailPublisher.sendStats(STATS_MAILS, { counter: mailCounter, users, dataset: layerSlug });
         } catch (e) {
             logger.error(e);
         }
@@ -72,4 +73,4 @@ class AlertQueue {
 }
 
 
-module.exports = new AlertQueue();
+module.exports = AlertQueue;

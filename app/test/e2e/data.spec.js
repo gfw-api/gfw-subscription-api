@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
+const chai = require('chai');
 const {
     createSubInDB,
     getUUID,
@@ -13,7 +14,6 @@ const {
 } = require('./utils/mock');
 const { ROLES, MOCK_FILE } = require('./utils/test.constants');
 const { createRequest } = require('./utils/test-server');
-const chai = require('chai');
 
 const should = chai.should();
 
@@ -32,12 +32,10 @@ describe('Get subscription endpoint', () => {
             throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
         }
 
-        nock.cleanAll();
-
         subscription = await createRequest(prefix, 'get');
         authCases.setRequester(subscription);
 
-        Subscription.remove({}).exec();
+        await Subscription.deleteMany({}).exec();
     });
 
     it('Getting subscription data without provide loggedUser should fall', authCases.isLoggedUserRequired());
@@ -91,6 +89,7 @@ describe('Get subscription endpoint', () => {
             .get(`/${createdSubscription._id}/data`)
             .query({ loggedUser: JSON.stringify(ROLES.USER), application: 'rw' })
             .send();
+
         response.status.should.equal(200);
         response.body.data[0].should.have.property(datasetID).and.instanceOf(Object);
         response.body.data[0][datasetID].type.should.equal('dataset');
@@ -98,8 +97,8 @@ describe('Get subscription endpoint', () => {
         response.body.data[0][datasetID].data.url.should.equal(MOCK_FILE);
     });
 
-    afterEach(() => {
-        Subscription.remove({}).exec();
+    afterEach(async () => {
+        await Subscription.deleteMany({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);

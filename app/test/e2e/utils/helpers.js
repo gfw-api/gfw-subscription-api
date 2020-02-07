@@ -1,5 +1,7 @@
-const Statistic = require('models/stadistic');
+const Statistic = require('models/statistic');
 const Subscription = require('models/subscription');
+const UrlService = require('services/urlService');
+const nock = require('nock');
 const { ROLES } = require('./test.constants');
 
 const getUUID = () => Math.random().toString(36).substring(7);
@@ -9,13 +11,13 @@ const ensureCorrectError = (body, errMessage) => {
     body.errors[0].should.have.property('detail').and.equal(errMessage);
 };
 
-const getDateWithIncreaseYear = years => new Date(new Date().setFullYear(new Date().getFullYear() + years));
-const getDateWithDecreaseYear = years => new Date(new Date().setFullYear(new Date().getFullYear() - years));
+const getDateWithIncreaseYear = (years) => new Date(new Date().setFullYear(new Date().getFullYear() + years));
+const getDateWithDecreaseYear = (years) => new Date(new Date().setFullYear(new Date().getFullYear() - years));
 
 const createSubscription = (userId, datasetUuid = null, data = {}) => {
     const uuid = getUUID();
 
-    return Object.assign({}, {
+    return {
         name: `Subscription ${uuid}`,
         datasets: [datasetUuid || getUUID()],
         userId,
@@ -28,8 +30,9 @@ const createSubscription = (userId, datasetUuid = null, data = {}) => {
         resource: {
             content: 'subscription-recipient@vizzuality.com',
             type: 'EMAIL'
-        }
-    }, data);
+        },
+        ...data
+    };
 };
 
 const createSubInDB = (userId, datasetUuid = null, data = {}) => new Subscription(createSubscription(userId, datasetUuid, data)).save();
@@ -71,14 +74,14 @@ const createAuthCases = (url, initMethod, providedRequester) => {
 
     const isLoggedUserJSONString = (method = initMethod) => async () => {
         const response = await requester[method](url).query({ loggedUser: USER }).send();
-        response.status.should.equal(401);
-        ensureCorrectError(response.body, 'Not valid loggedUser, it should be a json string in query');
+        response.status.should.equal(400);
+        ensureCorrectError(response.body, 'Invalid user token');
     };
 
     const isLoggedUserJSONObject = (method = initMethod) => async () => {
         const response = await requester[method](url).query({ loggedUser: '[]' }).send();
         response.status.should.equal(401);
-        ensureCorrectError(response.body, 'Not valid loggedUser, it should be json a valid object string in query');
+        ensureCorrectError(response.body, 'Not authorized');
     };
 
     return {
@@ -92,6 +95,50 @@ const createAuthCases = (url, initMethod, providedRequester) => {
     };
 };
 
+const validRedisMessage = (data = {}) => async (channel, message) => {
+    const { application, template } = data;
+
+    const subscription = await Subscription.findOne({});
+
+    const messageData = JSON.parse(message);
+
+    messageData.should.instanceOf(Object);
+    messageData.template.should.equal(template);
+    messageData.should.have.property('data');
+    messageData.data.confirmation_url.should.equal(UrlService.confirmationUrl(subscription));
+    messageData.recipients.should.instanceOf(Array).and.have.length(1);
+    messageData.recipients[0].address = subscription.resource.content;
+    messageData.sender.should.equal(application);
+};
+
+const createDatasetWithWebHook = async (url) => {
+    await new Subscription(createSubscription(ROLES.USER.id, 'viirs-active-fires', {
+        datasetsQuery: [{ id: 'viirs-active-fires', type: 'dataset' }],
+        resource: { content: url, type: 'URL' },
+    })).save();
+
+    nock(process.env.CT_URL)
+        .get('/v1/dataset/viirs-active-fires')
+        .reply(200, {
+            data: {
+                attributes: {
+                    subscribable: { dataset: { subscriptionQuery: '' } },
+                    tableName: 'test',
+                }
+            }
+        });
+
+    nock(process.env.CT_URL)
+        .get('/v1/query')
+        .query(() => true)
+        .reply(200, { data: [{ value: 10000 }] });
+
+    nock(process.env.CT_URL)
+        .get('/v1/dataset/viirs-active-fires/metadata')
+        .query(() => true)
+        .reply(200, { data: [{ attributes: { info: { name: 'metatest' } } }] });
+};
+
 module.exports = {
     createSubscription,
     getUUID,
@@ -100,5 +147,7 @@ module.exports = {
     createStatistic,
     getDateWithIncreaseYear,
     getDateWithDecreaseYear,
-    createAuthCases
+    createAuthCases,
+    validRedisMessage,
+    createDatasetWithWebHook
 };

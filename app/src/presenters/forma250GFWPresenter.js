@@ -1,8 +1,7 @@
-'use strict';
 
 class Forma250GFWPresenter {
 
-    static* transform(results, layer, subscription) {
+    static async transform(results) {
         results.alert_count = results.value;
 
         return results;

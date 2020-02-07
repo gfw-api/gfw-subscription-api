@@ -1,11 +1,3 @@
-const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
-
-const deserializer = function (obj) {
-    return function (callback) {
-        new JSONAPIDeserializer({}).deserialize(obj, callback);
-    };
-};
-
 const LAYERS = [{
     name: 'loss',
     slug: 'umd-loss-gain',
@@ -74,8 +66,8 @@ const LAYERS = [{
 
 class Layer {
 
-    static* findBySlug(slug) {
-        for (let i = 0, length = LAYERS.length; i < length; i++) {
+    static async findBySlug(slug) {
+        for (let i = 0, { length } = LAYERS; i < length; i++) {
             if (LAYERS[i].slug === slug) {
                 return LAYERS[i];
             }

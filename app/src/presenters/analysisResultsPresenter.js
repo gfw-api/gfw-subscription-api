@@ -2,28 +2,28 @@ const moment = require('moment');
 const _ = require('lodash');
 const logger = require('logger');
 
-const VIIRSPresenter = require('presenters/viirsPresenter'),
-    GLADPresenter = require('presenters/gladPresenter'),
-    TerraiPresenter = require('presenters/terraiPresenter'),
-    StoryPresenter = require('presenters/storyPresenter'),
-    ImazonPresenter = require('presenters/imazonPresenter'),
-    FormaPresenter = require('presenters/formaPresenter'),
-    Forma250GFWPresenter = require('presenters/forma250GFWPresenter');
+const VIIRSPresenter = require('presenters/viirsPresenter');
+const GLADPresenter = require('presenters/gladPresenter');
+const TerraiPresenter = require('presenters/terraiPresenter');
+const StoryPresenter = require('presenters/storyPresenter');
+const ImazonPresenter = require('presenters/imazonPresenter');
+const FormaPresenter = require('presenters/formaPresenter');
+const Forma250GFWPresenter = require('presenters/forma250GFWPresenter');
 
-const UrlService = require('services/urlService'),
-    AlertUrlService = require('services/alertUrlService');
+const UrlService = require('services/urlService');
+const AlertUrlService = require('services/alertUrlService');
 
 const PRESENTER_MAP = {
     'viirs-active-fires': VIIRSPresenter,
     'glad-alerts': GLADPresenter,
     'imazon-alerts': ImazonPresenter,
     'terrai-alerts': TerraiPresenter,
-    'story': StoryPresenter,
+    story: StoryPresenter,
     'forma-alerts': FormaPresenter,
-    'forma250GFW': Forma250GFWPresenter,
+    forma250GFW: Forma250GFWPresenter,
 };
 
-const decorateWithName = function (results, subscription) {
+const decorateWithName = (results, subscription) => {
     if (!_.isEmpty(subscription.name)) {
         results.alert_name = subscription.name;
     } else {
@@ -33,20 +33,20 @@ const decorateWithName = function (results, subscription) {
     return results;
 };
 
-const summaryForLayer = function (layer) {
-    let meta = layer.meta;
+const summaryForLayer = (layer) => {
+    const { meta } = layer;
     if (meta === undefined) {
         return '';
     }
 
     return '';
-    //let updatePeriod = meta.updates.charAt(0).toUpperCase() + meta.updates.slice(1);
-    //return `${meta.description} at a ${meta.resolution} resolution.
-    //Coverage of ${meta.coverage}. Source is ${meta.source}.
-    //Available data from ${meta.timescale}, updated ${updatePeriod}`;
+    // let updatePeriod = meta.updates.charAt(0).toUpperCase() + meta.updates.slice(1);
+    // return `${meta.description} at a ${meta.resolution} resolution.
+    // Coverage of ${meta.coverage}. Source is ${meta.source}.
+    // Available data from ${meta.timescale}, updated ${updatePeriod}`;
 };
 
-const decorateWithMetadata = function (results, layer) {
+const decorateWithMetadata = (results, layer) => {
     if (!layer.meta) {
         return results;
     }
@@ -57,16 +57,14 @@ const decorateWithMetadata = function (results, layer) {
     return results;
 };
 
-const decorateWithDates = function (results, begin, end) {
-    begin = moment(begin).format('YYYY-MM-DD');
-    end = moment(end).format('YYYY-MM-DD');
-    results.alert_date_begin = begin;
-    results.alert_date_end = end;
+const decorateWithDates = (results, begin, end) => {
+    results.alert_date_begin = moment(begin).format('YYYY-MM-DD');
+    results.alert_date_end = moment(end).format('YYYY-MM-DD');
 
     return results;
 };
 
-const decorateWithLinks = function (results, subscription, layer, begin, end) {
+const decorateWithLinks = (results, subscription, layer, begin, end) => {
     results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
     results.subscriptions_url = UrlService.flagshipUrl('/my-gfw');
     results.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
@@ -74,8 +72,8 @@ const decorateWithLinks = function (results, subscription, layer, begin, end) {
     return results;
 };
 
-const decorateWithArea = function (results, subscription) {
-    let params = subscription.params || {};
+const decorateWithArea = (results, subscription) => {
+    const params = subscription.params || {};
 
     if (params.iso && params.iso.country) {
         results.selected_area = `ISO Code: ${params.iso.country}`;
@@ -93,22 +91,29 @@ const decorateWithArea = function (results, subscription) {
 };
 
 class AnalysisResultsPresenter {
-    static decorateWithConfig(results, layer) {
+
+    static decorateWithConfig(results) {
         return results;
     }
 
-    static* render(results, subscription, layer, begin, end) {
+    static async render(results, subscription, layer, begin, end) {
         try {
-            let Presenter = PRESENTER_MAP[layer.slug];
+            const Presenter = PRESENTER_MAP[layer.slug];
 
             if (Presenter) {
-                results = yield Presenter.transform(results, layer, subscription, begin, end);
+                // eslint-disable-next-line no-param-reassign
+                results = await Presenter.transform(results, layer, subscription, begin, end);
             }
             results.layerSlug = layer.slug;
+            // eslint-disable-next-line no-param-reassign
             results = decorateWithName(results, subscription);
+            // eslint-disable-next-line no-param-reassign
             results = decorateWithArea(results, subscription);
+            // eslint-disable-next-line no-param-reassign
             results = decorateWithLinks(results, subscription, layer, begin, end);
+            // eslint-disable-next-line no-param-reassign
             results = decorateWithMetadata(results, layer);
+            // eslint-disable-next-line no-param-reassign
             results = decorateWithDates(results, begin, end);
 
             return results;
@@ -117,6 +122,7 @@ class AnalysisResultsPresenter {
             throw err;
         }
     }
+
 }
 
 module.exports = AnalysisResultsPresenter;

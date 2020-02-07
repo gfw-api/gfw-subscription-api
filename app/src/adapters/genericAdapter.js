@@ -1,7 +1,3 @@
-'use strict';
-
-var logger = require('logger');
-
 class GenericAdapter {
 
     constructor(results) {

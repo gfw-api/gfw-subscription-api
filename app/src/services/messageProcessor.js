@@ -1,9 +1,4 @@
-'use strict';
-
-var logger = require('logger');
-
-var SubscriptionService = require('services/subscriptionService');
-
+/* eslint-disable no-param-reassign */
 class MessageProcessor {
 
     static getLayerSlug(message) {

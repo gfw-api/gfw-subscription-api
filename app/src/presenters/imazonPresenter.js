@@ -1,15 +1,14 @@
-'use strict';
 
 const imageService = require('services/imageService');
 
 class ImazonPresenter {
 
-    static* transform(results, layer, subscription, begin, end) {
+    static async transform(results, layer, subscription, begin, end) {
 
         results.alert_count_degradation = 0;
         results.alert_count_deforestation = 0;
         if (results.value) {
-            for (let i = 0, length = results.value.length; i < length; i++) {
+            for (let i = 0, { length } = results.value; i < length; i++) {
                 if (results.value[i].dataType === 'degrad') {
                     results.alert_count_degradation = results.value[i].value;
                 } else if (results.value[i].dataType === 'defor') {
@@ -17,7 +16,7 @@ class ImazonPresenter {
                 }
             }
         }
-        results.map_image = yield imageService.overviewImage(subscription, layer.slug, begin, end);
+        results.map_image = await imageService.overviewImage(subscription, layer.slug, begin, end);
 
         return results;
     }

@@ -3,8 +3,7 @@ services:
   - mongodb
   - redis
 node_js:
-  - "node"
-  - "12.9"
+  - "12"
 cache:
   directories:
   - "node_modules"
@@ -35,7 +34,7 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
-  - npm test
-  - npm run coverage
+  - yarn test
+  - yarn run coverage
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
