@@ -22,7 +22,7 @@ class SubscriptionService {
             resource: subscription.resource,
             datasets: subscription.datasets,
             datasetsQuery: subscription.datasetsQuery,
-            application: subscription.application || null,
+            application: subscription.application || 'gfw',
             language: subscription.language,
             env: subscription.env || 'production'
         };

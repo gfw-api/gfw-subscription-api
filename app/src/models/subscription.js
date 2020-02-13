@@ -46,7 +46,9 @@ const Subscription = new Schema({
     },
     createdAt: { type: Date, required: true, default: Date.now },
     updateAt: { type: Date, required: false, default: Date.now },
-    application: { type: String, trim: true },
+    application: {
+        type: String, required: true, default: 'gfw', trim: true
+    },
     env: { type: String, required: true, default: 'production' }
 });
 
