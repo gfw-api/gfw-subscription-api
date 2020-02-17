@@ -264,8 +264,7 @@ class SubscriptionsRouter {
         const application = ctx.query.application || 'gfw';
         const env = ctx.query.env || 'production';
         logger.info(`[SubscriptionsRouter] Getting all subscriptions for user with id`, userId);
-        const subscriptions = await SubscriptionService.getSubscriptionsForUser(userId, application, env);
-        ctx.body = { data: subscriptions };
+        ctx.body = await SubscriptionService.getSubscriptionsForUser(userId, application, env);
     }
 
 }
