@@ -25,16 +25,36 @@ describe('Find subscriptions by ids tests', () => {
         await Subscription.deleteMany({}).exec();
     });
 
+    it('Finding subscriptions is only allowed when the request is performed by a micro service, failing with 403 Forbidden otherwise', async () => {
+        const noTokenResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send();
+        noTokenResponse.status.should.equal(403);
+
+        const userResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.USER });
+        userResponse.status.should.equal(403);
+
+        const managerResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.MANAGER });
+        managerResponse.status.should.equal(403);
+
+        const adminResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.ADMIN });
+        adminResponse.status.should.equal(403);
+
+        const superAdminResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.SUPERADMIN });
+        superAdminResponse.status.should.equal(403);
+
+        const msResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.MICROSERVICE });
+        msResponse.status.should.equal(200);
+    });
+
     it('Finding subscriptions providing wrong type data (non-string ids) returns a 200 OK response with no data', async () => {
         const response = await requester
             .post(`/api/v1/subscriptions/find-by-ids`)
-            .send({ ids: [{}] });
+            .send({ ids: [{}], loggedUser: ROLES.MICROSERVICE });
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(0);
     });
 
     it('Finding subscriptions by ids without providing ids should return a 200 OK response with no data', async () => {
-        const response = await requester.post(`/api/v1/subscriptions/find-by-ids`).send();
+        const response = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.MICROSERVICE });
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(0);
     });
@@ -42,7 +62,7 @@ describe('Find subscriptions by ids tests', () => {
     it('Finding subscriptions by ids providing invalid ids should return a 200 OK response with no data', async () => {
         const response = await requester
             .post(`/api/v1/subscriptions/find-by-ids`)
-            .send({ ids: ['non-existing-id'] });
+            .send({ ids: ['non-existing-id'], loggedUser: ROLES.MICROSERVICE });
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(0);
     });
@@ -53,7 +73,7 @@ describe('Find subscriptions by ids tests', () => {
 
         const response = await requester
             .post(`/api/v1/subscriptions/find-by-ids`)
-            .send({ ids: [subscriptionOne.id, subscriptionTwo.id] });
+            .send({ ids: [subscriptionOne.id, subscriptionTwo.id], loggedUser: ROLES.MICROSERVICE });
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(2);
     });
@@ -64,7 +84,7 @@ describe('Find subscriptions by ids tests', () => {
 
         const response = await requester
             .post(`/api/v1/subscriptions/find-by-ids`)
-            .send({ ids: [subscriptionOne.id, subscriptionTwo.id, 'invalid-id'] });
+            .send({ ids: [subscriptionOne.id, subscriptionTwo.id, 'invalid-id'], loggedUser: ROLES.MICROSERVICE });
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(2);
     });

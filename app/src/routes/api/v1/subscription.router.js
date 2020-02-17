@@ -336,6 +336,17 @@ const isLoggedUserRequired = async (ctx, next) => {
     await next();
 };
 
+const isMicroservice = async (ctx, next) => {
+    const loggedUser = SubscriptionsRouter.getUser(ctx);
+
+    if (loggedUser.id !== 'microservice') {
+        ctx.throw(403, 'Not authorized');
+        return;
+    }
+
+    await next();
+};
+
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', isLoggedUserRequired, SubscriptionsRouter.getSubscriptions);
 router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
@@ -350,7 +361,7 @@ router.patch('/:id', isLoggedUserRequired, subscriptionExists(true), Subscriptio
 router.delete('/:id', isLoggedUserRequired, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.post('/check-hook', SubscriptionsRouter.checkHook);
-router.get('/user/:userId', SubscriptionsRouter.findUserSubscriptions);
-router.post('/find-by-ids', SubscriptionsRouter.findByIds);
+router.get('/user/:userId', isMicroservice, SubscriptionsRouter.findUserSubscriptions);
+router.post('/find-by-ids', isMicroservice, SubscriptionsRouter.findByIds);
 
 module.exports = router;
