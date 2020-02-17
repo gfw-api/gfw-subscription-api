@@ -145,7 +145,11 @@ class SubscriptionService {
     }
 
     static async getSubscriptionsByIds(ids) {
-        return Subscription.find({ _id: { $in: ids.map((id) => mongoose.Types.ObjectId(id)) } });
+        const idsToFind = ids
+            .filter(mongoose.Types.ObjectId.isValid)
+            .map((id) => mongoose.Types.ObjectId(id));
+
+        return Subscription.find({ _id: { $in: idsToFind } });
     }
 
 }

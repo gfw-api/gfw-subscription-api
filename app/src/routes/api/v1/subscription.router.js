@@ -251,7 +251,7 @@ class SubscriptionsRouter {
 
     static async findByIds(ctx) {
         logger.info(`[SubscriptionsRouter] Getting all subscriptions with ids`, ctx.request.body);
-        if (ctx.request && ctx.request.body && ctx.request.body && ctx.request.body.ids.length > 0) {
+        if (ctx.request && ctx.request.body && ctx.request.body.ids && ctx.request.body.ids.length > 0) {
             const subscriptions = await SubscriptionService.getSubscriptionsByIds(ctx.request.body.ids);
             ctx.body = { data: subscriptions };
         } else {
