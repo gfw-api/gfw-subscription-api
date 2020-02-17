@@ -1,14 +1,12 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
-const Statistic = require('models/statistic');
 const chai = require('chai');
 const { getTestServer } = require('./utils/test-server');
 const {
     createAuthCases, ensureCorrectError, getDateWithDecreaseYear, getDateWithIncreaseYear
 } = require('./utils/helpers');
 const { ROLES } = require('./utils/test.constants');
-const { createMockUsersWithRange } = require('./utils/mock');
 const { createSubscriptions, createExpectedGroupStatistics } = require('./utils/helpers/statistic');
 
 const should = chai.should();

@@ -1,3 +1,10 @@
+# v1.1.0
+
+## 17/02/2020
+
+- Add support for webhook-based subscription notifications.
+- Add application field to statistics so that stats can be namespaced by application.
+
 # v1.0.0
 
 ## 27/01/2020
@@ -10,3 +17,4 @@
 - Replace npm with yarn.
 - Add liveliness and readiness probes.
 - Add resource quota definition for kubernetes.
+- Use dataset's metadata name field on subscription emails, instead of dataset's name
