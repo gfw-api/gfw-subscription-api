@@ -25,21 +25,21 @@ describe('Find subscriptions by ids tests', () => {
         await Subscription.deleteMany({}).exec();
     });
 
-    it('Finding subscriptions is only allowed when the request is performed by a micro service, failing with 403 Forbidden otherwise', async () => {
+    it('Finding subscriptions is only allowed when the request is performed by a micro service, failing with 401 Unauthorized otherwise', async () => {
         const noTokenResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send();
-        noTokenResponse.status.should.equal(403);
+        noTokenResponse.status.should.equal(401);
 
         const userResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.USER });
-        userResponse.status.should.equal(403);
+        userResponse.status.should.equal(401);
 
         const managerResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.MANAGER });
-        managerResponse.status.should.equal(403);
+        managerResponse.status.should.equal(401);
 
         const adminResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.ADMIN });
-        adminResponse.status.should.equal(403);
+        adminResponse.status.should.equal(401);
 
         const superAdminResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.SUPERADMIN });
-        superAdminResponse.status.should.equal(403);
+        superAdminResponse.status.should.equal(401);
 
         const msResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.MICROSERVICE });
         msResponse.status.should.equal(200);

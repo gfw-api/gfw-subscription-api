@@ -145,9 +145,7 @@ class SubscriptionsRouter {
             return;
         }
 
-        ctx.body = await SubscriptionService.updateSubscription(
-            ctx.params.id, ctx.request.body.loggedUser.id, ctx.request.body
-        );
+        ctx.body = await SubscriptionService.updateSubscription(ctx.params.id, ctx.request.body);
     }
 
     static async unsubscribeSubscription(ctx) {
@@ -295,14 +293,12 @@ const subscriptionExists = (isForUser) => async (ctx, next) => {
     }
 
     let subscription;
+    let user = ctx.request.query.loggedUser || ctx.request.body.loggedUser;
+    if (typeof user === 'string') {
+        user = JSON.parse(user);
+    }
 
-    if (isForUser) {
-        let user = ctx.request.query.loggedUser || ctx.request.body.loggedUser;
-
-        if (typeof user === 'string') {
-            user = JSON.parse(user);
-        }
-
+    if (isForUser && user.id !== 'microservice') {
         subscription = await Subscription.findOne({
             _id: id,
             userId: user.id,
@@ -318,28 +314,47 @@ const subscriptionExists = (isForUser) => async (ctx, next) => {
     await next();
 };
 
-const isLoggedUserRequired = async (ctx, next) => {
+const checkMicroservice = (ctx) => {
     const loggedUser = SubscriptionsRouter.getUser(ctx);
+    return loggedUser.id === 'microservice';
+};
 
-    if (!loggedUser || USER_ROLES.indexOf(loggedUser.role) === -1) {
+const hasLoggedUser = (ctx) => {
+    const loggedUser = SubscriptionsRouter.getUser(ctx);
+    return loggedUser && USER_ROLES.indexOf(loggedUser.role) !== -1;
+};
+
+const checkValidLoggedUser = (ctx) => {
+    const loggedUser = SubscriptionsRouter.getUser(ctx);
+    return typeof loggedUser === 'object' && loggedUser.role;
+};
+
+const isLoggedUserRequired = async (ctx, next) => {
+    if (!hasLoggedUser(ctx)) {
         ctx.throw(401, 'Not authorized');
         return;
     }
 
-    if (typeof loggedUser !== 'object') {
+    if (!checkValidLoggedUser(ctx)) {
         ctx.throw(401, 'Not valid loggedUser, it should be json a valid object string in query');
-    } else if (!loggedUser.role) {
-        ctx.throw(401, 'Not valid loggedUser, it should be json a valid object string in query');
+        return;
     }
 
     await next();
 };
 
 const isMicroservice = async (ctx, next) => {
-    const loggedUser = SubscriptionsRouter.getUser(ctx);
+    if (!checkMicroservice(ctx)) {
+        ctx.throw(401, 'Not authorized');
+        return;
+    }
 
-    if (loggedUser.id !== 'microservice') {
-        ctx.throw(403, 'Not authorized');
+    await next();
+};
+
+const loggedUserOrMicroserviceAuth = async (ctx, next) => {
+    if (!(hasLoggedUser(ctx) || checkValidLoggedUser(ctx)) && !checkMicroservice(ctx)) {
+        ctx.throw(401, 'Not authorized');
         return;
     }
 
@@ -356,8 +371,8 @@ router.get('/:id/data', isLoggedUserRequired, subscriptionExists(true), Subscrip
 router.get('/:id/confirm', subscriptionExists(), SubscriptionsRouter.confirmSubscription);
 router.get('/:id/send_confirmation', isLoggedUserRequired, subscriptionExists(true), SubscriptionsRouter.sendConfirmation);
 router.get('/:id/unsubscribe', subscriptionExists(), SubscriptionsRouter.unsubscribeSubscription);
-router.patch('/:id', isLoggedUserRequired, subscriptionExists(true), SubscriptionsRouter.updateSubscription);
-router.delete('/:id', isLoggedUserRequired, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
+router.patch('/:id', loggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.updateSubscription);
+router.delete('/:id', loggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.post('/check-hook', SubscriptionsRouter.checkHook);
 router.get('/user/:userId', isMicroservice, SubscriptionsRouter.findUserSubscriptions);

@@ -86,11 +86,8 @@ class SubscriptionService {
         );
     }
 
-    static async updateSubscription(id, userId, data) {
-        const subscription = await Subscription.where({
-            _id: id,
-            userId
-        }).findOne();
+    static async updateSubscription(id, data) {
+        const subscription = await Subscription.where({ _id: id }).findOne();
         let attributes = _.omitBy(data, _.isNil);
         attributes = _.omit(attributes, 'loggedUser');
         _.each(attributes, (value, attribute) => {

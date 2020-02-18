@@ -25,35 +25,35 @@ describe('Find subscriptions for user tests', () => {
         await Subscription.deleteMany({}).exec();
     });
 
-    it('Finding subscriptions for users is only allowed when the request is performed by a micro service, failing with 403 Forbidden otherwise', async () => {
+    it('Finding subscriptions for users is only allowed when the request is performed by a micro service, failing with 401 Unauthorized otherwise', async () => {
         const noTokenResponse = await requester
             .get(`/api/v1/subscriptions/user/1`)
             .send();
-        noTokenResponse.status.should.equal(403);
+        noTokenResponse.status.should.equal(401);
 
         const userResponse = await requester
             .get(`/api/v1/subscriptions/user/1`)
             .query({ loggedUser: JSON.stringify(ROLES.USER) })
             .send();
-        userResponse.status.should.equal(403);
+        userResponse.status.should.equal(401);
 
         const managerResponse = await requester
             .get(`/api/v1/subscriptions/user/1`)
             .query({ loggedUser: JSON.stringify(ROLES.MANAGER) })
             .send();
-        managerResponse.status.should.equal(403);
+        managerResponse.status.should.equal(401);
 
         const adminResponse = await requester
             .get(`/api/v1/subscriptions/user/1`)
             .query({ loggedUser: JSON.stringify(ROLES.ADMIN) })
             .send();
-        adminResponse.status.should.equal(403);
+        adminResponse.status.should.equal(401);
 
         const superAdminResponse = await requester
             .get(`/api/v1/subscriptions/user/1`)
             .query({ loggedUser: JSON.stringify(ROLES.SUPERADMIN) })
             .send();
-        superAdminResponse.status.should.equal(403);
+        superAdminResponse.status.should.equal(401);
     });
 
     it('Finding subscriptions for a user that does not have associated subscriptions returns a 200 OK response with no data', async () => {
