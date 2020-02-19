@@ -40,9 +40,6 @@ describe('Find subscriptions by ids tests', () => {
 
         const superAdminResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.SUPERADMIN });
         superAdminResponse.status.should.equal(401);
-
-        const msResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.MICROSERVICE });
-        msResponse.status.should.equal(200);
     });
 
     it('Finding subscriptions providing wrong type data (non-string ids) returns a 200 OK response with no data', async () => {
@@ -53,10 +50,11 @@ describe('Find subscriptions by ids tests', () => {
         response.body.should.have.property('data').with.lengthOf(0);
     });
 
-    it('Finding subscriptions by ids without providing ids should return a 200 OK response with no data', async () => {
+    it('Finding subscriptions by ids without providing ids returns 400 Bad Request requiring the ids', async () => {
         const response = await requester.post(`/api/v1/subscriptions/find-by-ids`).send({ loggedUser: ROLES.MICROSERVICE });
-        response.status.should.equal(200);
-        response.body.should.have.property('data').with.lengthOf(0);
+        response.status.should.equal(400);
+        response.body.should.have.property('errors').with.lengthOf(1);
+        response.body.errors[0].should.have.property('detail').and.be.equal('Ids not provided.');
     });
 
     it('Finding subscriptions by ids providing invalid ids should return a 200 OK response with no data', async () => {
@@ -76,6 +74,7 @@ describe('Find subscriptions by ids tests', () => {
             .send({ ids: [subscriptionOne.id, subscriptionTwo.id], loggedUser: ROLES.MICROSERVICE });
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(2);
+        response.body.data.map((e) => e.id).should.have.members([subscriptionOne.id.toString(), subscriptionTwo.id.toString()]);
     });
 
     it('Finding subscriptions by ids providing a mix of valid and invalid ids should return a 200 OK response with only the subscription data for valid ids', async () => {
@@ -87,6 +86,7 @@ describe('Find subscriptions by ids tests', () => {
             .send({ ids: [subscriptionOne.id, subscriptionTwo.id, 'invalid-id'], loggedUser: ROLES.MICROSERVICE });
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(2);
+        response.body.data.map((e) => e.id).should.have.members([subscriptionOne.id.toString(), subscriptionTwo.id.toString()]);
     });
 
     afterEach(async () => {

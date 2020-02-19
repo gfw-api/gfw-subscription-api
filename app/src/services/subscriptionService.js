@@ -31,10 +31,7 @@ class SubscriptionService {
 
     static async createSubscription(data) {
         logger.info('Creating subscription with data ', data);
-        data.userId = data.loggedUser.id === 'microservice'
-            ? data.userId || data.loggedUser.id
-            : data.loggedUser.id;
-
+        data.userId = (data.loggedUser.id === 'microservice') ? data.userId : data.loggedUser.id;
         const subscriptionFormatted = SubscriptionService.formatSubscription(data);
         logger.debug('Creating subscription ', subscriptionFormatted);
         delete subscriptionFormatted.createdAt;
@@ -87,7 +84,7 @@ class SubscriptionService {
     }
 
     static async updateSubscription(id, data) {
-        const subscription = await Subscription.where({ _id: id }).findOne();
+        const subscription = await Subscription.findById(id);
         let attributes = _.omitBy(data, _.isNil);
         attributes = _.omit(attributes, 'loggedUser');
         _.each(attributes, (value, attribute) => {
@@ -132,12 +129,7 @@ class SubscriptionService {
     }
 
     static async getSubscriptionsForUser(userId, application, env) {
-        const subscriptions = await Subscription.find({
-            userId,
-            application,
-            env
-        }).exec();
-
+        const subscriptions = await Subscription.find({ userId, application, env }).exec();
         return SubscriptionSerializer.serialize(subscriptions);
     }
 
@@ -146,7 +138,8 @@ class SubscriptionService {
             .filter(mongoose.Types.ObjectId.isValid)
             .map((id) => mongoose.Types.ObjectId(id));
 
-        return Subscription.find({ _id: { $in: idsToFind } });
+        const subscriptions = await Subscription.find({ _id: { $in: idsToFind } });
+        return SubscriptionSerializer.serialize(subscriptions);
     }
 
 }
