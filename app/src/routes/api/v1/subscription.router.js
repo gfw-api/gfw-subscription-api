@@ -259,11 +259,8 @@ class SubscriptionsRouter {
     }
 
     static async findUserSubscriptions(ctx) {
-        const { userId } = ctx.params;
-        ctx.assert(ctx.query.application, 400, 'Application required');
-        ctx.assert(ctx.query.env, 400, 'Environment required');
-        logger.info(`[SubscriptionsRouter] Getting all subscriptions for user with id`, userId);
-        ctx.body = await SubscriptionService.getSubscriptionsForUser(userId, ctx.query.application, ctx.query.env);
+        logger.info(`[SubscriptionsRouter] Getting all subscriptions for user with id`, ctx.params.userId);
+        ctx.body = await SubscriptionService.getSubscriptionsForUser(ctx.params.userId, ctx.query.application, ctx.query.env);
     }
 
 }

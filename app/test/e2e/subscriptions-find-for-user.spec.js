@@ -42,34 +42,10 @@ describe('Find subscriptions for user tests', () => {
         superAdminResponse.status.should.equal(401);
     });
 
-    it('Finding subscriptions without providing an application query param returns 400 Bad Request', async () => {
-        const response = await requester
-            .get(`/api/v1/subscriptions/user/1`)
-            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE) })
-            .send();
-        response.status.should.equal(400);
-        response.body.should.have.property('errors').with.lengthOf(1);
-        response.body.errors[0].should.have.property('detail').and.be.equal('Application required');
-    });
-
-    it('Finding subscriptions without providing an environment query param returns 400 Bad Request', async () => {
-        const response = await requester
-            .get(`/api/v1/subscriptions/user/1`)
-            .query({ application: 'gfw', loggedUser: JSON.stringify(ROLES.MICROSERVICE) })
-            .send();
-        response.status.should.equal(400);
-        response.body.should.have.property('errors').with.lengthOf(1);
-        response.body.errors[0].should.have.property('detail').and.be.equal('Environment required');
-    });
-
     it('Finding subscriptions for a user that does not have associated subscriptions returns a 200 OK response with no data', async () => {
         const response = await requester
             .get(`/api/v1/subscriptions/user/1`)
-            .query({
-                loggedUser: JSON.stringify(ROLES.MICROSERVICE),
-                application: 'gfw',
-                env: 'production',
-            })
+            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE) })
             .send();
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(0);
@@ -82,15 +58,53 @@ describe('Find subscriptions for user tests', () => {
 
         const response = await requester
             .get(`/api/v1/subscriptions/user/${ROLES.USER.id}`)
-            .query({
-                loggedUser: JSON.stringify(ROLES.MICROSERVICE),
-                application: 'gfw',
-                env: 'production',
-            })
+            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE) })
             .send();
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(2);
         response.body.data.every((subscription) => subscription.attributes.userId === ROLES.USER.id).should.be.true;
+    });
+
+    it('Finding subscriptions allows filtering by application query param, returns 200 OK with the correct data', async () => {
+        const gfwSub = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'gfw' })).save();
+        const rwSub = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw' })).save();
+
+        const response1 = await requester
+            .get(`/api/v1/subscriptions/user/${ROLES.USER.id}`)
+            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), application: 'gfw' })
+            .send();
+        response1.status.should.equal(200);
+        response1.body.should.have.property('data').with.lengthOf(1);
+        response1.body.data[0].should.have.property('id').and.be.equal(gfwSub.id);
+
+        const response2 = await requester
+            .get(`/api/v1/subscriptions/user/${ROLES.USER.id}`)
+            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), application: 'rw' })
+            .send();
+        response2.status.should.equal(200);
+        response2.body.should.have.property('data').with.lengthOf(1);
+        response2.body.data[0].should.have.property('id').and.be.equal(rwSub.id);
+    });
+
+    it('Finding subscriptions allows filtering by environment query param, returns 200 OK with the correct data', async () => {
+        const prodSub = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'production' })).save();
+        const stgSub = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
+
+        const response1 = await requester
+            .get(`/api/v1/subscriptions/user/${ROLES.USER.id}`)
+            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), env: 'production' })
+            .send();
+        response1.status.should.equal(200);
+        response1.body.should.have.property('data').with.lengthOf(1);
+        response1.body.data[0].should.have.property('id').and.be.equal(prodSub.id);
+
+        const response2 = await requester
+            .get(`/api/v1/subscriptions/user/${ROLES.USER.id}`)
+            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), env: 'staging' })
+            .send();
+        response2.status.should.equal(200);
+        response2.body.should.have.property('data').with.lengthOf(1);
+        response2.body.data[0].should.have.property('id').and.be.equal(stgSub.id);
     });
 
     afterEach(async () => {
