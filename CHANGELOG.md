@@ -1,3 +1,8 @@
+# 19/02/2020
+- Add endpoint for finding subscriptions by id.
+- Add endpoint for finding all subscriptions for a given user.
+- Add possibility of creating, updating or deleting subscriptions that belong to other users when endpoints are called by other MSs.
+
 # 22/01/2020
 - Add support for webhook-based subscription notifications.
 - Add application field to statistics so that stats can be namespaced by application.

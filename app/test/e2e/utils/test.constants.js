@@ -218,6 +218,27 @@ const ROLES = {
                 'data4sdgs'
             ]
         }
+    },
+    SUPERADMIN: {
+        id: '1a10d7c6e0a37126601fd7a6',
+        role: 'SUPERADMIN',
+        provider: 'local',
+        email: 'user@control-tower.org',
+        name: 'test super admin',
+        extraUserData: {
+            apps: [
+                'rw',
+                'gfw',
+                'gfw-climate',
+                'prep',
+                'aqueduct',
+                'forest-atlas',
+                'data4sdgs'
+            ]
+        }
+    },
+    MICROSERVICE: {
+        id: 'microservice'
     }
 };
 

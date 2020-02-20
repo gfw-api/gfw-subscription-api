@@ -48,6 +48,24 @@
             "path": "/api/v1/subscriptions/:id"
         }]
     }, {
+        "url": "/v1/subscriptions/find-by-ids",
+        "method": "POST",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "POST",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/find-by-ids"
+        }]
+    }, {
+        "url": "/v1/subscriptions/user/:userId",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/user/:userId"
+        }]
+    }, {
         "url": "/v1/subscriptions/:id",
         "method": "GET",
         "authenticated": true,
