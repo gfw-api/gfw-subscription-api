@@ -1,6 +1,6 @@
 # 19/02/2020
-- Add endpoint for finding subscriptions by id - can only be called by other MSs.
-- Add endpoint for finding all subscriptions for a given user - can only be called by other MSs.
+- Add endpoint for finding subscriptions by id.
+- Add endpoint for finding all subscriptions for a given user.
 - Add possibility of creating, updating or deleting subscriptions that belong to other users when endpoints are called by other MSs.
 
 # 22/01/2020
