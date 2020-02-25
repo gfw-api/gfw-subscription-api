@@ -1,5 +1,6 @@
 ## 25/02/2020
 
+- Fix issue where email queue listener would not start.
 - Fix an issue where a redirect url would be incorrectly logged.
 
 # v1.1.0
