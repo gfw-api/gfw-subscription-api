@@ -130,7 +130,7 @@ class SubscriptionsRouter {
 
         try {
             SubscriptionService.sendConfirmation(subscription);
-            logger.info('Redirect to ', ctx.headers.referer);
+            logger.info(`Redirect to: ${config.get('gfw.flagshipUrl')}/my_gfw/subscriptions`);
             ctx.redirect(`${config.get('gfw.flagshipUrl')}/my_gfw/subscriptions`);
         } catch (err) {
             logger.error(err);

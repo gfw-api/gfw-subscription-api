@@ -45,7 +45,7 @@ module.exports = (() => {
     };
 
     const loadQueues = (app, path = queuesPath) => {
-        logger.debug('Loading queues...');
+        logger.info('Loading queues...');
         const routesFiles = fs.readdirSync(path);
         routesFiles.forEach((file) => {
             if (/^\..*/.test(file)) {
@@ -57,21 +57,23 @@ module.exports = (() => {
 
             if (!stat.isDirectory()) {
                 if (file.lastIndexOf('.queue.js') !== -1) {
-                    logger.debug('Loading queue %s', newPath);
-                    require(newPath);
+                    logger.info('Loading queue %s', newPath);
+                    const QueueClass = require(newPath);
+                    // eslint-disable-next-line no-new
+                    new QueueClass();
                 }
             } else {
                 // is folder
                 loadQueues(app, newPath);
             }
         });
-        logger.debug('Loaded routes correctly!');
+        logger.info('Loaded routes correctly!');
     };
 
     const loadRoutes = (app) => {
-        logger.debug('Loading routes...');
+        logger.info('Loading routes...');
         loadAPI(app, routersPath);
-        logger.debug('Loaded routes correctly!');
+        logger.info('Loaded routes correctly!');
     };
 
     return {
