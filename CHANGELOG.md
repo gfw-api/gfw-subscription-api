@@ -1,3 +1,7 @@
+## 25/02/2020
+
+- Fix an issue where a redirect url would be incorrectly logged.
+
 # v1.1.0
 
 ## 17/02/2020
