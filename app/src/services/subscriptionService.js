@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const logger = require('logger');
+const mongoose = require('mongoose');
 const Subscription = require('models/subscription');
 const SubscriptionSerializer = require('serializers/subscriptionSerializer');
 
@@ -30,8 +31,7 @@ class SubscriptionService {
 
     static async createSubscription(data) {
         logger.info('Creating subscription with data ', data);
-        data.userId = data.loggedUser.id;
-
+        data.userId = (data.loggedUser.id === 'microservice') ? data.userId : data.loggedUser.id;
         const subscriptionFormatted = SubscriptionService.formatSubscription(data);
         logger.debug('Creating subscription ', subscriptionFormatted);
         delete subscriptionFormatted.createdAt;
@@ -83,11 +83,8 @@ class SubscriptionService {
         );
     }
 
-    static async updateSubscription(id, userId, data) {
-        const subscription = await Subscription.where({
-            _id: id,
-            userId
-        }).findOne();
+    static async updateSubscription(id, data) {
+        const subscription = await Subscription.findById(id);
         let attributes = _.omitBy(data, _.isNil);
         attributes = _.omit(attributes, 'loggedUser');
         _.each(attributes, (value, attribute) => {
@@ -131,13 +128,21 @@ class SubscriptionService {
         return subscriptions;
     }
 
-    static async getSubscriptionsForUser(userId, application, env) {
-        const subscriptions = await Subscription.find({
-            userId,
-            application,
-            env
-        }).exec();
+    static async getSubscriptionsForUser(userId, application = undefined, env = undefined) {
+        const filter = { userId };
+        if (application) filter.application = application;
+        if (env) filter.env = env;
 
+        const subscriptions = await Subscription.find(filter).exec();
+        return SubscriptionSerializer.serialize(subscriptions);
+    }
+
+    static async getSubscriptionsByIds(ids) {
+        const idsToFind = ids
+            .filter(mongoose.Types.ObjectId.isValid)
+            .map((id) => mongoose.Types.ObjectId(id));
+
+        const subscriptions = await Subscription.find({ _id: { $in: idsToFind } });
         return SubscriptionSerializer.serialize(subscriptions);
     }
 

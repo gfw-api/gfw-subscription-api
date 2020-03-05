@@ -1,13 +1,12 @@
-## 25/02/2020
+# v1.1.0
+
+## 28/02/2020
 
 - Fix issue where email queue listener would not start.
 - Fix an issue where a redirect url would be incorrectly logged.
-
-# v1.1.0
-
-## 17/02/2020
-
-- Add support for webhook-based subscription notifications.
+- Add endpoint for finding subscriptions by id.
+- Add endpoint for finding all subscriptions for a given user.
+- Add possibility of creating, updating or deleting subscriptions that belong to other users when endpoints are called by other MSs.
 - Add application field to statistics so that stats can be namespaced by application.
 
 # v1.0.0

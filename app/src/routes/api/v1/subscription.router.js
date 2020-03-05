@@ -12,6 +12,7 @@ const MockService = require('services/mockService');
 const GenericError = require('errors/genericError');
 const config = require('config');
 const redis = require('redis');
+const lodashGet = require('lodash/get');
 const { USER_ROLES } = require('app.constants');
 
 const router = new Router({
@@ -145,9 +146,7 @@ class SubscriptionsRouter {
             return;
         }
 
-        ctx.body = await SubscriptionService.updateSubscription(
-            ctx.params.id, ctx.request.body.loggedUser.id, ctx.request.body
-        );
+        ctx.body = await SubscriptionService.updateSubscription(ctx.params.id, ctx.request.body);
     }
 
     static async unsubscribeSubscription(ctx) {
@@ -249,6 +248,21 @@ class SubscriptionsRouter {
         ctx.body = await StatisticsService.infoByUserSubscriptions(new Date(ctx.query.start), new Date(ctx.query.end), ctx.query.application);
     }
 
+    static async findByIds(ctx) {
+        const ids = lodashGet(ctx.request, 'body.ids', null);
+        if (ids === null) {
+            throw new GenericError(400, 'Ids not provided.');
+        }
+
+        logger.info(`[SubscriptionsRouter] Getting all subscriptions with ids`, ids);
+        ctx.body = await SubscriptionService.getSubscriptionsByIds(ids);
+    }
+
+    static async findUserSubscriptions(ctx) {
+        logger.info(`[SubscriptionsRouter] Getting all subscriptions for user with id`, ctx.params.userId);
+        ctx.body = await SubscriptionService.getSubscriptionsForUser(ctx.params.userId, ctx.query.application, ctx.query.env);
+    }
+
 }
 
 const isAdmin = async (ctx, next) => {
@@ -276,22 +290,10 @@ const subscriptionExists = (isForUser) => async (ctx, next) => {
         ctx.throw(400, 'ID is not valid');
     }
 
-    let subscription;
-
-    if (isForUser) {
-        let user = ctx.request.query.loggedUser || ctx.request.body.loggedUser;
-
-        if (typeof user === 'string') {
-            user = JSON.parse(user);
-        }
-
-        subscription = await Subscription.findOne({
-            _id: id,
-            userId: user.id,
-        });
-    } else {
-        subscription = await Subscription.findById(id);
-    }
+    const user = SubscriptionsRouter.getUser(ctx);
+    const subscription = (isForUser && user.id !== 'microservice')
+        ? await Subscription.findOne({ _id: id, userId: user.id })
+        : await Subscription.findById(id);
 
     if (!subscription) {
         ctx.throw(404, 'Subscription not found');
@@ -300,36 +302,68 @@ const subscriptionExists = (isForUser) => async (ctx, next) => {
     await next();
 };
 
-const isLoggedUserRequired = async (ctx, next) => {
+const isMicroservice = (ctx) => {
     const loggedUser = SubscriptionsRouter.getUser(ctx);
+    return loggedUser.id === 'microservice';
+};
 
-    if (!loggedUser || USER_ROLES.indexOf(loggedUser.role) === -1) {
+const hasLoggedUser = (ctx) => {
+    const loggedUser = SubscriptionsRouter.getUser(ctx);
+    return loggedUser && USER_ROLES.indexOf(loggedUser.role) !== -1;
+};
+
+const hasValidLoggedUser = (ctx) => {
+    const loggedUser = SubscriptionsRouter.getUser(ctx);
+    return typeof loggedUser === 'object' && loggedUser.role;
+};
+
+const validateLoggedUserAuth = async (ctx, next) => {
+    if (!hasLoggedUser(ctx)) {
         ctx.throw(401, 'Not authorized');
         return;
     }
 
-    if (typeof loggedUser !== 'object') {
+    if (!hasValidLoggedUser(ctx)) {
         ctx.throw(401, 'Not valid loggedUser, it should be json a valid object string in query');
-    } else if (!loggedUser.role) {
-        ctx.throw(401, 'Not valid loggedUser, it should be json a valid object string in query');
+        return;
+    }
+
+    await next();
+};
+
+const validateMicroserviceAuth = async (ctx, next) => {
+    if (!isMicroservice(ctx)) {
+        ctx.throw(401, 'Not authorized');
+        return;
+    }
+
+    await next();
+};
+
+const validateLoggedUserOrMicroserviceAuth = async (ctx, next) => {
+    if (!(hasLoggedUser(ctx) || hasValidLoggedUser(ctx)) && !isMicroservice(ctx)) {
+        ctx.throw(401, 'Not authorized');
+        return;
     }
 
     await next();
 };
 
 router.post('/', SubscriptionsRouter.createSubscription);
-router.get('/', isLoggedUserRequired, SubscriptionsRouter.getSubscriptions);
+router.get('/', validateLoggedUserAuth, SubscriptionsRouter.getSubscriptions);
 router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
 router.get('/statistics-group', isAdmin, SubscriptionsRouter.statisticsGroup);
 router.get('/statistics-by-user', isAdmin, SubscriptionsRouter.statisticsByUser);
-router.get('/:id', isLoggedUserRequired, subscriptionExists(true), SubscriptionsRouter.getSubscription); // not done
-router.get('/:id/data', isLoggedUserRequired, subscriptionExists(true), SubscriptionsRouter.getSubscriptionData);
+router.get('/:id', validateLoggedUserAuth, subscriptionExists(true), SubscriptionsRouter.getSubscription); // not done
+router.get('/:id/data', validateLoggedUserAuth, subscriptionExists(true), SubscriptionsRouter.getSubscriptionData);
 router.get('/:id/confirm', subscriptionExists(), SubscriptionsRouter.confirmSubscription);
-router.get('/:id/send_confirmation', isLoggedUserRequired, subscriptionExists(true), SubscriptionsRouter.sendConfirmation);
+router.get('/:id/send_confirmation', validateLoggedUserAuth, subscriptionExists(true), SubscriptionsRouter.sendConfirmation);
 router.get('/:id/unsubscribe', subscriptionExists(), SubscriptionsRouter.unsubscribeSubscription);
-router.patch('/:id', isLoggedUserRequired, subscriptionExists(true), SubscriptionsRouter.updateSubscription);
-router.delete('/:id', isLoggedUserRequired, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
+router.patch('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.updateSubscription);
+router.delete('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.post('/check-hook', SubscriptionsRouter.checkHook);
+router.get('/user/:userId', validateMicroserviceAuth, SubscriptionsRouter.findUserSubscriptions);
+router.post('/find-by-ids', validateMicroserviceAuth, SubscriptionsRouter.findByIds);
 
 module.exports = router;
