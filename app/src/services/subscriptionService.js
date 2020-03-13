@@ -128,6 +128,15 @@ class SubscriptionService {
         return subscriptions;
     }
 
+    static async getAllSubscriptions(application = undefined, env = undefined) {
+        const filter = {};
+        if (application) filter.application = application;
+        if (env) filter.env = env;
+
+        const subscriptions = await Subscription.find(filter).exec();
+        return SubscriptionSerializer.serialize(subscriptions);
+    }
+
     static async getSubscriptionsForUser(userId, application = undefined, env = undefined) {
         const filter = { userId };
         if (application) filter.application = application;

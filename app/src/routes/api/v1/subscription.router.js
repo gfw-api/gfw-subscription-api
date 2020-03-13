@@ -263,6 +263,11 @@ class SubscriptionsRouter {
         ctx.body = await SubscriptionService.getSubscriptionsForUser(ctx.params.userId, ctx.query.application, ctx.query.env);
     }
 
+    static async findAllSubscriptions(ctx) {
+        logger.info(`[SubscriptionsRouter] Getting ALL subscriptions`);
+        ctx.body = await SubscriptionService.getAllSubscriptions(ctx.query.application, ctx.query.env);
+    }
+
 }
 
 const isAdmin = async (ctx, next) => {
@@ -364,6 +369,7 @@ router.delete('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(t
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.post('/check-hook', SubscriptionsRouter.checkHook);
 router.get('/user/:userId', validateMicroserviceAuth, SubscriptionsRouter.findUserSubscriptions);
+router.get('/admin/find-all', validateMicroserviceAuth, SubscriptionsRouter.findAllSubscriptions);
 router.post('/find-by-ids', validateMicroserviceAuth, SubscriptionsRouter.findByIds);
 
 module.exports = router;
