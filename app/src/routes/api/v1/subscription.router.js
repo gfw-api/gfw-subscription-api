@@ -263,6 +263,11 @@ class SubscriptionsRouter {
         ctx.body = await SubscriptionService.getSubscriptionsForUser(ctx.params.userId, ctx.query.application, ctx.query.env);
     }
 
+    static async findAllSubscriptions(ctx) {
+        logger.info(`[SubscriptionsRouter] Getting ALL subscriptions`);
+        ctx.body = await SubscriptionService.getAllSubscriptions(ctx.request.query.application, ctx.request.query.env);
+    }
+
 }
 
 const isAdmin = async (ctx, next) => {
@@ -351,6 +356,7 @@ const validateLoggedUserOrMicroserviceAuth = async (ctx, next) => {
 
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', validateLoggedUserAuth, SubscriptionsRouter.getSubscriptions);
+router.get('/find-all', validateMicroserviceAuth, SubscriptionsRouter.findAllSubscriptions);
 router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
 router.get('/statistics-group', isAdmin, SubscriptionsRouter.statisticsGroup);
 router.get('/statistics-by-user', isAdmin, SubscriptionsRouter.statisticsByUser);
