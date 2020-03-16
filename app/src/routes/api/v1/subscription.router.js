@@ -356,6 +356,7 @@ const validateLoggedUserOrMicroserviceAuth = async (ctx, next) => {
 
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', validateLoggedUserAuth, SubscriptionsRouter.getSubscriptions);
+router.get('/find-all', validateMicroserviceAuth, SubscriptionsRouter.findAllSubscriptions);
 router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
 router.get('/statistics-group', isAdmin, SubscriptionsRouter.statisticsGroup);
 router.get('/statistics-by-user', isAdmin, SubscriptionsRouter.statisticsByUser);
@@ -369,7 +370,6 @@ router.delete('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(t
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.post('/check-hook', SubscriptionsRouter.checkHook);
 router.get('/user/:userId', validateMicroserviceAuth, SubscriptionsRouter.findUserSubscriptions);
-router.get('/admin/find-all', validateMicroserviceAuth, SubscriptionsRouter.findAllSubscriptions);
 router.post('/find-by-ids', validateMicroserviceAuth, SubscriptionsRouter.findByIds);
 
 module.exports = router;

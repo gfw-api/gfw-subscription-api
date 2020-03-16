@@ -26,25 +26,25 @@ describe('Find all subscriptions tests', () => {
     });
 
     it('Finding all subscriptions is only allowed when the request is performed by a micro service, failing with 401 Unauthorized otherwise', async () => {
-        const noTokenResponse = await requester.get(`/api/v1/subscriptions/admin/find-all`).send();
+        const noTokenResponse = await requester.get(`/api/v1/subscriptions/find-all`).send();
         noTokenResponse.status.should.equal(401);
 
-        const userResponse = await requester.get(`/api/v1/subscriptions/admin/find-all`).query({ loggedUser: JSON.stringify(ROLES.USER) }).send();
+        const userResponse = await requester.get(`/api/v1/subscriptions/find-all`).query({ loggedUser: JSON.stringify(ROLES.USER) }).send();
         userResponse.status.should.equal(401);
 
-        const managerResponse = await requester.get(`/api/v1/subscriptions/admin/find-all`).query({ loggedUser: JSON.stringify(ROLES.MANAGER) }).send();
+        const managerResponse = await requester.get(`/api/v1/subscriptions/find-all`).query({ loggedUser: JSON.stringify(ROLES.MANAGER) }).send();
         managerResponse.status.should.equal(401);
 
-        const adminResponse = await requester.get(`/api/v1/subscriptions/admin/find-all`).query({ loggedUser: JSON.stringify(ROLES.ADMIN) }).send();
+        const adminResponse = await requester.get(`/api/v1/subscriptions/find-all`).query({ loggedUser: JSON.stringify(ROLES.ADMIN) }).send();
         adminResponse.status.should.equal(401);
 
-        const superAdminResponse = await requester.get(`/api/v1/subscriptions/admin/find-all`).query({ loggedUser: JSON.stringify(ROLES.SUPERADMIN) }).send();
+        const superAdminResponse = await requester.get(`/api/v1/subscriptions/find-all`).query({ loggedUser: JSON.stringify(ROLES.SUPERADMIN) }).send();
         superAdminResponse.status.should.equal(401);
     });
 
     it('Finding all subscriptions when there are no existing subscriptions returns a 200 OK response with no data', async () => {
         const response = await requester
-            .get(`/api/v1/subscriptions/admin/find-all`)
+            .get(`/api/v1/subscriptions/find-all`)
             .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE) })
             .send();
         response.status.should.equal(200);
@@ -59,7 +59,7 @@ describe('Find all subscriptions tests', () => {
         await new Subscription(createSubscription('123')).save();
 
         const response = await requester
-            .get(`/api/v1/subscriptions/admin/find-all`)
+            .get(`/api/v1/subscriptions/find-all`)
             .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE) })
             .send();
         response.status.should.equal(200);
@@ -73,7 +73,7 @@ describe('Find all subscriptions tests', () => {
         const rwSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { application: 'rw' })).save();
 
         const response1 = await requester
-            .get(`/api/v1/subscriptions/admin/find-all`)
+            .get(`/api/v1/subscriptions/find-all`)
             .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), application: 'gfw' })
             .send();
         response1.status.should.equal(200);
@@ -82,7 +82,7 @@ describe('Find all subscriptions tests', () => {
         response1.body.data.map((el) => el.id).should.contain(gfwSub2.id);
 
         const response2 = await requester
-            .get(`/api/v1/subscriptions/admin/find-all`)
+            .get(`/api/v1/subscriptions/find-all`)
             .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), application: 'rw' })
             .send();
         response2.status.should.equal(200);
@@ -98,7 +98,7 @@ describe('Find all subscriptions tests', () => {
         const stgSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'staging' })).save();
 
         const response1 = await requester
-            .get(`/api/v1/subscriptions/admin/find-all`)
+            .get(`/api/v1/subscriptions/find-all`)
             .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), env: 'production' })
             .send();
         response1.status.should.equal(200);
@@ -107,7 +107,7 @@ describe('Find all subscriptions tests', () => {
         response1.body.data.map((el) => el.id).should.contain(prodSub2.id);
 
         const response2 = await requester
-            .get(`/api/v1/subscriptions/admin/find-all`)
+            .get(`/api/v1/subscriptions/find-all`)
             .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), env: 'staging' })
             .send();
         response2.status.should.equal(200);
