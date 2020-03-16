@@ -265,7 +265,7 @@ class SubscriptionsRouter {
 
     static async findAllSubscriptions(ctx) {
         logger.info(`[SubscriptionsRouter] Getting ALL subscriptions`);
-        ctx.body = await SubscriptionService.getAllSubscriptions(ctx.query.application, ctx.query.env);
+        ctx.body = await SubscriptionService.getAllSubscriptions(ctx.request.query.application, ctx.request.query.env);
     }
 
 }
