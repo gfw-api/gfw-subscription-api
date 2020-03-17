@@ -4,5 +4,8 @@
     "level": "debug",
     "toFile": false,
     "dirLogFile": null
+  },
+  "datasets": {
+    "gladAlertsDataset": "9be3bf63-97fc-4bb0-b913-775ccae3cf9e"
   }
 }

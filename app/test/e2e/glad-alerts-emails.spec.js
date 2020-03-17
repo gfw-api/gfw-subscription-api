@@ -74,7 +74,7 @@ describe('GLAD alert emails', () => {
                 }
             });
 
-        createMockAlertsQuery('9be3bf63-97fc-4bb0-b913-775ccae3cf9e', '2019-10-01', '2019-10-10', 'test');
+        createMockAlertsQuery(config.get('datasets.gladAlertsDataset'));
 
         process.on('unhandledRejection', (error) => {
             should.fail(error);

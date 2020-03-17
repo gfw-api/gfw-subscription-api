@@ -7,5 +7,8 @@
   },
   "settings": {
     "loadCron": false
+  },
+  "datasets": {
+    "gladAlertsDataset": "64f17d8a-49ab-4132-b6bc-55dfa48ce3d0"
   }
 }
