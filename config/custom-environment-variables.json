@@ -37,5 +37,8 @@
   },
   "settings": {
     "loadCron": "LOAD_CRON"
+  },
+  "datasets": {
+    "gladAlertsDataset": "NEW_GLAD_ALERTS_DATASET_ID"
   }
 }

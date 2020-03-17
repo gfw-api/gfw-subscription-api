@@ -1,5 +1,6 @@
 const logger = require('logger');
 const moment = require('moment');
+const config = require('config');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 
 class GLADPresenter {
@@ -9,7 +10,7 @@ class GLADPresenter {
         const endDate = moment(end);
         const geostoreId = subscription.params.geostore;
         const sql = `SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date < '${endDate}' AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
-        const uri = `/query/9be3bf63-97fc-4bb0-b913-775ccae3cf9e?sql=${sql}`;
+        const uri = `/query/${config.get('datasets.gladAlertsDataset')}?sql=${sql}`;
 
         logger.debug('Last alerts endpoint ', uri);
         try {
