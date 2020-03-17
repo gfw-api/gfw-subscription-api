@@ -44,6 +44,86 @@ const createMockLatestDataset = (datasetID, date) => nock(process.env.CT_URL)
     .get(`/v1/${datasetID}/latest`)
     .reply(200, { data: { date } });
 
+const createMockAlertsQuery = (datasetId) => {
+    nock(process.env.CT_URL)
+        .get(`/v1/query/${datasetId}`)
+        .query(() => true)
+        .reply(200, {
+            data: [
+                {
+                    geostore__id: 'test',
+                    alert__date: '2019-10-12',
+                    is__confirmed_alert: false,
+                    is__regional_primary_forest: false,
+                    is__alliance_for_zero_extinction_site: false,
+                    is__key_biodiversity_area: false,
+                    is__landmark: false,
+                    gfw_plantation__type: 0,
+                    is__gfw_mining: true,
+                    is__gfw_logging: false,
+                    rspo_oil_palm__certification_status: 0,
+                    is__gfw_wood_fiber: false,
+                    is__peat_land: false,
+                    is__idn_forest_moratorium: false,
+                    is__gfw_oil_palm: false,
+                    idn_forest_area__type: 0,
+                    per_forest_concession__type: 0,
+                    is__gfw_oil_gas: false,
+                    is__mangroves_2016: true,
+                    intact_forest_landscapes_2016: false,
+                    bra_biome__name: 'Amazônia',
+                    alert__count: 6,
+                    alert_area__ha: 0.45252535669866123,
+                    aboveground_co2_emissions__Mg: 117.25617750097409,
+                    _id: 'AW6O0fqMLu2ttL7ZDM5u'
+                },
+                {
+                    geostore__id: 'test',
+                    alert__date: '2019-11-05',
+                    is__confirmed_alert: false,
+                    is__regional_primary_forest: false,
+                    is__alliance_for_zero_extinction_site: false,
+                    is__key_biodiversity_area: false,
+                    is__landmark: false,
+                    gfw_plantation__type: 0,
+                    is__gfw_mining: false,
+                    is__gfw_logging: false,
+                    rspo_oil_palm__certification_status: 0,
+                    is__gfw_wood_fiber: false,
+                    is__peat_land: false,
+                    is__idn_forest_moratorium: false,
+                    is__gfw_oil_palm: false,
+                    idn_forest_area__type: 0,
+                    per_forest_concession__type: 0,
+                    is__gfw_oil_gas: false,
+                    is__mangroves_2016: true,
+                    intact_forest_landscapes_2016: false,
+                    bra_biome__name: 'Cerrado',
+                    alert__count: 17,
+                    alert_area__ha: 1.278691435436168,
+                    aboveground_co2_emissions__Mg: 332.72845357758285,
+                    _id: 'AW6O0fqMLu2ttL7ZDM8E'
+                }
+            ],
+            meta: {
+                cloneUrl: {
+                    http_method: 'POST',
+                    url: `/v1/dataset/${datasetId}/clone`,
+                    body: {
+                        dataset: {
+                            // eslint-disable-next-line max-len
+                            datasetUrl: `/v1/query/${datasetId}?sql=SELECT%20%2A%20FROM%20data%20WHERE%20alert__date%20%3E%20%272019-10-01%27%20AND%20alert__date%20%3C%20%272020-01-01%27%20AND%20geostore__id%20%3D%20%27test%27`,
+                            application: [
+                                'your',
+                                'apps'
+                            ]
+                        }
+                    }
+                }
+            }
+        });
+};
+
 module.exports = {
     createMockUnsubscribeSUB,
     createMockSendConfirmationSUB,
@@ -52,5 +132,6 @@ module.exports = {
     createMockQuery,
     createMockUsersWithRange,
     createMockUsers,
-    createMockLatestDataset
+    createMockLatestDataset,
+    createMockAlertsQuery,
 };
