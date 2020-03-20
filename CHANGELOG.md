@@ -1,3 +1,5 @@
+# v1.2.0
+
 ## 16/03/2020
 
 - Add endpoint to find all subscriptions for all users - restricted to usage by other MSs.
