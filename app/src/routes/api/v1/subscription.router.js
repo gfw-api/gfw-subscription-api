@@ -24,6 +24,11 @@ const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
 
 const redisClient = redis.createClient({ url: config.get('redis.url') });
 
+const serializeObjToQuery = (obj) => Object.keys(obj).reduce((a, k) => {
+    a.push(`${k}=${encodeURIComponent(obj[k])}`);
+    return a;
+}, []).join('&');
+
 class SubscriptionsRouter {
 
     static getUser(ctx) {
@@ -265,7 +270,28 @@ class SubscriptionsRouter {
 
     static async findAllSubscriptions(ctx) {
         logger.info(`[SubscriptionsRouter] Getting ALL subscriptions`);
-        ctx.body = await SubscriptionService.getAllSubscriptions(ctx.request.query.application, ctx.request.query.env);
+
+        const page = ctx.query.page && ctx.query.page.number ? parseInt(ctx.query.page.number, 10) : 1;
+        const limit = ctx.query.page && ctx.query.page.size ? parseInt(ctx.query.page.size, 10) : 10;
+        const updatedAtSince = ctx.query.updatedAtSince ? ctx.query.updatedAtSince : null;
+
+        const clonedQuery = { ...ctx.query };
+        delete clonedQuery['page[size]'];
+        delete clonedQuery['page[number]'];
+        delete clonedQuery.page;
+        delete clonedQuery.loggedUser;
+        const serializedQuery = serializeObjToQuery(clonedQuery) ? `?${serializeObjToQuery(clonedQuery)}&` : '?';
+        const apiVersion = ctx.mountPath.split('/')[ctx.mountPath.split('/').length - 1];
+        const link = `${ctx.request.protocol}://${ctx.request.host}/${apiVersion}${ctx.request.path}${serializedQuery}`;
+
+        ctx.body = await SubscriptionService.getAllSubscriptions(
+            link,
+            ctx.request.query.application,
+            ctx.request.query.env,
+            page,
+            limit,
+            updatedAtSince,
+        );
     }
 
 }

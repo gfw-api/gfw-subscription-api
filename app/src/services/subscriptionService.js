@@ -128,13 +128,20 @@ class SubscriptionService {
         return subscriptions;
     }
 
-    static async getAllSubscriptions(application = undefined, env = undefined) {
+    static async getAllSubscriptions(
+        link,
+        application = undefined,
+        env = undefined,
+        page = 1,
+        limit = 10,
+        updatedAtSince = null
+    ) {
         const filter = {};
         if (application) filter.application = application;
         if (env) filter.env = env;
-
-        const subscriptions = await Subscription.find(filter).exec();
-        return SubscriptionSerializer.serialize(subscriptions);
+        if (updatedAtSince) filter.updateAt = { $gte: new Date(updatedAtSince).toISOString() };
+        const subscriptions = await Subscription.paginate(filter, { page, limit, sort: 'id' });
+        return SubscriptionSerializer.serializeList(subscriptions, link);
     }
 
     static async getSubscriptionsForUser(userId, application = undefined, env = undefined) {

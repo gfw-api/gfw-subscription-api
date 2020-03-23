@@ -138,7 +138,7 @@ describe('Update subscription endpoint', () => {
 
             // eslint-disable-next-line no-underscore-dangle
             ...subscriptionFromDB._doc,
-            createdAt: subscriptionFromDB.createdAt.toISOString()
+            createdAt: subscriptionFromDB.createdAt.toISOString(),
         };
 
         actualSubscription.should.deep.equal(expectedSubscription);
