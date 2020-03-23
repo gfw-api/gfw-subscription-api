@@ -120,6 +120,7 @@ describe('Update subscription endpoint', () => {
 
         const expectedAttributes = Object.assign(SUBSCRIPTION_TO_UPDATE, {
             createdAt: subscription.createdAt.toISOString(),
+            updateAt: subscription.updateAt.toISOString(),
             datasetsQuery: [],
             userId: ROLES.USER.id,
         });
@@ -138,7 +139,8 @@ describe('Update subscription endpoint', () => {
 
             // eslint-disable-next-line no-underscore-dangle
             ...subscriptionFromDB._doc,
-            createdAt: subscriptionFromDB.createdAt.toISOString()
+            createdAt: subscriptionFromDB.createdAt.toISOString(),
+            updateAt: subscriptionFromDB.updateAt.toISOString(),
         };
 
         actualSubscription.should.deep.equal(expectedSubscription);
