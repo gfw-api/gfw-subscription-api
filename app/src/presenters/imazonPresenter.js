@@ -1,4 +1,3 @@
-
 const imageService = require('services/imageService');
 
 class ImazonPresenter {

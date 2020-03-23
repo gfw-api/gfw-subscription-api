@@ -1,4 +1,3 @@
-
 const config = require('config');
 
 const BASE_URL = config.get('gfw.flagshipUrl');

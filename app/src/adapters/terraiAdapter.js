@@ -1,4 +1,3 @@
-
 const config = require('config');
 
 const BASE_URL_API = config.get('gfw.apiUrl');

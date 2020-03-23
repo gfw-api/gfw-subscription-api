@@ -1,4 +1,3 @@
-
 class Forma250GFWPresenter {
 
     static async transform(results) {

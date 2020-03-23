@@ -1,4 +1,3 @@
-
 class StoryPresenter {
 
     static async transform(results) {

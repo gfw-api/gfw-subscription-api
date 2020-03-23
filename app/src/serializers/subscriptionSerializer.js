@@ -1,4 +1,3 @@
-
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 const subscriptionSerializer = new JSONAPISerializer('subscription', {
