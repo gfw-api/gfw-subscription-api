@@ -273,7 +273,12 @@ class SubscriptionsRouter {
 
         const page = ctx.query.page && ctx.query.page.number ? parseInt(ctx.query.page.number, 10) : 1;
         const limit = ctx.query.page && ctx.query.page.size ? parseInt(ctx.query.page.size, 10) : 10;
+        if (limit > 100) {
+            throw new GenericError(400, 'Invalid page size (>100).');
+        }
+
         const updatedAtSince = ctx.query.updatedAtSince ? ctx.query.updatedAtSince : null;
+        const updatedAtUntil = ctx.query.updatedAtUntil ? ctx.query.updatedAtUntil : null;
 
         const clonedQuery = { ...ctx.query };
         delete clonedQuery['page[size]'];
@@ -291,6 +296,7 @@ class SubscriptionsRouter {
             page,
             limit,
             updatedAtSince,
+            updatedAtUntil,
         );
     }
 

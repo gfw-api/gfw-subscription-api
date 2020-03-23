@@ -134,12 +134,19 @@ class SubscriptionService {
         env = undefined,
         page = 1,
         limit = 10,
-        updatedAtSince = null
+        updatedAtSince = null,
+        updatedAtUntil = null,
     ) {
         const filter = {};
         if (application) filter.application = application;
         if (env) filter.env = env;
-        if (updatedAtSince) filter.updateAt = { $gte: new Date(updatedAtSince).toISOString() };
+
+        if (updatedAtSince || updatedAtUntil) {
+            filter.updateAt = {};
+            if (updatedAtSince) filter.updateAt.$gte = new Date(updatedAtSince).toISOString();
+            if (updatedAtUntil) filter.updateAt.$lte = new Date(updatedAtUntil).toISOString();
+        }
+
         const subscriptions = await Subscription.paginate(filter, { page, limit, sort: 'id' });
         return SubscriptionSerializer.serializeList(subscriptions, link);
     }

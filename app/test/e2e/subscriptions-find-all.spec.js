@@ -42,6 +42,15 @@ describe('Find all subscriptions tests', () => {
         superAdminResponse.status.should.equal(401);
     });
 
+    it('Finding all subscriptions has a maximum page[size] of 100, returning error for higher values', async () => {
+        const response = await requester
+            .get(`/api/v1/subscriptions/find-all`)
+            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), 'page[size]': 101 })
+            .send();
+        response.status.should.equal(400);
+        response.body.should.have.property('errors').with.lengthOf(1);
+    });
+
     it('Finding all subscriptions when there are no existing subscriptions returns a 200 OK response with no data', async () => {
         const response = await requester
             .get(`/api/v1/subscriptions/find-all`)
