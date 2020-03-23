@@ -1,3 +1,10 @@
+# v1.3.0
+
+## 23/03/2020
+
+- Update endpoint to find all subscriptions to use pagination.
+- Add filter by updatedAtSince for the endpoint to find all subscriptions.
+
 # v1.2.0
 
 ## 16/03/2020
