@@ -68,7 +68,6 @@ describe('Unsubscribe endpoint', () => {
 
         // set properties which are created on API side
         subData.createdAt = attributes.createdAt;
-        subData.updateAt = attributes.updateAt;
         subData.datasetsQuery = attributes.datasetsQuery;
         subData.language = attributes.language;
 

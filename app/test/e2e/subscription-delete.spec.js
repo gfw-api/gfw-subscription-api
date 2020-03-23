@@ -85,8 +85,7 @@ describe('Delete subscription endpoint', () => {
             // eslint-disable-next-line no-underscore-dangle
             ...createdSubscription._doc,
             createdAt: createdSubscription.createdAt.toISOString(),
-            updateAt: createdSubscription.updateAt.toISOString(),
-        }, ['_id', 'application', '__v']);
+        }, ['_id', 'updateAt', 'application', '__v']);
         data.attributes.should.deep.equal(expectedSubscription);
 
         const subscriptions = await Subscription.find({});

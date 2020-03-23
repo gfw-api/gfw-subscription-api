@@ -92,8 +92,7 @@ describe('Get subscription by id endpoint', () => {
             // eslint-disable-next-line no-underscore-dangle
             ...createSubscription._doc,
             createdAt: createSubscription.createdAt.toISOString(),
-            updateAt: createSubscription.updateAt.toISOString(),
-        }, ['_id', 'application', '__v']);
+        }, ['_id', 'updateAt', 'application', '__v']);
 
         data.attributes.should.deep.equal(expectedSubscription);
     });
