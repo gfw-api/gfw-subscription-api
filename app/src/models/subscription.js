@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate');
 
 const { Schema } = mongoose;
 const logger = require('logger');
@@ -84,5 +85,7 @@ Subscription.methods.publish = async function (layerConfig, begin, end) {
     await new Statistic({ slug: layerConfig.slug, application: this.application }).save();
     return true;
 };
+
+Subscription.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('Subscription', Subscription);
