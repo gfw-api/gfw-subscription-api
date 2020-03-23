@@ -88,8 +88,12 @@ describe('Get subscription by id endpoint', () => {
         data.should.have.property('attributes').and.instanceOf(Object);
 
         // omit fields which are not present to user from response body and convert the createdAt to ISO string
-        // eslint-disable-next-line no-underscore-dangle
-        const expectedSubscription = omit({ ...createSubscription._doc, createdAt: createSubscription.createdAt.toISOString(), }, ['_id', 'updateAt', 'application', '__v']);
+        const expectedSubscription = omit({
+            // eslint-disable-next-line no-underscore-dangle
+            ...createSubscription._doc,
+            createdAt: createSubscription.createdAt.toISOString(),
+            updateAt: createSubscription.updateAt.toISOString(),
+        }, ['_id', 'application', '__v']);
 
         data.attributes.should.deep.equal(expectedSubscription);
     });
