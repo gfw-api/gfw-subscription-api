@@ -133,11 +133,13 @@ class SubscriptionService {
         application = undefined,
         env = undefined,
         page = 1,
-        limit = 10
+        limit = 10,
+        updatedAtSince = null
     ) {
         const filter = {};
         if (application) filter.application = application;
         if (env) filter.env = env;
+        if (updatedAtSince)filter.updateAt = { $gte: new Date(updatedAtSince).toISOString() };
         const subscriptions = await Subscription.paginate(filter, { page, limit, sort: 'id' });
         return SubscriptionSerializer.serializeList(subscriptions, link);
     }
