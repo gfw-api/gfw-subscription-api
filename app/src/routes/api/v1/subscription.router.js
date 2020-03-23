@@ -273,6 +273,7 @@ class SubscriptionsRouter {
 
         const page = ctx.query.page && ctx.query.page.number ? parseInt(ctx.query.page.number, 10) : 1;
         const limit = ctx.query.page && ctx.query.page.size ? parseInt(ctx.query.page.size, 10) : 10;
+        const updatedAtSince = ctx.query.updatedAtSince ? ctx.query.updatedAtSince : null;
 
         const clonedQuery = { ...ctx.query };
         delete clonedQuery['page[size]'];
@@ -288,7 +289,8 @@ class SubscriptionsRouter {
             ctx.request.query.application,
             ctx.request.query.env,
             page,
-            limit
+            limit,
+            updatedAtSince,
         );
     }
 
