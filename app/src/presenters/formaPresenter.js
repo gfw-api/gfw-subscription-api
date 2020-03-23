@@ -1,4 +1,3 @@
-
 const logger = require('logger');
 const analysisService = require('services/analysisService');
 const imageService = require('services/imageService');
