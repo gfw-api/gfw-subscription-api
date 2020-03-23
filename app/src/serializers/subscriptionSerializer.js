@@ -3,7 +3,7 @@ const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 const subscriptionSerializer = new JSONAPISerializer('subscription', {
     attributes: [
-        'name', 'createdAt', 'updateAt', 'userId', 'geostoreId',
+        'name', 'createdAt', 'userId', 'geostoreId',
         'resource', 'datasets', 'params', 'confirmed', 'language', 'datasetsQuery', 'env'
     ],
 
