@@ -239,7 +239,7 @@ class ImageService {
     }
 
     // eslint-disable-next-line class-methods-use-this
-    async getStaticMapImageUrl(subscription, width = 700, height = 400) {
+    async getStaticMapImageUrl(subscription, width = 700, height = 350) {
         if (!subscription.params && !subscription.params.geostore) {
             throw new Error('No geostore to generate image from.');
         }
