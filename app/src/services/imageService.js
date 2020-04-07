@@ -195,6 +195,38 @@ async function getImageUrl(layergroupid, bbox) {
     return getS3Url(imageKey, staticImage);
 }
 
+async function getStaticMapImageUrl(subscription) {
+  // get geojson from geostore from subscription and simplify
+  const simpleGeostore = simplify(this.state.geostore.geojson, { tolerance: 0.05 });
+
+  // get geojson from feature
+  const simpGeostore = simpleGeostore.features[0];
+
+  // create two geojson simplestyle geometries
+  // green outline
+  const geojson = {
+    ...simpGeostore,
+    properties: {
+      fill: 'transparent',
+      stroke: '%23C0FF24',
+      'stroke-width': 2
+    }
+  };
+
+  // black outline
+  const geojsonOutline = {
+    ...simpGeostore,
+    properties: {
+      fill: 'transparent',
+      stroke: '%23000',
+      'stroke-width': 5
+    }
+  };
+
+  // return mapbox static map url
+  return `https://api.mapbox.com/styles/v1/resourcewatch/cjhqiecof53wv2rl9gw4cehmy/static/geojson(${JSON.stringify(geojsonOutline)}),geojson(${JSON.stringify(geojson)})/auto/${width}x${height}@2x?access_token=${process.env.MapboxAccessToken}&attribution=false&logo=false`;
+}
+
 class ImageService {
 
     constructor() {
