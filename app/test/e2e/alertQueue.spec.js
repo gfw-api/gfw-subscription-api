@@ -392,7 +392,7 @@ describe('AlertQueue ', () => {
                 properties: { fill: 'transparent', stroke: '%23000', 'stroke-width': 5 }
             };
 
-            const expectedMapImage = `https://api.mapbox.com/styles/v1/resourcewatch/cjhqiecof53wv2rl9gw4cehmy/static/geojson(${JSON.stringify(geojsonOutline)}),geojson(${JSON.stringify(geojson)})/auto/700x400@2x?access_token=${process.env.MapboxAccessToken}&attribution=false&logo=false`;
+            const expectedImageUrl = `https://api.mapbox.com/styles/v1/resourcewatch/cjhqiecof53wv2rl9gw4cehmy/static/geojson(${JSON.stringify(geojsonOutline)}),geojson(${JSON.stringify(geojson)})/auto/700x350@2x?access_token=${process.env.MapboxAccessToken}&attribution=false&logo=false`;
             switch (jsonMessage.template) {
 
                 case 'fires-notification-en':
@@ -405,7 +405,7 @@ describe('AlertQueue ', () => {
                     jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/viirs_fires_alerts?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw`);
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('viirs-active-fires');
-                    jsonMessage.data.should.have.property('alert_custom_image').and.equal(expectedMapImage);
+                    jsonMessage.data.should.have.property('image_url').and.equal(expectedImageUrl);
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my_gfw/subscriptions');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);

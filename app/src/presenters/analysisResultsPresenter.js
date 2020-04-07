@@ -92,7 +92,7 @@ const decorateWithArea = (results, subscription) => {
 };
 
 const decorateWithCustomImage = async (results, subscription) => {
-    results.alert_custom_image = await ImageService.getStaticMapImageUrl(subscription);
+    results.image_url = await ImageService.getStaticMapImageUrl(subscription);
     return results;
 };
 
