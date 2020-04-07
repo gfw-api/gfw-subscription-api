@@ -277,95 +277,95 @@ describe('AlertQueue ', () => {
                 total_rows: 1
             });
 
+        const geostoreResult = {
+            type: 'geoStore',
+            id: 'bbbdfae884a8038d78477f0b75c44ffc',
+            attributes: {
+                geojson: {
+                    features: [
+                        {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Polygon',
+                                coordinates: [
+                                    [
+                                        [
+                                            -56.80497166099991,
+                                            -22.425827288999876
+                                        ],
+                                        [
+                                            -56.817045236999945,
+                                            -22.482535483999882
+                                        ],
+                                        [
+                                            -56.85328547199998,
+                                            -22.463761627999883
+                                        ],
+                                        [
+                                            -56.83759920499995,
+                                            -22.41092532299985
+                                        ],
+                                        [
+                                            -56.83483518899993,
+                                            -22.413073965999914
+                                        ],
+                                        [
+                                            -56.832400797999924,
+                                            -22.41543968799989
+                                        ],
+                                        [
+                                            -56.82911534399989,
+                                            -22.42040937799989
+                                        ],
+                                        [
+                                            -56.81942114499998,
+                                            -22.42550003099992
+                                        ],
+                                        [
+                                            -56.81439037899986,
+                                            -22.42586786899991
+                                        ],
+                                        [
+                                            -56.81113715299989,
+                                            -22.42564125899988
+                                        ],
+                                        [
+                                            -56.810228355999925,
+                                            -22.425840631999918
+                                        ],
+                                        [
+                                            -56.80497166099991,
+                                            -22.425827288999876
+                                        ]
+                                    ]
+                                ]
+                            }
+                        }
+                    ],
+                    crs: {},
+                    type: 'FeatureCollection'
+                },
+                hash: 'bbbdfae884a8038d78477f0b75c44ffc',
+                provider: {},
+                areaHa: 2288.11071592866,
+                bbox: [
+                    -56.85328547199998,
+                    -22.482535483999882,
+                    -56.80497166099991,
+                    -22.41092532299985
+                ],
+                lock: false,
+                info: {
+                    use: {}
+                }
+            }
+        };
+
         nock(process.env.CT_URL)
             .get('/v1/geostore/agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw')
-            .twice()
-            .reply(200, {
-                data: {
-                    type: 'geoStore',
-                    id: 'bbbdfae884a8038d78477f0b75c44ffc',
-                    attributes: {
-                        geojson: {
-                            features: [
-                                {
-                                    type: 'Feature',
-                                    geometry: {
-                                        type: 'Polygon',
-                                        coordinates: [
-                                            [
-                                                [
-                                                    -56.80497166099991,
-                                                    -22.425827288999876
-                                                ],
-                                                [
-                                                    -56.817045236999945,
-                                                    -22.482535483999882
-                                                ],
-                                                [
-                                                    -56.85328547199998,
-                                                    -22.463761627999883
-                                                ],
-                                                [
-                                                    -56.83759920499995,
-                                                    -22.41092532299985
-                                                ],
-                                                [
-                                                    -56.83483518899993,
-                                                    -22.413073965999914
-                                                ],
-                                                [
-                                                    -56.832400797999924,
-                                                    -22.41543968799989
-                                                ],
-                                                [
-                                                    -56.82911534399989,
-                                                    -22.42040937799989
-                                                ],
-                                                [
-                                                    -56.81942114499998,
-                                                    -22.42550003099992
-                                                ],
-                                                [
-                                                    -56.81439037899986,
-                                                    -22.42586786899991
-                                                ],
-                                                [
-                                                    -56.81113715299989,
-                                                    -22.42564125899988
-                                                ],
-                                                [
-                                                    -56.810228355999925,
-                                                    -22.425840631999918
-                                                ],
-                                                [
-                                                    -56.80497166099991,
-                                                    -22.425827288999876
-                                                ]
-                                            ]
-                                        ]
-                                    }
-                                }
-                            ],
-                            crs: {},
-                            type: 'FeatureCollection'
-                        },
-                        hash: 'bbbdfae884a8038d78477f0b75c44ffc',
-                        provider: {},
-                        areaHa: 2288.11071592866,
-                        bbox: [
-                            -56.85328547199998,
-                            -22.482535483999882,
-                            -56.80497166099991,
-                            -22.41092532299985
-                        ],
-                        lock: false,
-                        info: {
-                            use: {}
-                        }
-                    }
-                }
-            });
-
+            .times(3)
+            .query(() => true)
+            .reply(200, { data: geostoreResult });
 
         nock(`http://${process.env.CARTODB_USER}.cartodb.com`)
             .get('/api/v1/map/static/bbox/9aa067dff99aeffd442b4e0dd1cbcdd5:1555465880320/-57.853285472,-23.4825354839999,-55.8049716609999,-21.4109253229999/700/450.png')
@@ -380,7 +380,19 @@ describe('AlertQueue ', () => {
 
             jsonMessage.should.have.property('template');
 
+            const simpGeostore = geostoreResult.attributes.geojson.features[0];
 
+            const geojson = {
+                ...simpGeostore,
+                properties: { fill: 'transparent', stroke: '%23C0FF24', 'stroke-width': 2 }
+            };
+
+            const geojsonOutline = {
+                ...simpGeostore,
+                properties: { fill: 'transparent', stroke: '%23000', 'stroke-width': 5 }
+            };
+
+            const expectedMapImage = `https://api.mapbox.com/styles/v1/resourcewatch/cjhqiecof53wv2rl9gw4cehmy/static/geojson(${JSON.stringify(geojsonOutline)}),geojson(${JSON.stringify(geojson)})/auto/700x400@2x?access_token=${process.env.MapboxAccessToken}&attribution=false&logo=false`;
             switch (jsonMessage.template) {
 
                 case 'fires-notification-en':
@@ -393,8 +405,7 @@ describe('AlertQueue ', () => {
                     jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/viirs_fires_alerts?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw`);
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('viirs-active-fires');
-                    // TODO: mock s3 upload so map_image has the actual thumbnail url
-                    jsonMessage.data.should.have.property('map_image').and.equal(null);
+                    jsonMessage.data.should.have.property('alert_custom_image').and.equal(expectedMapImage);
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my_gfw/subscriptions');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);

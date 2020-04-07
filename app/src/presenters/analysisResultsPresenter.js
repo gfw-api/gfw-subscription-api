@@ -12,6 +12,7 @@ const Forma250GFWPresenter = require('presenters/forma250GFWPresenter');
 
 const UrlService = require('services/urlService');
 const AlertUrlService = require('services/alertUrlService');
+const ImageService = require('services/imageService');
 
 const PRESENTER_MAP = {
     'viirs-active-fires': VIIRSPresenter,
@@ -90,6 +91,11 @@ const decorateWithArea = (results, subscription) => {
     return results;
 };
 
+const decorateWithCustomImage = async (results, subscription) => {
+    results.alert_custom_image = await ImageService.getStaticMapImageUrl(subscription);
+    return results;
+};
+
 class AnalysisResultsPresenter {
 
     static decorateWithConfig(results) {
@@ -115,6 +121,13 @@ class AnalysisResultsPresenter {
             results = decorateWithMetadata(results, layer);
             // eslint-disable-next-line no-param-reassign
             results = decorateWithDates(results, begin, end);
+
+            try {
+                // eslint-disable-next-line no-param-reassign
+                results = await decorateWithCustomImage(results, subscription);
+            } catch (err) {
+                logger.error('Error generating custom image for subscription: ', err);
+            }
 
             return results;
         } catch (err) {
