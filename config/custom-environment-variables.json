@@ -37,5 +37,8 @@
   },
   "settings": {
     "loadCron": "LOAD_CRON"
+  },
+  "mapbox": {
+    "token": "MAPBOX_TOKEN"
   }
 }

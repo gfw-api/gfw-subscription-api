@@ -246,7 +246,6 @@ class ImageService {
 
         // Request to geostore to get the geojson for the current geostore
         const { data } = await ctRegisterMicroservice.requestToMicroservice({
-            // TODO: not sure if simplify as query param works here
             uri: `/geostore/${subscription.params.geostore}?simplify=0.05`,
             method: 'GET',
             json: true,
@@ -277,7 +276,8 @@ class ImageService {
         };
 
         // return mapbox static map url
-        return `https://api.mapbox.com/styles/v1/resourcewatch/cjhqiecof53wv2rl9gw4cehmy/static/geojson(${JSON.stringify(geojsonOutline)}),geojson(${JSON.stringify(geojson)})/auto/${width}x${height}@2x?access_token=${process.env.MapboxAccessToken}&attribution=false&logo=false`;
+        const mapboxToken = config.get('mapbox.token');
+        return `https://api.mapbox.com/styles/v1/resourcewatch/cjhqiecof53wv2rl9gw4cehmy/static/geojson(${JSON.stringify(geojsonOutline)}),geojson(${JSON.stringify(geojson)})/auto/${width}x${height}@2x?access_token=${mapboxToken}&attribution=false&logo=false`;
     }
 
 }

@@ -392,7 +392,8 @@ describe('AlertQueue ', () => {
                 properties: { fill: 'transparent', stroke: '%23000', 'stroke-width': 5 }
             };
 
-            const expectedImageUrl = `https://api.mapbox.com/styles/v1/resourcewatch/cjhqiecof53wv2rl9gw4cehmy/static/geojson(${JSON.stringify(geojsonOutline)}),geojson(${JSON.stringify(geojson)})/auto/700x350@2x?access_token=${process.env.MapboxAccessToken}&attribution=false&logo=false`;
+            const mapboxToken = config.get('mapbox.token');
+            const expectedImageUrl = `https://api.mapbox.com/styles/v1/resourcewatch/cjhqiecof53wv2rl9gw4cehmy/static/geojson(${JSON.stringify(geojsonOutline)}),geojson(${JSON.stringify(geojson)})/auto/700x350@2x?access_token=${mapboxToken}&attribution=false&logo=false`;
             switch (jsonMessage.template) {
 
                 case 'fires-notification-en':
