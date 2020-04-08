@@ -24,6 +24,14 @@ Execution using Docker requires:
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
 
+Dependencies on other Microservices:
+- [Query](https://github.com/resource-watch/query/)
+- [Layer](https://github.com/resource-watch/layer/)
+- [Dataset](https://github.com/resource-watch/dataset/)
+- [Geostore](https://github.com/gfw-api/gfw-geostore-api/)
+- [Area](https://github.com/gfw-api/gfw-area/)
+- [GFW user](https://github.com/gfw-api/gfw-user-api/)
+
 ## Getting started
 
 Start by cloning the repository from github to your execution environment

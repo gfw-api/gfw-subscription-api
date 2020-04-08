@@ -3,19 +3,28 @@ kind: Deployment
 metadata:
   namespace: gfw
   labels:
-    name: {name}
+    name: subscriptions
     app: gfw
-  name: {name}
+  name: subscriptions
 spec:
   revisionHistoryLimit: 2
   template:
     metadata:
       labels:
-        name: {name}
+        name: subscriptions
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: type
+                    operator: In
+                    values:
+                      - apps
       containers:
-      - name: {name}
-        image: vizzuality/{name}
+      - name: subscriptions
+        image: vizzuality/subscriptions
         imagePullPolicy: Always
         resources:
           requests:
@@ -32,7 +41,7 @@ spec:
           - name: NODE_PATH
             value: app/src
           - name: LOCAL_URL
-            value: http://{name}.gfw.svc.cluster.local:3600
+            value: http://subscriptions.gfw.svc.cluster.local:3600
           - name: MONGO_URI
             valueFrom:
                 secretKeyRef:
@@ -103,5 +112,22 @@ spec:
 
         ports:
           - containerPort: 3600
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /healthcheck
+            port: 3600
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+          periodSeconds: 15
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /healthcheck
+            port: 3600
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+          periodSeconds: 15
 
       restartPolicy: Always

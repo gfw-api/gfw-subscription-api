@@ -5,6 +5,7 @@ const koaLogger = require('koa-logger');
 const koaQs = require('koa-qs');
 const koaBody = require('koa-body');
 const loader = require('loader');
+const koaSimpleHealthCheck = require('koa-simple-healthcheck');
 const koaValidate = require('koa-validate');
 const ErrorSerializer = require('serializers/errorSerializer');
 const sleep = require('sleep');
@@ -51,6 +52,7 @@ async function init() {
                 formLimit: '50mb',
                 textLimit: '50mb'
             }));
+            app.use(koaSimpleHealthCheck());
 
             // catch errors and send in jsonapi standard. Always return vnd.api+json
             app.use(async (ctx, next) => {
