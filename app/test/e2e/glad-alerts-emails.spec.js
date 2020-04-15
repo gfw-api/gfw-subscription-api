@@ -106,29 +106,30 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('week_start').and.equal(beginDate.format('DD/MM/YYYY'));
                     jsonMessage.data.should.have.property('week_end').and.equal(endDate.format('DD/MM/YYYY'));
                     jsonMessage.data.should.have.property('priority_areas').and.deep.equal({
-                        intact_forest: 1,
-                        primary_forest: 1,
-                        peat: 1,
-                        protected_areas: 12,
-                        plantations: 15,
-                        other: 3
+                        intact_forest: 6,
+                        primary_forest: 7,
+                        peat: 8,
+                        protected_areas: 9,
+                        plantations: 10,
+                        other: 11
                     });
-                    jsonMessage.data.should.have.property('glad_count').and.equal(23);
+                    jsonMessage.data.should.have.property('glad_count').and.equal(51);
                     jsonMessage.data.should.have.property('glad_alerts').and.deep.equal({
-                        intact_forest: 1,
-                        primary_forest: 1,
-                        peat: 1,
-                        protected_areas: 12,
-                        plantations: 15,
-                        other: 3
+                        intact_forest: 6,
+                        primary_forest: 7,
+                        peat: 8,
+                        protected_areas: 9,
+                        plantations: 10,
+                        other: 11
                     });
-                    // TODO: missing lat and long for now
-                    jsonMessage.data.should.have.property('alerts').and.have.length(2).and.deep.equal([
+                    jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
+                        { alert_type: 'GLAD', date: '10/10/2019 00:10 UTC' },
+                        { alert_type: 'GLAD', date: '11/10/2019 00:10 UTC' },
                         { alert_type: 'GLAD', date: '12/10/2019 00:10 UTC' },
-                        { alert_type: 'GLAD', date: '05/11/2019 00:11 UTC' },
+                        { alert_type: 'GLAD', date: '13/10/2019 00:10 UTC' },
+                        { alert_type: 'GLAD', date: '14/10/2019 00:10 UTC' },
+                        { alert_type: 'GLAD', date: '15/10/2019 00:10 UTC' },
                     ]);
-
-                    // TODO: also not including the more_items property
 
                     // Not included in this email version
                     // jsonMessage.data.should.have.property('glad_image_url').and.equal('');
@@ -146,7 +147,7 @@ describe('GLAD alert emails', () => {
                     // "peat": 0, "protected_areas": 12 }
 
                     // Keeping this for backwards compatibility
-                    jsonMessage.data.should.have.property('alert_count').and.equal(5);
+                    jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=423e5dfb0448e692f97b590c61f45f22`);
