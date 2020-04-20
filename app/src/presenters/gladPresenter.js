@@ -4,65 +4,66 @@ const moment = require('moment');
 const config = require('config');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 
-function average(data) {
-    return _.sum(data) / data.length;
-}
-
-function standardDeviation(data) {
-    const avg = average(data);
-    return Math.sqrt(_.sum(_.map(data, (i) => (i - avg) ** 2)) / data.length);
-}
-
-function getTranslationForFrequency(status, lang = 'en') {
-    const translationsMap = {
-        en: {
-            'unusually high': 'unusually high',
-            high: 'high',
-            average: 'average',
-            low: 'low',
-            'unusually low': 'unusually low',
-        },
-        pt: {
-            'unusually high': 'extraordinariamente alto',
-            high: 'alto',
-            average: 'normal',
-            low: 'baixo',
-            'unusually low': 'extraordinariamente baixo',
-        },
-        fr: {
-            'unusually high': 'inhabituellement élevé',
-            high: 'haut',
-            average: 'moyenne',
-            low: 'faible',
-            'unusually low': 'inhabituellement bas',
-        },
-        zh: {
-            'unusually high': '异常高',
-            high: '高',
-            average: '平均',
-            low: '低',
-            'unusually low': '异常低',
-        },
-        es: {
-            'unusually high': 'inusualmente alto',
-            high: 'alto',
-            average: 'promedio',
-            low: 'bajo',
-            'unusually low': 'inusualmente bajo',
-        },
-        id: {
-            'unusually high': 'luar biasa tinggi',
-            high: 'tinggi',
-            average: 'rata-rata',
-            low: 'rendah',
-            'unusually low': 'rendah luar biasa',
-        },
-    };
-
-    return translationsMap[lang][status];
-}
-
 class GLADPresenter {
+
+    static average(data) {
+        return _.sum(data) / data.length;
+    }
+
+    static standardDeviation(data) {
+        const avg = GLADPresenter.average(data);
+        return Math.sqrt(_.sum(_.map(data, (i) => (i - avg) ** 2)) / data.length);
+    }
+
+    static translateFrequency(status, lang = 'en') {
+        const translationsMap = {
+            en: {
+                'unusually high': 'unusually high',
+                high: 'high',
+                average: 'average',
+                low: 'low',
+                'unusually low': 'unusually low',
+            },
+            pt: {
+                'unusually high': 'extraordinariamente alto',
+                high: 'alto',
+                average: 'normal',
+                low: 'baixo',
+                'unusually low': 'extraordinariamente baixo',
+            },
+            fr: {
+                'unusually high': 'inhabituellement élevé',
+                high: 'haut',
+                average: 'moyenne',
+                low: 'faible',
+                'unusually low': 'inhabituellement bas',
+            },
+            zh: {
+                'unusually high': '异常高',
+                high: '高',
+                average: '平均',
+                low: '低',
+                'unusually low': '异常低',
+            },
+            es: {
+                'unusually high': 'inusualmente alto',
+                high: 'alto',
+                average: 'promedio',
+                low: 'bajo',
+                'unusually low': 'inusualmente bajo',
+            },
+            id: {
+                'unusually high': 'luar biasa tinggi',
+                high: 'tinggi',
+                average: 'rata-rata',
+                low: 'rendah',
+                'unusually low': 'rendah luar biasa',
+            },
+        };
+
+        return translationsMap[lang][status];
+    }
+
 
     static async transform(results, layer, subscription, begin, end) {
         const startDate = moment(begin);
@@ -150,13 +151,13 @@ class GLADPresenter {
 
             // Finding standard deviation of alert values
             const lastYearAlerts = await ctRegisterMicroservice.requestToMicroservice({ uri: lastYearURI, method: 'GET', json: true });
-            const lastYearAverage = average(lastYearAlerts.data.map((al) => al.alert__count));
-            const lastYearStdDev = standardDeviation(lastYearAlerts.data.map((al) => al.alert__count));
-            const currentAvg = average(alerts.data.map((al) => al.alert__count));
+            const lastYearAverage = GLADPresenter.average(lastYearAlerts.data.map((al) => al.alert__count));
+            const lastYearStdDev = GLADPresenter.standardDeviation(lastYearAlerts.data.map((al) => al.alert__count));
+            const currentAvg = GLADPresenter.average(alerts.data.map((al) => al.alert__count));
 
             const twoPlusStdDev = currentAvg >= lastYearAverage + (2 * lastYearStdDev);
-            const plusStdDev = (currentAvg >= lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
-            const minusStdDev = (currentAvg <= lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
+            const plusStdDev = (currentAvg > lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
+            const minusStdDev = (currentAvg < lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
             const twoMinusStdDev = currentAvg <= lastYearAverage - (2 * lastYearStdDev);
 
             // Calc normality string
@@ -171,7 +172,7 @@ class GLADPresenter {
                 status = 'unusually high';
             }
 
-            results.glad_frequency = getTranslationForFrequency(status, subscription.language);
+            results.glad_frequency = GLADPresenter.translateFrequency(status, subscription.language);
 
         } catch (err) {
             logger.error(err);
