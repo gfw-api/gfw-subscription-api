@@ -101,7 +101,7 @@ describe('GLAD alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'forest-change-notification-en':
+                case 'forest-change-notification-glads-en':
                     jsonMessage.should.have.property('sender').and.equal('gfw');
                     jsonMessage.should.have.property('data').and.be.a('object');
 
@@ -196,7 +196,7 @@ describe('GLAD alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'forest-change-notification-fr':
+                case 'forest-change-notification-glads-fr':
                     jsonMessage.should.have.property('sender').and.equal('gfw');
                     jsonMessage.should.have.property('data').and.be.a('object');
 
@@ -291,7 +291,7 @@ describe('GLAD alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'forest-change-notification-zh':
+                case 'forest-change-notification-glads-zh':
                     jsonMessage.should.have.property('sender').and.equal('gfw');
                     jsonMessage.should.have.property('data').and.be.a('object');
 
