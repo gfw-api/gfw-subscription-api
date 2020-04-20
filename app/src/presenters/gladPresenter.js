@@ -6,12 +6,8 @@ const ctRegisterMicroservice = require('ct-register-microservice-node');
 
 class GLADPresenter {
 
-    static average(data) {
-        return _.sum(data) / data.length;
-    }
-
     static standardDeviation(data) {
-        const avg = GLADPresenter.average(data);
+        const avg = _.mean(data);
         return Math.sqrt(_.sum(_.map(data, (i) => (i - avg) ** 2)) / data.length);
     }
 
@@ -151,9 +147,9 @@ class GLADPresenter {
 
             // Finding standard deviation of alert values
             const lastYearAlerts = await ctRegisterMicroservice.requestToMicroservice({ uri: lastYearURI, method: 'GET', json: true });
-            const lastYearAverage = GLADPresenter.average(lastYearAlerts.data.map((al) => al.alert__count));
+            const lastYearAverage = _.mean(lastYearAlerts.data.map((al) => al.alert__count));
             const lastYearStdDev = GLADPresenter.standardDeviation(lastYearAlerts.data.map((al) => al.alert__count));
-            const currentAvg = GLADPresenter.average(alerts.data.map((al) => al.alert__count));
+            const currentAvg = _.mean(alerts.data.map((al) => al.alert__count));
 
             const twoPlusStdDev = currentAvg >= lastYearAverage + (2 * lastYearStdDev);
             const plusStdDev = (currentAvg > lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
