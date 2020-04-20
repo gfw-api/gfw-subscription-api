@@ -106,7 +106,10 @@ describe('GLAD alert emails', () => {
                     jsonMessage.should.have.property('data').and.be.a('object');
 
                     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
-                    jsonMessage.recipients[0].should.be.an('object').and.have.property('address').and.have.property('email').and.equal('subscription-recipient@vizzuality.com');
+                    jsonMessage.recipients[0].should.be.an('object')
+                        .and.have.property('address')
+                        .and.have.property('email')
+                        .and.equal('subscription-recipient@vizzuality.com');
 
                     // TODO: fix the missing values
                     // image_url_big : same AOI image as before, but now 350px tall and 700px wide.
@@ -148,12 +151,13 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=423e5dfb0448e692f97b590c61f45f22`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=423e5dfb0448e692f97b590c61f45f22&lang=en`);
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
-                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw');
-                    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);
+                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=en');
+                    // eslint-disable-next-line max-len
+                    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=en`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
                 case 'subscriptions-stats':
@@ -201,7 +205,10 @@ describe('GLAD alert emails', () => {
                     jsonMessage.should.have.property('data').and.be.a('object');
 
                     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
-                    jsonMessage.recipients[0].should.be.an('object').and.have.property('address').and.have.property('email').and.equal('subscription-recipient@vizzuality.com');
+                    jsonMessage.recipients[0].should.be.an('object')
+                        .and.have.property('address')
+                        .and.have.property('email')
+                        .and.equal('subscription-recipient@vizzuality.com');
 
                     // TODO: fix the missing values
                     // image_url_big : same AOI image as before, but now 350px tall and 700px wide.
@@ -243,12 +250,13 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=423e5dfb0448e692f97b590c61f45f22`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=423e5dfb0448e692f97b590c61f45f22&lang=fr`);
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
-                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw');
-                    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);
+                    jsonMessage.data.should.have.property('subscriptions_url').and.equal(`http://staging.globalforestwatch.org/my-gfw?lang=fr`);
+                    // eslint-disable-next-line max-len
+                    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=fr`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
                 case 'subscriptions-stats':
@@ -296,7 +304,10 @@ describe('GLAD alert emails', () => {
                     jsonMessage.should.have.property('data').and.be.a('object');
 
                     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
-                    jsonMessage.recipients[0].should.be.an('object').and.have.property('address').and.have.property('email').and.equal('subscription-recipient@vizzuality.com');
+                    jsonMessage.recipients[0].should.be.an('object')
+                        .and.have.property('address')
+                        .and.have.property('email')
+                        .and.equal('subscription-recipient@vizzuality.com');
 
                     // TODO: fix the missing values
                     // image_url_big : same AOI image as before, but now 350px tall and 700px wide.
@@ -338,12 +349,12 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=423e5dfb0448e692f97b590c61f45f22`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=423e5dfb0448e692f97b590c61f45f22&lang=zh`);
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
-                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw');
-                    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);
+                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=zh');
+                    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=zh`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
                 case 'subscriptions-stats':

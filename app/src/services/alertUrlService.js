@@ -51,6 +51,10 @@ class AlertUrlService {
             iso = 'ALL';
         }
 
+        if (subscription.language) {
+            query.lang = subscription.language;
+        }
+
         const existingUrlParams = _.pick(subscription.params, ALLOWED_PARAMS);
         query = _.omitBy(Object.assign(query, existingUrlParams), _.isNil);
 
