@@ -396,7 +396,7 @@ describe('AlertQueue ', () => {
                     // TODO: mock s3 upload so map_image has the actual thumbnail url
                     jsonMessage.data.should.have.property('map_image').and.equal(null);
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
-                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my_gfw/subscriptions');
+                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);
                     jsonMessage.data.should.have.property('value').and.equal(3578);
 

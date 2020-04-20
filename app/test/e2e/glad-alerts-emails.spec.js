@@ -152,7 +152,7 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
-                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my_gfw/subscriptions');
+                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
@@ -247,7 +247,7 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
-                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my_gfw/subscriptions');
+                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
@@ -342,7 +342,7 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
-                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my_gfw/subscriptions');
+                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
