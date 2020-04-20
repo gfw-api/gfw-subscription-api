@@ -60,8 +60,17 @@ class GLADPresenter {
         return translationsMap[lang][status];
     }
 
+    static updateMonthTranslations() {
+        moment.updateLocale('zh', { monthsShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'] });
+        moment.updateLocale('id', { monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'] });
+        moment.updateLocale('pt', { monthsShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'] });
+        moment.updateLocale('es', { monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'] });
+        moment.updateLocale('fr', { monthsShort: ['Janv.', 'Fév.', 'Mars', 'Avril', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'] });
+    }
 
     static async transform(results, layer, subscription, begin, end) {
+        GLADPresenter.updateMonthTranslations();
+        moment.locale(subscription.language || 'en');
         const startDate = moment(begin);
         const endDate = moment(end);
         const geostoreId = subscription.params.geostore;
@@ -87,7 +96,7 @@ class GLADPresenter {
 
             results.month = startDate.format('MMMM');
             results.year = startDate.format('YYYY');
-            results.week_of = `${startDate.format('Do')} of ${startDate.format('MMMM')}`;
+            results.week_of = `${startDate.format('DD MMM')}`;
             results.week_start = startDate.format('DD/MM/YYYY');
             results.week_end = endDate.format('DD/MM/YYYY');
             results.glad_count = alerts.data.reduce((acc, curr) => acc + curr.alert__count, 0);
