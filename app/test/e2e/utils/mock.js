@@ -44,10 +44,11 @@ const createMockLatestDataset = (datasetID, date) => nock(process.env.CT_URL)
     .get(`/v1/${datasetID}/latest`)
     .reply(200, { data: { date } });
 
-const createMockAlertsQuery = (datasetId) => {
+const createMockAlertsQuery = (datasetId, times = 1) => {
     nock(process.env.CT_URL)
         .get(`/v1/query/${datasetId}`)
         .query(() => true)
+        .times(times)
         .reply(200, {
             data: [
                 {
