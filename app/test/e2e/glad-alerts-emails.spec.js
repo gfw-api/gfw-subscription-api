@@ -74,7 +74,7 @@ describe('GLAD alert emails', () => {
                 }
             });
 
-        createMockAlertsQuery(config.get('datasets.gladAlertsDataset'));
+        createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
 
         process.on('unhandledRejection', (error) => {
             should.fail(error);
@@ -98,7 +98,7 @@ describe('GLAD alert emails', () => {
                     // image_url_big : same AOI image as before, but now 350px tall and 700px wide.
                     jsonMessage.data.should.have.property('image_url_big').and.equal('example image');
                     jsonMessage.data.should.have.property('image_source').and.equal('');
-                    jsonMessage.data.should.have.property('glad_frequency').and.equal('normal');
+                    jsonMessage.data.should.have.property('glad_frequency').and.equal('average');
 
                     jsonMessage.data.should.have.property('month').and.equal(beginDate.format('MMMM'));
                     jsonMessage.data.should.have.property('year').and.equal(beginDate.format('YYYY'));

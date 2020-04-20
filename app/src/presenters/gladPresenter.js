@@ -1,7 +1,66 @@
+const _ = require('lodash');
 const logger = require('logger');
 const moment = require('moment');
 const config = require('config');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
+
+function average(data) {
+    return _.sum(data) / data.length;
+}
+
+function standardDeviation(data) {
+    const avg = average(data);
+    return Math.sqrt(_.sum(_.map(data, (i) => (i - avg) ** 2)) / data.length);
+}
+
+function getTranslationForFrequency(status, lang = 'en') {
+    const translationsMap = {
+        en: {
+            'unusually high': 'unusually high',
+            high: 'high',
+            average: 'average',
+            low: 'low',
+            'unusually low': 'unusually low',
+        },
+        pt: {
+            'unusually high': 'extraordinariamente alto',
+            high: 'alto',
+            average: 'normal',
+            low: 'baixo',
+            'unusually low': 'extraordinariamente baixo',
+        },
+        fr: {
+            'unusually high': 'inhabituellement élevé',
+            high: 'haut',
+            average: 'moyenne',
+            low: 'faible',
+            'unusually low': 'inhabituellement bas',
+        },
+        zh: {
+            'unusually high': '异常高',
+            high: '高',
+            average: '平均',
+            low: '低',
+            'unusually low': '异常低',
+        },
+        es: {
+            'unusually high': 'inusualmente alto',
+            high: 'alto',
+            average: 'promedio',
+            low: 'bajo',
+            'unusually low': 'inusualmente bajo',
+        },
+        id: {
+            'unusually high': 'luar biasa tinggi',
+            high: 'tinggi',
+            average: 'rata-rata',
+            low: 'rendah',
+            'unusually low': 'rendah luar biasa',
+        },
+    };
+
+    return translationsMap[lang][status];
+}
 
 class GLADPresenter {
 
@@ -11,6 +70,11 @@ class GLADPresenter {
         const geostoreId = subscription.params.geostore;
         const sql = `SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date < '${endDate}' AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
         const uri = `/query/${config.get('datasets.gladAlertsDataset')}?sql=${sql}`;
+
+        const lastYearStartDate = moment(begin).subtract('1', 'y');
+        const lastYearEndDate = moment(end).subtract('1', 'y');
+        const lastYearSQL = `SELECT * FROM data WHERE alert__date > '${lastYearStartDate}' AND alert__date < '${lastYearEndDate}' AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
+        const lastYearURI = `/query/${config.get('datasets.gladAlertsDataset')}?sql=${lastYearSQL}`;
 
         logger.debug('Last alerts endpoint ', uri);
         try {
@@ -23,7 +87,6 @@ class GLADPresenter {
             // TODO: fix these parameters
             results.image_url_big = 'example image';
             results.image_source = '';
-            results.glad_frequency = 'normal';
 
             results.month = startDate.format('MMMM');
             results.year = startDate.format('YYYY');
@@ -84,6 +147,31 @@ class GLADPresenter {
                 plantations: plantationAlerts,
                 other: otherAlerts,
             };
+
+            // Finding standard deviation of alert values
+            const lastYearAlerts = await ctRegisterMicroservice.requestToMicroservice({ uri: lastYearURI, method: 'GET', json: true });
+            const lastYearAverage = average(lastYearAlerts.data.map((al) => al.alert__count));
+            const lastYearStdDev = standardDeviation(lastYearAlerts.data.map((al) => al.alert__count));
+            const currentAvg = average(alerts.data.map((al) => al.alert__count));
+
+            const twoPlusStdDev = currentAvg >= lastYearAverage + (2 * lastYearStdDev);
+            const plusStdDev = (currentAvg >= lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
+            const minusStdDev = (currentAvg <= lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
+            const twoMinusStdDev = currentAvg <= lastYearAverage - (2 * lastYearStdDev);
+
+            // Calc normality string
+            let status = 'average';
+            if (twoPlusStdDev) {
+                status = 'unusually high';
+            } else if (plusStdDev) {
+                status = 'high';
+            } else if (minusStdDev) {
+                status = 'low';
+            } else if (twoMinusStdDev) {
+                status = 'unusually high';
+            }
+
+            results.glad_frequency = getTranslationForFrequency(status, subscription.language);
 
         } catch (err) {
             logger.error(err);
