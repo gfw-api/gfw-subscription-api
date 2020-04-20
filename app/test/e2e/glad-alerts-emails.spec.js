@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+
 const chai = require('chai');
 const nock = require('nock');
 const config = require('config');
@@ -36,9 +38,7 @@ const mockGLADAlertsQuery = (beginDate, endDate) => {
                 attributes: {
                     areaHa: 22435351.3660182,
                     downloadUrls: {
-                        // eslint-disable-next-line max-len
                         csv: '/glad-alerts/download/?period=2020-02-22,2020-03-04&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv',
-                        // eslint-disable-next-line max-len
                         json: '/glad-alerts/download/?period=2020-02-22,2020-03-04&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json'
                     },
                     value: 5
@@ -89,6 +89,7 @@ describe('GLAD alert emails', () => {
 
         const beginDate = moment().subtract('1', 'w');
         const endDate = moment();
+        const sql = `SELECT * FROM data WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${subscriptionOne.params.geostore}' ORDER BY alert__date`;
         mockGLADAlertsQuery(beginDate, endDate);
         createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
 
@@ -110,11 +111,6 @@ describe('GLAD alert emails', () => {
                         .and.have.property('address')
                         .and.have.property('email')
                         .and.equal('subscription-recipient@vizzuality.com');
-
-                    // TODO: fix the missing values
-                    // image_url_big : same AOI image as before, but now 350px tall and 700px wide.
-                    jsonMessage.data.should.have.property('image_url_big').and.equal('example image');
-                    jsonMessage.data.should.have.property('image_source').and.equal('');
                     jsonMessage.data.should.have.property('glad_frequency').and.equal('average');
                     jsonMessage.data.should.have.property('month').and.equal(beginDate.format('MMMM'));
                     jsonMessage.data.should.have.property('year').and.equal(beginDate.format('YYYY'));
@@ -156,8 +152,9 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=en');
-                    // eslint-disable-next-line max-len
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=en`);
+                    jsonMessage.data.should.have.property('download_csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/download/${config.get('datasets.gladAlertsDataset')}?sql=${sql}&format=csv`);
+                    jsonMessage.data.should.have.property('download_json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/download/${config.get('datasets.gladAlertsDataset')}?sql=${sql}&format=json`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
                 case 'subscriptions-stats':
@@ -188,6 +185,7 @@ describe('GLAD alert emails', () => {
 
         const beginDate = moment().subtract('1', 'w');
         const endDate = moment();
+        const sql = `SELECT * FROM data WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${subscriptionOne.params.geostore}' ORDER BY alert__date`;
         mockGLADAlertsQuery(beginDate, endDate);
         createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
 
@@ -209,11 +207,6 @@ describe('GLAD alert emails', () => {
                         .and.have.property('address')
                         .and.have.property('email')
                         .and.equal('subscription-recipient@vizzuality.com');
-
-                    // TODO: fix the missing values
-                    // image_url_big : same AOI image as before, but now 350px tall and 700px wide.
-                    jsonMessage.data.should.have.property('image_url_big').and.equal('example image');
-                    jsonMessage.data.should.have.property('image_source').and.equal('');
                     jsonMessage.data.should.have.property('glad_frequency').and.equal('moyenne');
                     jsonMessage.data.should.have.property('month').and.equal(beginDate.format('MMMM'));
                     jsonMessage.data.should.have.property('year').and.equal(beginDate.format('YYYY'));
@@ -255,8 +248,9 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal(`http://staging.globalforestwatch.org/my-gfw?lang=fr`);
-                    // eslint-disable-next-line max-len
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=fr`);
+                    jsonMessage.data.should.have.property('download_csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/download/${config.get('datasets.gladAlertsDataset')}?sql=${sql}&format=csv`);
+                    jsonMessage.data.should.have.property('download_json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/download/${config.get('datasets.gladAlertsDataset')}?sql=${sql}&format=json`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
                 case 'subscriptions-stats':
@@ -287,6 +281,7 @@ describe('GLAD alert emails', () => {
 
         const beginDate = moment().subtract('1', 'w');
         const endDate = moment();
+        const sql = `SELECT * FROM data WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${subscriptionOne.params.geostore}' ORDER BY alert__date`;
         mockGLADAlertsQuery(beginDate, endDate);
         createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
 
@@ -302,17 +297,11 @@ describe('GLAD alert emails', () => {
                 case 'forest-change-notification-glads-zh':
                     jsonMessage.should.have.property('sender').and.equal('gfw');
                     jsonMessage.should.have.property('data').and.be.a('object');
-
                     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
                     jsonMessage.recipients[0].should.be.an('object')
                         .and.have.property('address')
                         .and.have.property('email')
                         .and.equal('subscription-recipient@vizzuality.com');
-
-                    // TODO: fix the missing values
-                    // image_url_big : same AOI image as before, but now 350px tall and 700px wide.
-                    jsonMessage.data.should.have.property('image_url_big').and.equal('example image');
-                    jsonMessage.data.should.have.property('image_source').and.equal('');
                     jsonMessage.data.should.have.property('glad_frequency').and.equal('平均');
                     jsonMessage.data.should.have.property('month').and.equal(beginDate.format('MMMM'));
                     jsonMessage.data.should.have.property('year').and.equal(beginDate.format('YYYY'));
@@ -355,6 +344,8 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=zh');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=zh`);
+                    jsonMessage.data.should.have.property('download_csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/download/${config.get('datasets.gladAlertsDataset')}?sql=${sql}&format=csv`);
+                    jsonMessage.data.should.have.property('download_json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/download/${config.get('datasets.gladAlertsDataset')}?sql=${sql}&format=json`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
                 case 'subscriptions-stats':

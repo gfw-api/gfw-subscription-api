@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const _ = require('lodash');
 const logger = require('logger');
 const moment = require('moment');
@@ -74,12 +75,12 @@ class GLADPresenter {
         const startDate = moment(begin);
         const endDate = moment(end);
         const geostoreId = subscription.params.geostore;
-        const sql = `SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date < '${endDate}' AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
+        const sql = `SELECT * FROM data WHERE alert__date > '${startDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
         const uri = `/query/${config.get('datasets.gladAlertsDataset')}?sql=${sql}`;
 
         const lastYearStartDate = moment(begin).subtract('1', 'y');
         const lastYearEndDate = moment(end).subtract('1', 'y');
-        const lastYearSQL = `SELECT * FROM data WHERE alert__date > '${lastYearStartDate}' AND alert__date < '${lastYearEndDate}' AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
+        const lastYearSQL = `SELECT * FROM data WHERE alert__date > '${lastYearStartDate.format('YYYY-MM-DD')}' AND alert__date < '${lastYearEndDate.format('YYYY-MM-DD')}' AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
         const lastYearURI = `/query/${config.get('datasets.gladAlertsDataset')}?sql=${lastYearSQL}`;
 
         logger.debug('Last alerts endpoint ', uri);
@@ -89,11 +90,6 @@ class GLADPresenter {
                 alert_type: 'GLAD',
                 date: `${moment(el.alert__date).format('DD/MM/YYYY HH:MM')} UTC`,
             }));
-
-            // TODO: fix these parameters
-            results.image_url_big = 'example image';
-            results.image_source = '';
-
             results.month = startDate.format('MMMM');
             results.year = startDate.format('YYYY');
             results.week_of = `${startDate.format('DD MMM')}`;
@@ -101,6 +97,8 @@ class GLADPresenter {
             results.week_end = endDate.format('DD/MM/YYYY');
             results.glad_count = alerts.data.reduce((acc, curr) => acc + curr.alert__count, 0);
             results.alert_count = alerts.data.reduce((acc, curr) => acc + curr.alert__count, 0);
+            results.download_csv = `${config.get('apiGateway.externalUrl')}/download/${config.get('datasets.gladAlertsDataset')}?sql=${sql}&format=csv`;
+            results.download_json = `${config.get('apiGateway.externalUrl')}/download/${config.get('datasets.gladAlertsDataset')}?sql=${sql}&format=json`;
 
             // Calculate alerts grouped by area types
             let intactForestAlerts = 0;
@@ -178,7 +176,6 @@ class GLADPresenter {
             }
 
             results.glad_frequency = GLADPresenter.translateFrequency(status, subscription.language);
-
         } catch (err) {
             logger.error(err);
             results.alerts = [];
