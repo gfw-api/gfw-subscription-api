@@ -234,6 +234,54 @@ const createMockAlertsQuery = (datasetId, times = 1) => {
         });
 };
 
+const createMockGLADAlertsForCustomRegion = (path, query = {}) => {
+    nock(process.env.CT_URL)
+        .get(`/v1/glad-alerts/${path}`)
+        .query(query)
+        .reply(200, {
+            data: {
+                attributes: {
+                    areaHa: 188087698.78700367,
+                    downloadUrls: {
+                        csv: 'http://gfw2-data.s3.amazonaws.com/alerts-tsv/glad-download/iso/IDN.csv',
+                        json: null
+                    },
+                    value: 78746908
+                },
+                gladConfirmOnly: false,
+                id: '20892bc2-5601-424d-8a4a-605c319418a2',
+                period: '2015-01-01,2020-04-22',
+                type: 'glad-alerts'
+            }
+        });
+};
+
+const createMockGLADAlertsQuery = (beginDate, endDate) => {
+    nock(process.env.CT_URL)
+        .get('/v1/glad-alerts/')
+        .query({
+            period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}`,
+            geostore: '423e5dfb0448e692f97b590c61f45f22'
+        })
+        .reply(200, {
+            data: {
+                attributes: {
+                    areaHa: 22435351.3660182,
+                    downloadUrls: {
+                        csv: '/glad-alerts/download/?period=2020-02-22,2020-03-04&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv',
+                        // eslint-disable-next-line max-len
+                        json: '/glad-alerts/download/?period=2020-02-22,2020-03-04&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json'
+                    },
+                    value: 5
+                },
+                gladConfirmOnly: false,
+                id: '20892bc2-5601-424d-8a4a-605c319418a2',
+                period: '2020-02-22,2020-03-04',
+                type: 'glad-alerts'
+            }
+        });
+};
+
 module.exports = {
     createMockUnsubscribeSUB,
     createMockSendConfirmationSUB,
@@ -244,4 +292,6 @@ module.exports = {
     createMockUsers,
     createMockLatestDataset,
     createMockAlertsQuery,
+    createMockGLADAlertsQuery,
+    createMockGLADAlertsForCustomRegion,
 };
