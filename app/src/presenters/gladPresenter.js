@@ -98,8 +98,8 @@ class GLADPresenter {
             results.week_end = endDate.format('DD/MM/YYYY');
             results.glad_count = alerts.data.reduce((acc, curr) => acc + curr.alert__count, 0);
             results.alert_count = alerts.data.reduce((acc, curr) => acc + curr.alert__count, 0);
-            results.download_csv = `${config.get('apiGateway.externalUrl')}/download/${config.get('datasets.gladAlertsDataset')}?sql=${sql}&format=csv`;
-            results.download_json = `${config.get('apiGateway.externalUrl')}/download/${config.get('datasets.gladAlertsDataset')}?sql=${sql}&format=json`;
+            results.download_csv = `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`;
+            results.download_json = `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`;
 
             // Calculate alerts grouped by area types
             let intactForestAlerts = 0;
