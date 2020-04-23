@@ -203,7 +203,11 @@ class DatasetService {
                 uri += `/wdpa/${area.wdpaid}`;
             } else if (area.iso) {
                 if (area.iso && area.iso.region) {
-                    uri += `/admin/${area.iso.country}/${area.iso.region}`;
+                    if (area.iso.subregion) {
+                        uri += `/admin/${area.iso.country}/${area.iso.region}/${area.iso.subregion}`;
+                    } else {
+                        uri += `/admin/${area.iso.country}/${area.iso.region}`;
+                    }
                 } else {
                     uri += `/admin/${area.iso.country}`;
                 }
@@ -256,7 +260,11 @@ class DatasetService {
                 uri += `/wdpa/${params.wdpaid}`;
             } else if (params.iso && params.iso.country) {
                 if (params.iso && params.iso.region) {
-                    uri += `/admin/${params.iso.country}/${params.iso.region}`;
+                    if (params.iso.subregion) {
+                        uri += `/admin/${params.iso.country}/${params.iso.region}/${params.iso.subregion}`;
+                    } else {
+                        uri += `/admin/${params.iso.country}/${params.iso.region}`;
+                    }
                 } else {
                     uri += `/admin/${params.iso.country}`;
                 }

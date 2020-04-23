@@ -5,12 +5,9 @@ const logger = require('logger');
 
 class UrlService {
 
-    static flagshipUrl(path) {
-        if (!path) {
-            // eslint-disable-next-line no-param-reassign
-            path = '';
-        }
-        return config.get('gfw.flagshipUrl') + path;
+    static flagshipUrl(path = '', lang) {
+        const uri = `${config.get('gfw.flagshipUrl')}${path}`;
+        return lang ? `${uri}?lang=${lang}` : uri;
     }
 
     static flagshipUrlRW(path, env = 'production') {
@@ -35,7 +32,7 @@ class UrlService {
     }
 
     static unsubscribeUrl(subscription) {
-        return `${BASE_URL}/subscriptions/${subscription._id}/unsubscribe?redirect=true`;
+        return `${BASE_URL}/subscriptions/${subscription._id}/unsubscribe?redirect=true&lang=${subscription.language || 'en'}`;
     }
 
 }
