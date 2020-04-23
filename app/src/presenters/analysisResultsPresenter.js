@@ -80,6 +80,10 @@ const decorateWithArea = (results, subscription) => {
 
         if (params.iso.region) {
             results.selected_area += `, ID1: ${params.iso.region}`;
+
+            if (params.iso.subregion) {
+                results.selected_area += `, ID2: ${params.iso.subregion}`;
+            }
         }
     } else if (params.wdpaid) {
         results.selected_area = `WDPA ID: ${params.wdpaid}`;

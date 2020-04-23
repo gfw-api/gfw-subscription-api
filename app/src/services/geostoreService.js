@@ -12,6 +12,10 @@ class GeostoreService {
             return GeostoreService.getGeostoreFromWDPAID(params.wdpaid);
         }
 
+        if (params.iso && params.iso.country && params.iso.region && params.iso.subregion) {
+            return GeostoreService.getGeostoreFromISOSubregionCode(params.iso.country, params.iso.region, params.iso.subregion);
+        }
+
         if (params.iso && params.iso.country && params.iso.region) {
             return GeostoreService.getGeostoreFromISORegionCode(params.iso.country, params.iso.region);
         }
@@ -41,6 +45,17 @@ class GeostoreService {
 
     static async getGeostoreFromISORegionCode(countryCode, regionCode) {
         const uri = `/v2/geostore/admin/${countryCode}/${regionCode}`;
+        const response = await ctRegisterMicroservice.requestToMicroservice({
+            uri,
+            method: 'GET',
+            json: true,
+            version: false,
+        });
+        return response.data.id;
+    }
+
+    static async getGeostoreFromISOSubregionCode(countryCode, regionCode, subregionCode) {
+        const uri = `/v2/geostore/admin/${countryCode}/${regionCode}/${subregionCode}`;
         const response = await ctRegisterMicroservice.requestToMicroservice({
             uri,
             method: 'GET',

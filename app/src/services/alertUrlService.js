@@ -20,6 +20,10 @@ const getIso = (subscription) => {
 
         if (params.iso.region) {
             iso += `-${params.iso.region}`;
+
+            if (params.iso.subregion) {
+                iso += `-${params.iso.subregion}`;
+            }
         }
 
         return iso;
