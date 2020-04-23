@@ -256,12 +256,12 @@ const createMockGLADAlertsForCustomRegion = (path, query = {}) => {
         });
 };
 
-const createMockGLADAlertsQuery = (beginDate, endDate) => {
+const createMockGLADAlertsQuery = (beginDate, endDate, geostore) => {
     nock(process.env.CT_URL)
         .get('/v1/glad-alerts/')
         .query({
             period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}`,
-            geostore: '423e5dfb0448e692f97b590c61f45f22'
+            geostore,
         })
         .reply(200, {
             data: {
@@ -282,6 +282,43 @@ const createMockGLADAlertsQuery = (beginDate, endDate) => {
         });
 };
 
+const createMockGeostore = (path) => {
+    nock(process.env.CT_URL)
+        .get(path)
+        .reply(200, {
+            data: {
+                type: 'geoStore',
+                id: 'f98f505878dcee72a2e92e7510a07d6f',
+                attributes: {
+                    geojson: {
+                        features: [{
+                            properties: null,
+                            type: 'Feature',
+                            geometry: {
+                                type: 'MultiPolygon',
+                                coordinates: [[[[117.36772481838, -0.64399409467464]]]]
+                            }
+                        }],
+                        crs: {},
+                        type: 'FeatureCollection'
+                    },
+                    hash: 'f98f505878dcee72a2e92e7510a07d6f',
+                    provider: {},
+                    areaHa: 190132126.08844432,
+                    bbox: [95.01091766, -11.00761509, 141.01939392, 5.90682268],
+                    lock: false,
+                    info: {
+                        use: {},
+                        iso: 'IDN',
+                        name: 'Indonesia',
+                        gadm: '3.6',
+                        simplifyThresh: 0.1
+                    }
+                }
+            }
+        });
+};
+
 module.exports = {
     createMockUnsubscribeSUB,
     createMockSendConfirmationSUB,
@@ -294,4 +331,5 @@ module.exports = {
     createMockAlertsQuery,
     createMockGLADAlertsQuery,
     createMockGLADAlertsForCustomRegion,
+    createMockGeostore,
 };

@@ -10,7 +10,12 @@ const redis = require('redis');
 const { getTestServer } = require('./utils/test-server');
 
 const { createSubscription } = require('./utils/helpers');
-const { createMockAlertsQuery, createMockGLADAlertsForCustomRegion, createMockGLADAlertsQuery } = require('./utils/mock');
+const {
+    createMockAlertsQuery,
+    createMockGLADAlertsForCustomRegion,
+    createMockGLADAlertsQuery,
+    createMockGeostore,
+} = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 
 const AlertQueue = require('../../src/queues/alert.queue');
@@ -39,6 +44,14 @@ const assertSubscriptionStats = (jsonMessage, sub) => {
     jsonMessage.recipients[0].should.be.an('object').and.have.property('address').and.have.property('email').and.equal('info@vizzuality.com');
 };
 
+const bootstrapGLADAlertTest = (geostore) => {
+    const beginDate = moment().subtract('1', 'w');
+    const endDate = moment();
+    const sql = `SELECT * FROM data WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${geostore}' ORDER BY alert__date`;
+    process.on('unhandledRejection', (error) => should.fail(error));
+    return { beginDate, endDate, sql };
+};
+
 describe('GLAD alert emails', () => {
 
     before(async () => {
@@ -62,19 +75,13 @@ describe('GLAD alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
 
-        const beginDate = moment().subtract('1', 'w');
-        const endDate = moment();
-        const sql = `SELECT * FROM data WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${subscriptionOne.params.geostore}' ORDER BY alert__date`;
-        createMockGLADAlertsQuery(beginDate, endDate);
+        const { beginDate, endDate, sql } = bootstrapGLADAlertTest('423e5dfb0448e692f97b590c61f45f22');
+        createMockGLADAlertsQuery(beginDate, endDate, '423e5dfb0448e692f97b590c61f45f22');
         createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
-
-        process.on('unhandledRejection', (error) => should.fail(error));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
-
             jsonMessage.should.have.property('template');
-
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
@@ -158,13 +165,9 @@ describe('GLAD alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
         )).save();
 
-        const beginDate = moment().subtract('1', 'w');
-        const endDate = moment();
-        const sql = `SELECT * FROM data WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${subscriptionOne.params.geostore}' ORDER BY alert__date`;
-        createMockGLADAlertsQuery(beginDate, endDate);
+        const { beginDate, endDate, sql } = bootstrapGLADAlertTest('423e5dfb0448e692f97b590c61f45f22');
+        createMockGLADAlertsQuery(beginDate, endDate, '423e5dfb0448e692f97b590c61f45f22');
         createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
-
-        process.on('unhandledRejection', (error) => should.fail(error));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -254,13 +257,9 @@ describe('GLAD alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'zh' },
         )).save();
 
-        const beginDate = moment().subtract('1', 'w');
-        const endDate = moment();
-        const sql = `SELECT * FROM data WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${subscriptionOne.params.geostore}' ORDER BY alert__date`;
-        createMockGLADAlertsQuery(beginDate, endDate);
+        const { beginDate, endDate, sql } = bootstrapGLADAlertTest('423e5dfb0448e692f97b590c61f45f22');
+        createMockGLADAlertsQuery(beginDate, endDate, '423e5dfb0448e692f97b590c61f45f22');
         createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
-
-        process.on('unhandledRejection', (error) => should.fail(error));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -349,16 +348,13 @@ describe('GLAD alert emails', () => {
             { params: { iso: { country: 'IDN' } } },
         )).save();
 
-        const beginDate = moment().subtract('1', 'w');
-        const endDate = moment();
-        const sql = `SELECT * FROM data WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${subscriptionOne.params.geostore}' ORDER BY alert__date`;
+        const { beginDate, endDate, sql } = bootstrapGLADAlertTest('f98f505878dcee72a2e92e7510a07d6f', false);
         createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
+        createMockGeostore('/v2/geostore/admin/IDN');
         createMockGLADAlertsForCustomRegion(
             'admin/IDN',
-            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` },
+            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` }
         );
-
-        process.on('unhandledRejection', (error) => should.fail(error));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -447,16 +443,13 @@ describe('GLAD alert emails', () => {
             { params: { iso: { country: 'IDN', region: '3' } } },
         )).save();
 
-        const beginDate = moment().subtract('1', 'w');
-        const endDate = moment();
-        const sql = `SELECT * FROM data WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${subscriptionOne.params.geostore}' ORDER BY alert__date`;
+        const { beginDate, endDate, sql } = bootstrapGLADAlertTest('f98f505878dcee72a2e92e7510a07d6f', false);
         createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
+        createMockGeostore('/v2/geostore/admin/IDN/3');
         createMockGLADAlertsForCustomRegion(
             'admin/IDN/3',
-            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` },
+            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` }
         );
-
-        process.on('unhandledRejection', (error) => should.fail(error));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -545,16 +538,13 @@ describe('GLAD alert emails', () => {
             { params: { wdpaid: '1' } },
         )).save();
 
-        const beginDate = moment().subtract('1', 'w');
-        const endDate = moment();
-        const sql = `SELECT * FROM data WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${subscriptionOne.params.geostore}' ORDER BY alert__date`;
+        const { beginDate, endDate, sql } = bootstrapGLADAlertTest('f98f505878dcee72a2e92e7510a07d6f', false);
         createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
+        createMockGeostore('/v2/geostore/wdpa/1');
         createMockGLADAlertsForCustomRegion(
             'wdpa/1',
-            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` },
+            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` }
         );
-
-        process.on('unhandledRejection', (error) => should.fail(error));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -643,16 +633,13 @@ describe('GLAD alert emails', () => {
             { params: { use: 'gfw_logging', useid: '29407' } },
         )).save();
 
-        const beginDate = moment().subtract('1', 'w');
-        const endDate = moment();
-        const sql = `SELECT * FROM data WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${subscriptionOne.params.geostore}' ORDER BY alert__date`;
+        const { beginDate, endDate, sql } = bootstrapGLADAlertTest('f98f505878dcee72a2e92e7510a07d6f', false);
         createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407');
         createMockGLADAlertsForCustomRegion(
             'use/gfw_logging/29407',
-            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` },
+            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` }
         );
-
-        process.on('unhandledRejection', (error) => should.fail(error));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
