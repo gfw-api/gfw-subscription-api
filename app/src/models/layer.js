@@ -25,7 +25,9 @@ const LAYERS = [{
 }, {
     name: 'umd_as_it_happens',
     slug: 'glad-alerts',
-    subscription: true
+    subscription: true,
+    datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+    layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
 }, {
     name: 'umd_as_it_happens_per',
     slug: 'glad-alerts',

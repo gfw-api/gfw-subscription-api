@@ -4,68 +4,53 @@ const BASE_URL = config.get('gfw.flagshipUrl');
 
 const qs = require('querystring');
 const moment = require('moment');
-const _ = require('lodash');
-
-const ALLOWED_PARAMS = [
-    'tab', 'geojson', 'geostore', 'wdpaid', 'begin', 'end', 'threshold',
-    'dont_analyze', 'hresolution', 'tour', 'subscribe', 'use', 'useid',
-    'fit_to_geom'
-];
-
-const getIso = (subscription) => {
-    const params = subscription.params || {};
-
-    if (params.iso && params.iso.country) {
-        let iso = params.iso.country;
-
-        if (params.iso.region) {
-            iso += `-${params.iso.region}`;
-
-            if (params.iso.subregion) {
-                iso += `-${params.iso.subregion}`;
-            }
-        }
-
-        return iso;
-    }
-    return 'ALL';
-
-};
 
 class AlertUrlService {
 
     static generate(subscription, layer, begin, end) {
-        let query = {
-            begin: moment(begin).format('YYYY-MM-DD'),
-            end: moment(end).format('YYYY-MM-DD'),
-            fit_to_geom: true
-        };
-        let iso = getIso(subscription);
+        let pathname = `geostore/${subscription.params.geostore}`;
 
-        if (subscription.params.geostore) {
-            query.geostore = subscription.params.geostore;
+        if (subscription.params.iso && subscription.params.iso.country) {
+          const country = subscription.params.iso.country;
+          const region = subscription.params.iso.region;
+          const subregion = subscription.params.iso.subregion;
+          pathname = `country/${country}${region ? `/${region}` : ''}${subregion ? `/${subregion}` : ''}`;
         }
-        if (subscription.params.use) {
-            query.use = subscription.params.use;
-            query.useid = subscription.params.useid;
-            iso = 'ALL';
-        }
+
         if (subscription.params.wdpaid) {
-            query.wdpaid = subscription.params.wdpaid;
-            iso = 'ALL';
+          pathname = `wdpa/${subscription.params.wdpaid}`;
         }
 
-        if (subscription.language) {
-            query.lang = subscription.language;
+        if (subscription.params.use && subscription.params.useid) {
+          pathname = `use/${subscription.params.use}/${subscription.params.useid}`;
         }
 
-        const existingUrlParams = _.pick(subscription.params, ALLOWED_PARAMS);
-        query = _.omitBy(Object.assign(query, existingUrlParams), _.isNil);
+        queryForUrl = {
+          lang: subscription.language || 'en',
+          map: {
+            canBound: true,
+            datasets: [
+              {
+                dataset: layer.datasetId,
+                layers: [dataset.layerId],
+                timelineParams: {
+                  startDate: moment(begin).format('YYYY-MM-DD'),
+                  endDate: moment(end).format('YYYY-MM-DD'),
+                  trimEndDate: moment(end).format('YYYY-MM-DD')
+                }
+              },
+              {
+                dataset: '0b0208b6-b424-4b57-984f-caddfa25ba22',
+                layers: ['b45350e3-5a76-44cd-b0a9-5038a0d8bfae', 'cc35432d-38d7-4a03-872e-3a71a2f555fc']
+              }
+            ]
+          },
+          mainMap: {
+            showAnalysis: true
+          }
+        }
 
-        const baselayer = layer.name;
-        const querystring = qs.stringify(query);
-
-        return `${BASE_URL}/map/3/0/0/${iso}/grayscale/${baselayer}?${querystring}`;
+        return `${BASE_URL}/map/${pathname}?${qs.stringify(queryForUrl)}`;
     }
 
 }
