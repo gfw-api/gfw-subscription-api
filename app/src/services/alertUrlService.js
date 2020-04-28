@@ -25,25 +25,36 @@ class AlertUrlService {
           pathname = `use/${subscription.params.use}/${subscription.params.useid}`;
         }
 
+        const diffInDays = moment(begin).diff(moment(end), 'days');
+
         queryForUrl = {
           lang: subscription.language || 'en',
           map: {
             canBound: true,
-            datasets: [
-              {
-                dataset: layer.datasetId,
-                layers: [dataset.layerId],
-                timelineParams: {
-                  startDate: moment(begin).format('YYYY-MM-DD'),
-                  endDate: moment(end).format('YYYY-MM-DD'),
-                  trimEndDate: moment(end).format('YYYY-MM-DD')
+            ...layer.datasetId && dataset.layerId && {
+              datasets: [
+                {
+                  dataset: layer.datasetId,
+                  layers: [dataset.layerId],
+                  ...layer.slug === 'viirs-active-fires' && {
+                    params: {
+                      number_of_days: diffInDays <= 7 ? diffInDays : 7
+                    }
+                  },
+                  ...layer.slug !== 'viirs-active-fires' && {
+                    timelineParams: {
+                      startDate: moment(begin).format('YYYY-MM-DD'),
+                      endDate: moment(end).format('YYYY-MM-DD'),
+                      trimEndDate: moment(end).format('YYYY-MM-DD')
+                    }
+                  }
+                },
+                {
+                  dataset: '0b0208b6-b424-4b57-984f-caddfa25ba22',
+                  layers: ['b45350e3-5a76-44cd-b0a9-5038a0d8bfae', 'cc35432d-38d7-4a03-872e-3a71a2f555fc']
                 }
-              },
-              {
-                dataset: '0b0208b6-b424-4b57-984f-caddfa25ba22',
-                layers: ['b45350e3-5a76-44cd-b0a9-5038a0d8bfae', 'cc35432d-38d7-4a03-872e-3a71a2f555fc']
-              }
-            ]
+              ]
+            }
           },
           mainMap: {
             showAnalysis: true
