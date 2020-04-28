@@ -107,14 +107,6 @@ describe('GLAD alert emails', () => {
                         other: 11
                     });
                     jsonMessage.data.should.have.property('glad_count').and.equal(51);
-                    jsonMessage.data.should.have.property('glad_alerts').and.deep.equal({
-                        intact_forest: 6,
-                        primary_forest: 7,
-                        peat: 8,
-                        protected_areas: 9,
-                        plantations: 10,
-                        other: 11
-                    });
                     jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
                         { alert_type: 'GLAD', date: '10/10/2019 00:10 UTC' },
                         { alert_type: 'GLAD', date: '11/10/2019 00:10 UTC' },
@@ -199,14 +191,6 @@ describe('GLAD alert emails', () => {
                         other: 11
                     });
                     jsonMessage.data.should.have.property('glad_count').and.equal(51);
-                    jsonMessage.data.should.have.property('glad_alerts').and.deep.equal({
-                        intact_forest: 6,
-                        primary_forest: 7,
-                        peat: 8,
-                        protected_areas: 9,
-                        plantations: 10,
-                        other: 11
-                    });
                     jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
                         { alert_type: 'GLAD', date: '10/10/2019 00:10 UTC' },
                         { alert_type: 'GLAD', date: '11/10/2019 00:10 UTC' },
@@ -290,14 +274,6 @@ describe('GLAD alert emails', () => {
                         other: 11
                     });
                     jsonMessage.data.should.have.property('glad_count').and.equal(51);
-                    jsonMessage.data.should.have.property('glad_alerts').and.deep.equal({
-                        intact_forest: 6,
-                        primary_forest: 7,
-                        peat: 8,
-                        protected_areas: 9,
-                        plantations: 10,
-                        other: 11
-                    });
                     jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
                         { alert_type: 'GLAD', date: '10/10/2019 00:10 UTC' },
                         { alert_type: 'GLAD', date: '11/10/2019 00:10 UTC' },
@@ -385,14 +361,6 @@ describe('GLAD alert emails', () => {
                         other: 11
                     });
                     jsonMessage.data.should.have.property('glad_count').and.equal(51);
-                    jsonMessage.data.should.have.property('glad_alerts').and.deep.equal({
-                        intact_forest: 6,
-                        primary_forest: 7,
-                        peat: 8,
-                        protected_areas: 9,
-                        plantations: 10,
-                        other: 11
-                    });
                     jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
                         { alert_type: 'GLAD', date: '10/10/2019 00:10 UTC' },
                         { alert_type: 'GLAD', date: '11/10/2019 00:10 UTC' },
@@ -480,14 +448,6 @@ describe('GLAD alert emails', () => {
                         other: 11
                     });
                     jsonMessage.data.should.have.property('glad_count').and.equal(51);
-                    jsonMessage.data.should.have.property('glad_alerts').and.deep.equal({
-                        intact_forest: 6,
-                        primary_forest: 7,
-                        peat: 8,
-                        protected_areas: 9,
-                        plantations: 10,
-                        other: 11
-                    });
                     jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
                         { alert_type: 'GLAD', date: '10/10/2019 00:10 UTC' },
                         { alert_type: 'GLAD', date: '11/10/2019 00:10 UTC' },
@@ -575,14 +535,6 @@ describe('GLAD alert emails', () => {
                         other: 11
                     });
                     jsonMessage.data.should.have.property('glad_count').and.equal(51);
-                    jsonMessage.data.should.have.property('glad_alerts').and.deep.equal({
-                        intact_forest: 6,
-                        primary_forest: 7,
-                        peat: 8,
-                        protected_areas: 9,
-                        plantations: 10,
-                        other: 11
-                    });
                     jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
                         { alert_type: 'GLAD', date: '10/10/2019 00:10 UTC' },
                         { alert_type: 'GLAD', date: '11/10/2019 00:10 UTC' },
@@ -670,14 +622,6 @@ describe('GLAD alert emails', () => {
                         other: 11
                     });
                     jsonMessage.data.should.have.property('glad_count').and.equal(51);
-                    jsonMessage.data.should.have.property('glad_alerts').and.deep.equal({
-                        intact_forest: 6,
-                        primary_forest: 7,
-                        peat: 8,
-                        protected_areas: 9,
-                        plantations: 10,
-                        other: 11
-                    });
                     jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
                         { alert_type: 'GLAD', date: '10/10/2019 00:10 UTC' },
                         { alert_type: 'GLAD', date: '11/10/2019 00:10 UTC' },
@@ -765,14 +709,6 @@ describe('GLAD alert emails', () => {
                         other: 11
                     });
                     jsonMessage.data.should.have.property('glad_count').and.equal(51);
-                    jsonMessage.data.should.have.property('glad_alerts').and.deep.equal({
-                        intact_forest: 6,
-                        primary_forest: 7,
-                        peat: 8,
-                        protected_areas: 9,
-                        plantations: 10,
-                        other: 11
-                    });
                     jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
                         { alert_type: 'GLAD', date: '10/10/2019 00:10 UTC' },
                         { alert_type: 'GLAD', date: '11/10/2019 00:10 UTC' },

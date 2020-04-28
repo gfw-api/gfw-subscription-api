@@ -144,15 +144,6 @@ class GLADPresenter {
                 other: otherAlerts,
             };
 
-            results.glad_alerts = {
-                intact_forest: intactForestAlerts,
-                primary_forest: primaryForestAlerts,
-                peat: peatAlerts,
-                protected_areas: protectedAreasAlerts,
-                plantations: plantationAlerts,
-                other: otherAlerts,
-            };
-
             // Finding standard deviation of alert values
             const lastYearAlerts = await ctRegisterMicroservice.requestToMicroservice({ uri: lastYearURI, method: 'GET', json: true });
             const lastYearAverage = _.mean(lastYearAlerts.data.map((al) => al.alert__count));
