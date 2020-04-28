@@ -8,7 +8,7 @@ const moment = require('moment');
 class AlertUrlService {
 
     static generate(subscription, layer, begin, end) {
-        let pathname = `geostore/${subscription.params.geostore}`;
+        let pathname = `aoi/${subscription.id}`;
 
         if (subscription.params.iso && subscription.params.iso.country) {
           const country = subscription.params.iso.country;
