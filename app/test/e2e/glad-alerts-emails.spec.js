@@ -126,8 +126,9 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=en');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=en`);
-                    jsonMessage.data.should.have.property('download_csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv`);
-                    jsonMessage.data.should.have.property('download_json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json`);
+                    jsonMessage.data.should.have.property('downloadUrls');
+                    jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv`);
+                    jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
                 case 'subscriptions-stats':
@@ -210,8 +211,9 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal(`http://staging.globalforestwatch.org/my-gfw?lang=fr`);
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=fr`);
-                    jsonMessage.data.should.have.property('download_csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv`);
-                    jsonMessage.data.should.have.property('download_json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json`);
+                    jsonMessage.data.should.have.property('downloadUrls');
+                    jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv`);
+                    jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
                 case 'subscriptions-stats':
@@ -293,8 +295,9 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=zh');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=zh`);
-                    jsonMessage.data.should.have.property('download_csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv`);
-                    jsonMessage.data.should.have.property('download_json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json`);
+                    jsonMessage.data.should.have.property('downloadUrls');
+                    jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv`);
+                    jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json`);
                     jsonMessage.data.should.have.property('value').and.equal(5);
                     break;
                 case 'subscriptions-stats':
@@ -380,8 +383,9 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('selected_area').and.equal('ISO Code: IDN');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=en');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=en`);
-                    jsonMessage.data.should.have.property('download_csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
-                    jsonMessage.data.should.have.property('download_json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
+                    jsonMessage.data.should.have.property('downloadUrls');
+                    jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
+                    jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
                     jsonMessage.data.should.have.property('value').and.equal(78746908);
                     break;
                 case 'subscriptions-stats':
@@ -467,8 +471,9 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('selected_area').and.equal('ISO Code: IDN, ID1: 3');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=en');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=en`);
-                    jsonMessage.data.should.have.property('download_csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
-                    jsonMessage.data.should.have.property('download_json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
+                    jsonMessage.data.should.have.property('downloadUrls');
+                    jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
+                    jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
                     jsonMessage.data.should.have.property('value').and.equal(78746908);
                     break;
                 case 'subscriptions-stats':
@@ -554,8 +559,9 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('selected_area').and.equal('ISO Code: BRA, ID1: 1, ID2: 1');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=en');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=en`);
-                    jsonMessage.data.should.have.property('download_csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
-                    jsonMessage.data.should.have.property('download_json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
+                    jsonMessage.data.should.have.property('downloadUrls');
+                    jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
+                    jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
                     jsonMessage.data.should.have.property('value').and.equal(78746908);
                     break;
                 case 'subscriptions-stats':
@@ -641,8 +647,9 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('selected_area').and.equal('WDPA ID: 1');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=en');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=en`);
-                    jsonMessage.data.should.have.property('download_csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
-                    jsonMessage.data.should.have.property('download_json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
+                    jsonMessage.data.should.have.property('downloadUrls');
+                    jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
+                    jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
                     jsonMessage.data.should.have.property('value').and.equal(78746908);
                     break;
                 case 'subscriptions-stats':
@@ -728,8 +735,9 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
                     jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=en');
                     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=en`);
-                    jsonMessage.data.should.have.property('download_csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
-                    jsonMessage.data.should.have.property('download_json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
+                    jsonMessage.data.should.have.property('downloadUrls');
+                    jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
+                    jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
                     jsonMessage.data.should.have.property('value').and.equal(78746908);
                     break;
                 case 'subscriptions-stats':
