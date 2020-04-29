@@ -66,7 +66,8 @@ const decorateWithDates = (results, begin, end) => {
 
 const decorateWithLinks = (results, subscription, layer, begin, end) => {
     results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
-    results.subscriptions_url = UrlService.flagshipUrl('/my_gfw/subscriptions');
+    results.subscriptions_url = UrlService.flagshipUrl('/my-gfw', subscription.language);
+    results.dashboard_link = UrlService.flagshipUrl(`/dashboards/aoi/${subscription.id}`, subscription.language);
     results.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
 
     return results;
@@ -80,6 +81,10 @@ const decorateWithArea = (results, subscription) => {
 
         if (params.iso.region) {
             results.selected_area += `, ID1: ${params.iso.region}`;
+
+            if (params.iso.subregion) {
+                results.selected_area += `, ID2: ${params.iso.subregion}`;
+            }
         }
     } else if (params.wdpaid) {
         results.selected_area = `WDPA ID: ${params.wdpaid}`;

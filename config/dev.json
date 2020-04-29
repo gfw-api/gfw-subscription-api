@@ -1,1 +1,20 @@
-{}
+{
+  "datasets": {
+    "gladAlertsDataset": "64f17d8a-49ab-4132-b6bc-55dfa48ce3d0"
+  },
+  "layers": {
+    "gladAlertLayerDataset": "bfd1d211-8106-4393-86c3-9e1ab2ee1b9b",
+    "gladAlertLayer": "8e4a527d-1bcd-4a12-82b0-5a108ffec452",
+    "umdLossGainLayerDataset": "eab9655f-dd37-4bb3-b223-4c5df166564c",
+    "umdLossGainLayer": "dce8004f-4d0f-4c2d-ae4b-dcf55e14035f",
+    "terraILayerDataset": "68c81bc5-171c-4425-9836-d45659f0ed23",
+    "terraILayer": "50a76478-9f6e-4315-874a-611d10a50338",
+    "prodesLayerDataset": "a481466d-de8a-450c-b792-271901d20d3b",
+    "prodesLayer": "b3529b7f-8fdd-4d10-a6eb-71c6effcbcd5",
+    "viirsLayerDataset": "1d3ccf9b-102e-4c0b-b2ea-2abcc712e194",
+    "viirsLayer": "93e33932-3959-4201-b8c8-6ec0b32596e0",
+    "gadm36BoundariesDataset": "0b0208b6-b424-4b57-984f-caddfa25ba22",
+    "gadm36BoundariesLayer1": "b45350e3-5a76-44cd-b0a9-5038a0d8bfae",
+    "gadm36BoundariesLayer2": "cc35432d-38d7-4a03-872e-3a71a2f555fc"
+  }
+}

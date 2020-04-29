@@ -9,6 +9,10 @@ class AnalysisClassifier {
 
                 if (params.iso.region) {
                     url += `&id1=${params.iso.region}`;
+
+                    if (params.iso.subregion) {
+                        url += `&id2=${params.iso.subregion}`;
+                    }
                 }
 
                 return url;
@@ -29,6 +33,10 @@ class AnalysisClassifier {
 
             if (params.iso.region) {
                 url += `/${params.iso.region}`;
+
+                if (params.iso.subregion) {
+                    url += `/${params.iso.subregion}`;
+                }
             }
 
             return url;

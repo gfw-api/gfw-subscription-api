@@ -1,63 +1,71 @@
 const config = require('config');
+const btoa = require('btoa');
 
 const BASE_URL = config.get('gfw.flagshipUrl');
+const GADM36_DATASET = config.get('layers.gadm36BoundariesDataset');
+const GADM36_LAYER_1 = config.get('layers.gadm36BoundariesLayer1');
+const GADM36_LAYER_2 = config.get('layers.gadm36BoundariesLayer2');
 
-const qs = require('querystring');
+const qs = require('qs');
 const moment = require('moment');
-const _ = require('lodash');
 
-const ALLOWED_PARAMS = [
-    'tab', 'geojson', 'geostore', 'wdpaid', 'begin', 'end', 'threshold',
-    'dont_analyze', 'hresolution', 'tour', 'subscribe', 'use', 'useid',
-    'fit_to_geom'
-];
-
-const getIso = (subscription) => {
-    const params = subscription.params || {};
-
-    if (params.iso && params.iso.country) {
-        let iso = params.iso.country;
-
-        if (params.iso.region) {
-            iso += `-${params.iso.region}`;
-        }
-
-        return iso;
-    }
-    return 'ALL';
-
-};
+const endocdeStateForUrl = (state) => btoa(JSON.stringify(state));
 
 class AlertUrlService {
 
     static generate(subscription, layer, begin, end) {
-        let query = {
-            begin: moment(begin).format('YYYY-MM-DD'),
-            end: moment(end).format('YYYY-MM-DD'),
-            fit_to_geom: true
-        };
-        let iso = getIso(subscription);
+        let pathname = `aoi/${subscription.id}`;
 
-        if (subscription.params.geostore) {
-            query.geostore = subscription.params.geostore;
+        if (subscription.params.iso && subscription.params.iso.country) {
+            const { country, region, subregion } = subscription.params.iso;
+            pathname = `country/${country}${region ? `/${region}` : ''}${subregion ? `/${subregion}` : ''}`;
         }
-        if (subscription.params.use) {
-            query.use = subscription.params.use;
-            query.useid = subscription.params.useid;
-            iso = 'ALL';
-        }
+
         if (subscription.params.wdpaid) {
-            query.wdpaid = subscription.params.wdpaid;
-            iso = 'ALL';
+            pathname = `wdpa/${subscription.params.wdpaid}`;
         }
 
-        const existingUrlParams = _.pick(subscription.params, ALLOWED_PARAMS);
-        query = _.omitBy(Object.assign(query, existingUrlParams), _.isNil);
+        if (subscription.params.use && subscription.params.useid) {
+            pathname = `use/${subscription.params.use}/${subscription.params.useid}`;
+        }
 
-        const baselayer = layer.name;
-        const querystring = qs.stringify(query);
+        const diffInDays = moment(begin).diff(moment(end), 'days');
 
-        return `${BASE_URL}/map/3/0/0/${iso}/grayscale/${baselayer}?${querystring}`;
+        const queryForUrl = {
+            lang: subscription.language || 'en',
+            map: endocdeStateForUrl({
+                canBound: true,
+                ...layer.datasetId && layer.layerId && {
+                    datasets: [
+                        {
+                            dataset: layer.datasetId,
+                            layers: [layer.layerId],
+                            ...layer.slug === 'viirs-active-fires' && {
+                                params: {
+                                    number_of_days: diffInDays <= 7 ? diffInDays : 7
+                                }
+                            },
+                            ...layer.slug !== 'viirs-active-fires' && {
+                                timelineParams: {
+                                    startDate: moment(begin).format('YYYY-MM-DD'),
+                                    endDate: moment(end).format('YYYY-MM-DD'),
+                                    trimEndDate: moment(end).format('YYYY-MM-DD')
+                                }
+                            }
+                        },
+                        {
+                            dataset: GADM36_DATASET,
+                            layers: [GADM36_LAYER_1, GADM36_LAYER_2]
+                        }
+                    ]
+                }
+            }),
+            mainMap: endocdeStateForUrl({
+                showAnalysis: true
+            })
+        };
+
+        return `${BASE_URL}/map/${pathname}?${qs.stringify(queryForUrl)}`;
     }
 
 }

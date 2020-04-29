@@ -1,3 +1,12 @@
+# v.1.4.0
+
+## 23/04/2020
+
+- Update the email parameters for GLAD alert emails.
+- Added test coverage for GLAD alert email parameters.
+- Fetching geostore id when we don't have one when sending GLAD alert emails, as in the cases of iso country, iso country + region, wdpaid and use + useid
+- Update the download link to the correct one in the GLAD alert emails
+
 # v1.3.1
 
 ## 08/04/2020

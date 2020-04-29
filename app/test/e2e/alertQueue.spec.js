@@ -14,6 +14,7 @@ const { createSubscription, createDatasetWithWebHook } = require('./utils/helper
 const { ROLES } = require('./utils/test.constants');
 
 const AlertQueue = require('../../src/queues/alert.queue');
+const AlertUrlService = require('../../src/services/alertUrlService');
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -377,9 +378,7 @@ describe('AlertQueue ', () => {
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
-
             jsonMessage.should.have.property('template');
-
 
             switch (jsonMessage.template) {
 
@@ -390,14 +389,24 @@ describe('AlertQueue ', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(3578);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/viirs_fires_alerts?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+                        subscriptionOne,
+                        {
+                            name: 'viirs_fires_alerts',
+                            slug: 'viirs-active-fires',
+                            subscription: true,
+                            datasetId: '1d3ccf9b-102e-4c0b-b2ea-2abcc712e194',
+                            layerId: '93e33932-3959-4201-b8c8-6ec0b32596e0'
+                        },
+                        beginDate,
+                        endDate,
+                    ));
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('viirs-active-fires');
-                    // TODO: mock s3 upload so map_image has the actual thumbnail url
                     jsonMessage.data.should.have.property('map_image').and.equal(null);
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
-                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my_gfw/subscriptions');
-                    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true`);
+                    jsonMessage.data.should.have.property('subscriptions_url').and.equal('http://staging.globalforestwatch.org/my-gfw?lang=en');
+                    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${subscriptionOne.id}/unsubscribe?redirect=true&lang=en`);
                     jsonMessage.data.should.have.property('value').and.equal(3578);
 
                     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
@@ -492,30 +501,48 @@ describe('AlertQueue ', () => {
 
         process.on('unhandledRejection', (error) => { should.fail(error); });
 
-        await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
+        const beginDate = moment().subtract('1', 'w').subtract('1', 'w').toDate();
+        const endDate = moment().subtract('1', 'w').toDate();
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'glad-alerts',
+            begin_date: beginDate,
+            end_date: endDate,
+        }));
     });
 
     it('All goes well when a dataset Redis message is received for a subscription with a valid resource type URL that returns 4XX codes', async () => {
-        await createDatasetWithWebHook('http://www.webhook.com');
+        await createDatasetWithWebHook('http://www.webhook.com', true);
 
         // If this mock is not used (i.e., the web-hook is not called), the test will fail
         nock('http://www.webhook.com').post('/').query(() => true).reply(400);
 
         process.on('unhandledRejection', (error) => { should.fail(error); });
 
-        await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
+        const beginDate = moment().subtract('1', 'w').subtract('1', 'w').toDate();
+        const endDate = moment().subtract('1', 'w').toDate();
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'glad-alerts',
+            begin_date: beginDate,
+            end_date: endDate,
+        }));
     });
 
 
     it('POST request to a web-hook URL triggered when a dataset Redis message is received for a subscription with a valid resource type URL (happy case)', async () => {
-        await createDatasetWithWebHook('http://www.webhook.com');
+        await createDatasetWithWebHook('http://www.webhook.com', true);
 
         // If this mock is not used (i.e., the web-hook is not called), the test will fail
         nock('http://www.webhook.com').post('/').query(() => true).reply(200, { received: true });
 
         process.on('unhandledRejection', (error) => { should.fail(error); });
 
-        await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
+        const beginDate = moment().subtract('1', 'w').subtract('1', 'w').toDate();
+        const endDate = moment().subtract('1', 'w').toDate();
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'glad-alerts',
+            begin_date: beginDate,
+            end_date: endDate,
+        }));
     });
 
     afterEach(async () => {
