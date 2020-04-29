@@ -501,30 +501,48 @@ describe('AlertQueue ', () => {
 
         process.on('unhandledRejection', (error) => { should.fail(error); });
 
-        await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
+        const beginDate = moment().subtract('1', 'w').subtract('1', 'w').toDate();
+        const endDate = moment().subtract('1', 'w').toDate();
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'glad-alerts',
+            begin_date: beginDate,
+            end_date: endDate,
+        }));
     });
 
     it('All goes well when a dataset Redis message is received for a subscription with a valid resource type URL that returns 4XX codes', async () => {
-        await createDatasetWithWebHook('http://www.webhook.com');
+        await createDatasetWithWebHook('http://www.webhook.com', true);
 
         // If this mock is not used (i.e., the web-hook is not called), the test will fail
         nock('http://www.webhook.com').post('/').query(() => true).reply(400);
 
         process.on('unhandledRejection', (error) => { should.fail(error); });
 
-        await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
+        const beginDate = moment().subtract('1', 'w').subtract('1', 'w').toDate();
+        const endDate = moment().subtract('1', 'w').toDate();
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'glad-alerts',
+            begin_date: beginDate,
+            end_date: endDate,
+        }));
     });
 
 
     it('POST request to a web-hook URL triggered when a dataset Redis message is received for a subscription with a valid resource type URL (happy case)', async () => {
-        await createDatasetWithWebHook('http://www.webhook.com');
+        await createDatasetWithWebHook('http://www.webhook.com', true);
 
         // If this mock is not used (i.e., the web-hook is not called), the test will fail
         nock('http://www.webhook.com').post('/').query(() => true).reply(200, { received: true });
 
         process.on('unhandledRejection', (error) => { should.fail(error); });
 
-        await AlertQueue.processMessage(null, JSON.stringify({ layer_slug: 'dataset' }));
+        const beginDate = moment().subtract('1', 'w').subtract('1', 'w').toDate();
+        const endDate = moment().subtract('1', 'w').toDate();
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'glad-alerts',
+            begin_date: beginDate,
+            end_date: endDate,
+        }));
     });
 
     afterEach(async () => {
