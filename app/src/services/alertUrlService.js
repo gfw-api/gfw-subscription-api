@@ -1,6 +1,9 @@
 const config = require('config');
 
 const BASE_URL = config.get('gfw.flagshipUrl');
+const GADM36_DATASET = config.get('layers.gadm36BoundariesDataset');
+const GADM36_LAYER_1 = config.get('layers.gadm36BoundariesLayer1');
+const GADM36_LAYER_2 = config.get('layers.gadm36BoundariesLayer2');
 
 const qs = require('qs');
 const moment = require('moment');
@@ -48,8 +51,8 @@ class AlertUrlService {
                             }
                         },
                         {
-                            dataset: '0b0208b6-b424-4b57-984f-caddfa25ba22',
-                            layers: ['b45350e3-5a76-44cd-b0a9-5038a0d8bfae', 'cc35432d-38d7-4a03-872e-3a71a2f555fc']
+                            dataset: GADM36_DATASET,
+                            layers: [GADM36_LAYER_1, GADM36_LAYER_2]
                         }
                     ]
                 }
