@@ -1,4 +1,5 @@
 const config = require('config');
+const btoa = require('btoa');
 
 const BASE_URL = config.get('gfw.flagshipUrl');
 const GADM36_DATASET = config.get('layers.gadm36BoundariesDataset');
@@ -8,7 +9,7 @@ const GADM36_LAYER_2 = config.get('layers.gadm36BoundariesLayer2');
 const qs = require('qs');
 const moment = require('moment');
 
-const endocdeStateForUrl = state => btoa(JSON.stringify(state));
+const endocdeStateForUrl = (state) => btoa(JSON.stringify(state));
 
 class AlertUrlService {
 
