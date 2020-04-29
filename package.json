@@ -48,6 +48,7 @@
     "mongoose": "^5.7.12",
     "mongoose-paginate": "^5.0.3",
     "mustache": "^3.1.0",
+    "qs": "^6.9.3",
     "redis": "^2.8.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8",

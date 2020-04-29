@@ -67,6 +67,7 @@ const decorateWithDates = (results, begin, end) => {
 const decorateWithLinks = (results, subscription, layer, begin, end) => {
     results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
     results.subscriptions_url = UrlService.flagshipUrl('/my-gfw', subscription.language);
+    results.dashboard_link = UrlService.flagshipUrl(`/dashboards/aoi/${subscription.id}`, subscription.language);
     results.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
 
     return results;

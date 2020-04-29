@@ -18,6 +18,7 @@ const {
 } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 
+const AlertUrlService = require('../../src/services/alertUrlService');
 const AlertQueue = require('../../src/queues/alert.queue');
 const GLADPresenter = require('../../src/presenters/gladPresenter');
 
@@ -120,7 +121,18 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=423e5dfb0448e692f97b590c61f45f22&lang=en`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+                        subscriptionOne,
+                        {
+                            name: 'umd_as_it_happens',
+                            slug: 'glad-alerts',
+                            subscription: true,
+                            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        },
+                        beginDate,
+                        endDate,
+                    ));
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
@@ -205,7 +217,18 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=423e5dfb0448e692f97b590c61f45f22&lang=fr`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+                        subscriptionOne,
+                        {
+                            name: 'umd_as_it_happens',
+                            slug: 'glad-alerts',
+                            subscription: true,
+                            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        },
+                        beginDate,
+                        endDate,
+                    ));
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
@@ -289,7 +312,18 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&geostore=423e5dfb0448e692f97b590c61f45f22&lang=zh`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+                        subscriptionOne,
+                        {
+                            name: 'umd_as_it_happens',
+                            slug: 'glad-alerts',
+                            subscription: true,
+                            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        },
+                        beginDate,
+                        endDate,
+                    ));
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
@@ -377,7 +411,18 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/IDN/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&lang=en`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+                        subscriptionOne,
+                        {
+                            name: 'umd_as_it_happens',
+                            slug: 'glad-alerts',
+                            subscription: true,
+                            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        },
+                        beginDate,
+                        endDate,
+                    ));
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('ISO Code: IDN');
@@ -465,7 +510,18 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/IDN-3/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&lang=en`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+                        subscriptionOne,
+                        {
+                            name: 'umd_as_it_happens',
+                            slug: 'glad-alerts',
+                            subscription: true,
+                            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        },
+                        beginDate,
+                        endDate,
+                    ));
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('ISO Code: IDN, ID1: 3');
@@ -553,7 +609,18 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/BRA-1-1/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&lang=en`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+                        subscriptionOne,
+                        {
+                            name: 'umd_as_it_happens',
+                            slug: 'glad-alerts',
+                            subscription: true,
+                            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        },
+                        beginDate,
+                        endDate,
+                    ));
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('ISO Code: BRA, ID1: 1, ID2: 1');
@@ -641,7 +708,18 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&wdpaid=1&lang=en`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+                        subscriptionOne,
+                        {
+                            name: 'umd_as_it_happens',
+                            slug: 'glad-alerts',
+                            subscription: true,
+                            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        },
+                        beginDate,
+                        endDate,
+                    ));
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('WDPA ID: 1');
@@ -729,7 +807,18 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('alert_count').and.equal(51);
                     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
                     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-                    jsonMessage.data.should.have.property('alert_link').and.equal(`http://staging.globalforestwatch.org/map/3/0/0/ALL/grayscale/umd_as_it_happens?begin=${moment(beginDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}&fit_to_geom=true&use=gfw_logging&useid=29407&lang=en`);
+                    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+                        subscriptionOne,
+                        {
+                            name: 'umd_as_it_happens',
+                            slug: 'glad-alerts',
+                            subscription: true,
+                            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        },
+                        beginDate,
+                        endDate,
+                    ));
                     jsonMessage.data.should.have.property('alert_name').and.equal(subscriptionOne.name);
                     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('selected_area').and.equal('Custom Area');
