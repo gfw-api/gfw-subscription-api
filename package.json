@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.90.0",
+    "btoa": "^1.2.1",
     "bunyan": "^1.8.12",
     "cartodb": "^0.5.1",
     "config": "1.19.0",
@@ -48,6 +49,7 @@
     "mongoose": "^5.7.12",
     "mongoose-paginate": "^5.0.3",
     "mustache": "^3.1.0",
+    "qs": "^6.9.3",
     "redis": "^2.8.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8",

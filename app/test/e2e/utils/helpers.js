@@ -112,32 +112,35 @@ const validRedisMessage = (data = {}) => async (channel, message) => {
     messageData.sender.should.equal(application);
 };
 
-const createDatasetWithWebHook = async (url) => {
-    await new Subscription(createSubscription(ROLES.USER.id, 'viirs-active-fires', {
-        datasetsQuery: [{ id: 'viirs-active-fires', type: 'dataset' }],
+const createDatasetWithWebHook = async (url, extraMock = false) => {
+    await new Subscription(createSubscription(ROLES.USER.id, 'glad-alerts', {
+        datasetsQuery: [{ id: 'glad-alerts', type: 'dataset' }],
         resource: { content: url, type: 'URL' },
     })).save();
 
-    nock(process.env.CT_URL)
-        .get('/v1/dataset/viirs-active-fires')
-        .reply(200, {
-            data: {
-                attributes: {
-                    subscribable: { dataset: { subscriptionQuery: '' } },
-                    tableName: 'test',
+    if (extraMock) {
+        nock(process.env.CT_URL)
+            .get('/v1/glad-alerts/')
+            .query(() => true)
+            .reply(200, {
+                data: {
+                    attributes: {
+                        areaHa: 22435351.3660182,
+                        downloadUrls: {
+                            // eslint-disable-next-line max-len
+                            csv: '/glad-alerts/download/?period=2020-02-22,2020-03-04&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv',
+                            // eslint-disable-next-line max-len
+                            json: '/glad-alerts/download/?period=2020-02-22,2020-03-04&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json'
+                        },
+                        value: 5
+                    },
+                    gladConfirmOnly: false,
+                    id: '20892bc2-5601-424d-8a4a-605c319418a2',
+                    period: '2020-02-22,2020-03-04',
+                    type: 'glad-alerts'
                 }
-            }
-        });
-
-    nock(process.env.CT_URL)
-        .get('/v1/query')
-        .query(() => true)
-        .reply(200, { data: [{ value: 10000 }] });
-
-    nock(process.env.CT_URL)
-        .get('/v1/dataset/viirs-active-fires/metadata')
-        .query(() => true)
-        .reply(200, { data: [{ attributes: { info: { name: 'metatest' } } }] });
+            });
+    }
 };
 
 module.exports = {
