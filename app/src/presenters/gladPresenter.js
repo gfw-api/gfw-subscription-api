@@ -98,8 +98,10 @@ class GLADPresenter {
             results.week_end = endDate.format('DD/MM/YYYY');
             results.glad_count = alerts.data.reduce((acc, curr) => acc + curr.alert__count, 0);
             results.alert_count = alerts.data.reduce((acc, curr) => acc + curr.alert__count, 0);
-            results.download_csv = `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`;
-            results.download_json = `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`;
+            results.downloadUrls = {
+                csv: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`,
+                json: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`,
+            };
 
             // Calculate alerts grouped by area types
             let intactForestAlerts = 0;
@@ -136,15 +138,6 @@ class GLADPresenter {
             const otherAlerts = results.glad_count - intactForestAlerts - primaryForestAlerts - peatAlerts - protectedAreasAlerts - plantationAlerts;
 
             results.priority_areas = {
-                intact_forest: intactForestAlerts,
-                primary_forest: primaryForestAlerts,
-                peat: peatAlerts,
-                protected_areas: protectedAreasAlerts,
-                plantations: plantationAlerts,
-                other: otherAlerts,
-            };
-
-            results.glad_alerts = {
                 intact_forest: intactForestAlerts,
                 primary_forest: primaryForestAlerts,
                 peat: peatAlerts,
