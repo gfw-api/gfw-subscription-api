@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.90.0",
+    "btoa": "^1.2.1",
     "bunyan": "^1.8.12",
     "cartodb": "^0.5.1",
     "config": "1.19.0",

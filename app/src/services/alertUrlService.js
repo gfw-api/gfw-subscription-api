@@ -1,4 +1,5 @@
 const config = require('config');
+const btoa = require('btoa');
 
 const BASE_URL = config.get('gfw.flagshipUrl');
 const GADM36_DATASET = config.get('layers.gadm36BoundariesDataset');
@@ -7,6 +8,8 @@ const GADM36_LAYER_2 = config.get('layers.gadm36BoundariesLayer2');
 
 const qs = require('qs');
 const moment = require('moment');
+
+const endocdeStateForUrl = (state) => btoa(JSON.stringify(state));
 
 class AlertUrlService {
 
@@ -30,7 +33,7 @@ class AlertUrlService {
 
         const queryForUrl = {
             lang: subscription.language || 'en',
-            map: {
+            map: endocdeStateForUrl({
                 canBound: true,
                 ...layer.datasetId && layer.layerId && {
                     datasets: [
@@ -56,10 +59,10 @@ class AlertUrlService {
                         }
                     ]
                 }
-            },
-            mainMap: {
+            }),
+            mainMap: endocdeStateForUrl({
                 showAnalysis: true
-            }
+            })
         };
 
         return `${BASE_URL}/map/${pathname}?${qs.stringify(queryForUrl)}`;
