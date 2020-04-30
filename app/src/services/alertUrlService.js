@@ -14,21 +14,6 @@ const endocdeStateForUrl = (state) => btoa(JSON.stringify(state));
 class AlertUrlService {
 
     static generate(subscription, layer, begin, end) {
-        let pathname = `aoi/${subscription.id}`;
-
-        if (subscription.params.iso && subscription.params.iso.country) {
-            const { country, region, subregion } = subscription.params.iso;
-            pathname = `country/${country}${region ? `/${region}` : ''}${subregion ? `/${subregion}` : ''}`;
-        }
-
-        if (subscription.params.wdpaid) {
-            pathname = `wdpa/${subscription.params.wdpaid}`;
-        }
-
-        if (subscription.params.use && subscription.params.useid) {
-            pathname = `use/${subscription.params.use}/${subscription.params.useid}`;
-        }
-
         const diffInDays = moment(begin).diff(moment(end), 'days');
 
         const queryForUrl = {
@@ -65,7 +50,7 @@ class AlertUrlService {
             })
         };
 
-        return `${BASE_URL}/map/${pathname}?${qs.stringify(queryForUrl)}`;
+        return `${BASE_URL}/map/aoi/${subscription.id}?${qs.stringify(queryForUrl)}`;
     }
 
 }
