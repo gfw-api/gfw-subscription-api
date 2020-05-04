@@ -515,8 +515,8 @@ describe('AlertQueue ', () => {
         await createDatasetWithWebHook('http://www.webhook.com');
         createMockAlertsQuery(3);
 
-        // This mock should not be needed (i.e., the web-hook is not called)
-        // nock('http://www.webhook.com').post('/').query(() => true).reply(400);
+        // If this mock is not used (i.e., the web-hook is not called), the test will fail
+        nock('http://www.webhook.com').post('/').query(() => true).reply(400);
 
         process.on('unhandledRejection', (error) => { should.fail(error); });
 
