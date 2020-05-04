@@ -3,8 +3,8 @@ const _ = require('lodash');
 const logger = require('logger');
 const moment = require('moment');
 const config = require('config');
-const ctRegisterMicroservice = require('ct-register-microservice-node');
 const GeostoreService = require('../services/geostoreService');
+const GLADAlertsService = require('../services/gladAlertsService');
 
 class GLADPresenter {
 
@@ -73,21 +73,19 @@ class GLADPresenter {
     static async transform(results, layer, subscription, begin, end) {
         GLADPresenter.updateMonthTranslations();
         moment.locale(subscription.language || 'en');
-        const startDate = moment(begin);
-        const endDate = moment(end);
-        const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
-        const sql = `SELECT * FROM data WHERE alert__date > '${startDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}' AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
-        const uri = `/query/${config.get('datasets.gladAlertsDataset')}?sql=${sql}`;
 
-        const lastYearStartDate = moment(begin).subtract('1', 'y');
-        const lastYearEndDate = moment(end).subtract('1', 'y');
-        const lastYearSQL = `SELECT * FROM data WHERE alert__date > '${lastYearStartDate.format('YYYY-MM-DD')}' AND alert__date < '${lastYearEndDate.format('YYYY-MM-DD')}' AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
-        const lastYearURI = `/query/${config.get('datasets.gladAlertsDataset')}?sql=${lastYearSQL}`;
-
-        logger.debug('Last alerts endpoint ', uri);
         try {
-            const alerts = await ctRegisterMicroservice.requestToMicroservice({ uri, method: 'GET', json: true });
-            results.alerts = alerts.data.map((el) => ({
+            const startDate = moment(begin);
+            const endDate = moment(end);
+            const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
+
+            const alerts = await GLADAlertsService.getAnalysisInPeriodForGeostore(
+                startDate.format('YYYY-MM-DD'),
+                endDate.format('YYYY-MM-DD'),
+                geostoreId
+            );
+
+            results.alerts = alerts.map((el) => ({
                 alert_type: 'GLAD',
                 date: `${moment(el.alert__date).format('DD/MM/YYYY HH:MM')} UTC`,
             }));
@@ -96,8 +94,8 @@ class GLADPresenter {
             results.week_of = `${startDate.format('DD MMM')}`;
             results.week_start = startDate.format('DD/MM/YYYY');
             results.week_end = endDate.format('DD/MM/YYYY');
-            results.glad_count = alerts.data.reduce((acc, curr) => acc + curr.alert__count, 0);
-            results.alert_count = alerts.data.reduce((acc, curr) => acc + curr.alert__count, 0);
+            results.glad_count = alerts.reduce((acc, curr) => acc + curr.alert__count, 0);
+            results.alert_count = alerts.reduce((acc, curr) => acc + curr.alert__count, 0);
             results.downloadUrls = {
                 csv: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`,
                 json: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`,
@@ -112,7 +110,7 @@ class GLADPresenter {
 
             const useValueOrAlertCount = (val, count) => (Number.isInteger(val) ? Number.parseInt(val, 10) : count);
 
-            alerts.data.forEach((al) => {
+            alerts.forEach((al) => {
                 if (al.intact_forest_landscapes_2016) {
                     intactForestAlerts += useValueOrAlertCount(al.intact_forest_landscapes_2016, al.alert__count);
                 }
@@ -147,10 +145,17 @@ class GLADPresenter {
             };
 
             // Finding standard deviation of alert values
-            const lastYearAlerts = await ctRegisterMicroservice.requestToMicroservice({ uri: lastYearURI, method: 'GET', json: true });
-            const lastYearAverage = _.mean(lastYearAlerts.data.map((al) => al.alert__count));
-            const lastYearStdDev = GLADPresenter.standardDeviation(lastYearAlerts.data.map((al) => al.alert__count));
-            const currentAvg = _.mean(alerts.data.map((al) => al.alert__count));
+            const lastYearStartDate = moment(begin).subtract('1', 'y');
+            const lastYearEndDate = moment(end).subtract('1', 'y');
+            const lastYearAlerts = await GLADAlertsService.getAnalysisInPeriodForGeostore(
+                lastYearStartDate.format('YYYY-MM-DD'),
+                lastYearEndDate.format('YYYY-MM-DD'),
+                geostoreId
+            );
+
+            const lastYearAverage = _.mean(lastYearAlerts.map((al) => al.alert__count));
+            const lastYearStdDev = GLADPresenter.standardDeviation(lastYearAlerts.map((al) => al.alert__count));
+            const currentAvg = _.mean(alerts.map((al) => al.alert__count));
 
             const twoPlusStdDev = currentAvg >= lastYearAverage + (2 * lastYearStdDev);
             const plusStdDev = (currentAvg > lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
