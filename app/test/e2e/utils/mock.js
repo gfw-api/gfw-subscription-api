@@ -44,9 +44,9 @@ const createMockLatestDataset = (datasetID, date) => nock(process.env.CT_URL)
     .get(`/v1/${datasetID}/latest`)
     .reply(200, { data: { date } });
 
-const createMockAlertsQuery = (datasetId, times = 1) => {
+const createMockAlertsQuery = (times = 1, overrideData = {}) => {
     nock(process.env.CT_URL)
-        .get(`/v1/query/${datasetId}`)
+        .get(`/v1/query/${config.get('datasets.gladAlertsDataset')}`)
         .query(() => true)
         .times(times)
         .reply(200, {
@@ -218,11 +218,11 @@ const createMockAlertsQuery = (datasetId, times = 1) => {
             meta: {
                 cloneUrl: {
                     http_method: 'POST',
-                    url: `/v1/dataset/${datasetId}/clone`,
+                    url: `/v1/dataset/${config.get('datasets.gladAlertsDataset')}/clone`,
                     body: {
                         dataset: {
                             // eslint-disable-next-line max-len
-                            datasetUrl: `/v1/query/${datasetId}?sql=SELECT%20%2A%20FROM%20data%20WHERE%20alert__date%20%3E%20%272019-10-01%27%20AND%20alert__date%20%3C%20%272020-01-01%27%20AND%20geostore__id%20%3D%20%27test%27`,
+                            datasetUrl: `/v1/query/${config.get('datasets.gladAlertsDataset')}?sql=SELECT%20%2A%20FROM%20data%20WHERE%20alert__date%20%3E%20%272019-10-01%27%20AND%20alert__date%20%3C%20%272020-01-01%27%20AND%20geostore__id%20%3D%20%27test%27`,
                             application: [
                                 'your',
                                 'apps'
@@ -230,61 +230,15 @@ const createMockAlertsQuery = (datasetId, times = 1) => {
                         }
                     }
                 }
-            }
+            },
+            ...overrideData,
         });
 };
 
-const createMockGLADAlertsForCustomRegion = (path, query = {}) => {
-    nock(process.env.CT_URL)
-        .get(`/v1/glad-alerts/${path}`)
-        .query(query)
-        .reply(200, {
-            data: {
-                attributes: {
-                    areaHa: 188087698.78700367,
-                    downloadUrls: {
-                        csv: 'http://gfw2-data.s3.amazonaws.com/alerts-tsv/glad-download/iso/IDN.csv',
-                        json: null
-                    },
-                    value: 78746908
-                },
-                gladConfirmOnly: false,
-                id: '20892bc2-5601-424d-8a4a-605c319418a2',
-                period: '2015-01-01,2020-04-22',
-                type: 'glad-alerts'
-            }
-        });
-};
-
-const createMockGLADAlertsQuery = (beginDate, endDate, geostore) => {
-    nock(process.env.CT_URL)
-        .get('/v1/glad-alerts/')
-        .query({
-            period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}`,
-            geostore,
-        })
-        .reply(200, {
-            data: {
-                attributes: {
-                    areaHa: 22435351.3660182,
-                    downloadUrls: {
-                        csv: '/glad-alerts/download/?period=2020-02-22,2020-03-04&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv',
-                        // eslint-disable-next-line max-len
-                        json: '/glad-alerts/download/?period=2020-02-22,2020-03-04&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json'
-                    },
-                    value: 5
-                },
-                gladConfirmOnly: false,
-                id: '20892bc2-5601-424d-8a4a-605c319418a2',
-                period: '2020-02-22,2020-03-04',
-                type: 'glad-alerts'
-            }
-        });
-};
-
-const createMockGeostore = (path) => {
+const createMockGeostore = (path, times = 1) => {
     nock(process.env.CT_URL)
         .get(path)
+        .times(times)
         .reply(200, {
             data: {
                 type: 'geoStore',
@@ -329,7 +283,5 @@ module.exports = {
     createMockUsers,
     createMockLatestDataset,
     createMockAlertsQuery,
-    createMockGLADAlertsQuery,
-    createMockGLADAlertsForCustomRegion,
     createMockGeostore,
 };

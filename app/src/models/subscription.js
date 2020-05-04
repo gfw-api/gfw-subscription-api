@@ -62,9 +62,7 @@ Subscription.methods.publish = async function (layerConfig, begin, end) {
         return null;
     }
 
-    let results = await AnalysisService.execute(
-        this, layerConfig.slug, begin, end
-    );
+    let results = await AnalysisService.execute(this, layerConfig.slug, begin, end);
     if (!results) {
         logger.info('Results are null. Returning');
         return null;
