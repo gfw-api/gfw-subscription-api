@@ -10,12 +10,7 @@ const redis = require('redis');
 const { getTestServer } = require('./utils/test-server');
 
 const { createSubscription } = require('./utils/helpers');
-const {
-    createMockAlertsQuery,
-    createMockGLADAlertsForCustomRegion,
-    createMockGLADAlertsQuery,
-    createMockGeostore,
-} = require('./utils/mock');
+const { createMockAlertsQuery, createMockGeostore } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 
 const AlertUrlService = require('../../src/services/alertUrlService');
@@ -76,8 +71,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapGLADAlertTest();
-        createMockGLADAlertsQuery(beginDate, endDate, '423e5dfb0448e692f97b590c61f45f22');
-        createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
+        createMockAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -141,7 +135,7 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('downloadUrls');
                     jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv`);
                     jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json`);
-                    jsonMessage.data.should.have.property('value').and.equal(5);
+                    jsonMessage.data.should.have.property('value').and.equal(51);
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStats(jsonMessage, subscriptionOne);
@@ -170,8 +164,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapGLADAlertTest();
-        createMockGLADAlertsQuery(beginDate, endDate, '423e5dfb0448e692f97b590c61f45f22');
-        createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
+        createMockAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -237,7 +230,7 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('downloadUrls');
                     jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv`);
                     jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json`);
-                    jsonMessage.data.should.have.property('value').and.equal(5);
+                    jsonMessage.data.should.have.property('value').and.equal(51);
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStats(jsonMessage, subscriptionOne);
@@ -266,8 +259,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapGLADAlertTest();
-        createMockGLADAlertsQuery(beginDate, endDate, '423e5dfb0448e692f97b590c61f45f22');
-        createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
+        createMockAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -332,7 +324,7 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('downloadUrls');
                     jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv`);
                     jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json`);
-                    jsonMessage.data.should.have.property('value').and.equal(5);
+                    jsonMessage.data.should.have.property('value').and.equal(51);
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStats(jsonMessage, subscriptionOne);
@@ -361,12 +353,8 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapGLADAlertTest();
-        createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
-        createMockGeostore('/v2/geostore/admin/IDN');
-        createMockGLADAlertsForCustomRegion(
-            'admin/IDN',
-            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` }
-        );
+        createMockAlertsQuery(3);
+        createMockGeostore('/v2/geostore/admin/IDN', 2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -431,7 +419,7 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('downloadUrls');
                     jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
                     jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
-                    jsonMessage.data.should.have.property('value').and.equal(78746908);
+                    jsonMessage.data.should.have.property('value').and.equal(51);
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStats(jsonMessage, subscriptionOne);
@@ -460,12 +448,8 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapGLADAlertTest();
-        createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
-        createMockGeostore('/v2/geostore/admin/IDN/3');
-        createMockGLADAlertsForCustomRegion(
-            'admin/IDN/3',
-            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` }
-        );
+        createMockAlertsQuery(3);
+        createMockGeostore('/v2/geostore/admin/IDN/3', 2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -530,7 +514,7 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('downloadUrls');
                     jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
                     jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
-                    jsonMessage.data.should.have.property('value').and.equal(78746908);
+                    jsonMessage.data.should.have.property('value').and.equal(51);
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStats(jsonMessage, subscriptionOne);
@@ -559,12 +543,8 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapGLADAlertTest();
-        createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
-        createMockGeostore('/v2/geostore/admin/BRA/1/1');
-        createMockGLADAlertsForCustomRegion(
-            'admin/BRA/1/1',
-            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` }
-        );
+        createMockAlertsQuery(3);
+        createMockGeostore('/v2/geostore/admin/BRA/1/1', 2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -629,7 +609,7 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('downloadUrls');
                     jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
                     jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
-                    jsonMessage.data.should.have.property('value').and.equal(78746908);
+                    jsonMessage.data.should.have.property('value').and.equal(51);
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStats(jsonMessage, subscriptionOne);
@@ -658,12 +638,8 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapGLADAlertTest();
-        createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
-        createMockGeostore('/v2/geostore/wdpa/1');
-        createMockGLADAlertsForCustomRegion(
-            'wdpa/1',
-            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` }
-        );
+        createMockAlertsQuery(3);
+        createMockGeostore('/v2/geostore/wdpa/1', 2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -728,7 +704,7 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('downloadUrls');
                     jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
                     jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
-                    jsonMessage.data.should.have.property('value').and.equal(78746908);
+                    jsonMessage.data.should.have.property('value').and.equal(51);
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStats(jsonMessage, subscriptionOne);
@@ -757,12 +733,8 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapGLADAlertTest();
-        createMockAlertsQuery(config.get('datasets.gladAlertsDataset'), 2);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407');
-        createMockGLADAlertsForCustomRegion(
-            'use/gfw_logging/29407',
-            { period: `${beginDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}` }
-        );
+        createMockAlertsQuery(3);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -827,10 +799,48 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('downloadUrls');
                     jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=csv`);
                     jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=f98f505878dcee72a2e92e7510a07d6f&format=json`);
-                    jsonMessage.data.should.have.property('value').and.equal(78746908);
+                    jsonMessage.data.should.have.property('value').and.equal(51);
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStats(jsonMessage, subscriptionOne);
+                    break;
+                default:
+                    should.fail('Unsupported message type: ', jsonMessage.template);
+                    break;
+
+            }
+        });
+
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'glad-alerts',
+            begin_date: beginDate,
+            end_date: endDate
+        }));
+    });
+
+    it('No email is sent if there no alerts are returned by the glad alerts query', async () => {
+        await new Subscription(createSubscription(
+            ROLES.USER.id,
+            'glad-alerts',
+            { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
+        )).save();
+
+        const { beginDate, endDate } = bootstrapGLADAlertTest();
+        createMockAlertsQuery(1, { data: [] });
+
+        redisClient.on('message', (channel, message) => {
+            const jsonMessage = JSON.parse(message);
+            jsonMessage.should.have.property('template');
+            switch (jsonMessage.template) {
+
+                case 'subscriptions-stats':
+                    jsonMessage.should.have.property('sender').and.equal('gfw');
+                    jsonMessage.should.have.property('data').and.be.a('object');
+                    jsonMessage.data.should.have.property('counter').and.equal(0);
+                    jsonMessage.data.should.have.property('dataset').and.equal('glad-alerts');
+                    jsonMessage.data.should.have.property('users').and.be.an('array').and.length(0);
+                    jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
+                    jsonMessage.recipients[0].should.be.an('object').and.have.property('address').and.have.property('email').and.equal('info@vizzuality.com');
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);

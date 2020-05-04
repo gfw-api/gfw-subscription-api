@@ -1,23 +1,12 @@
-const config = require('config');
-
-const BASE_URL_API = config.get('gfw.apiUrl');
-
-class GladAdapter {
+module.exports = class GladAdapter {
 
     constructor(results) {
         this.results = results;
     }
 
     transform() {
-        return {
-            value: this.results.value,
-            downloadUrls: {
-                csv: `${BASE_URL_API}${this.results.downloadUrls.csv}`,
-                json: `${BASE_URL_API}${this.results.downloadUrls.json}`
-            }
-        };
+        const value = this.results.reduce((acc, curr) => acc + curr.alert__count, 0);
+        return { value };
     }
 
-}
-
-module.exports = GladAdapter;
+};
