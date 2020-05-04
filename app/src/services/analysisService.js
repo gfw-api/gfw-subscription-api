@@ -1,10 +1,11 @@
 const logger = require('logger');
-const AnalysisClassifier = require('services/analysisClassifier');
-
+const moment = require('moment');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
-const moment = require('moment');
+const AnalysisClassifier = require('services/analysisClassifier');
+const GLADAlertsService = require('services/gladAlertsService');
+const GeostoreService = require('services/geostoreService');
 
 const formatDate = (date) => moment(date).format('YYYY-MM-DD');
 
@@ -28,15 +29,20 @@ class AnalysisService {
         const url = `/${layerSlug}${path}`;
         logger.debug('subscription id: ', subscription._id, 'Url ', url, 'and query ', query);
         try {
+            // Override results in the case of glad-alerts
+            if (layerSlug === 'glad-alerts') {
+                const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
+                return await GLADAlertsService.getAnalysisInPeriodForGeostore(formatDate(begin), formatDate(end), geostoreId);
+            }
+
             const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: url,
                 method: 'GET',
                 json: true,
                 qs: query
             });
-            return await new JSONAPIDeserializer({
-                keyForAttribute: 'camelCase'
-            }).deserialize(result);
+
+            return await new JSONAPIDeserializer({ keyForAttribute: 'camelCase' }).deserialize(result);
         } catch (e) {
             logger.error(e);
             return null;

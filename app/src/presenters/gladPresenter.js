@@ -3,8 +3,8 @@ const _ = require('lodash');
 const logger = require('logger');
 const moment = require('moment');
 const config = require('config');
-const GeostoreService = require('../services/geostoreService');
-const GLADAlertsService = require('../services/gladAlertsService');
+const GeostoreService = require('services/geostoreService');
+const GLADAlertsService = require('services/gladAlertsService');
 
 class GLADPresenter {
 
