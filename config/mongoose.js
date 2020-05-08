@@ -3,9 +3,7 @@ const mongooseOptions = {
     useFindAndModify: false,
     useCreateIndex: true,
     useUnifiedTopology: true,
-    db: {
-        readPreference: 'secondaryPreferred'
-    }
+    readPreference: 'secondaryPreferred'
 };
 
 module.exports = mongooseOptions;
