@@ -131,6 +131,9 @@ async function init() {
         }
 
         logger.info(`Connecting to MongoDB URL ${mongoUri}`);
+        if (config.get('logger.level') === 'debug') {
+            mongoose.set('debug', true);
+        }
         mongoose.connect(mongoUri, mongooseOptions, onDbReady);
     });
 }
