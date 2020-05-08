@@ -2,8 +2,7 @@ const mongooseOptions = {
     useNewUrlParser: true,
     useFindAndModify: false,
     useCreateIndex: true,
-    useUnifiedTopology: true,
-    readPreference: 'secondaryPreferred'
+    useUnifiedTopology: true
 };
 
 module.exports = mongooseOptions;
