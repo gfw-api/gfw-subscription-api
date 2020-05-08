@@ -11,6 +11,7 @@ const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 class StatisticsService {
 
     static async getUsers(startDate, endDate) {
+        logger.info('[StatisticsService] Loading users');
         try {
             const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: `/user/obtain/all-users?start=${startDate.toISOString().substring(0, 10)}&end=${endDate.toISOString().substring(0, 10)}`,
