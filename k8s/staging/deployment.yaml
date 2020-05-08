@@ -36,8 +36,6 @@ spec:
         env:
           - name: PORT
             value: "3600"
-          - name: LOGGER_LEVEL
-            value: "debug"
           - name: NODE_ENV
             value: staging
           - name: NODE_PATH
