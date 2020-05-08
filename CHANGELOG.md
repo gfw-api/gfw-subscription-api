@@ -1,3 +1,10 @@
+# v.1.4.1
+
+## 08/05/2020
+
+- Rollback mongoose to 4.x and configure reads to prefer secondary mongodb servers
+
+
 # v.1.4.0
 
 ## 23/04/2020
