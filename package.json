@@ -46,7 +46,7 @@
     "koa-validate": "^1.0.7",
     "lodash": "^4.17.15",
     "moment": "^2.13.0",
-    "mongoose": "^4.13.20",
+    "mongoose": "^5.9.13",
     "mongoose-paginate": "^5.0.3",
     "mustache": "^3.1.0",
     "qs": "^6.9.3",
