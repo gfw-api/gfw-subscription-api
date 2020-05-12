@@ -20,21 +20,22 @@ let retries = 10;
 
 if (config.get('logger.level') === 'debug') {
     logger.debug('Setting mongoose debug logging on');
+
     mongoose.set('debug', true);
+    mongoose.connection.on('connecting', () => {
+        logger.debug('Mongoose attempting to connect');
+    });
+    mongoose.connection.on('connected', () => {
+        logger.debug('Mongoose connected to the initial server');
+    });
+    mongoose.connection.on('fullsetup', () => {
+        logger.debug('Mongoose connected to the primary server and at least a secondary server');
+    });
+    mongoose.connection.on('all', () => {
+        logger.debug('Mongoose connected to all servers');
+    });
 }
 
-mongoose.connection.on('connecting', () => {
-    logger.debug('Mongoose attempting to connect');
-});
-mongoose.connection.on('connected', () => {
-    logger.debug('Mongoose connected to the initial server');
-});
-mongoose.connection.on('fullsetup', () => {
-    logger.debug('Mongoose connected to the primary server and at least a secondary server');
-});
-mongoose.connection.on('all', () => {
-    logger.debug('Mongoose connected to all servers');
-});
 
 async function init() {
     return new Promise((resolve, reject) => {
