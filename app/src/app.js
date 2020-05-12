@@ -19,8 +19,22 @@ const mongoUri = process.env.MONGO_URI || `mongodb://${config.get('mongodb.host'
 let retries = 10;
 
 if (config.get('logger.level') === 'debug') {
+    logger.debug('Setting mongoose debug logging on');
     mongoose.set('debug', true);
 }
+
+mongoose.connection.on('connecting', () => {
+    logger.debug('Mongoose attempting to connect');
+});
+mongoose.connection.on('connected', () => {
+    logger.debug('Mongoose connected to the initial server');
+});
+mongoose.connection.on('fullsetup', () => {
+    logger.debug('Mongoose connected to the primary server and at least a secondary server');
+});
+mongoose.connection.on('all', () => {
+    logger.debug('Mongoose connected to all servers');
+});
 
 async function init() {
     return new Promise((resolve, reject) => {
@@ -29,6 +43,7 @@ async function init() {
                 if (retries >= 0) {
                     retries--;
                     logger.error(`Failed to connect to MongoDB uri ${mongoUri}, retrying...`);
+                    logger.debug(mongoConnectionError);
                     sleep.sleep(5);
                     mongoose.connect(mongoUri, mongooseOptions, onDbReady);
                 } else {
@@ -135,20 +150,6 @@ async function init() {
         }
 
         logger.info(`Connecting to MongoDB URL ${mongoUri}`);
-
-        mongoose.connection.on('connecting', () => {
-            logger.debug('Mongoose attempting to connect');
-        });
-        mongoose.connection.on('connected', () => {
-            logger.debug('Mongoose connected to the initial server');
-        });
-        mongoose.connection.on('fullsetup', () => {
-            logger.debug('Mongoose connected to the primary server and at least a secondary server');
-        });
-        mongoose.connection.on('all', () => {
-            logger.debug('Mongoose connected to all servers');
-        });
-
 
         mongoose.connect(mongoUri, mongooseOptions, onDbReady);
     });
