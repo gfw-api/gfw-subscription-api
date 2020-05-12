@@ -156,6 +156,7 @@ class SubscriptionService {
         if (application) filter.application = application;
         if (env) filter.env = env;
 
+        logger.debug(`[SubscriptionService - getSubscriptionsForUser] - loading subscriptions for filter ${JSON.stringify(filter)}`);
         const subscriptions = await Subscription.find(filter).exec();
         return SubscriptionSerializer.serialize(subscriptions);
     }

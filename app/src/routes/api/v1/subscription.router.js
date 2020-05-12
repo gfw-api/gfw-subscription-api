@@ -76,7 +76,7 @@ class SubscriptionsRouter {
 
     static async getSubscriptions(ctx) {
         const user = JSON.parse(ctx.request.query.loggedUser);
-        logger.info('Getting subscription for used ', user.id);
+        logger.info('Getting subscription for user ', user.id);
 
         try {
             ctx.body = await SubscriptionService.getSubscriptionsForUser(user.id, ctx.query.application || 'gfw', ctx.query.env || 'production');
