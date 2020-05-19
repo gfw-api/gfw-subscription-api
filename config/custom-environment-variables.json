@@ -24,7 +24,8 @@
   "mongodb": {
     "host": "MONGO_PORT_27017_TCP_ADDR",
     "database": "MONGO_PORT_27017_TCP_DATABASE",
-    "port": "MONGO_PORT_27017_TCP_PORT"
+    "port": "MONGO_PORT_27017_TCP_PORT",
+    "useUnifiedTopology": "MONGO_USE_UNIFIED_TOPOLOGY"
   },
   "migrate": {
     "uri": "MIGRATE_URI"

@@ -1,3 +1,11 @@
+# v.1.4.2
+
+## 19/05/2020
+
+- Upgrade `mongoose` to v5.x
+- Use secondary mongo nodes for read operations.
+- Disable mongo unified topology.
+
 # v.1.4.1
 
 ## 08/05/2020
