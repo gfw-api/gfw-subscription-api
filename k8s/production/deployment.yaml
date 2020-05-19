@@ -44,6 +44,8 @@ spec:
             value: app/src
           - name: LOCAL_URL
             value: http://subscriptions.gfw.svc.cluster.local:3600
+          - name: MONGO_USE_UNIFIED_TOPOLOGY
+            value: "false"
           - name: MONGO_URI
             valueFrom:
                 secretKeyRef:

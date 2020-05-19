@@ -1,7 +1,7 @@
 {
   "logger": {
     "name": "gfw-subscription-api-DEV",
-    "level": "debug",
+    "level": "info",
     "toFile": false,
     "dirLogFile": null
   },
@@ -23,7 +23,8 @@
   "mongodb": {
     "database": "gfw_subscription_db",
     "host": "localhost",
-    "port": 27017
+    "port": 27017,
+    "useUnifiedTopology": true
   },
   "migrate": {
     "uri": ""
