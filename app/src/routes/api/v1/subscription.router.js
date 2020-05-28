@@ -290,7 +290,7 @@ class SubscriptionsRouter {
         const apiVersion = ctx.mountPath.split('/')[ctx.mountPath.split('/').length - 1];
         const link = `${ctx.request.protocol}://${ctx.request.host}/${apiVersion}${ctx.request.path}${serializedQuery}`;
 
-        ctx.body = await SubscriptionService.getAllSubscriptions(
+        const subscriptions = await SubscriptionService.getAllSubscriptions(
             link,
             ctx.request.query.application,
             ctx.request.query.env,
@@ -299,6 +299,9 @@ class SubscriptionsRouter {
             updatedAtSince,
             updatedAtUntil,
         );
+
+        logger.info(`[SubscriptionsRouter] Subscriptions loaded, returning`);
+        ctx.body = subscriptions;
     }
 
 }
