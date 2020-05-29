@@ -1,6 +1,8 @@
 const Router = require('koa-router');
 const UrlService = require('services/urlService');
 const logger = require('logger');
+const moment = require('moment');
+const mongoose = require('mongoose');
 const request = require('request-promise-native');
 const Subscription = require('models/subscription');
 const SubscriptionService = require('services/subscriptionService');
@@ -10,6 +12,7 @@ const StatisticsService = require('services/statisticsService');
 const mailService = require('services/mailService');
 const MockService = require('services/mockService');
 const GenericError = require('errors/genericError');
+const AlertQueue = require('queues/alert.queue');
 const config = require('config');
 const redis = require('redis');
 const lodashGet = require('lodash/get');
@@ -18,7 +21,6 @@ const { USER_ROLES } = require('app.constants');
 const router = new Router({
     prefix: '/subscriptions'
 });
-const mongoose = require('mongoose');
 
 const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
 
@@ -304,6 +306,29 @@ class SubscriptionsRouter {
         ctx.body = subscriptions;
     }
 
+    static async testEmailAlert(ctx) {
+        logger.info(`[EmailAlertsRouter] Starting test email alerts.`);
+
+        const { alert, email } = ctx.request.body;
+
+        if (!['glad-alerts', 'viirs-active-fires'].includes(alert)) {
+            ctx.throw(400, 'The alert provided is not supported for testing.');
+            return;
+        }
+
+        try {
+            await AlertQueue.processMessage(null, JSON.stringify({
+                layer_slug: alert,
+                begin_date: moment().subtract('2', 'w').toDate(),
+                end_date: moment().subtract('1', 'w').toDate(),
+                email
+            }));
+            ctx.body = { success: true };
+        } catch (e) {
+            ctx.body = { success: false, message: e.message };
+        }
+    }
+
 }
 
 const isAdmin = async (ctx, next) => {
@@ -404,6 +429,7 @@ router.get('/:id/unsubscribe', subscriptionExists(), SubscriptionsRouter.unsubsc
 router.patch('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.updateSubscription);
 router.delete('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
+router.post('/test-email-alerts', isAdmin, SubscriptionsRouter.testEmailAlert);
 router.post('/check-hook', SubscriptionsRouter.checkHook);
 router.get('/user/:userId', validateMicroserviceAuth, SubscriptionsRouter.findUserSubscriptions);
 router.post('/find-by-ids', validateMicroserviceAuth, SubscriptionsRouter.findByIds);
