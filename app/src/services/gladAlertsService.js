@@ -14,8 +14,8 @@ class GLADAlertsService {
      * @returns {string} The URL that should be used to fetch the alerts.
      */
     static getURLInPeriodForGeostore(startDate, endDate, geostoreId) {
-        // eslint-disable-next-line max-len
-        const sql = `SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}' AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
+        const sql = `SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}' `
+            + `AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
         return `/query/${config.get('datasets.gladAlertsDataset')}?sql=${sql}`;
     }
 

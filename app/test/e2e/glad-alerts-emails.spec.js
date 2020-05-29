@@ -1,21 +1,20 @@
 /* eslint-disable max-len */
-
 const chai = require('chai');
 const nock = require('nock');
 const config = require('config');
 const moment = require('moment');
+const redis = require('redis');
+
 const Subscription = require('models/subscription');
 const Statistic = require('models/statistic');
-const redis = require('redis');
-const { getTestServer } = require('./utils/test-server');
+const AlertUrlService = require('services/alertUrlService');
+const AlertQueue = require('queues/alert.queue');
+const EmailHelpersService = require('services/emailHelpersService');
 
+const { getTestServer } = require('./utils/test-server');
 const { createSubscription } = require('./utils/helpers');
 const { createMockAlertsQuery, createMockGeostore } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
-
-const AlertUrlService = require('../../src/services/alertUrlService');
-const AlertQueue = require('../../src/queues/alert.queue');
-const GLADPresenter = require('../../src/presenters/gladPresenter');
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -155,7 +154,7 @@ describe('GLAD alert emails', () => {
     });
 
     it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (FR)', async () => {
-        GLADPresenter.updateMonthTranslations();
+        EmailHelpersService.updateMonthTranslations();
         moment.locale('fr');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
@@ -250,7 +249,7 @@ describe('GLAD alert emails', () => {
     });
 
     it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (ZH)', async () => {
-        GLADPresenter.updateMonthTranslations();
+        EmailHelpersService.updateMonthTranslations();
         moment.locale('zh');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
@@ -344,7 +343,7 @@ describe('GLAD alert emails', () => {
     });
 
     it('GLAD alert emails for subscriptions that refer to an ISO code work as expected', async () => {
-        GLADPresenter.updateMonthTranslations();
+        EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
@@ -439,7 +438,7 @@ describe('GLAD alert emails', () => {
     });
 
     it('GLAD alert emails for subscriptions that refer to an ISO region work as expected', async () => {
-        GLADPresenter.updateMonthTranslations();
+        EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
@@ -534,7 +533,7 @@ describe('GLAD alert emails', () => {
     });
 
     it('GLAD alert emails for subscriptions that refer to an ISO subregion work as expected', async () => {
-        GLADPresenter.updateMonthTranslations();
+        EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
@@ -629,7 +628,7 @@ describe('GLAD alert emails', () => {
     });
 
     it('GLAD alert emails for subscriptions that refer to a WDPA ID work as expected', async () => {
-        GLADPresenter.updateMonthTranslations();
+        EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
@@ -724,7 +723,7 @@ describe('GLAD alert emails', () => {
     });
 
     it('GLAD alert emails for subscriptions that refer to a USE ID work as expected', async () => {
-        GLADPresenter.updateMonthTranslations();
+        EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,

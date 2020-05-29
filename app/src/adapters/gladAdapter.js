@@ -1,4 +1,4 @@
-module.exports = class GladAdapter {
+class GladAdapter {
 
     constructor(results) {
         this.results = results;
@@ -9,4 +9,6 @@ module.exports = class GladAdapter {
         return { value };
     }
 
-};
+}
+
+module.exports = GladAdapter;
