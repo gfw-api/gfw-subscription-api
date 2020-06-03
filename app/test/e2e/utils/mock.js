@@ -237,20 +237,44 @@ const createMockAlertsQuery = (times = 1, overrideData = {}) => {
 
 const createMockViirsAlertsQuery = (times = 1, overrideData = {}) => {
     nock(process.env.CT_URL)
-        .get(`/v1/query/${config.get('layers.viirsLayerDataset')}`)
+        .get(`/v1/query/${config.get('datasets.viirsAlertsDataset')}`)
         .query(() => true)
         .times(times)
         .reply(200, {
             data: [
                 {
                     geostore__id: '637f00132248b231bb719f3bc5b07308',
-                    alert__date: '2018-10-15',
+                    alert__date: '2019-10-10',
                     confidence__cat: 'l',
-                    wdpa_protected_area__iucn_cat: 'Other Category',
                     is__regional_primary_forest: false,
                     is__alliance_for_zero_extinction_site: false,
                     is__key_biodiversity_area: false,
-                    is__landmark: true,
+                    is__landmark: false,
+                    gfw_plantation__type: 0,
+                    is__gfw_mining: false,
+                    is__gfw_logging: false,
+                    rspo_oil_palm__certification_status: 0,
+                    is__gfw_wood_fiber: false,
+                    is__peat_land: false,
+                    is__idn_forest_moratorium: false,
+                    is__gfw_oil_palm: false,
+                    idn_forest_area__type: 0,
+                    per_forest_concession__type: 0,
+                    is__gfw_oil_gas: false,
+                    is__mangroves_2016: false,
+                    is__intact_forest_landscapes_2016: true,
+                    bra_biome__name: 'Amazônia',
+                    alert__count: 41,
+                    _id: 'AXFWA6FWaGY8ui3EllSB'
+                },
+                {
+                    geostore__id: '637f00132248b231bb719f3bc5b07308',
+                    alert__date: '2019-10-11',
+                    confidence__cat: 'l',
+                    is__regional_primary_forest: true,
+                    is__alliance_for_zero_extinction_site: false,
+                    is__key_biodiversity_area: false,
+                    is__landmark: false,
                     gfw_plantation__type: 0,
                     is__gfw_mining: false,
                     is__gfw_logging: false,
@@ -270,9 +294,8 @@ const createMockViirsAlertsQuery = (times = 1, overrideData = {}) => {
                 },
                 {
                     geostore__id: '637f00132248b231bb719f3bc5b07308',
-                    alert__date: '2012-10-15',
+                    alert__date: '2019-10-12',
                     confidence__cat: 'l',
-                    wdpa_protected_area__iucn_cat: 0,
                     is__regional_primary_forest: false,
                     is__alliance_for_zero_extinction_site: false,
                     is__key_biodiversity_area: false,
@@ -282,7 +305,7 @@ const createMockViirsAlertsQuery = (times = 1, overrideData = {}) => {
                     is__gfw_logging: false,
                     rspo_oil_palm__certification_status: 0,
                     is__gfw_wood_fiber: false,
-                    is__peat_land: false,
+                    is__peat_land: true,
                     is__idn_forest_moratorium: false,
                     is__gfw_oil_palm: false,
                     idn_forest_area__type: 0,
@@ -296,7 +319,7 @@ const createMockViirsAlertsQuery = (times = 1, overrideData = {}) => {
                 },
                 {
                     geostore__id: '637f00132248b231bb719f3bc5b07308',
-                    alert__date: '2016-10-16',
+                    alert__date: '2019-10-13',
                     confidence__cat: 'l',
                     wdpa_protected_area__iucn_cat: 0,
                     is__regional_primary_forest: false,
@@ -322,14 +345,13 @@ const createMockViirsAlertsQuery = (times = 1, overrideData = {}) => {
                 },
                 {
                     geostore__id: '637f00132248b231bb719f3bc5b07308',
-                    alert__date: '2016-10-17',
+                    alert__date: '2019-10-14',
                     confidence__cat: 'n',
-                    wdpa_protected_area__iucn_cat: 0,
                     is__regional_primary_forest: false,
                     is__alliance_for_zero_extinction_site: false,
                     is__key_biodiversity_area: false,
                     is__landmark: false,
-                    gfw_plantation__type: 0,
+                    gfw_plantation__type: 1,
                     is__gfw_mining: false,
                     is__gfw_logging: false,
                     rspo_oil_palm__certification_status: 0,
@@ -348,9 +370,8 @@ const createMockViirsAlertsQuery = (times = 1, overrideData = {}) => {
                 },
                 {
                     geostore__id: '637f00132248b231bb719f3bc5b07308',
-                    alert__date: '2017-12-05',
+                    alert__date: '2019-10-15',
                     confidence__cat: 'h',
-                    wdpa_protected_area__iucn_cat: 0,
                     is__regional_primary_forest: false,
                     is__alliance_for_zero_extinction_site: false,
                     is__key_biodiversity_area: false,

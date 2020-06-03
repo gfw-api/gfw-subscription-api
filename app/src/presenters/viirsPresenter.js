@@ -50,8 +50,8 @@ class ViirsPresenter {
             const useValueOrAlertCount = (val, count) => (Number.isInteger(val) ? Number.parseInt(val, 10) : count);
 
             alerts.forEach((al) => {
-                if (al.intact_forest_landscapes_2016) {
-                    intactForestAlerts += useValueOrAlertCount(al.intact_forest_landscapes_2016, al.alert__count);
+                if (al.is__intact_forest_landscapes_2016) {
+                    intactForestAlerts += useValueOrAlertCount(al.is__intact_forest_landscapes_2016, al.alert__count);
                 }
 
                 if (al.is__regional_primary_forest) {
