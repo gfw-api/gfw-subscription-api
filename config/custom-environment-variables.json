@@ -40,6 +40,7 @@
     "loadCron": "LOAD_CRON"
   },
   "datasets": {
-    "gladAlertsDataset": "NEW_GLAD_ALERTS_DATASET_ID"
+    "gladAlertsDataset": "NEW_GLAD_ALERTS_DATASET_ID",
+    "viirsAlertsDataset": "NEW_VIIRS_ALERTS_DATASET_ID"
   }
 }

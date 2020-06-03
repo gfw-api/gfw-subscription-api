@@ -6,7 +6,8 @@
     "dirLogFile": null
   },
   "datasets": {
-    "gladAlertsDataset": "9be3bf63-97fc-4bb0-b913-775ccae3cf9e"
+    "gladAlertsDataset": "9be3bf63-97fc-4bb0-b913-775ccae3cf9e",
+    "viirsAlertsDataset": "e17593fd-fdcf-40c5-8e6e-c437c9fc15a2"
   },
   "layers": {
     "gladAlertLayerDataset": "bfd1d211-8106-4393-86c3-9e1ab2ee1b9b",

@@ -1,6 +1,7 @@
 {
   "datasets": {
-    "gladAlertsDataset": "64f17d8a-49ab-4132-b6bc-55dfa48ce3d0"
+    "gladAlertsDataset": "64f17d8a-49ab-4132-b6bc-55dfa48ce3d0",
+    "viirsAlertsDataset": "e17593fd-fdcf-40c5-8e6e-c437c9fc15a2"
   },
   "layers": {
     "gladAlertLayerDataset": "bfd1d211-8106-4393-86c3-9e1ab2ee1b9b",
