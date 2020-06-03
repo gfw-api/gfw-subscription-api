@@ -5,9 +5,11 @@ const GladAdapter = require('adapters/gladAdapter');
 const StoryAdapter = require('adapters/storyAdapter');
 const Forma250Adapter = require('adapters/forma250Adapter');
 const TerraiAdapter = require('adapters/terraiAdapter');
+const ViirsAdapter = require('adapters/viirsAdapter');
 
 const ADAPTER_MAP = {
     'glad-alerts': GladAdapter,
+    'viirs-active-fires': ViirsAdapter,
     story: StoryAdapter,
     forma250GFW: Forma250Adapter,
     'terrai-alerts': TerraiAdapter

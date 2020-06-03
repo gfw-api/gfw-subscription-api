@@ -5,6 +5,7 @@ const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
 const AnalysisClassifier = require('services/analysisClassifier');
 const GLADAlertsService = require('services/gladAlertsService');
+const ViirsAlertsService = require('services/viirsAlertsService');
 const GeostoreService = require('services/geostoreService');
 
 const formatDate = (date) => moment(date).format('YYYY-MM-DD');
@@ -33,6 +34,12 @@ class AnalysisService {
             if (layerSlug === 'glad-alerts') {
                 const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
                 return await GLADAlertsService.getAnalysisInPeriodForGeostore(formatDate(begin), formatDate(end), geostoreId);
+            }
+
+            // Override results in the case of viirs-active-fires
+            if (layerSlug === 'viirs-active-fires') {
+                const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
+                return await ViirsAlertsService.getAnalysisInPeriodForGeostore(formatDate(begin), formatDate(end), geostoreId);
             }
 
             const result = await ctRegisterMicroservice.requestToMicroservice({
