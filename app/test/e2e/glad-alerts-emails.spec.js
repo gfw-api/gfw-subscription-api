@@ -856,7 +856,7 @@ describe('GLAD alert emails', () => {
     });
 
     afterEach(async () => {
-        redisClient.removeAllListeners('message');
+        redisClient.removeAllListeners();
         process.removeAllListeners('unhandledRejection');
 
         if (!nock.isDone()) {
