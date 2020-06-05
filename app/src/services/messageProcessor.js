@@ -18,7 +18,7 @@ class MessageProcessor {
 
     static getEmail(message) {
         message = JSON.parse(message);
-        return message.email ? message.email : null;
+        return message.email;
     }
 
 }
