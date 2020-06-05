@@ -9,7 +9,10 @@
     "loadCron": false
   },
   "datasets": {
-    "gladAlertsDataset": "64f17d8a-49ab-4132-b6bc-55dfa48ce3d0"
+    "gladISODataset": "61170ad0-9d6a-4347-8e58-9b551eeb341e",
+    "gladWDPADataset": "bb2a69f1-c3ca-44e3-bd3c-0d6b9fb30169",
+    "gladGeostoreDataset": "69f279f5-c5e3-4856-bd8b-2b5eceaef56a",
+    "viirsAlertsDataset": "e17593fd-fdcf-40c5-8e6e-c437c9fc15a2"
   },
   "layers": {
     "gladAlertLayerDataset": "bfd1d211-8106-4393-86c3-9e1ab2ee1b9b",
