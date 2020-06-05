@@ -1,8 +1,10 @@
 # Unreleased
 
-## 29/05/2020
+## 05/06/2020
 
 - Add endpoint for testing subscription email alerts for GLAD alerts and VIIRS Fires. [#172772548](https://www.pivotaltracker.com/story/show/172772548)
+
+- Update the datasets used by GLAD alert emails to the correct ones. [#173192978](https://www.pivotaltracker.com/story/show/173192978)
 
 # v.1.4.2
 
