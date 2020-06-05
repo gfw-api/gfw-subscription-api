@@ -44,9 +44,10 @@ const createMockLatestDataset = (datasetID, date) => nock(process.env.CT_URL)
     .get(`/v1/${datasetID}/latest`)
     .reply(200, { data: { date } });
 
-const createMockAlertsQuery = (times = 1, overrideData = {}) => {
+const createMockAlertsQuery = (times = 1, datasetId = undefined, overrideData = {}) => {
+    const id = datasetId || config.get('datasets.gladGeostoreDataset');
     nock(process.env.CT_URL)
-        .get(`/v1/query/${config.get('datasets.gladGeostoreDataset')}`)
+        .get(`/v1/query/${id}`)
         .query(() => true)
         .times(times)
         .reply(200, {
@@ -218,11 +219,11 @@ const createMockAlertsQuery = (times = 1, overrideData = {}) => {
             meta: {
                 cloneUrl: {
                     http_method: 'POST',
-                    url: `/v1/dataset/${config.get('datasets.gladGeostoreDataset')}/clone`,
+                    url: `/v1/dataset/${id}/clone`,
                     body: {
                         dataset: {
                             // eslint-disable-next-line max-len
-                            datasetUrl: `/v1/query/${config.get('datasets.gladGeostoreDataset')}?sql=SELECT%20%2A%20FROM%20data%20WHERE%20alert__date%20%3E%20%272019-10-01%27%20AND%20alert__date%20%3C%20%272020-01-01%27%20AND%20geostore__id%20%3D%20%27test%27`,
+                            datasetUrl: `/v1/query/${id}?sql=SELECT%20%2A%20FROM%20data%20WHERE%20alert__date%20%3E%20%272019-10-01%27%20AND%20alert__date%20%3C%20%272020-01-01%27%20AND%20geostore__id%20%3D%20%27test%27`,
                             application: [
                                 'your',
                                 'apps'
