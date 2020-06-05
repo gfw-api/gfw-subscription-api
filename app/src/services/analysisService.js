@@ -5,7 +5,6 @@ const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
 const AnalysisClassifier = require('services/analysisClassifier');
 const GLADAlertsService = require('services/gladAlertsService');
-const GeostoreService = require('services/geostoreService');
 
 const formatDate = (date) => moment(date).format('YYYY-MM-DD');
 
@@ -31,8 +30,7 @@ class AnalysisService {
         try {
             // Override results in the case of glad-alerts
             if (layerSlug === 'glad-alerts') {
-                const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
-                return await GLADAlertsService.getAnalysisInPeriodForGeostore(formatDate(begin), formatDate(end), geostoreId);
+                return await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
             }
 
             const result = await ctRegisterMicroservice.requestToMicroservice({

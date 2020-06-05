@@ -170,14 +170,6 @@ class SubscriptionService {
         return SubscriptionSerializer.serialize(subscriptions);
     }
 
-    static isSubscriptionISO(subscription) {
-        return subscription && subscription.params && subscription.params.iso;
-    }
-
-    static isSubscriptionWDPA(subscription) {
-        return subscription && subscription.params && subscription.params.wdpaid;
-    }
-
 }
 
 module.exports = SubscriptionService;
