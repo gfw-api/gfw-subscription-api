@@ -16,6 +16,11 @@ class MessageProcessor {
         return new Date(Date.parse(message.end_date));
     }
 
+    static getEmail(message) {
+        message = JSON.parse(message);
+        return message.email;
+    }
+
 }
 
 module.exports = MessageProcessor;

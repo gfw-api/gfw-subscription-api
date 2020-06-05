@@ -38,12 +38,20 @@ class AlertQueue {
         const end = MessageProcessor.getEndDate(message);
 
         logger.debug('[AlertQueue] Params in message', layerSlug, begin, end);
-        const subscriptions = await SubscriptionService.getSubscriptionsByLayer(
-            layerSlug
-        );
+        const subscriptions = await SubscriptionService.getSubscriptionsByLayer(layerSlug);
         logger.debug('[AlertQueue] Subscriptions obtained', subscriptions);
         logger.info('[AlertQueue] Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
         try {
+            const email = MessageProcessor.getEmail(message);
+            if (email && subscriptions[0]) {
+                const subscription = subscriptions[0];
+                subscription.resource.type = 'EMAIL';
+                subscription.resource.content = email;
+                const layer = { name: layerSlug, slug: layerSlug };
+                await subscription.publish(layer, begin, end, email);
+                return;
+            }
+
             let mailCounter = 0;
             const users = [];
             for (let i = 0, { length } = subscriptions; i < length; i++) {
