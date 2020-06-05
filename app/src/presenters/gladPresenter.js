@@ -77,12 +77,10 @@ class GLADPresenter {
         try {
             const startDate = moment(begin);
             const endDate = moment(end);
-            const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
-
-            const alerts = await GLADAlertsService.getAnalysisInPeriodForGeostore(
+            const alerts = await GLADAlertsService.getAnalysisInPeriodForSubscription(
                 startDate.format('YYYY-MM-DD'),
                 endDate.format('YYYY-MM-DD'),
-                geostoreId
+                subscription.params
             );
 
             results.alerts = alerts.map((el) => ({
@@ -96,6 +94,7 @@ class GLADPresenter {
             results.week_end = endDate.format('DD/MM/YYYY');
             results.glad_count = alerts.reduce((acc, curr) => acc + curr.alert__count, 0);
             results.alert_count = alerts.reduce((acc, curr) => acc + curr.alert__count, 0);
+            const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
             results.downloadUrls = {
                 csv: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`,
                 json: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`,
@@ -147,10 +146,10 @@ class GLADPresenter {
             // Finding standard deviation of alert values
             const lastYearStartDate = moment(begin).subtract('1', 'y');
             const lastYearEndDate = moment(end).subtract('1', 'y');
-            const lastYearAlerts = await GLADAlertsService.getAnalysisInPeriodForGeostore(
+            const lastYearAlerts = await GLADAlertsService.getAnalysisInPeriodForSubscription(
                 lastYearStartDate.format('YYYY-MM-DD'),
                 lastYearEndDate.format('YYYY-MM-DD'),
-                geostoreId
+                subscription.params
             );
 
             const lastYearAverage = _.mean(lastYearAlerts.map((al) => al.alert__count));
