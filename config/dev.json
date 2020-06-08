@@ -1,15 +1,15 @@
 {
   "datasets": {
-    "gladISODataset": "61170ad0-9d6a-4347-8e58-9b551eeb341e",
-    "gladWDPADataset": "bb2a69f1-c3ca-44e3-bd3c-0d6b9fb30169",
-    "gladGeostoreDataset": "69f279f5-c5e3-4856-bd8b-2b5eceaef56a",
+    "gladISODataset": "12c24404-00f9-449b-a02e-23832ca1db84",
+    "gladWDPADataset": "851de968-1dd7-4156-91ac-4312badf4e6f",
+    "gladGeostoreDataset": "9b8d79c8-1865-43de-890e-1fc7e6948454",
     "viirsAlertsDataset": "e17593fd-fdcf-40c5-8e6e-c437c9fc15a2"
   },
   "layers": {
     "gladAlertLayerDataset": "bfd1d211-8106-4393-86c3-9e1ab2ee1b9b",
     "gladAlertLayer": "8e4a527d-1bcd-4a12-82b0-5a108ffec452",
-    "umdLossGainLayerDataset": "eab9655f-dd37-4bb3-b223-4c5df166564c",
-    "umdLossGainLayer": "dce8004f-4d0f-4c2d-ae4b-dcf55e14035f",
+    "umdLossGainLayerDataset": "b584954c-0d8d-40c6-859c-f3fdf3c2c5df",
+    "umdLossGainLayer": "49a80e70-ec52-4ef8-bcc6-fb2771d95b2c",
     "terraILayerDataset": "68c81bc5-171c-4425-9836-d45659f0ed23",
     "terraILayer": "50a76478-9f6e-4315-874a-611d10a50338",
     "prodesLayerDataset": "a481466d-de8a-450c-b792-271901d20d3b",
