@@ -20,7 +20,13 @@ const getTask = async (task) => {
         }));
         return;
     }
-    if (task.dataset !== 'viirs-active-fires' && task.dataset !== 'story' && task.dataset !== 'forma-alerts' && task.dataset !== 'forma250GFW') {
+    if (
+        task.dataset !== 'viirs-active-fires'
+        && task.dataset !== 'story'
+        && task.dataset !== 'forma-alerts'
+        && task.dataset !== 'forma250GFW'
+        && task.dataset !== 'glad-alerts'
+    ) {
         logger.info(`Checking if dataset '${task.dataset}' was updated`);
         const result = await UpdateService.checkUpdated(task.dataset);
         if (result.updated) {
