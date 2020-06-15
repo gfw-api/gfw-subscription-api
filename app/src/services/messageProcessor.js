@@ -21,6 +21,11 @@ class MessageProcessor {
         return message.email;
     }
 
+    static getSubscriptionId(message) {
+        message = JSON.parse(message);
+        return message.subId;
+    }
+
 }
 
 module.exports = MessageProcessor;
