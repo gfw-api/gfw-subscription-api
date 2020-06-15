@@ -114,18 +114,23 @@ class SubscriptionService {
     }
 
     static async getSubscriptionById(id) {
-        const subscription = await Subscription.findById(id.toString());
-        return subscription;
+        return Subscription.findById(id.toString());
     }
 
     static async getSubscriptionsByLayer(layerSlug) {
-        const subscriptions = await Subscription.find({
+        if (layerSlug === 'glad-alerts') {
+            return Subscription.find({ confirmed: true }).or([
+                { datasets: { $in: [layerSlug] } },
+                { datasets: { $in: ['4145f642-5455-4414-b214-58ad39b83e1e'] } },
+            ]).exec();
+        }
+
+        return Subscription.find({
             datasets: {
                 $in: [layerSlug]
             },
             confirmed: true
         }).exec();
-        return subscriptions;
     }
 
     static async getAllSubscriptions(
