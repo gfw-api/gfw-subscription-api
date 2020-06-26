@@ -36,7 +36,8 @@ const assertSubscriptionStats = (jsonMessage, sub) => {
     jsonMessage.data.users[0].should.have.property('subscriptionId').and.equal(sub.id);
     jsonMessage.data.users[0].should.have.property('email').and.equal(sub.resource.content);
     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
-    jsonMessage.recipients[0].should.be.an('object').and.have.property('address').and.have.property('email').and.equal('info@vizzuality.com');
+    jsonMessage.recipients[0].should.be.an('object').and.have.property('address')
+        .and.have.property('email').and.equal('info@vizzuality.com');
 };
 
 const bootstrapGLADAlertTest = () => {

@@ -67,6 +67,15 @@ class GLADAlertsService {
         return `/query/${config.get('datasets.gladGeostoreDataset')}?sql=${sql}`;
     }
 
+    /**
+     * Returns an array of GLAD alerts for the provided period (startDate to endDate). The params are
+     * taken into account to decide which dataset will be used to fetch the alerts.
+     *
+     * @param startDate
+     * @param endDate
+     * @param params
+     * @returns {Promise<*>}
+     */
     static async getAnalysisInPeriodForSubscription(startDate, endDate, params) {
         let uri;
         logger.info('Entering GLAD analysis endpoint with params', startDate, endDate, params);

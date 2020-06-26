@@ -236,9 +236,10 @@ const createMockAlertsQuery = (times = 1, datasetId = undefined, overrideData = 
         });
 };
 
-const createMockViirsAlertsQuery = (times = 1, overrideData = {}) => {
+const createMockViirsAlertsQuery = (times = 1, datasetId = undefined, overrideData = {}) => {
+    const id = datasetId || config.get('datasets.viirsGeostoreDataset');
     nock(process.env.CT_URL)
-        .get(`/v1/query/${config.get('datasets.viirsAlertsDataset')}`)
+        .get(`/v1/query/${id}`)
         .query(() => true)
         .times(times)
         .reply(200, {

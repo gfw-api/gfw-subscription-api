@@ -18,10 +18,10 @@ class ViirsPresenter {
             const endDate = moment(end);
             const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
 
-            const alerts = await ViirsAlertsService.getAnalysisInPeriodForGeostore(
+            const alerts = await ViirsAlertsService.getAnalysisInPeriodForSubscription(
                 startDate.format('YYYY-MM-DD'),
                 endDate.format('YYYY-MM-DD'),
-                geostoreId
+                subscription.params
             );
 
             results.alerts = alerts.map((el) => ({
@@ -86,10 +86,10 @@ class ViirsPresenter {
             // Finding standard deviation of alert values
             const lastYearStartDate = moment(begin).subtract('1', 'y');
             const lastYearEndDate = moment(end).subtract('1', 'y');
-            const lastYearAlerts = await ViirsAlertsService.getAnalysisInPeriodForGeostore(
+            const lastYearAlerts = await ViirsAlertsService.getAnalysisInPeriodForSubscription(
                 lastYearStartDate.format('YYYY-MM-DD'),
                 lastYearEndDate.format('YYYY-MM-DD'),
-                geostoreId
+                subscription.params
             );
 
             const lastYearAverage = _.mean(lastYearAlerts.map((al) => al.alert__count));
