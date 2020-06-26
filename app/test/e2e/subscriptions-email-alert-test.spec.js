@@ -44,10 +44,19 @@ describe('Test email alerts spec', () => {
         managerResponse.status.should.equal(403);
     });
 
+    it('Validates the provided subscriptionId, rejecting if not provided', async () => {
+        const res = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({
+            loggedUser: ROLES.ADMIN,
+            email: 'henrique.pacheco@vizzuality.com',
+        });
+        res.status.should.equal(400);
+    });
+
     it('Validates the provided alert, rejecting everything else other than "glad-alerts" or "viirs-active-fires"', async () => {
         const res1 = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({
             loggedUser: ROLES.ADMIN,
             email: 'henrique.pacheco@vizzuality.com',
+            subId: '123',
             alert: 'glad-alerts',
         });
         res1.status.should.equal(200);
@@ -55,6 +64,7 @@ describe('Test email alerts spec', () => {
         const res2 = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({
             loggedUser: ROLES.ADMIN,
             email: 'henrique.pacheco@vizzuality.com',
+            subId: '123',
             alert: 'viirs-active-fires',
         });
         res2.status.should.equal(200);
@@ -62,19 +72,21 @@ describe('Test email alerts spec', () => {
         const res3 = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({
             loggedUser: ROLES.ADMIN,
             email: 'henrique.pacheco@vizzuality.com',
+            subId: '123',
             alert: 'other',
         });
         res3.status.should.equal(400);
     });
 
     it('Testing an email alert for GLAD alerts should return a 200 OK response', async () => {
-        await new Subscription(createSubscription(ROLES.ADMIN.id, 'glad-alerts')).save();
+        const sub = await new Subscription(createSubscription(ROLES.ADMIN.id, 'glad-alerts')).save();
         process.on('unhandledRejection', (args) => should.fail(...args));
         createMockAlertsQuery(3);
 
         const body = {
             loggedUser: ROLES.ADMIN,
             email: 'henrique.pacheco@vizzuality.com',
+            subId: sub._id,
             alert: 'glad-alerts',
         };
 

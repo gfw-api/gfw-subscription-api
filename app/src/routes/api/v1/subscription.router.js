@@ -309,7 +309,14 @@ class SubscriptionsRouter {
     static async testEmailAlert(ctx) {
         logger.info(`[EmailAlertsRouter] Starting test email alerts.`);
 
-        const { alert, email } = ctx.request.body;
+        const {
+            alert, email, subId, fromDate, toDate
+        } = ctx.request.body;
+
+        if (!subId) {
+            ctx.throw(400, 'Subscription id is required.');
+            return;
+        }
 
         if (!['glad-alerts', 'viirs-active-fires'].includes(alert)) {
             ctx.throw(400, 'The alert provided is not supported for testing.');
@@ -319,9 +326,10 @@ class SubscriptionsRouter {
         try {
             await AlertQueue.processMessage(null, JSON.stringify({
                 layer_slug: alert,
-                begin_date: moment().subtract('2', 'w').toDate(),
-                end_date: moment().subtract('1', 'w').toDate(),
-                email
+                begin_date: fromDate ? moment(fromDate).toDate() : moment().subtract('2', 'w').toDate(),
+                end_date: toDate ? moment(toDate).toDate() : moment().subtract('1', 'w').toDate(),
+                email,
+                subId,
             }));
             ctx.body = { success: true };
         } catch (e) {

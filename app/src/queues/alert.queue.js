@@ -43,8 +43,9 @@ class AlertQueue {
         logger.info('[AlertQueue] Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
         try {
             const email = MessageProcessor.getEmail(message);
-            if (email && subscriptions[0]) {
-                const subscription = subscriptions[0];
+            const subId = MessageProcessor.getSubscriptionId(message);
+            if (email && subId) {
+                const subscription = await SubscriptionService.getSubscriptionById(subId);
                 subscription.resource.type = 'EMAIL';
                 subscription.resource.content = email;
                 const layer = { name: layerSlug, slug: layerSlug };

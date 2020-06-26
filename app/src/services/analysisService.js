@@ -32,8 +32,7 @@ class AnalysisService {
         try {
             // Override results in the case of glad-alerts
             if (layerSlug === 'glad-alerts') {
-                const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
-                return await GLADAlertsService.getAnalysisInPeriodForGeostore(formatDate(begin), formatDate(end), geostoreId);
+                return await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
             }
 
             // Override results in the case of viirs-active-fires
