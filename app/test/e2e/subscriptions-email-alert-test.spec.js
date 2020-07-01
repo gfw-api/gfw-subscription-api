@@ -120,6 +120,9 @@ describe('Test email alerts spec', () => {
     });
 
     afterEach(async () => {
+        redisClient.removeAllListeners();
+        process.removeAllListeners('unhandledRejection');
+
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
         }

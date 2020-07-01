@@ -5,6 +5,7 @@ const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
 const AnalysisClassifier = require('services/analysisClassifier');
 const GLADAlertsService = require('services/gladAlertsService');
+const ViirsAlertsService = require('services/viirsAlertsService');
 
 const formatDate = (date) => moment(date).format('YYYY-MM-DD');
 
@@ -31,6 +32,11 @@ class AnalysisService {
             // Override results in the case of glad-alerts
             if (layerSlug === 'glad-alerts') {
                 return await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+            }
+
+            // Override results in the case of viirs-active-fires
+            if (layerSlug === 'viirs-active-fires') {
+                return await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
             }
 
             const result = await ctRegisterMicroservice.requestToMicroservice({
