@@ -1,3 +1,8 @@
+const chai = require('chai');
+const moment = require('moment');
+
+const should = chai.should();
+
 const assertSubscriptionStats = (jsonMessage, sub) => {
     jsonMessage.should.have.property('sender').and.equal('gfw');
     jsonMessage.should.have.property('data').and.be.a('object');
@@ -12,6 +17,14 @@ const assertSubscriptionStats = (jsonMessage, sub) => {
         .and.have.property('email').and.equal('info@vizzuality.com');
 };
 
+const bootstrapEmailNotificationTests = () => {
+    const beginDate = moment().subtract('1', 'w');
+    const endDate = moment();
+    process.on('unhandledRejection', (error) => should.fail(error));
+    return { beginDate, endDate };
+};
+
 module.exports = {
     assertSubscriptionStats,
+    bootstrapEmailNotificationTests,
 };

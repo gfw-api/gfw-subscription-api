@@ -16,7 +16,7 @@ const { createSubscription } = require('../utils/helpers');
 const { createMockViirsAlertsQuery, createMockGeostore } = require('../utils/mock');
 const { ROLES } = require('../utils/test.constants');
 
-const { assertSubscriptionStats } = require('../utils/helpers/email-notifications');
+const { assertSubscriptionStats, bootstrapEmailNotificationTests } = require('../utils/helpers/email-notifications');
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -27,13 +27,6 @@ chai.use(require('chai-datetime'));
 const CHANNEL = config.get('apiGateway.queueName');
 const redisClient = redis.createClient({ url: config.get('redis.url') });
 redisClient.subscribe(CHANNEL);
-
-const bootstrapVIIRSAlertTest = () => {
-    const beginDate = moment().subtract('1', 'w');
-    const endDate = moment();
-    process.on('unhandledRejection', (error) => should.fail(error));
-    return { beginDate, endDate };
-};
 
 describe('VIIRS Fires alert emails', () => {
 
@@ -58,7 +51,7 @@ describe('VIIRS Fires alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapVIIRSAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockViirsAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
@@ -152,7 +145,7 @@ describe('VIIRS Fires alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
         )).save();
 
-        const { beginDate, endDate } = bootstrapVIIRSAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockViirsAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
@@ -247,7 +240,7 @@ describe('VIIRS Fires alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'zh' },
         )).save();
 
-        const { beginDate, endDate } = bootstrapVIIRSAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockViirsAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
@@ -341,7 +334,7 @@ describe('VIIRS Fires alert emails', () => {
             { params: { iso: { country: 'IDN' } } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapVIIRSAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockViirsAlertsQuery(3, config.get('datasets.viirsISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN');
 
@@ -436,7 +429,7 @@ describe('VIIRS Fires alert emails', () => {
             { params: { iso: { country: 'IDN', region: '3' } } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapVIIRSAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockViirsAlertsQuery(3, config.get('datasets.viirsISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN/3');
 
@@ -531,7 +524,7 @@ describe('VIIRS Fires alert emails', () => {
             { params: { iso: { country: 'BRA', region: '1', subregion: '1' } } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapVIIRSAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockViirsAlertsQuery(3, config.get('datasets.viirsISODataset'));
         createMockGeostore('/v2/geostore/admin/BRA/1/1');
 
@@ -626,7 +619,7 @@ describe('VIIRS Fires alert emails', () => {
             { params: { wdpaid: '1' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapVIIRSAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockViirsAlertsQuery(3, config.get('datasets.viirsWDPADataset'));
         createMockGeostore('/v2/geostore/wdpa/1');
 
@@ -721,7 +714,7 @@ describe('VIIRS Fires alert emails', () => {
             { params: { use: 'gfw_logging', useid: '29407' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapVIIRSAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockViirsAlertsQuery(3);
         createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
 
@@ -814,7 +807,7 @@ describe('VIIRS Fires alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapVIIRSAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockViirsAlertsQuery(1, undefined, { data: [] });
 
         redisClient.on('message', (channel, message) => {

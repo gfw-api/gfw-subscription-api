@@ -16,7 +16,7 @@ const { createSubscription } = require('../utils/helpers');
 const { createMockAlertsQuery, createMockGeostore } = require('../utils/mock');
 const { ROLES } = require('../utils/test.constants');
 
-const { assertSubscriptionStats } = require('../utils/helpers/email-notifications');
+const { assertSubscriptionStats, bootstrapEmailNotificationTests } = require('../utils/helpers/email-notifications');
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -27,13 +27,6 @@ chai.use(require('chai-datetime'));
 const CHANNEL = config.get('apiGateway.queueName');
 const redisClient = redis.createClient({ url: config.get('redis.url') });
 redisClient.subscribe(CHANNEL);
-
-const bootstrapGLADAlertTest = () => {
-    const beginDate = moment().subtract('1', 'w');
-    const endDate = moment();
-    process.on('unhandledRejection', (error) => should.fail(error));
-    return { beginDate, endDate };
-};
 
 describe('GLAD alert emails', () => {
 
@@ -58,7 +51,7 @@ describe('GLAD alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapGLADAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
@@ -151,7 +144,7 @@ describe('GLAD alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
         )).save();
 
-        const { beginDate, endDate } = bootstrapGLADAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
@@ -246,7 +239,7 @@ describe('GLAD alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'zh' },
         )).save();
 
-        const { beginDate, endDate } = bootstrapGLADAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
@@ -340,7 +333,7 @@ describe('GLAD alert emails', () => {
             { params: { iso: { country: 'IDN' } } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapGLADAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockAlertsQuery(3, config.get('datasets.gladISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN');
 
@@ -435,7 +428,7 @@ describe('GLAD alert emails', () => {
             { params: { iso: { country: 'IDN', region: '3' } } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapGLADAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockAlertsQuery(3, config.get('datasets.gladISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN/3');
 
@@ -530,7 +523,7 @@ describe('GLAD alert emails', () => {
             { params: { iso: { country: 'BRA', region: '1', subregion: '1' } } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapGLADAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockAlertsQuery(3, config.get('datasets.gladISODataset'));
         createMockGeostore('/v2/geostore/admin/BRA/1/1');
 
@@ -625,7 +618,7 @@ describe('GLAD alert emails', () => {
             { params: { wdpaid: '1' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapGLADAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockAlertsQuery(3, config.get('datasets.gladWDPADataset'));
         createMockGeostore('/v2/geostore/wdpa/1');
 
@@ -720,7 +713,7 @@ describe('GLAD alert emails', () => {
             { params: { use: 'gfw_logging', useid: '29407' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapGLADAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockAlertsQuery(3);
         createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
 
@@ -813,7 +806,7 @@ describe('GLAD alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapGLADAlertTest();
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockAlertsQuery(1, undefined, { data: [] });
 
         redisClient.on('message', (channel, message) => {
