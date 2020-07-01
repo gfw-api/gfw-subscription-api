@@ -6,7 +6,6 @@ const redis = require('redis');
 
 const Subscription = require('models/subscription');
 const Statistic = require('models/statistic');
-const AlertUrlService = require('services/alertUrlService');
 const AlertQueue = require('queues/alert.queue');
 const EmailHelpersService = require('services/emailHelpersService');
 
@@ -15,7 +14,11 @@ const { createSubscription } = require('../utils/helpers');
 const { createMockViirsAlertsQuery, createMockGeostore } = require('../utils/mock');
 const { ROLES } = require('../utils/test.constants');
 
-const { assertSubscriptionStats, bootstrapEmailNotificationTests } = require('../utils/helpers/email-notifications');
+const {
+    assertSubscriptionStatsNotificationEvent,
+    bootstrapEmailNotificationTests,
+    validateVIIRSAlert,
+} = require('../utils/helpers/email-notifications');
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -26,77 +29,6 @@ chai.use(require('chai-datetime'));
 const CHANNEL = config.get('apiGateway.queueName');
 const redisClient = redis.createClient({ url: config.get('redis.url') });
 redisClient.subscribe(CHANNEL);
-
-const validateVIIRSAlert = (
-    jsonMessage,
-    beginDate,
-    endDate,
-    sub,
-    lang = 'en',
-    frequency = 'average',
-    areaName = 'Custom Area',
-    geostoreId = '423e5dfb0448e692f97b590c61f45f22',
-) => {
-    jsonMessage.should.have.property('sender').and.equal('gfw');
-    jsonMessage.should.have.property('data').and.be.a('object');
-
-    jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
-    jsonMessage.recipients[0].should.be.an('object')
-        .and.have.property('address')
-        .and.have.property('email')
-        .and.equal('subscription-recipient@vizzuality.com');
-    jsonMessage.data.should.have.property('viirs_frequency').and.equal(frequency);
-    jsonMessage.data.should.have.property('month').and.equal(beginDate.format('MMMM'));
-    jsonMessage.data.should.have.property('year').and.equal(beginDate.format('YYYY'));
-    jsonMessage.data.should.have.property('week_of').and.equal(`${beginDate.format('DD MMM')}`);
-    jsonMessage.data.should.have.property('week_start').and.equal(beginDate.format('DD/MM/YYYY'));
-    jsonMessage.data.should.have.property('week_end').and.equal(endDate.format('DD/MM/YYYY'));
-    jsonMessage.data.should.have.property('priority_areas').and.deep.equal({
-        intact_forest: 41,
-        primary_forest: 41,
-        peat: 1171,
-        protected_areas: 1640,
-        plantations: 81,
-        other: 258,
-    });
-    jsonMessage.data.should.have.property('viirs_count').and.equal(3232);
-    jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
-        { alert_type: 'VIIRS', date: '10/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '11/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '12/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '13/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '14/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '15/10/2019 00:10 UTC' },
-    ]);
-
-    // Keeping this for backwards compatibility
-    jsonMessage.data.should.have.property('alert_count').and.equal(3232);
-    jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
-    jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
-        sub,
-        {
-            name: 'viirs_fires_alerts',
-            slug: 'viirs-active-fires',
-            subscription: true,
-            datasetId: '1d3ccf9b-102e-4c0b-b2ea-2abcc712e194',
-            layerId: '93e33932-3959-4201-b8c8-6ec0b32596e0'
-        },
-        beginDate,
-        endDate,
-    ));
-    jsonMessage.data.should.have.property('alert_name').and.equal(sub.name);
-    jsonMessage.data.should.have.property('layerSlug').and.equal('viirs-active-fires');
-    jsonMessage.data.should.have.property('selected_area').and.equal(areaName);
-    jsonMessage.data.should.have.property('subscriptions_url').and.equal(`http://staging.globalforestwatch.org/my-gfw?lang=${lang}`);
-    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${lang}`);
-    jsonMessage.data.should.have.property('downloadUrls');
-    // eslint-disable-next-line max-len
-    jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/viirs-active-fires/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`);
-    // eslint-disable-next-line max-len
-    jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/viirs-active-fires/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`);
-    jsonMessage.data.should.have.property('value').and.equal(3232);
-};
 
 describe('VIIRS Fires alert emails', () => {
 
@@ -134,7 +66,7 @@ describe('VIIRS Fires alert emails', () => {
                     validateVIIRSAlert(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStats(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -173,7 +105,7 @@ describe('VIIRS Fires alert emails', () => {
                     validateVIIRSAlert(jsonMessage, beginDate, endDate, subscriptionOne, 'fr', 'moyenne');
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStats(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -212,7 +144,7 @@ describe('VIIRS Fires alert emails', () => {
                     validateVIIRSAlert(jsonMessage, beginDate, endDate, subscriptionOne, 'zh', '平均');
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStats(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -261,7 +193,7 @@ describe('VIIRS Fires alert emails', () => {
                     );
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStats(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -310,7 +242,7 @@ describe('VIIRS Fires alert emails', () => {
                     );
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStats(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -359,7 +291,7 @@ describe('VIIRS Fires alert emails', () => {
                     );
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStats(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -408,7 +340,7 @@ describe('VIIRS Fires alert emails', () => {
                     );
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStats(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -457,7 +389,7 @@ describe('VIIRS Fires alert emails', () => {
                     );
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStats(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
