@@ -139,7 +139,14 @@ class SubscriptionsRouter {
         try {
             SubscriptionService.sendConfirmation(subscription);
             logger.info(`Redirect to: ${config.get('gfw.flagshipUrl')}/my_gfw/subscriptions`);
-            ctx.redirect(`${config.get('gfw.flagshipUrl')}/my_gfw/subscriptions`);
+
+            // Allows redirect=false flag to be provided, but defaults to applying the redirect
+            if (ctx.query.redirect !== 'false') {
+                ctx.redirect(`${config.get('gfw.flagshipUrl')}/my_gfw/subscriptions`);
+                return;
+            }
+
+            ctx.body = subscription;
         } catch (err) {
             logger.error(err);
         }

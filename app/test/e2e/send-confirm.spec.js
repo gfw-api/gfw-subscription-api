@@ -109,6 +109,22 @@ describe('Send confirmation endpoint', () => {
         process.on('unhandledRejection', (err) => should.fail(err));
     });
 
+    it('Providing redirect=false as query param disables the redirection (happy case)', async () => {
+        const createdSubscription = await new Subscription(createSubscription(ROLES.USER.id)).save();
+        const response = await subscription
+            .get(`/${createdSubscription._id}/send_confirmation`)
+            .query({
+                loggedUser: JSON.stringify(ROLES.USER),
+                application: 'rw',
+                redirect: false,
+            })
+            .send();
+        response.status.should.equal(200);
+        response.body._id.should.equal(createdSubscription._id.toString());
+
+        process.on('unhandledRejection', (err) => should.fail(err));
+    });
+
     afterEach(async () => {
         process.removeAllListeners('unhandledRejection');
         this.channel.removeAllListeners('message');
