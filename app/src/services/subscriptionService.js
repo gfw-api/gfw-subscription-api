@@ -25,6 +25,7 @@ class SubscriptionService {
             datasetsQuery: subscription.datasetsQuery,
             application: subscription.application || 'gfw',
             language: subscription.language,
+            confirmed: subscription.confirmed,
             env: subscription.env || 'production'
         };
     }
