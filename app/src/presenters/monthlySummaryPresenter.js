@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-const _ = require('lodash');
 const logger = require('logger');
 const moment = require('moment');
 const config = require('config');
@@ -62,39 +61,27 @@ class MonthlySummaryPresenter {
             };
 
             // Find values for priority areas
-            results.priority_areas = EmailHelpersService.calculatePriorityAreaValues(allAlerts, results.alert_count);
+            results.glad_priority_areas = EmailHelpersService.calculateGLADPriorityAreaValues(allAlerts, results.alert_count);
+            results.viirs_priority_areas = EmailHelpersService.calculateVIIRSPriorityAreaValues(allAlerts, results.alert_count);
+            results.all_priority_areas = {
+                intact_forest: results.glad_priority_areas.intact_forest + results.viirs_priority_areas.intact_forest,
+                primary_forest: results.glad_priority_areas.primary_forest + results.viirs_priority_areas.primary_forest,
+                peat: results.glad_priority_areas.peat + results.viirs_priority_areas.peat,
+                protected_areas: results.glad_priority_areas.protected_areas + results.viirs_priority_areas.protected_areas,
+                plantations: results.glad_priority_areas.plantations + results.viirs_priority_areas.plantations,
+                other: results.glad_priority_areas.other + results.viirs_priority_areas.other,
+            };
 
-            // Finding standard deviation of alert values
-            const lastYearStartDate = moment(begin).subtract('1', 'y');
-            const lastYearEndDate = moment(end).subtract('1', 'y');
-            const lastYearAlerts = await GLADAlertsService.getAnalysisInPeriodForSubscription(
-                lastYearStartDate.format('YYYY-MM-DD'),
-                lastYearEndDate.format('YYYY-MM-DD'),
-                subscription.params
+            // Finding alerts for the same period last year and calculate frequency
+            const gladLastYearAlerts = await GLADAlertsService.getAnalysisSamePeriodLastYearForSubscription(
+                begin, end, subscription.params
             );
+            results.glad_frequency = await EmailHelpersService.calculateAlertFrequency(gladAlerts, gladLastYearAlerts, subscription.language);
 
-            const lastYearAverage = _.mean(lastYearAlerts.map((al) => al.alert__count));
-            const lastYearStdDev = EmailHelpersService.standardDeviation(lastYearAlerts.map((al) => al.alert__count));
-            const currentAvg = _.mean(allAlerts.map((al) => al.alert__count));
+            // Finding alerts for the same period last year and calculate frequency
+            const viirsLastYearAlerts = await ViirsAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
+            results.viirs_frequency = await EmailHelpersService.calculateAlertFrequency(viirsAlerts, viirsLastYearAlerts, subscription.language);
 
-            const twoPlusStdDev = currentAvg >= lastYearAverage + (2 * lastYearStdDev);
-            const plusStdDev = (currentAvg > lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
-            const minusStdDev = (currentAvg < lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
-            const twoMinusStdDev = currentAvg <= lastYearAverage - (2 * lastYearStdDev);
-
-            // Calc normality string
-            let status = 'average';
-            if (twoPlusStdDev) {
-                status = 'unusually high';
-            } else if (plusStdDev) {
-                status = 'high';
-            } else if (minusStdDev) {
-                status = 'low';
-            } else if (twoMinusStdDev) {
-                status = 'unusually high';
-            }
-
-            results.glad_frequency = EmailHelpersService.translateFrequency(status, subscription.language);
         } catch (err) {
             logger.error(err);
             results.alerts = [];
