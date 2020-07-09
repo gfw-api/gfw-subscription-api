@@ -19,8 +19,8 @@ const assertSubscriptionStatsNotificationEvent = (jsonMessage, sub) => {
         .and.have.property('email').and.equal('info@vizzuality.com');
 };
 
-const bootstrapEmailNotificationTests = () => {
-    const beginDate = moment().subtract('1', 'w');
+const bootstrapEmailNotificationTests = (amount = '1', unit = 'w') => {
+    const beginDate = moment().subtract(amount, unit);
     const endDate = moment();
     process.on('unhandledRejection', (error) => should.fail(error));
     return { beginDate, endDate };

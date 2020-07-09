@@ -44,7 +44,7 @@ const createMockLatestDataset = (datasetID, date) => nock(process.env.CT_URL)
     .get(`/v1/${datasetID}/latest`)
     .reply(200, { data: { date } });
 
-const createMockAlertsQuery = (times = 1, datasetId = undefined, overrideData = {}) => {
+const mockGLADAlertsQuery = (times = 1, datasetId = undefined, overrideData = {}) => {
     const id = datasetId || config.get('datasets.gladGeostoreDataset');
     nock(process.env.CT_URL)
         .get(`/v1/query/${id}`)
@@ -236,7 +236,7 @@ const createMockAlertsQuery = (times = 1, datasetId = undefined, overrideData = 
         });
 };
 
-const createMockViirsAlertsQuery = (times = 1, datasetId = undefined, overrideData = {}) => {
+const mockVIIRSAlertsQuery = (times = 1, datasetId = undefined, overrideData = {}) => {
     const id = datasetId || config.get('datasets.viirsGeostoreDataset');
     nock(process.env.CT_URL)
         .get(`/v1/query/${id}`)
@@ -462,7 +462,7 @@ module.exports = {
     createMockUsersWithRange,
     createMockUsers,
     createMockLatestDataset,
-    createMockAlertsQuery,
-    createMockViirsAlertsQuery,
+    mockGLADAlertsQuery,
+    mockVIIRSAlertsQuery,
     createMockGeostore,
 };

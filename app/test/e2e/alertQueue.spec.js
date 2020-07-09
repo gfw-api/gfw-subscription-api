@@ -8,7 +8,7 @@ const redis = require('redis');
 const { getTestServer } = require('./utils/test-server');
 
 const { createDatasetWithWebHook } = require('./utils/helpers');
-const { createMockAlertsQuery } = require('./utils/mock');
+const { mockGLADAlertsQuery } = require('./utils/mock');
 
 const AlertQueue = require('../../src/queues/alert.queue');
 
@@ -57,7 +57,7 @@ describe('AlertQueue ', () => {
 
     it('All goes well when a dataset Redis message is received for a subscription with a valid resource type URL that returns 4XX codes', async () => {
         await createDatasetWithWebHook('http://www.webhook.com');
-        createMockAlertsQuery(3);
+        mockGLADAlertsQuery(3);
 
         // If this mock is not used (i.e., the web-hook is not called), the test will fail
         nock('http://www.webhook.com').post('/').query(() => true).reply(400);
@@ -68,7 +68,7 @@ describe('AlertQueue ', () => {
 
     it('POST request to a web-hook URL triggered when a dataset Redis message is received for a subscription with a valid resource type URL (happy case)', async () => {
         await createDatasetWithWebHook('http://www.webhook.com');
-        createMockAlertsQuery(3);
+        mockGLADAlertsQuery(3);
 
         // If this mock is not used (i.e., the web-hook is not called), the test will fail
         nock('http://www.webhook.com').post('/').query(() => true).reply(200, { received: true });
