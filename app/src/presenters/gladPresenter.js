@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-const _ = require('lodash');
 const logger = require('logger');
 const moment = require('moment');
 const config = require('config');
@@ -39,80 +38,12 @@ class GLADPresenter {
                 json: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`,
             };
 
-            // Calculate alerts grouped by area types
-            let intactForestAlerts = 0;
-            let primaryForestAlerts = 0;
-            let peatAlerts = 0;
-            let protectedAreasAlerts = 0;
-            let plantationAlerts = 0;
+            // Find values for priority areas
+            results.priority_areas = EmailHelpersService.calculateGLADPriorityAreaValues(alerts, results.alert_count);
 
-            const useValueOrAlertCount = (val, count) => (Number.isInteger(val) ? Number.parseInt(val, 10) : count);
-
-            alerts.forEach((al) => {
-                if (al.is__ifl_intact_forest_landscape_2016) {
-                    intactForestAlerts += useValueOrAlertCount(al.is__ifl_intact_forest_landscape_2016, al.alert__count);
-                }
-
-                if (al.is__umd_regional_primary_forest_2001) {
-                    primaryForestAlerts += useValueOrAlertCount(al.is__umd_regional_primary_forest_2001, al.alert__count);
-                }
-
-                if (al.is__peatland) {
-                    peatAlerts += useValueOrAlertCount(al.is__peatland, al.alert__count);
-                }
-
-                const wdpaKey = Object.keys(al).find((key) => /wdpa/.test(key));
-                if (wdpaKey !== undefined) {
-                    protectedAreasAlerts += useValueOrAlertCount(true, al.alert__count);
-                }
-
-                if (al.gfw_plantation__type !== 0 && al.gfw_plantation__type !== '0') {
-                    plantationAlerts += useValueOrAlertCount(true, al.alert__count);
-                }
-            });
-
-            const otherAlerts = results.glad_count - intactForestAlerts - primaryForestAlerts - peatAlerts - protectedAreasAlerts - plantationAlerts;
-
-            results.priority_areas = {
-                intact_forest: intactForestAlerts,
-                primary_forest: primaryForestAlerts,
-                peat: peatAlerts,
-                protected_areas: protectedAreasAlerts,
-                plantations: plantationAlerts,
-                other: otherAlerts,
-            };
-
-            // Finding standard deviation of alert values
-            const lastYearStartDate = moment(begin).subtract('1', 'y');
-            const lastYearEndDate = moment(end).subtract('1', 'y');
-            const lastYearAlerts = await GLADAlertsService.getAnalysisInPeriodForSubscription(
-                lastYearStartDate.format('YYYY-MM-DD'),
-                lastYearEndDate.format('YYYY-MM-DD'),
-                subscription.params
-            );
-
-            const lastYearAverage = _.mean(lastYearAlerts.map((al) => al.alert__count));
-            const lastYearStdDev = EmailHelpersService.standardDeviation(lastYearAlerts.map((al) => al.alert__count));
-            const currentAvg = _.mean(alerts.map((al) => al.alert__count));
-
-            const twoPlusStdDev = currentAvg >= lastYearAverage + (2 * lastYearStdDev);
-            const plusStdDev = (currentAvg > lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
-            const minusStdDev = (currentAvg < lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
-            const twoMinusStdDev = currentAvg <= lastYearAverage - (2 * lastYearStdDev);
-
-            // Calc normality string
-            let status = 'average';
-            if (twoPlusStdDev) {
-                status = 'unusually high';
-            } else if (plusStdDev) {
-                status = 'high';
-            } else if (minusStdDev) {
-                status = 'low';
-            } else if (twoMinusStdDev) {
-                status = 'unusually high';
-            }
-
-            results.glad_frequency = EmailHelpersService.translateFrequency(status, subscription.language);
+            // Finding alerts for the same period last year and calculate frequency
+            const lastYearAlerts = await GLADAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
+            results.glad_frequency = await EmailHelpersService.calculateAlertFrequency(alerts, lastYearAlerts, subscription.language);
         } catch (err) {
             logger.error(err);
             results.alerts = [];

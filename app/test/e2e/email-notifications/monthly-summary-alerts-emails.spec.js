@@ -93,6 +93,7 @@ describe('Monthly summary notifications', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3);
+        mockVIIRSAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -132,6 +133,7 @@ describe('Monthly summary notifications', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3);
+        mockVIIRSAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -171,6 +173,7 @@ describe('Monthly summary notifications', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
+        mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN');
 
         redisClient.on('message', (channel, message) => {
@@ -220,6 +223,7 @@ describe('Monthly summary notifications', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
+        mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN/3');
 
         redisClient.on('message', (channel, message) => {
@@ -269,6 +273,7 @@ describe('Monthly summary notifications', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
+        mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
         createMockGeostore('/v2/geostore/admin/BRA/1/1');
 
         redisClient.on('message', (channel, message) => {
@@ -318,6 +323,7 @@ describe('Monthly summary notifications', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3, config.get('datasets.gladWDPADataset'));
+        mockVIIRSAlertsQuery(3, config.get('datasets.viirsWDPADataset'));
         createMockGeostore('/v2/geostore/wdpa/1');
 
         redisClient.on('message', (channel, message) => {
@@ -367,7 +373,8 @@ describe('Monthly summary notifications', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
+        mockVIIRSAlertsQuery(3);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 7);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -414,6 +421,7 @@ describe('Monthly summary notifications', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(1, undefined, { data: [] });
+        mockVIIRSAlertsQuery(1, undefined, { data: [] });
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);

@@ -1,5 +1,6 @@
 const config = require('config');
 const logger = require('logger');
+const moment = require('moment');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const GeostoreService = require('services/geostoreService');
 
@@ -77,9 +78,9 @@ class GLADAlertsService {
      * @returns {Promise<*>}
      */
     static async getAnalysisInPeriodForSubscription(startDate, endDate, params) {
-        let uri;
         logger.info('Entering GLAD analysis endpoint with params', startDate, endDate, params);
 
+        let uri;
         if (params && params.iso) {
             uri = GLADAlertsService.getURLInPeriodForISO(startDate, endDate, params);
         } else if (params && params.wdpaid) {
@@ -91,6 +92,24 @@ class GLADAlertsService {
 
         const response = await ctRegisterMicroservice.requestToMicroservice({ uri, method: 'GET', json: true });
         return response.data;
+    }
+
+    /**
+     * Returns an array of GLAD alerts for the corresponding period of the last year for the dates provided (startDate to endDate).
+     *
+     * @param startDate
+     * @param endDate
+     * @param params
+     * @returns {Promise<*>}
+     */
+    static async getAnalysisSamePeriodLastYearForSubscription(startDate, endDate, params) {
+        const lastYearStartDate = moment(startDate).subtract('1', 'y');
+        const lastYearEndDate = moment(endDate).subtract('1', 'y');
+        return GLADAlertsService.getAnalysisInPeriodForSubscription(
+            lastYearStartDate.format('YYYY-MM-DD'),
+            lastYearEndDate.format('YYYY-MM-DD'),
+            params
+        );
     }
 
 }
