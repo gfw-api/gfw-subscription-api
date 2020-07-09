@@ -26,6 +26,7 @@ const getTask = async (task) => {
         && task.dataset !== 'forma-alerts'
         && task.dataset !== 'forma250GFW'
         && task.dataset !== 'glad-alerts'
+        && task.dataset !== 'monthly-summary'
     ) {
         logger.info(`Checking if dataset '${task.dataset}' was updated`);
         const result = await UpdateService.checkUpdated(task.dataset);

@@ -81,5 +81,18 @@
       "value": 1,
       "measure": "week"
     }
+  },
+  {
+    "name": "Monthly Summary",
+    "dataset": "monthly-summary",
+    "crontab": "00 00 14 01 * *",
+    "gap": {
+      "value": 0,
+      "measure": "day"
+    },
+    "periodicity": {
+      "value": 1,
+      "measure": "months"
+    }
   }
 ]
