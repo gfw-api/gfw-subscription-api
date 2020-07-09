@@ -73,6 +73,12 @@ const LAYERS = [{
     name: 'forma250GFW',
     slug: 'forma250GFW',
     subscription: true
+}, {
+    name: 'monthly-summary',
+    slug: 'monthly-summary',
+    subscription: true,
+    datasetId: config.get('layers.viirsLayerDataset'),
+    layerId: config.get('layers.viirsLayer')
 }];
 
 class Layer {

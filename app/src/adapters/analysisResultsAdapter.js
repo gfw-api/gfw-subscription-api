@@ -4,12 +4,14 @@ const GENERIC_ADAPTER = require('adapters/genericAdapter');
 const GladAdapter = require('adapters/gladAdapter');
 const StoryAdapter = require('adapters/storyAdapter');
 const Forma250Adapter = require('adapters/forma250Adapter');
+const MonthlySummaryAdapter = require('adapters/monthlySummaryAdapter');
 const TerraiAdapter = require('adapters/terraiAdapter');
 const ViirsAdapter = require('adapters/viirsAdapter');
 
 const ADAPTER_MAP = {
     'glad-alerts': GladAdapter,
     'viirs-active-fires': ViirsAdapter,
+    'monthly-summary': MonthlySummaryAdapter,
     story: StoryAdapter,
     forma250GFW: Forma250Adapter,
     'terrai-alerts': TerraiAdapter

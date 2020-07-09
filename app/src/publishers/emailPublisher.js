@@ -9,7 +9,8 @@ const TEMPLATE_MAP = {
     'forma-alerts': 'forest-change-notification',
     forma250GFW: 'forest-change-notification',
     'terrai-alerts': 'forest-change-notification',
-    'glad-alerts': 'forest-change-notification-glads'
+    'glad-alerts': 'forest-change-notification-glads',
+    'monthly-summary': 'monthly-summary-notification',
 };
 
 class EmailPublisher {
