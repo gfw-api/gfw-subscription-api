@@ -52,7 +52,7 @@ describe('Test email alerts spec', () => {
         res.status.should.equal(400);
     });
 
-    it('Validates the provided alert, rejecting everything else other than "glad-alerts" or "viirs-active-fires"', async () => {
+    it('Validates the provided alert, rejecting everything else other than "glad-alerts", "viirs-active-fires" or "monthly-summary"', async () => {
         const res1 = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({
             loggedUser: ROLES.ADMIN,
             email: 'henrique.pacheco@vizzuality.com',
@@ -73,9 +73,17 @@ describe('Test email alerts spec', () => {
             loggedUser: ROLES.ADMIN,
             email: 'henrique.pacheco@vizzuality.com',
             subId: '123',
+            alert: 'monthly-summary',
+        });
+        res3.status.should.equal(200);
+
+        const res4 = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({
+            loggedUser: ROLES.ADMIN,
+            email: 'henrique.pacheco@vizzuality.com',
+            subId: '123',
             alert: 'other',
         });
-        res3.status.should.equal(400);
+        res4.status.should.equal(400);
     });
 
     it('Testing an email alert for GLAD alerts should return a 200 OK response', async () => {
