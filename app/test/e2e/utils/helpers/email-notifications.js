@@ -26,7 +26,7 @@ const bootstrapEmailNotificationTests = () => {
     return { beginDate, endDate };
 };
 
-const commonAlertValidations = (
+const validateCommonNotificationParams = (
     jsonMessage,
     beginDate,
     endDate,
@@ -49,26 +49,14 @@ const commonAlertValidations = (
     jsonMessage.data.should.have.property('week_end').and.equal(endDate.format('DD/MM/YYYY'));
     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
-
     jsonMessage.data.should.have.property('alert_name').and.equal(sub.name);
     jsonMessage.data.should.have.property('selected_area').and.equal(areaName);
     jsonMessage.data.should.have.property('subscriptions_url').and.equal(`http://staging.globalforestwatch.org/my-gfw?lang=${lang}`);
     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${lang}`);
 };
 
-const validateGLADAlert = (
-    jsonMessage,
-    beginDate,
-    endDate,
-    sub,
-    lang = 'en',
-    gladFrequency = 'average',
-    areaName = 'Custom Area',
-    geostoreId = '423e5dfb0448e692f97b590c61f45f22',
-) => {
-    commonAlertValidations(jsonMessage, beginDate, endDate, sub, lang, areaName);
-
-    jsonMessage.data.should.have.property('glad_frequency').and.equal(gladFrequency);
+const validateGLADSpecificParams = (jsonMessage, beginDate, endDate, sub, frequency, geostoreId) => {
+    jsonMessage.data.should.have.property('glad_frequency').and.equal(frequency);
     jsonMessage.data.should.have.property('priority_areas').and.deep.equal({
         intact_forest: 6,
         primary_forest: 7,
@@ -109,18 +97,7 @@ const validateGLADAlert = (
     jsonMessage.data.should.have.property('value').and.equal(51);
 };
 
-const validateVIIRSAlert = (
-    jsonMessage,
-    beginDate,
-    endDate,
-    sub,
-    lang = 'en',
-    frequency = 'average',
-    areaName = 'Custom Area',
-    geostoreId = '423e5dfb0448e692f97b590c61f45f22',
-) => {
-    commonAlertValidations(jsonMessage, beginDate, endDate, sub, lang, areaName);
-
+const validateVIIRSSpecificParams = (jsonMessage, beginDate, endDate, sub, frequency, geostoreId) => {
     jsonMessage.data.should.have.property('viirs_frequency').and.equal(frequency);
     jsonMessage.data.should.have.property('priority_areas').and.deep.equal({
         intact_forest: 41,
@@ -162,9 +139,53 @@ const validateVIIRSAlert = (
     jsonMessage.data.should.have.property('value').and.equal(3232);
 };
 
+const validateGLADNotificationParams = (
+    jsonMessage,
+    beginDate,
+    endDate,
+    sub,
+    lang = 'en',
+    frequency = 'average',
+    areaName = 'Custom Area',
+    geostoreId = '423e5dfb0448e692f97b590c61f45f22',
+) => {
+    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub, lang, areaName);
+    validateGLADSpecificParams(jsonMessage, beginDate, endDate, sub, frequency, geostoreId);
+};
+
+const validateVIIRSNotificationParams = (
+    jsonMessage,
+    beginDate,
+    endDate,
+    sub,
+    lang = 'en',
+    frequency = 'average',
+    areaName = 'Custom Area',
+    geostoreId = '423e5dfb0448e692f97b590c61f45f22',
+) => {
+    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub, lang, areaName);
+    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, sub, frequency, geostoreId);
+};
+
+const validateMonthlySummaryNotificationParams = (
+    jsonMessage,
+    beginDate,
+    endDate,
+    sub,
+    lang = 'en',
+    frequency = 'average',
+    areaName = 'Custom Area',
+    geostoreId = '423e5dfb0448e692f97b590c61f45f22',
+) => {
+    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub, lang, areaName);
+    validateGLADSpecificParams(jsonMessage, beginDate, endDate, sub, frequency, geostoreId);
+    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, sub, frequency, geostoreId);
+};
+
 module.exports = {
     assertSubscriptionStatsNotificationEvent,
     bootstrapEmailNotificationTests,
-    validateGLADAlert,
-    validateVIIRSAlert,
+    validateGLADNotificationParams,
+    validateVIIRSNotificationParams,
+    validateMonthlySummaryNotificationParams,
 };

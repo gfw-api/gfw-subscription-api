@@ -11,13 +11,13 @@ const EmailHelpersService = require('services/emailHelpersService');
 
 const { getTestServer } = require('../utils/test-server');
 const { createSubscription } = require('../utils/helpers');
-const { createMockViirsAlertsQuery, createMockGeostore } = require('../utils/mock');
+const { createMockAlertsQuery, createMockGeostore } = require('../utils/mock');
 const { ROLES } = require('../utils/test.constants');
 
 const {
     assertSubscriptionStatsNotificationEvent,
     bootstrapEmailNotificationTests,
-    validateVIIRSNotificationParams,
+    validateMonthlySummaryNotificationParams,
 } = require('../utils/helpers/email-notifications');
 
 nock.disableNetConnect();
@@ -30,7 +30,7 @@ const CHANNEL = config.get('apiGateway.queueName');
 const redisClient = redis.createClient({ url: config.get('redis.url') });
 redisClient.subscribe(CHANNEL);
 
-describe('VIIRS Fires alert emails', () => {
+describe('GLAD alert emails', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -46,24 +46,23 @@ describe('VIIRS Fires alert emails', () => {
         await Statistic.deleteMany({}).exec();
     });
 
-    it('Updating VIIRS Fires dataset triggers a new email being queued using the correct email template and providing the needed data', async () => {
+    it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data', async () => {
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
+            'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockViirsAlertsQuery(3);
+        createMockAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
             jsonMessage.should.have.property('template');
-
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
-                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                case 'monthly-summary-notification-en':
+                    validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
@@ -76,23 +75,23 @@ describe('VIIRS Fires alert emails', () => {
         });
 
         await AlertQueue.processMessage(null, JSON.stringify({
-            layer_slug: 'viirs-active-fires',
+            layer_slug: 'monthly-summary',
             begin_date: beginDate,
             end_date: endDate
         }));
     });
 
-    it('Updating VIIRS Fires dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (FR)', async () => {
+    it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (FR)', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('fr');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
+            'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockViirsAlertsQuery(3);
+        createMockAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -101,8 +100,8 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-fr':
-                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'fr', 'moyenne');
+                case 'monthly-summary-notification-fr':
+                    validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'fr', 'moyenne');
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
@@ -115,23 +114,23 @@ describe('VIIRS Fires alert emails', () => {
         });
 
         await AlertQueue.processMessage(null, JSON.stringify({
-            layer_slug: 'viirs-active-fires',
+            layer_slug: 'monthly-summary',
             begin_date: beginDate,
             end_date: endDate
         }));
     });
 
-    it('Updating VIIRS Fires dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (ZH)', async () => {
+    it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (ZH)', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('zh');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
+            'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'zh' },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockViirsAlertsQuery(3);
+        createMockAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -140,8 +139,8 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-zh':
-                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'zh', '平均');
+                case 'monthly-summary-notification-zh':
+                    validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'zh', '平均');
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
@@ -154,23 +153,23 @@ describe('VIIRS Fires alert emails', () => {
         });
 
         await AlertQueue.processMessage(null, JSON.stringify({
-            layer_slug: 'viirs-active-fires',
+            layer_slug: 'monthly-summary',
             begin_date: beginDate,
             end_date: endDate
         }));
     });
 
-    it('VIIRS Fires emails for subscriptions that refer to an ISO code work as expected', async () => {
+    it('GLAD alert emails for subscriptions that refer to an ISO code work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
+            'monthly-summary',
             { params: { iso: { country: 'IDN' } } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockViirsAlertsQuery(3, config.get('datasets.viirsISODataset'));
+        createMockAlertsQuery(3, config.get('datasets.gladISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN');
 
         redisClient.on('message', (channel, message) => {
@@ -180,8 +179,8 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
-                    validateVIIRSNotificationParams(
+                case 'monthly-summary-notification-en':
+                    validateMonthlySummaryNotificationParams(
                         jsonMessage,
                         beginDate,
                         endDate,
@@ -203,23 +202,23 @@ describe('VIIRS Fires alert emails', () => {
         });
 
         await AlertQueue.processMessage(null, JSON.stringify({
-            layer_slug: 'viirs-active-fires',
+            layer_slug: 'monthly-summary',
             begin_date: beginDate,
             end_date: endDate
         }));
     });
 
-    it('VIIRS Fires emails for subscriptions that refer to an ISO region work as expected', async () => {
+    it('GLAD alert emails for subscriptions that refer to an ISO region work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
+            'monthly-summary',
             { params: { iso: { country: 'IDN', region: '3' } } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockViirsAlertsQuery(3, config.get('datasets.viirsISODataset'));
+        createMockAlertsQuery(3, config.get('datasets.gladISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN/3');
 
         redisClient.on('message', (channel, message) => {
@@ -229,8 +228,8 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
-                    validateVIIRSNotificationParams(
+                case 'monthly-summary-notification-en':
+                    validateMonthlySummaryNotificationParams(
                         jsonMessage,
                         beginDate,
                         endDate,
@@ -252,23 +251,23 @@ describe('VIIRS Fires alert emails', () => {
         });
 
         await AlertQueue.processMessage(null, JSON.stringify({
-            layer_slug: 'viirs-active-fires',
+            layer_slug: 'monthly-summary',
             begin_date: beginDate,
             end_date: endDate
         }));
     });
 
-    it('VIIRS Fires emails for subscriptions that refer to an ISO subregion work as expected', async () => {
+    it('GLAD alert emails for subscriptions that refer to an ISO subregion work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
+            'monthly-summary',
             { params: { iso: { country: 'BRA', region: '1', subregion: '1' } } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockViirsAlertsQuery(3, config.get('datasets.viirsISODataset'));
+        createMockAlertsQuery(3, config.get('datasets.gladISODataset'));
         createMockGeostore('/v2/geostore/admin/BRA/1/1');
 
         redisClient.on('message', (channel, message) => {
@@ -278,8 +277,8 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
-                    validateVIIRSNotificationParams(
+                case 'monthly-summary-notification-en':
+                    validateMonthlySummaryNotificationParams(
                         jsonMessage,
                         beginDate,
                         endDate,
@@ -301,23 +300,23 @@ describe('VIIRS Fires alert emails', () => {
         });
 
         await AlertQueue.processMessage(null, JSON.stringify({
-            layer_slug: 'viirs-active-fires',
+            layer_slug: 'monthly-summary',
             begin_date: beginDate,
             end_date: endDate
         }));
     });
 
-    it('VIIRS Fires emails for subscriptions that refer to a WDPA ID work as expected', async () => {
+    it('GLAD alert emails for subscriptions that refer to a WDPA ID work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
+            'monthly-summary',
             { params: { wdpaid: '1' } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockViirsAlertsQuery(3, config.get('datasets.viirsWDPADataset'));
+        createMockAlertsQuery(3, config.get('datasets.gladWDPADataset'));
         createMockGeostore('/v2/geostore/wdpa/1');
 
         redisClient.on('message', (channel, message) => {
@@ -327,8 +326,8 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
-                    validateVIIRSNotificationParams(
+                case 'monthly-summary-notification-en':
+                    validateMonthlySummaryNotificationParams(
                         jsonMessage,
                         beginDate,
                         endDate,
@@ -350,23 +349,23 @@ describe('VIIRS Fires alert emails', () => {
         });
 
         await AlertQueue.processMessage(null, JSON.stringify({
-            layer_slug: 'viirs-active-fires',
+            layer_slug: 'monthly-summary',
             begin_date: beginDate,
             end_date: endDate
         }));
     });
 
-    it('VIIRS Fires emails for subscriptions that refer to a USE ID work as expected', async () => {
+    it('GLAD alert emails for subscriptions that refer to a USE ID work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
+            'monthly-summary',
             { params: { use: 'gfw_logging', useid: '29407' } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockViirsAlertsQuery(3);
+        createMockAlertsQuery(3);
         createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
 
         redisClient.on('message', (channel, message) => {
@@ -376,8 +375,8 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
-                    validateVIIRSNotificationParams(
+                case 'monthly-summary-notification-en':
+                    validateMonthlySummaryNotificationParams(
                         jsonMessage,
                         beginDate,
                         endDate,
@@ -399,21 +398,21 @@ describe('VIIRS Fires alert emails', () => {
         });
 
         await AlertQueue.processMessage(null, JSON.stringify({
-            layer_slug: 'viirs-active-fires',
+            layer_slug: 'monthly-summary',
             begin_date: beginDate,
             end_date: endDate
         }));
     });
 
-    it('No email is sent if there no alerts are returned by the VIIRS Fires alerts query', async () => {
+    it('No email is sent if there no alerts are returned by the glad alerts query', async () => {
         await new Subscription(createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
+            'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockViirsAlertsQuery(1, undefined, { data: [] });
+        createMockAlertsQuery(1, undefined, { data: [] });
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -424,7 +423,7 @@ describe('VIIRS Fires alert emails', () => {
                     jsonMessage.should.have.property('sender').and.equal('gfw');
                     jsonMessage.should.have.property('data').and.be.a('object');
                     jsonMessage.data.should.have.property('counter').and.equal(0);
-                    jsonMessage.data.should.have.property('dataset').and.equal('viirs-active-fires');
+                    jsonMessage.data.should.have.property('dataset').and.equal('monthly-summary');
                     jsonMessage.data.should.have.property('users').and.be.an('array').and.length(0);
                     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
                     jsonMessage.recipients[0].should.be.an('object').and.have.property('address').and.have.property('email').and.equal('info@vizzuality.com');
@@ -437,7 +436,7 @@ describe('VIIRS Fires alert emails', () => {
         });
 
         await AlertQueue.processMessage(null, JSON.stringify({
-            layer_slug: 'viirs-active-fires',
+            layer_slug: 'monthly-summary',
             begin_date: beginDate,
             end_date: endDate
         }));

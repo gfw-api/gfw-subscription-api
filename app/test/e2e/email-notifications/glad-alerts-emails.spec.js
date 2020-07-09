@@ -17,7 +17,7 @@ const { ROLES } = require('../utils/test.constants');
 const {
     assertSubscriptionStatsNotificationEvent,
     bootstrapEmailNotificationTests,
-    validateGLADAlert,
+    validateGLADNotificationParams,
 } = require('../utils/helpers/email-notifications');
 
 nock.disableNetConnect();
@@ -62,7 +62,7 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADAlert(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
@@ -101,7 +101,7 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-fr':
-                    validateGLADAlert(jsonMessage, beginDate, endDate, subscriptionOne, 'fr', 'moyenne');
+                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'fr', 'moyenne');
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
@@ -140,7 +140,7 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-zh':
-                    validateGLADAlert(jsonMessage, beginDate, endDate, subscriptionOne, 'zh', '平均');
+                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'zh', '平均');
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
@@ -180,7 +180,7 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADAlert(
+                    validateGLADNotificationParams(
                         jsonMessage,
                         beginDate,
                         endDate,
@@ -229,7 +229,7 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADAlert(
+                    validateGLADNotificationParams(
                         jsonMessage,
                         beginDate,
                         endDate,
@@ -278,7 +278,7 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADAlert(
+                    validateGLADNotificationParams(
                         jsonMessage,
                         beginDate,
                         endDate,
@@ -327,7 +327,7 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADAlert(
+                    validateGLADNotificationParams(
                         jsonMessage,
                         beginDate,
                         endDate,
@@ -376,7 +376,7 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADAlert(
+                    validateGLADNotificationParams(
                         jsonMessage,
                         beginDate,
                         endDate,
