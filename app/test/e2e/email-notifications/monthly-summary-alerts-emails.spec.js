@@ -11,7 +11,7 @@ const EmailHelpersService = require('services/emailHelpersService');
 
 const { getTestServer } = require('../utils/test-server');
 const { createSubscription } = require('../utils/helpers');
-const { createMockAlertsQuery, createMockGeostore } = require('../utils/mock');
+const { mockGLADAlertsQuery, mockVIIRSAlertsQuery, createMockGeostore } = require('../utils/mock');
 const { ROLES } = require('../utils/test.constants');
 
 const {
@@ -30,7 +30,7 @@ const CHANNEL = config.get('apiGateway.queueName');
 const redisClient = redis.createClient({ url: config.get('redis.url') });
 redisClient.subscribe(CHANNEL);
 
-describe('GLAD alert emails', () => {
+describe('Monthly summary notifications', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -46,15 +46,16 @@ describe('GLAD alert emails', () => {
         await Statistic.deleteMany({}).exec();
     });
 
-    it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data', async () => {
+    it('Updating monthly summary alerts dataset triggers a new email being queued using the correct email template and providing the needed data', async () => {
         const subscriptionOne = await new Subscription(createSubscription(
             ROLES.USER.id,
             'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockAlertsQuery(3);
+        const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+        mockGLADAlertsQuery(3);
+        mockVIIRSAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -81,7 +82,7 @@ describe('GLAD alert emails', () => {
         }));
     });
 
-    it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (FR)', async () => {
+    it('Updating monthly summary datasets triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (FR)', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('fr');
         const subscriptionOne = await new Subscription(createSubscription(
@@ -90,8 +91,8 @@ describe('GLAD alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
         )).save();
 
-        const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockAlertsQuery(3);
+        const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+        mockGLADAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -120,7 +121,7 @@ describe('GLAD alert emails', () => {
         }));
     });
 
-    it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (ZH)', async () => {
+    it('Updating monthly summary datasets triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (ZH)', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('zh');
         const subscriptionOne = await new Subscription(createSubscription(
@@ -129,8 +130,8 @@ describe('GLAD alert emails', () => {
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'zh' },
         )).save();
 
-        const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockAlertsQuery(3);
+        const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+        mockGLADAlertsQuery(3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -159,7 +160,7 @@ describe('GLAD alert emails', () => {
         }));
     });
 
-    it('GLAD alert emails for subscriptions that refer to an ISO code work as expected', async () => {
+    it('Monthly summary alert emails for subscriptions that refer to an ISO code work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
@@ -168,8 +169,8 @@ describe('GLAD alert emails', () => {
             { params: { iso: { country: 'IDN' } } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockAlertsQuery(3, config.get('datasets.gladISODataset'));
+        const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+        mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN');
 
         redisClient.on('message', (channel, message) => {
@@ -208,7 +209,7 @@ describe('GLAD alert emails', () => {
         }));
     });
 
-    it('GLAD alert emails for subscriptions that refer to an ISO region work as expected', async () => {
+    it('Monthly summary alert emails for subscriptions that refer to an ISO region work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
@@ -217,8 +218,8 @@ describe('GLAD alert emails', () => {
             { params: { iso: { country: 'IDN', region: '3' } } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockAlertsQuery(3, config.get('datasets.gladISODataset'));
+        const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+        mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN/3');
 
         redisClient.on('message', (channel, message) => {
@@ -257,7 +258,7 @@ describe('GLAD alert emails', () => {
         }));
     });
 
-    it('GLAD alert emails for subscriptions that refer to an ISO subregion work as expected', async () => {
+    it('Monthly summary alert emails for subscriptions that refer to an ISO subregion work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
@@ -266,8 +267,8 @@ describe('GLAD alert emails', () => {
             { params: { iso: { country: 'BRA', region: '1', subregion: '1' } } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockAlertsQuery(3, config.get('datasets.gladISODataset'));
+        const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+        mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
         createMockGeostore('/v2/geostore/admin/BRA/1/1');
 
         redisClient.on('message', (channel, message) => {
@@ -306,7 +307,7 @@ describe('GLAD alert emails', () => {
         }));
     });
 
-    it('GLAD alert emails for subscriptions that refer to a WDPA ID work as expected', async () => {
+    it('Monthly summary alert emails for subscriptions that refer to a WDPA ID work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
@@ -315,8 +316,8 @@ describe('GLAD alert emails', () => {
             { params: { wdpaid: '1' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockAlertsQuery(3, config.get('datasets.gladWDPADataset'));
+        const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+        mockGLADAlertsQuery(3, config.get('datasets.gladWDPADataset'));
         createMockGeostore('/v2/geostore/wdpa/1');
 
         redisClient.on('message', (channel, message) => {
@@ -355,7 +356,7 @@ describe('GLAD alert emails', () => {
         }));
     });
 
-    it('GLAD alert emails for subscriptions that refer to a USE ID work as expected', async () => {
+    it('Monthly summary alert emails for subscriptions that refer to a USE ID work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
@@ -364,8 +365,8 @@ describe('GLAD alert emails', () => {
             { params: { use: 'gfw_logging', useid: '29407' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockAlertsQuery(3);
+        const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+        mockGLADAlertsQuery(3);
         createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
 
         redisClient.on('message', (channel, message) => {
@@ -404,15 +405,15 @@ describe('GLAD alert emails', () => {
         }));
     });
 
-    it('No email is sent if there no alerts are returned by the glad alerts query', async () => {
+    it('No email is sent if there no alerts are returned by the monthly summary query', async () => {
         await new Subscription(createSubscription(
             ROLES.USER.id,
             'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
 
-        const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockAlertsQuery(1, undefined, { data: [] });
+        const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+        mockGLADAlertsQuery(1, undefined, { data: [] });
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);

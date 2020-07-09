@@ -6,7 +6,7 @@ const redis = require('redis');
 const Subscription = require('models/subscription');
 
 const { createSubscription } = require('./utils/helpers');
-const { createMockAlertsQuery } = require('./utils/mock');
+const { mockGLADAlertsQuery } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 const { getTestServer } = require('./utils/test-server');
 
@@ -89,7 +89,7 @@ describe('Test email alerts spec', () => {
     it('Testing an email alert for GLAD alerts should return a 200 OK response', async () => {
         const sub = await new Subscription(createSubscription(ROLES.ADMIN.id, 'glad-alerts')).save();
         process.on('unhandledRejection', (args) => should.fail(...args));
-        createMockAlertsQuery(3);
+        mockGLADAlertsQuery(3);
 
         const body = {
             loggedUser: ROLES.ADMIN,
