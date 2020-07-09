@@ -39,6 +39,13 @@ class AnalysisService {
                 return await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
             }
 
+            // Override results in the case of monthly-summary
+            if (layerSlug === 'monthly-summary') {
+                const gladAlerts = await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                const viirsAlerts = await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                return { gladAlerts, viirsAlerts };
+            }
+
             const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: url,
                 method: 'GET',
