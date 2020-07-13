@@ -62,7 +62,7 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
+                case 'forest-fires-notification-viirs-en':
                     validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 case 'subscriptions-stats':
@@ -101,7 +101,7 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-fr':
+                case 'forest-fires-notification-viirs-fr':
                     validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'fr', 'moyenne');
                     break;
                 case 'subscriptions-stats':
@@ -140,7 +140,7 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-zh':
+                case 'forest-fires-notification-viirs-zh':
                     validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'zh', '平均');
                     break;
                 case 'subscriptions-stats':
@@ -180,7 +180,7 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
+                case 'forest-fires-notification-viirs-en':
                     validateVIIRSNotificationParams(
                         jsonMessage,
                         beginDate,
@@ -229,7 +229,7 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
+                case 'forest-fires-notification-viirs-en':
                     validateVIIRSNotificationParams(
                         jsonMessage,
                         beginDate,
@@ -278,7 +278,7 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
+                case 'forest-fires-notification-viirs-en':
                     validateVIIRSNotificationParams(
                         jsonMessage,
                         beginDate,
@@ -327,7 +327,7 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
+                case 'forest-fires-notification-viirs-en':
                     validateVIIRSNotificationParams(
                         jsonMessage,
                         beginDate,
@@ -376,7 +376,7 @@ describe('VIIRS Fires alert emails', () => {
 
             switch (jsonMessage.template) {
 
-                case 'fires-notification-en':
+                case 'forest-fires-notification-viirs-en':
                     validateVIIRSNotificationParams(
                         jsonMessage,
                         beginDate,

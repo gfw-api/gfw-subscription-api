@@ -239,7 +239,7 @@ class SubscriptionsRouter {
         const slug = info.slug ? info.slug : 'viirs-active-fires';
         const mock = MockService.getMock(slug);
         if (info.type === 'EMAIL') {
-            mailService.sendMail('fires-notification-en', mock, [{ email: info.content }]);
+            mailService.sendMail('forest-fires-notification-viirs-en', mock, [{ email: info.content }]);
         } else {
             try {
                 await request({
