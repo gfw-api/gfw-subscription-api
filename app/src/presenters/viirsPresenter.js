@@ -1,40 +1,58 @@
+/* eslint-disable max-len */
 const logger = require('logger');
-const imageService = require('services/imageService');
-const analysisService = require('services/analysisService');
+const moment = require('moment');
+const config = require('config');
+const GeostoreService = require('services/geostoreService');
+const ViirsAlertsService = require('services/viirsAlertsService');
+const EmailHelpersService = require('services/emailHelpersService');
 
-
-class VIIRSPresenter {
+class ViirsPresenter {
 
     static async transform(results, layer, subscription, begin, end) {
-        logger.debug('Obtaining fires');
-        const alerts = await analysisService.execute(subscription, layer.slug, begin, end, true);
-        if (alerts && alerts.length && alerts.length > 0) {
-            const alertsFormat = [];
-            let length = 10;
-            if (alerts.length < 10) {
-                length = alerts.length;
-            }
-            for (let i = 0; i < length; i++) {
-                try {
-                    alertsFormat.push({
-                        acq_date: alerts[i].acqDate.split('T')[0],
-                        acq_time: `${alerts[i].acqTime.substr(0, 2)}:${alerts[i].acqTime.substr(2, 4)}`,
-                        latitude: alerts[i].latitude,
-                        longitude: alerts[i].longitude
-                    });
-                } catch (err) {
-                    logger.error(err);
-                    throw err;
-                }
-            }
-            logger.debug('Alerts formatted', alertsFormat);
-            results.alerts = alertsFormat;
+        EmailHelpersService.updateMonthTranslations();
+        moment.locale(subscription.language || 'en');
+
+        try {
+            const startDate = moment(begin);
+            const endDate = moment(end);
+            const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
+
+            const alerts = await ViirsAlertsService.getAnalysisInPeriodForSubscription(
+                startDate.format('YYYY-MM-DD'),
+                endDate.format('YYYY-MM-DD'),
+                subscription.params
+            );
+
+            results.alerts = alerts.map((el) => ({
+                alert_type: 'VIIRS',
+                date: `${moment(el.alert__date).format('DD/MM/YYYY HH:MM')} UTC`,
+            }));
+            results.month = startDate.format('MMMM');
+            results.year = startDate.format('YYYY');
+            results.week_of = `${startDate.format('DD MMM')}`;
+            results.week_start = startDate.format('DD/MM/YYYY');
+            results.week_end = endDate.format('DD/MM/YYYY');
+            results.viirs_count = alerts.reduce((acc, curr) => acc + curr.alert__count, 0);
+            results.alert_count = alerts.reduce((acc, curr) => acc + curr.alert__count, 0);
+            results.downloadUrls = {
+                csv: `${config.get('apiGateway.externalUrl')}/viirs-active-fires/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`,
+                json: `${config.get('apiGateway.externalUrl')}/viirs-active-fires/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`,
+            };
+
+            // Calculate alerts grouped by area types
+            results.priority_areas = EmailHelpersService.calculateVIIRSPriorityAreaValues(alerts, results.alert_count);
+
+            // Finding alerts for the same period last year and calculate frequency
+            const lastYearAlerts = await ViirsAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
+            results.viirs_frequency = await EmailHelpersService.calculateAlertFrequency(alerts, lastYearAlerts, subscription.language);
+        } catch (err) {
+            logger.error(err);
+            results.alerts = [];
         }
-        results.alert_count = results.value;
-        results.map_image = await imageService.overviewImage(subscription, layer.slug, begin, end);
+        logger.info('VIIRS Active Fires results: ', results);
         return results;
     }
 
 }
 
-module.exports = VIIRSPresenter;
+module.exports = ViirsPresenter;

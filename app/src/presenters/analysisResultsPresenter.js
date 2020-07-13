@@ -9,11 +9,13 @@ const StoryPresenter = require('presenters/storyPresenter');
 const ImazonPresenter = require('presenters/imazonPresenter');
 const FormaPresenter = require('presenters/formaPresenter');
 const Forma250GFWPresenter = require('presenters/forma250GFWPresenter');
+const MonthlySummaryPresenter = require('presenters/monthlySummaryPresenter');
 
 const UrlService = require('services/urlService');
 const AlertUrlService = require('services/alertUrlService');
 
 const PRESENTER_MAP = {
+    'monthly-summary': MonthlySummaryPresenter,
     'viirs-active-fires': VIIRSPresenter,
     'glad-alerts': GLADPresenter,
     'imazon-alerts': ImazonPresenter,

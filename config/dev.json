@@ -3,7 +3,9 @@
     "gladISODataset": "12c24404-00f9-449b-a02e-23832ca1db84",
     "gladWDPADataset": "851de968-1dd7-4156-91ac-4312badf4e6f",
     "gladGeostoreDataset": "9b8d79c8-1865-43de-890e-1fc7e6948454",
-    "viirsAlertsDataset": "e17593fd-fdcf-40c5-8e6e-c437c9fc15a2"
+    "viirsISODataset": "875863d1-35bb-44f2-8b71-03beb5c90c38",
+    "viirsWDPADataset": "43371354-4a60-4cac-afd9-1e4627682ea2",
+    "viirsGeostoreDataset": "ef91cab3-92ba-4bf4-bb3e-edd526529be2"
   },
   "layers": {
     "gladAlertLayerDataset": "bfd1d211-8106-4393-86c3-9e1ab2ee1b9b",

@@ -2,6 +2,7 @@ const chai = require('chai');
 const nock = require('nock');
 const redis = require('redis');
 const config = require('config');
+const moment = require('moment');
 const LastUpdateModel = require('models/lastUpdate');
 const { getTestServer } = require('./utils/test-server');
 const cronLoader = require('../../src/cronLoader');
@@ -52,10 +53,8 @@ describe('CronLoader task queueing', () => {
             jsonMessage.should.have.property('layer_slug').and.equal('viirs-active-fires');
 
             jsonMessage.should.have.property('begin_date');
-            new Date(jsonMessage.begin_date).should.beforeDate(new Date());
-
             jsonMessage.should.have.property('end_date');
-            new Date(jsonMessage.end_date).should.equalDate(new Date());
+            moment(jsonMessage.begin_date).toDate().should.beforeDate(moment(jsonMessage.end_date).toDate());
 
             expectedMessageCount -= 1;
 
@@ -255,6 +254,66 @@ describe('CronLoader task queueing', () => {
             new Date(jsonMessage.end_date).should.beforeDate(new Date());
 
             new Date(jsonMessage.begin_date).should.beforeDate(new Date(jsonMessage.end_date));
+
+            expectedMessageCount -= 1;
+
+            if (expectedMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedMessageCount:${expectedMessageCount}`);
+            }
+
+            if (expectedMessageCount === 0) {
+                resolve();
+            }
+        };
+
+        return new Promise((resolve) => {
+            redisClient.on('message', validateMessage(resolve));
+        });
+    });
+
+    it('Test glad-alerts cron task queues the expected message', async () => {
+        const task = taskConfig.find((e) => e.dataset === 'glad-alerts');
+        await cronLoader.getTask(task);
+
+        let expectedMessageCount = 1;
+
+        const validateMessage = (resolve) => async (channel, message) => {
+            const jsonMessage = JSON.parse(message);
+            jsonMessage.should.have.property('layer_slug').and.equal('glad-alerts');
+
+            jsonMessage.should.have.property('begin_date');
+            jsonMessage.should.have.property('end_date');
+            moment(jsonMessage.begin_date).toDate().should.beforeDate(moment(jsonMessage.end_date).toDate());
+
+            expectedMessageCount -= 1;
+
+            if (expectedMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedMessageCount:${expectedMessageCount}`);
+            }
+
+            if (expectedMessageCount === 0) {
+                resolve();
+            }
+        };
+
+        return new Promise((resolve) => {
+            redisClient.on('message', validateMessage(resolve));
+        });
+    });
+
+    it('Test monthly-summary cron task queues the expected message', async () => {
+        const task = taskConfig.find((e) => e.dataset === 'monthly-summary');
+        await cronLoader.getTask(task);
+
+        let expectedMessageCount = 1;
+
+        const validateMessage = (resolve) => async (channel, message) => {
+            const jsonMessage = JSON.parse(message);
+            jsonMessage.should.have.property('layer_slug').and.equal('monthly-summary');
+
+            jsonMessage.should.have.property('begin_date');
+            jsonMessage.should.have.property('end_date');
+            moment(jsonMessage.begin_date).toDate().should.beforeDate(moment(jsonMessage.end_date).toDate());
 
             expectedMessageCount -= 1;
 

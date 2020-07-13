@@ -239,7 +239,7 @@ class SubscriptionsRouter {
         const slug = info.slug ? info.slug : 'viirs-active-fires';
         const mock = MockService.getMock(slug);
         if (info.type === 'EMAIL') {
-            mailService.sendMail('fires-notification-en', mock, [{ email: info.content }]);
+            mailService.sendMail('forest-fires-notification-viirs-en', mock, [{ email: info.content }]);
         } else {
             try {
                 await request({
@@ -325,7 +325,7 @@ class SubscriptionsRouter {
             return;
         }
 
-        if (!['glad-alerts', 'viirs-active-fires'].includes(alert)) {
+        if (!['glad-alerts', 'viirs-active-fires', 'monthly-summary'].includes(alert)) {
             ctx.throw(400, 'The alert provided is not supported for testing.');
             return;
         }

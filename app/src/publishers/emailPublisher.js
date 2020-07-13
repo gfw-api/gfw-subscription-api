@@ -3,13 +3,14 @@ const mailService = require('services/mailService');
 
 const DEFAULT_TEMPLATE = 'forest-change-notification';
 const TEMPLATE_MAP = {
-    'viirs-active-fires': 'fires-notification',
+    'viirs-active-fires': 'forest-fires-notification-viirs',
     'imazon-alerts': 'forest-change-imazon-alerts',
     story: 'stories-alerts',
     'forma-alerts': 'forest-change-notification',
     forma250GFW: 'forest-change-notification',
     'terrai-alerts': 'forest-change-notification',
-    'glad-alerts': 'forest-change-notification-glads'
+    'glad-alerts': 'forest-change-notification-glads',
+    'monthly-summary': 'monthly-summary',
 };
 
 class EmailPublisher {

@@ -1,7 +1,9 @@
-# v.1.5.1
+# v.1.6.0
 
-## 03/07/2020
+## 13/07/2020
 
+- Create new presenter for monthly summary emails. [#172772321](https://www.pivotaltracker.com/story/show/172772321)
+- Configure new cron for sending monthly summary emails on a monthly basis. [#172772438](https://www.pivotaltracker.com/story/show/172772438)
 - Add `redirect=false` via query param to disable redirection in re-send confirmation endpoint.
 
 # v.1.5.0

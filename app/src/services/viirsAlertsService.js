@@ -4,7 +4,7 @@ const moment = require('moment');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 const GeostoreService = require('services/geostoreService');
 
-class GLADAlertsService {
+class ViirsAlertsService {
 
     /**
      * Returns the URL that should be used to fetch alerts for a subscription related to an ISO.
@@ -33,7 +33,7 @@ class GLADAlertsService {
 
         sql += ' ORDER BY alert__date';
 
-        return `/query/${config.get('datasets.gladISODataset')}?sql=${sql}`;
+        return `/query/${config.get('datasets.viirsISODataset')}?sql=${sql}`;
     }
 
     /**
@@ -50,7 +50,7 @@ class GLADAlertsService {
         let sql = `SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}' `;
         sql += `AND wdpa_protected_area__id = '${wdpaid}'`;
         sql += ' ORDER BY alert__date';
-        return `/query/${config.get('datasets.gladWDPADataset')}?sql=${sql}`;
+        return `/query/${config.get('datasets.viirsWDPADataset')}?sql=${sql}`;
     }
 
     /**
@@ -65,7 +65,7 @@ class GLADAlertsService {
     static getURLInPeriodForGeostore(startDate, endDate, geostoreId) {
         const sql = `SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}' `
             + `AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
-        return `/query/${config.get('datasets.gladGeostoreDataset')}?sql=${sql}`;
+        return `/query/${config.get('datasets.viirsGeostoreDataset')}?sql=${sql}`;
     }
 
     /**
@@ -78,16 +78,16 @@ class GLADAlertsService {
      * @returns {Promise<*>}
      */
     static async getAnalysisInPeriodForSubscription(startDate, endDate, params) {
-        logger.info('Entering GLAD analysis endpoint with params', startDate, endDate, params);
+        logger.info('Entering VIIRS analysis endpoint with params', startDate, endDate, params);
 
         let uri;
         if (params && params.iso) {
-            uri = GLADAlertsService.getURLInPeriodForISO(startDate, endDate, params);
+            uri = ViirsAlertsService.getURLInPeriodForISO(startDate, endDate, params);
         } else if (params && params.wdpaid) {
-            uri = GLADAlertsService.getURLInPeriodForWDPA(startDate, endDate, params);
+            uri = ViirsAlertsService.getURLInPeriodForWDPA(startDate, endDate, params);
         } else {
             const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
-            uri = GLADAlertsService.getURLInPeriodForGeostore(startDate, endDate, geostoreId);
+            uri = ViirsAlertsService.getURLInPeriodForGeostore(startDate, endDate, geostoreId);
         }
 
         const response = await ctRegisterMicroservice.requestToMicroservice({ uri, method: 'GET', json: true });
@@ -105,7 +105,7 @@ class GLADAlertsService {
     static async getAnalysisSamePeriodLastYearForSubscription(startDate, endDate, params) {
         const lastYearStartDate = moment(startDate).subtract('1', 'y');
         const lastYearEndDate = moment(endDate).subtract('1', 'y');
-        return GLADAlertsService.getAnalysisInPeriodForSubscription(
+        return ViirsAlertsService.getAnalysisInPeriodForSubscription(
             lastYearStartDate.format('YYYY-MM-DD'),
             lastYearEndDate.format('YYYY-MM-DD'),
             params
@@ -114,4 +114,4 @@ class GLADAlertsService {
 
 }
 
-module.exports = GLADAlertsService;
+module.exports = ViirsAlertsService;

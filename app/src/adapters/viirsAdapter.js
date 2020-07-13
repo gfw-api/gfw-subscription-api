@@ -1,4 +1,4 @@
-class GladAdapter {
+class ViirsAdapter {
 
     constructor(results) {
         this.results = results;
@@ -11,4 +11,4 @@ class GladAdapter {
 
 }
 
-module.exports = GladAdapter;
+module.exports = ViirsAdapter;
