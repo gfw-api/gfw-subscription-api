@@ -136,24 +136,9 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
     ));
 };
 
-const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub, geostoreId) => {
+const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub) => {
     jsonMessage.data.should.have.property('layerSlug').and.equal('monthly-summary');
-
-    jsonMessage.data.downloadUrls.should.have.property('glad').and.have.property('csv').and
-        // eslint-disable-next-line max-len
-        .equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`);
-    jsonMessage.data.downloadUrls.should.have.property('glad').and.have.property('json').and
-        // eslint-disable-next-line max-len
-        .equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`);
-
-    jsonMessage.data.downloadUrls.should.have.property('viirs').and.have.property('csv').and
-        // eslint-disable-next-line max-len
-        .equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/viirs-active-fires/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`);
-    jsonMessage.data.downloadUrls.should.have.property('viirs').and.have.property('json').and
-        // eslint-disable-next-line max-len
-        .equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/viirs-active-fires/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`);
-
-    jsonMessage.data.should.have.property('all_priority_areas').and.deep.equal({
+    jsonMessage.data.should.have.property('priority_areas').and.deep.equal({
         intact_forest: 47,
         primary_forest: 48,
         peat: 1179,
@@ -192,18 +177,21 @@ const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, en
         beginDate,
         endDate,
     ));
+
+    jsonMessage.data.should.have.property('viirs_days_count').and.equal(30);
+    jsonMessage.data.should.have.property('viirs_day_start').and.equal(beginDate.format('DD/MM/YYYY'));
+    jsonMessage.data.should.have.property('viirs_day_end').and.equal(endDate.format('DD/MM/YYYY'));
+    jsonMessage.data.should.have.property('location').and.equal(sub.name);
 };
 
 const validateGLADSpecificParams = (jsonMessage, beginDate, endDate, sub, frequency) => {
     jsonMessage.data.should.have.property('glad_frequency').and.equal(frequency);
     jsonMessage.data.should.have.property('glad_count').and.equal(51);
-    jsonMessage.data.should.have.property('downloadUrls');
 };
 
 const validateVIIRSSpecificParams = (jsonMessage, beginDate, endDate, sub, frequency) => {
     jsonMessage.data.should.have.property('viirs_frequency').and.equal(frequency);
     jsonMessage.data.should.have.property('viirs_count').and.equal(3232);
-    jsonMessage.data.should.have.property('downloadUrls');
 };
 
 const validateGLADNotificationParams = (
@@ -244,12 +232,11 @@ const validateMonthlySummaryNotificationParams = (
     lang = 'en',
     frequency = 'average',
     areaName = 'Custom Area',
-    geostoreId = '423e5dfb0448e692f97b590c61f45f22',
 ) => {
     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub, lang, areaName);
     validateGLADSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
-    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub, geostoreId);
+    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub);
 };
 
 module.exports = {

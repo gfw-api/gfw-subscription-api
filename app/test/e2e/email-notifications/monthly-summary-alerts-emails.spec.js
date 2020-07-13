@@ -62,7 +62,7 @@ describe('Monthly summary notifications', () => {
             jsonMessage.should.have.property('template');
             switch (jsonMessage.template) {
 
-                case 'monthly-summary-notification-en':
+                case 'monthly-summary-en':
                     validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 case 'subscriptions-stats':
@@ -102,7 +102,7 @@ describe('Monthly summary notifications', () => {
 
             switch (jsonMessage.template) {
 
-                case 'monthly-summary-notification-fr':
+                case 'monthly-summary-fr':
                     validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'fr', 'moyenne');
                     break;
                 case 'subscriptions-stats':
@@ -142,7 +142,7 @@ describe('Monthly summary notifications', () => {
 
             switch (jsonMessage.template) {
 
-                case 'monthly-summary-notification-zh':
+                case 'monthly-summary-zh':
                     validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'zh', '平均');
                     break;
                 case 'subscriptions-stats':
@@ -174,7 +174,6 @@ describe('Monthly summary notifications', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
         mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
-        createMockGeostore('/v2/geostore/admin/IDN');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -183,7 +182,7 @@ describe('Monthly summary notifications', () => {
 
             switch (jsonMessage.template) {
 
-                case 'monthly-summary-notification-en':
+                case 'monthly-summary-en':
                     validateMonthlySummaryNotificationParams(
                         jsonMessage,
                         beginDate,
@@ -192,7 +191,6 @@ describe('Monthly summary notifications', () => {
                         'en',
                         'average',
                         'ISO Code: IDN',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -224,7 +222,6 @@ describe('Monthly summary notifications', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
         mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
-        createMockGeostore('/v2/geostore/admin/IDN/3');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -233,7 +230,7 @@ describe('Monthly summary notifications', () => {
 
             switch (jsonMessage.template) {
 
-                case 'monthly-summary-notification-en':
+                case 'monthly-summary-en':
                     validateMonthlySummaryNotificationParams(
                         jsonMessage,
                         beginDate,
@@ -242,7 +239,6 @@ describe('Monthly summary notifications', () => {
                         'en',
                         'average',
                         'ISO Code: IDN, ID1: 3',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -274,7 +270,6 @@ describe('Monthly summary notifications', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
         mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
-        createMockGeostore('/v2/geostore/admin/BRA/1/1');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -283,7 +278,7 @@ describe('Monthly summary notifications', () => {
 
             switch (jsonMessage.template) {
 
-                case 'monthly-summary-notification-en':
+                case 'monthly-summary-en':
                     validateMonthlySummaryNotificationParams(
                         jsonMessage,
                         beginDate,
@@ -292,7 +287,6 @@ describe('Monthly summary notifications', () => {
                         'en',
                         'average',
                         'ISO Code: BRA, ID1: 1, ID2: 1',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -324,7 +318,6 @@ describe('Monthly summary notifications', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3, config.get('datasets.gladWDPADataset'));
         mockVIIRSAlertsQuery(3, config.get('datasets.viirsWDPADataset'));
-        createMockGeostore('/v2/geostore/wdpa/1');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -333,7 +326,7 @@ describe('Monthly summary notifications', () => {
 
             switch (jsonMessage.template) {
 
-                case 'monthly-summary-notification-en':
+                case 'monthly-summary-en':
                     validateMonthlySummaryNotificationParams(
                         jsonMessage,
                         beginDate,
@@ -342,7 +335,6 @@ describe('Monthly summary notifications', () => {
                         'en',
                         'average',
                         'WDPA ID: 1',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -374,7 +366,7 @@ describe('Monthly summary notifications', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADAlertsQuery(3);
         mockVIIRSAlertsQuery(3);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 7);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 6);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -383,7 +375,7 @@ describe('Monthly summary notifications', () => {
 
             switch (jsonMessage.template) {
 
-                case 'monthly-summary-notification-en':
+                case 'monthly-summary-en':
                     validateMonthlySummaryNotificationParams(
                         jsonMessage,
                         beginDate,
@@ -392,7 +384,6 @@ describe('Monthly summary notifications', () => {
                         'en',
                         'average',
                         'Custom Area',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
