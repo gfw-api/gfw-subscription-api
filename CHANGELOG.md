@@ -1,3 +1,9 @@
+# v.1.6.1
+
+## 15/07/2020
+
+- Add possibility of ADMIN users finding subscriptions owned by other users by their ids.
+
 # v.1.6.0
 
 ## 13/07/2020

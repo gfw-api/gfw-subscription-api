@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const request = require('request-promise-native');
 const Subscription = require('models/subscription');
 const SubscriptionService = require('services/subscriptionService');
+const SubscriptionSerializer = require('serializers/subscriptionSerializer');
 const UpdateService = require('services/updateService');
 const DatasetService = require('services/datasetService');
 const StatisticsService = require('services/statisticsService');
@@ -57,7 +58,9 @@ class SubscriptionsRouter {
         const { id } = ctx.params;
 
         try {
-            ctx.body = await SubscriptionService.getSubscriptionForUser(id, user.id);
+            ctx.body = user.role === 'ADMIN'
+                ? SubscriptionSerializer.serialize(await SubscriptionService.getSubscriptionById(id))
+                : await SubscriptionService.getSubscriptionForUser(id, user.id);
         } catch (err) {
             logger.error(err);
         }
@@ -372,7 +375,7 @@ const subscriptionExists = (isForUser) => async (ctx, next) => {
     }
 
     const user = SubscriptionsRouter.getUser(ctx);
-    const subscription = (isForUser && user.id !== 'microservice')
+    const subscription = (isForUser && user.id !== 'microservice' && user.role !== 'ADMIN')
         ? await Subscription.findOne({ _id: id, userId: user.id })
         : await Subscription.findById(id);
 
