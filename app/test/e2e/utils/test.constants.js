@@ -154,7 +154,7 @@ const DEFAULT_DATASET = {
 
 const ROLES = {
     USER: {
-        id: '1a10d7c6e0a37126611fd7a7',
+        id: '1a10d7c6e0a37126611fd7a1',
         role: 'USER',
         provider: 'local',
         email: 'rootikaleks@gmail.com',
@@ -171,7 +171,7 @@ const ROLES = {
         }
     },
     MANAGER: {
-        id: '1a10d7c6e0a37126611fd7a7',
+        id: '1a10d7c6e0a37126611fd7a2',
         role: 'MANAGER',
         provider: 'local',
         email: 'user@control-tower.org',
@@ -188,7 +188,7 @@ const ROLES = {
         }
     },
     WRONG_ADMIN: {
-        id: '1a10d7c6e0a37126611fd7a7',
+        id: '1a10d7c6e0a37126611fd7a3',
         role: 'ADMIN',
         provider: 'local',
         email: 'user@control-tower.org',
@@ -203,7 +203,7 @@ const ROLES = {
         }
     },
     ADMIN: {
-        id: '1a10d7c6e0a37126611fd7a7',
+        id: '1a10d7c6e0a37126611fd7a4',
         role: 'ADMIN',
         provider: 'local',
         email: 'user@control-tower.org',
@@ -220,7 +220,7 @@ const ROLES = {
         }
     },
     SUPERADMIN: {
-        id: '1a10d7c6e0a37126601fd7a6',
+        id: '1a10d7c6e0a37126601fd7a5',
         role: 'SUPERADMIN',
         provider: 'local',
         email: 'user@control-tower.org',
