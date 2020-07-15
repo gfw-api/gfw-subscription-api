@@ -97,6 +97,28 @@ describe('Get subscription by id endpoint', () => {
         data.attributes.should.deep.equal(expectedSubscription);
     });
 
+    it('Getting a subscription by id as an ADMIN even when not the owner of the subscription should return the subscription (ADMIN override)', async () => {
+        const sub = await createSubInDB(ROLES.USER.id, getUUID());
+
+        const response = await subscription.get(sub._id).query({ loggedUser: JSON.stringify(ROLES.ADMIN) }).send();
+        response.status.should.equal(200);
+        response.body.should.have.property('data').and.instanceOf(Object);
+        const { data } = response.body;
+
+        data.type.should.equal('subscription');
+        data.id.should.equal(sub._id.toString());
+        data.should.have.property('attributes').and.instanceOf(Object);
+
+        // omit fields which are not present to user from response body and convert the createdAt to ISO string
+        const expectedSubscription = omit({
+            // eslint-disable-next-line no-underscore-dangle
+            ...sub._doc,
+            createdAt: sub.createdAt.toISOString(),
+        }, ['_id', 'updateAt', 'application', '__v']);
+
+        data.attributes.should.deep.equal(expectedSubscription);
+    });
+
     afterEach(async () => {
         await Subscription.deleteMany({}).exec();
 
