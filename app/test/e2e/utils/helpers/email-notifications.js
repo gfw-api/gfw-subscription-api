@@ -1,4 +1,5 @@
 const chai = require('chai');
+const config = require('config');
 const moment = require('moment');
 
 const AlertUrlService = require('services/alertUrlService');
@@ -16,7 +17,7 @@ const assertSubscriptionStatsNotificationEvent = (jsonMessage, sub) => {
     jsonMessage.data.users[0].should.have.property('email').and.equal(sub.resource.content);
     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
     jsonMessage.recipients[0].should.be.an('object').and.have.property('address')
-        .and.have.property('email').and.equal('info@vizzuality.com');
+        .and.have.property('email').and.equal(config.get('mails.statsRecipients'));
 };
 
 const bootstrapEmailNotificationTests = (amount = '1', unit = 'w') => {

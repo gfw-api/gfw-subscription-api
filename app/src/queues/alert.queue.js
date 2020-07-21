@@ -54,7 +54,10 @@ class AlertQueue {
             }
 
             let mailCounter = 0;
+            let notSentCounter = 0;
             const users = [];
+            const successSubscriptions = [];
+            const errorSubscriptions = [];
             for (let i = 0, { length } = subscriptions; i < length; i++) {
                 try {
                     const subscription = await SubscriptionService.getSubscriptionById(subscriptions[i]._id);
@@ -62,10 +65,23 @@ class AlertQueue {
                     const sent = await subscription.publish(layer, begin, end);
                     if (sent) {
                         mailCounter++;
+                        successSubscriptions.push({
+                            id: subscription._id.toString(),
+                            startDate: begin,
+                            endDate: end,
+                        });
+
                         users.push({
                             userId: subscription.userId,
                             email: subscription.resource.content,
                             subscriptionId: subscriptions[i]._id
+                        });
+                    } else {
+                        notSentCounter++;
+                        errorSubscriptions.push({
+                            id: subscription._id.toString(),
+                            startDate: begin,
+                            endDate: end,
                         });
                     }
                 } catch (e) {
@@ -73,7 +89,17 @@ class AlertQueue {
                 }
             }
 
-            EmailPublisher.sendStats(STATS_MAILS, { counter: mailCounter, users, dataset: layerSlug });
+            EmailPublisher.sendStats(
+                STATS_MAILS,
+                {
+                    counter: mailCounter,
+                    notSentCounter,
+                    users,
+                    dataset: layerSlug,
+                    successSubscriptions,
+                    errorSubscriptions,
+                }
+            );
         } catch (e) {
             logger.error(e);
         }
