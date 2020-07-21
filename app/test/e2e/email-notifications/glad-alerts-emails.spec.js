@@ -426,7 +426,8 @@ describe('GLAD alert emails', () => {
                     jsonMessage.data.should.have.property('dataset').and.equal('glad-alerts');
                     jsonMessage.data.should.have.property('users').and.be.an('array').and.length(0);
                     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
-                    jsonMessage.recipients[0].should.be.an('object').and.have.property('address').and.have.property('email').and.equal('info@vizzuality.com');
+                    jsonMessage.recipients[0].should.be.an('object').and.have.property('address')
+                        .and.have.property('email').and.equal(config.get('mails.statsRecipients'));
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
