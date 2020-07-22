@@ -34,6 +34,7 @@ class EmailPublisher {
         const template = 'subscriptions-stats';
         logger.info('MAIL TEMPLATE', template);
         const recipients = emails.map((el) => ({ address: { email: el } }));
+        logger.info('Subscription stats email recipients', emails);
         mailService.sendMail(template, stats, recipients);
     }
 
