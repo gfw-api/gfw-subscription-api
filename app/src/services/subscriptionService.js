@@ -10,7 +10,7 @@ const UrlService = require('services/urlService');
 class SubscriptionService {
 
     static getSupportedLanguages() {
-        return ['en', 'fr', 'es', 'pt', 'zh', 'id'];
+        return ['en', 'fr', 'es_MX', 'pt_BR', 'zh', 'id'];
     }
 
     static formatSubscription(subscription) {
