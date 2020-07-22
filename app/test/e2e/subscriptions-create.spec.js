@@ -160,16 +160,16 @@ describe('Create subscriptions tests', () => {
 
     it('Create a subscription with the basic required fields with application = "test" should return a 200, create a subscription and emit a redis message(happy case)', async () => {
         this.channel.on('message', validRedisMessage({
-            template: 'subscription-confirmation-test-ru',
+            template: 'subscription-confirmation-test-en',
             application: 'gfw',
-            language: 'ru',
+            language: 'en',
         }));
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
             .send({
                 datasets: ['123456789'],
-                language: 'ru',
+                language: 'en',
                 resource: {
                     type: 'EMAIL',
                     content: 'email@address.com'
