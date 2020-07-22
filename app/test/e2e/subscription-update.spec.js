@@ -158,17 +158,11 @@ describe('Update subscription endpoint', () => {
         data.attributes.should.deep.equal(expectedAttributes);
 
         const subscriptionFromDB = await Subscription.findOne({ _id: subscription._id });
-        const expectedSubscription = {
-            ...subscription._doc,
-            ...SUBSCRIPTION_TO_UPDATE,
-            __v: 1
-        };
-        const actualSubscription = {
-            ...subscriptionFromDB._doc,
-            createdAt: subscriptionFromDB.createdAt.toISOString(),
-        };
-
-        actualSubscription.should.deep.equal(expectedSubscription);
+        subscriptionFromDB._doc.should.deep.equal({
+            ...subscription.toJSON(),
+            ...updateData,
+            language: 'en',
+        });
     });
 
     afterEach(async () => {

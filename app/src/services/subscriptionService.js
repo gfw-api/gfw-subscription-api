@@ -9,6 +9,10 @@ const UrlService = require('services/urlService');
 
 class SubscriptionService {
 
+    static getSupportedLanguages() {
+        return ['en', 'fr', 'es', 'pt', 'zh', 'id'];
+    }
+
     static formatSubscription(subscription) {
         if (!subscription) {
             return {};
@@ -33,6 +37,12 @@ class SubscriptionService {
     static async createSubscription(data) {
         logger.info('Creating subscription with data ', data);
         data.userId = (data.loggedUser.id === 'microservice') ? data.userId : data.loggedUser.id;
+
+        // Sanitize subscription language
+        if (!SubscriptionService.getSupportedLanguages().includes(data.language)) {
+            data.language = 'en';
+        }
+
         const subscriptionFormatted = SubscriptionService.formatSubscription(data);
         logger.debug('Creating subscription ', subscriptionFormatted);
         delete subscriptionFormatted.createdAt;
@@ -91,6 +101,11 @@ class SubscriptionService {
         _.each(attributes, (value, attribute) => {
             subscription[attribute] = value;
         });
+
+        // Sanitize subscription language
+        if (!SubscriptionService.getSupportedLanguages().includes(subscription.language)) {
+            subscription.language = 'en';
+        }
 
         await subscription.save();
 
