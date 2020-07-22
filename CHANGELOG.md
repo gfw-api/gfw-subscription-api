@@ -1,3 +1,9 @@
+# v.1.6.2
+
+## 22/07/2020
+
+- Sanitize language of the subscription when providing an invalid language (supported languages are `en`, `fr`, `es`, `pt`, `zh` and `id`).
+
 # v.1.6.1
 
 ## 15/07/2020
