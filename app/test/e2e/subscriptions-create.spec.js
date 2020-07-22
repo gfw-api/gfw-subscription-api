@@ -18,6 +18,30 @@ const CHANNEL = config.get('apiGateway.queueName');
 
 let requester;
 
+const assertSubscriptionResponse = async (response) => {
+    response.status.should.equal(200);
+    response.body.should.have.property('data').and.be.an('object');
+
+    const databaseSubscriptions = await Subscription.find({}).exec();
+    databaseSubscriptions.should.be.an('array').and.have.length(1);
+
+    const subscriptionOne = databaseSubscriptions[0];
+    const responseSubscription = response.body.data;
+
+    responseSubscription.id.should.equal(subscriptionOne.id);
+    responseSubscription.attributes.should.have.property('confirmed').and.equal(subscriptionOne.confirmed);
+    responseSubscription.attributes.should.have.property('datasets').and.be.an('array').and.length(1).and.contains(subscriptionOne.datasets[0]);
+    responseSubscription.attributes.should.have.property('createdAt').and.be.a('string');
+    responseSubscription.attributes.should.have.property('datasetsQuery').and.be.an('array').and.length(0);
+    responseSubscription.attributes.should.have.property('env').and.equal(subscriptionOne.env);
+    responseSubscription.attributes.should.have.property('language').and.equal(subscriptionOne.language);
+    responseSubscription.attributes.should.have.property('params').and.deep.equal(subscriptionOne.params);
+    responseSubscription.attributes.resource.should.have.property('content').and.equal(subscriptionOne.resource.content);
+    responseSubscription.attributes.resource.should.have.property('type').and.equal(subscriptionOne.resource.type);
+
+    process.on('unhandledRejection', (err) => should.fail(err));
+};
+
 describe('Create subscriptions tests', () => {
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -131,72 +155,7 @@ describe('Create subscriptions tests', () => {
                 loggedUser: ROLES.ADMIN
             });
 
-        response.status.should.equal(200);
-        response.body.should.have.property('data').and.be.an('object');
-
-        const databaseSubscriptions = await Subscription.find({}).exec();
-        databaseSubscriptions.should.be.an('array').and.have.length(1);
-
-        const subscriptionOne = databaseSubscriptions[0];
-        const responseSubscription = response.body.data;
-
-        responseSubscription.id.should.equal(subscriptionOne.id);
-        responseSubscription.attributes.should.have.property('confirmed').and.equal(subscriptionOne.confirmed);
-        responseSubscription.attributes.should.have.property('datasets').and.be.an('array').and.length(1).and.contains(subscriptionOne.datasets[0]);
-        responseSubscription.attributes.should.have.property('createdAt').and.be.a('string');
-        responseSubscription.attributes.should.have.property('datasetsQuery').and.be.an('array').and.length(0);
-        responseSubscription.attributes.should.have.property('env').and.equal(subscriptionOne.env);
-        responseSubscription.attributes.should.have.property('language').and.equal(subscriptionOne.language);
-        responseSubscription.attributes.should.have.property('params').and.deep.equal(subscriptionOne.params);
-        responseSubscription.attributes.resource.should.have.property('content').and.equal(subscriptionOne.resource.content);
-        responseSubscription.attributes.resource.should.have.property('type').and.equal(subscriptionOne.resource.type);
-
-        process.on('unhandledRejection', (err) => should.fail(err));
-    });
-
-    it('Create a subscription with the basic required fields with language = "RU" should return a 200, create a subscription and emit a redis message (happy case)', async () => {
-        this.channel.on('message', validRedisMessage({
-            template: 'subscription-confirmation-ru',
-            application: 'gfw',
-            language: 'ru',
-        }));
-
-        const response = await requester
-            .post(`/api/v1/subscriptions`)
-            .send({
-                datasets: ['123456789'],
-                language: 'ru',
-                resource: {
-                    type: 'EMAIL',
-                    content: 'email@address.com'
-                },
-                params: {
-                    geostore: '35a6d982388ee5c4e141c2bceac3fb72'
-                },
-                loggedUser: ROLES.ADMIN
-            });
-
-        response.status.should.equal(200);
-        response.body.should.have.property('data').and.be.an('object');
-
-        const databaseSubscriptions = await Subscription.find({}).exec();
-        databaseSubscriptions.should.be.an('array').and.have.length(1);
-
-        const subscriptionOne = databaseSubscriptions[0];
-        const responseSubscription = response.body.data;
-
-        responseSubscription.id.should.equal(subscriptionOne.id);
-        responseSubscription.attributes.should.have.property('confirmed').and.equal(subscriptionOne.confirmed);
-        responseSubscription.attributes.should.have.property('datasets').and.be.an('array').and.length(1).and.contains(subscriptionOne.datasets[0]);
-        responseSubscription.attributes.should.have.property('createdAt').and.be.a('string');
-        responseSubscription.attributes.should.have.property('datasetsQuery').and.be.an('array').and.length(0);
-        responseSubscription.attributes.should.have.property('env').and.equal(subscriptionOne.env);
-        responseSubscription.attributes.should.have.property('language').and.equal(subscriptionOne.language);
-        responseSubscription.attributes.should.have.property('params').and.deep.equal(subscriptionOne.params);
-        responseSubscription.attributes.resource.should.have.property('content').and.equal(subscriptionOne.resource.content);
-        responseSubscription.attributes.resource.should.have.property('type').and.equal(subscriptionOne.resource.type);
-
-        process.on('unhandledRejection', (err) => should.fail(err));
+        await assertSubscriptionResponse(response);
     });
 
     it('Create a subscription with the basic required fields with application = "test" should return a 200, create a subscription and emit a redis message(happy case)', async () => {
@@ -222,27 +181,7 @@ describe('Create subscriptions tests', () => {
                 loggedUser: ROLES.ADMIN
             });
 
-        response.status.should.equal(200);
-        response.body.should.have.property('data').and.be.an('object');
-
-        const databaseSubscriptions = await Subscription.find({}).exec();
-        databaseSubscriptions.should.be.an('array').and.have.length(1);
-
-        const subscriptionOne = databaseSubscriptions[0];
-        const responseSubscription = response.body.data;
-
-        responseSubscription.id.should.equal(subscriptionOne.id);
-        responseSubscription.attributes.should.have.property('confirmed').and.equal(subscriptionOne.confirmed);
-        responseSubscription.attributes.should.have.property('datasets').and.be.an('array').and.length(1).and.contains(subscriptionOne.datasets[0]);
-        responseSubscription.attributes.should.have.property('createdAt').and.be.a('string');
-        responseSubscription.attributes.should.have.property('datasetsQuery').and.be.an('array').and.length(0);
-        responseSubscription.attributes.should.have.property('env').and.equal(subscriptionOne.env);
-        responseSubscription.attributes.should.have.property('language').and.equal(subscriptionOne.language);
-        responseSubscription.attributes.should.have.property('params').and.deep.equal(subscriptionOne.params);
-        responseSubscription.attributes.resource.should.have.property('content').and.equal(subscriptionOne.resource.content);
-        responseSubscription.attributes.resource.should.have.property('type').and.equal(subscriptionOne.resource.type);
-
-        process.on('unhandledRejection', (err) => should.fail(err));
+        await assertSubscriptionResponse(response);
     });
 
     it('Create a subscription with the basic required fields with resource_type = "URL" should return a 200, create a subscription, and don\'t emit a redis message (happy case)', async () => {
@@ -255,6 +194,7 @@ describe('Create subscriptions tests', () => {
                 language: 'ru',
                 resource: {
                     type: 'URL',
+                    content: 'http://www.google.com',
                 },
                 application: 'test',
                 params: {
@@ -263,26 +203,35 @@ describe('Create subscriptions tests', () => {
                 loggedUser: ROLES.ADMIN
             });
 
-        response.status.should.equal(200);
-        response.body.should.have.property('data').and.be.an('object');
-
-        const databaseSubscriptions = await Subscription.find({}).exec();
-        databaseSubscriptions.should.be.an('array').and.have.length(1);
-
-        const subscriptionOne = databaseSubscriptions[0];
-        const responseSubscription = response.body.data;
-
-        responseSubscription.id.should.equal(subscriptionOne.id);
-        responseSubscription.attributes.should.have.property('confirmed').and.equal(subscriptionOne.confirmed);
-        responseSubscription.attributes.should.have.property('datasets').and.be.an('array').and.length(1).and.contains(subscriptionOne.datasets[0]);
-        responseSubscription.attributes.should.have.property('createdAt').and.be.a('string');
-        responseSubscription.attributes.should.have.property('datasetsQuery').and.be.an('array').and.length(0);
-        responseSubscription.attributes.should.have.property('env').and.equal(subscriptionOne.env);
-        responseSubscription.attributes.should.have.property('language').and.equal(subscriptionOne.language);
-        responseSubscription.attributes.should.have.property('params').and.deep.equal(subscriptionOne.params);
-        responseSubscription.attributes.resource.should.have.property('type').and.equal(subscriptionOne.resource.type);
-
+        await assertSubscriptionResponse(response);
         sleep(1);
+    });
+
+    it('Create a subscription with an invalid language should sanitize the language, return a 200, create a subscription and emit a redis message (happy case)', async () => {
+        this.channel.on('message', validRedisMessage({
+            template: 'subscription-confirmation-en',
+            application: 'gfw',
+            language: 'en',
+        }));
+
+        const response = await requester
+            .post(`/api/v1/subscriptions`)
+            .send({
+                datasets: ['123456789'],
+                language: 'ru',
+                resource: {
+                    type: 'EMAIL',
+                    content: 'email@address.com'
+                },
+                params: {
+                    geostore: '35a6d982388ee5c4e141c2bceac3fb72'
+                },
+                loggedUser: ROLES.ADMIN
+            });
+
+        await assertSubscriptionResponse(response);
+        // Ensure language has been sanitized
+        response.body.data.attributes.should.have.property('language').and.equal('en');
     });
 
     afterEach(async () => {

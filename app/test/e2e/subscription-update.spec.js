@@ -1,18 +1,15 @@
-/* eslint-disable no-unused-vars,no-undef */
+/* eslint-disable no-underscore-dangle */
 const nock = require('nock');
-const { expect } = require('chai');
 const Subscription = require('models/subscription');
 const { omit } = require('lodash');
 const chai = require('chai');
 const { getTestServer } = require('./utils/test-server');
-const {
-    MOCK_USER_IDS, TEST_SUBSCRIPTIONS, SUBSCRIPTION_TO_UPDATE, ROLES
-} = require('./utils/test.constants');
+const { MOCK_USER_IDS, SUBSCRIPTION_TO_UPDATE, ROLES } = require('./utils/test.constants');
 const {
     ensureCorrectError, createSubInDB, getUUID, createAuthCases
 } = require('./utils/helpers');
 
-const should = chai.should();
+chai.should();
 
 const prefix = '/api/v1/subscriptions';
 
@@ -35,13 +32,8 @@ const updateSubscription = async ({
         subscription = await createSubInDB(userID, datasetID);
     }
 
-    return requester
-        .patch(`${prefix}/${subID || subscription._id}`)
-        .send({
-
-            ...subToUpdate,
-            loggedUser: ROLES.USER
-        });
+    return requester.patch(`${prefix}/${subID || subscription._id}`)
+        .send({ ...subToUpdate, loggedUser: ROLES.USER });
 };
 
 describe('Update subscription endpoint', () => {
@@ -128,15 +120,50 @@ describe('Update subscription endpoint', () => {
 
         const subscriptionFromDB = await Subscription.findOne({ _id: subscription._id });
         const expectedSubscription = {
-
-            // eslint-disable-next-line no-underscore-dangle
             ...subscription._doc,
             ...SUBSCRIPTION_TO_UPDATE,
             __v: 1
         };
         const actualSubscription = {
+            ...subscriptionFromDB._doc,
+            createdAt: subscriptionFromDB.createdAt.toISOString(),
+        };
 
-            // eslint-disable-next-line no-underscore-dangle
+        actualSubscription.should.deep.equal(expectedSubscription);
+    });
+
+    it('Updating subscription data providing an invalid language should sanitize the language and update the subscription', async () => {
+        const subscription = await createSubInDB(ROLES.USER.id, getUUID());
+        const updateData = { ...subscription.toJSON(), language: 'ru' };
+        delete updateData._id;
+        delete updateData.__v;
+        delete updateData.updateAt;
+        const response = await updateSubscription({ defaultSub: subscription, subToUpdate: updateData });
+
+        response.status.should.equal(200);
+        const { data } = response.body;
+
+        data.type.should.equal('subscription');
+        data.id.should.equal(subscription._id.toString());
+        data.should.have.property('attributes').and.instanceOf(Object);
+
+        const expectedAttributes = {
+            ...updateData,
+            createdAt: subscription.createdAt.toISOString(),
+            datasetsQuery: [],
+            userId: ROLES.USER.id,
+            language: 'en',
+        };
+        delete expectedAttributes.application;
+        data.attributes.should.deep.equal(expectedAttributes);
+
+        const subscriptionFromDB = await Subscription.findOne({ _id: subscription._id });
+        const expectedSubscription = {
+            ...subscription._doc,
+            ...SUBSCRIPTION_TO_UPDATE,
+            __v: 1
+        };
+        const actualSubscription = {
             ...subscriptionFromDB._doc,
             createdAt: subscriptionFromDB.createdAt.toISOString(),
         };
