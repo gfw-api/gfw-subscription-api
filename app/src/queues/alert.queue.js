@@ -65,11 +65,7 @@ class AlertQueue {
                         mailCounter++;
                     } else {
                         notSentCounter++;
-                        errorSubscriptions.push({
-                            id: subscription._id.toString(),
-                            startDate: begin,
-                            endDate: end,
-                        });
+                        errorSubscriptions.push(subscription._id.toString());
                     }
                 } catch (e) {
                     logger.error(e);

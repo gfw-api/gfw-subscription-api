@@ -32,10 +32,6 @@ class MonthlySummaryPresenter {
             gladAlerts.forEach((alert) => allAlerts.push({ ...alert, type: 'GLAD' }));
             viirsAlerts.forEach((alert) => allAlerts.push({ ...alert, type: 'VIIRS' }));
 
-            results.alerts = allAlerts.map((alert) => ({
-                alert_type: alert.type,
-                date: `${moment(alert.alert__date).format('DD/MM/YYYY HH:MM')} UTC`,
-            }));
             results.month = startDate.format('MMMM');
             results.year = startDate.format('YYYY');
             results.week_of = `${startDate.format('DD MMM')}`;
