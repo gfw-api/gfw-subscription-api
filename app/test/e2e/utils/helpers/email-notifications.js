@@ -6,15 +6,11 @@ const AlertUrlService = require('services/alertUrlService');
 
 const should = chai.should();
 
-const assertSubscriptionStatsNotificationEvent = (jsonMessage, sub) => {
+const assertSubscriptionStatsNotificationEvent = (jsonMessage) => {
     jsonMessage.should.have.property('sender').and.equal('gfw');
     jsonMessage.should.have.property('data').and.be.a('object');
     jsonMessage.data.should.have.property('counter').and.equal(1);
     jsonMessage.data.should.have.property('dataset').and.equal('viirs-active-fires');
-    jsonMessage.data.should.have.property('users').and.be.an('array').and.length(1);
-    jsonMessage.data.users[0].should.have.property('userId').and.equal(sub.userId);
-    jsonMessage.data.users[0].should.have.property('subscriptionId').and.equal(sub.id);
-    jsonMessage.data.users[0].should.have.property('email').and.equal(sub.resource.content);
     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
     jsonMessage.recipients[0].should.be.an('object').and.have.property('address')
         .and.have.property('email').and.equal(config.get('mails.statsRecipients'));
@@ -179,7 +175,7 @@ const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, en
         endDate,
     ));
 
-    jsonMessage.data.should.have.property('viirs_days_count').and.equal(30);
+    jsonMessage.data.should.have.property('viirs_days_count').and.equal(endDate.diff(beginDate, 'days'));
     jsonMessage.data.should.have.property('viirs_day_start').and.equal(beginDate.format('DD/MM/YYYY'));
     jsonMessage.data.should.have.property('viirs_day_end').and.equal(endDate.format('DD/MM/YYYY'));
     jsonMessage.data.should.have.property('location').and.equal(sub.name);

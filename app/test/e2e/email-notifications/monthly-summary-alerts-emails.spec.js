@@ -66,7 +66,7 @@ describe('Monthly summary notifications', () => {
                     validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -106,7 +106,7 @@ describe('Monthly summary notifications', () => {
                     validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'fr', 'moyenne');
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -146,7 +146,7 @@ describe('Monthly summary notifications', () => {
                     validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'zh', '平均');
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -194,7 +194,7 @@ describe('Monthly summary notifications', () => {
                     );
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -242,7 +242,7 @@ describe('Monthly summary notifications', () => {
                     );
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -290,7 +290,7 @@ describe('Monthly summary notifications', () => {
                     );
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -338,7 +338,7 @@ describe('Monthly summary notifications', () => {
                     );
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -387,7 +387,7 @@ describe('Monthly summary notifications', () => {
                     );
                     break;
                 case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage, subscriptionOne);
+                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -424,7 +424,6 @@ describe('Monthly summary notifications', () => {
                     jsonMessage.should.have.property('data').and.be.a('object');
                     jsonMessage.data.should.have.property('counter').and.equal(0);
                     jsonMessage.data.should.have.property('dataset').and.equal('monthly-summary');
-                    jsonMessage.data.should.have.property('users').and.be.an('array').and.length(0);
                     jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
                     jsonMessage.recipients[0].should.be.an('object').and.have.property('address')
                         .and.have.property('email').and.equal(config.get('mails.statsRecipients'));

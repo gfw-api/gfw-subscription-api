@@ -17,7 +17,7 @@ class EmailHelpersService {
                 low: 'low',
                 'unusually low': 'unusually low',
             },
-            pt: {
+            pt_BR: {
                 'unusually high': 'extraordinariamente alto',
                 high: 'alto',
                 average: 'normal',
@@ -38,7 +38,7 @@ class EmailHelpersService {
                 low: '低',
                 'unusually low': '异常低',
             },
-            es: {
+            es_MX: {
                 'unusually high': 'inusualmente alto',
                 high: 'alto',
                 average: 'promedio',
