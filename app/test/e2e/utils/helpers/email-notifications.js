@@ -67,15 +67,6 @@ const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub
         other: 11
     });
 
-    jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
-        { alert_type: 'GLAD', date: '10/10/2019 00:10 UTC' },
-        { alert_type: 'GLAD', date: '11/10/2019 00:10 UTC' },
-        { alert_type: 'GLAD', date: '12/10/2019 00:10 UTC' },
-        { alert_type: 'GLAD', date: '13/10/2019 00:10 UTC' },
-        { alert_type: 'GLAD', date: '14/10/2019 00:10 UTC' },
-        { alert_type: 'GLAD', date: '15/10/2019 00:10 UTC' },
-    ]);
-
     jsonMessage.data.should.have.property('alert_count').and.equal(51);
     jsonMessage.data.should.have.property('value').and.equal(51);
     jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
@@ -107,15 +98,6 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
         other: 258,
     });
 
-    jsonMessage.data.should.have.property('alerts').and.have.length(6).and.deep.equal([
-        { alert_type: 'VIIRS', date: '10/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '11/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '12/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '13/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '14/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '15/10/2019 00:10 UTC' },
-    ]);
-
     jsonMessage.data.should.have.property('value').and.equal(3232);
     jsonMessage.data.should.have.property('alert_count').and.equal(3232);
 
@@ -143,21 +125,6 @@ const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, en
         plantations: 182,
         other: 1812,
     });
-
-    jsonMessage.data.should.have.property('alerts').and.have.length(12).and.deep.equal([
-        { alert_type: 'GLAD', date: '10/10/2019 00:10 UTC' },
-        { alert_type: 'GLAD', date: '11/10/2019 00:10 UTC' },
-        { alert_type: 'GLAD', date: '12/10/2019 00:10 UTC' },
-        { alert_type: 'GLAD', date: '13/10/2019 00:10 UTC' },
-        { alert_type: 'GLAD', date: '14/10/2019 00:10 UTC' },
-        { alert_type: 'GLAD', date: '15/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '10/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '11/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '12/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '13/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '14/10/2019 00:10 UTC' },
-        { alert_type: 'VIIRS', date: '15/10/2019 00:10 UTC' },
-    ]);
 
     jsonMessage.data.should.have.property('alert_count').and.equal(3283);
     jsonMessage.data.should.have.property('value').and.equal(3283);

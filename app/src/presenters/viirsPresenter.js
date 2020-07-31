@@ -23,10 +23,6 @@ class ViirsPresenter {
                 subscription.params
             );
 
-            results.alerts = alerts.map((el) => ({
-                alert_type: 'VIIRS',
-                date: `${moment(el.alert__date).format('DD/MM/YYYY HH:MM')} UTC`,
-            }));
             results.month = startDate.format('MMMM');
             results.year = startDate.format('YYYY');
             results.week_of = `${startDate.format('DD MMM')}`;
