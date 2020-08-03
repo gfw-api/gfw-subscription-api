@@ -2,7 +2,7 @@
   {
     "name": "Viirs active fires",
     "dataset": "viirs-active-fires",
-    "crontab": "00 45 13 * * 0-6",
+    "crontab": "00 45 10 * * 0-6",
     "gap": {
       "value": 0,
       "measure": "week"
@@ -85,7 +85,7 @@
   {
     "name": "Monthly Summary",
     "dataset": "monthly-summary",
-    "crontab": "00 00 14 01 * *",
+    "crontab": "00 00 16 01 * *",
     "gap": {
       "value": 0,
       "measure": "day"
