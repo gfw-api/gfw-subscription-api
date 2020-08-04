@@ -72,29 +72,14 @@ class EmailHelpersService {
         let protectedAreasAlerts = 0;
         let plantationAlerts = 0;
 
-        const useValueOrAlertCount = (val, count) => (Number.isInteger(val) ? Number.parseInt(val, 10) : count);
-
         alerts.forEach((al) => {
-            if (al.is__ifl_intact_forest_landscape_2016) {
-                intactForestAlerts += useValueOrAlertCount(al.is__ifl_intact_forest_landscape_2016, al.alert__count);
-            }
-
-            if (al.is__umd_regional_primary_forest_2001) {
-                primaryForestAlerts += useValueOrAlertCount(al.is__umd_regional_primary_forest_2001, al.alert__count);
-            }
-
-            if (al.is__peatland) {
-                peatAlerts += useValueOrAlertCount(al.is__peatland, al.alert__count);
-            }
+            if (al.is__ifl_intact_forest_landscape_2016) intactForestAlerts += al.alert__count;
+            if (al.is__umd_regional_primary_forest_2001) primaryForestAlerts += al.alert__count;
+            if (al.is__peatland) peatAlerts += al.alert__count;
 
             const wdpaKey = Object.keys(al).find((key) => /wdpa/.test(key));
-            if (wdpaKey !== undefined) {
-                protectedAreasAlerts += useValueOrAlertCount(true, al.alert__count);
-            }
-
-            if (al.gfw_plantation__type !== 0 && al.gfw_plantation__type !== '0') {
-                plantationAlerts += useValueOrAlertCount(true, al.alert__count);
-            }
+            if (wdpaKey !== undefined || (al[wdpaKey] !== 0 && al[wdpaKey] !== '0')) protectedAreasAlerts += al.alert__count;
+            if (al.gfw_plantation__type !== 0 && al.gfw_plantation__type !== '0') plantationAlerts += al.alert__count;
         });
 
         const otherAlerts = total - intactForestAlerts - primaryForestAlerts - peatAlerts - protectedAreasAlerts - plantationAlerts;
@@ -116,29 +101,14 @@ class EmailHelpersService {
         let protectedAreasAlerts = 0;
         let plantationAlerts = 0;
 
-        const useValueOrAlertCount = (val, count) => (Number.isInteger(val) ? Number.parseInt(val, 10) : count);
-
         alerts.forEach((al) => {
-            if (al.is__intact_forest_landscapes_2016) {
-                intactForestAlerts += useValueOrAlertCount(al.is__intact_forest_landscapes_2016, al.alert__count);
-            }
-
-            if (al.is__regional_primary_forest) {
-                primaryForestAlerts += useValueOrAlertCount(al.is__regional_primary_forest, al.alert__count);
-            }
-
-            if (al.is__peat_land) {
-                peatAlerts += useValueOrAlertCount(al.is__peat_land, al.alert__count);
-            }
+            if (al.is__intact_forest_landscapes_2016) intactForestAlerts += al.alert__count;
+            if (al.is__regional_primary_forest) primaryForestAlerts += al.alert__count;
+            if (al.is__peat_land) peatAlerts += al.alert__count;
 
             const wdpaKey = Object.keys(al).find((key) => /wdpa/.test(key));
-            if (wdpaKey !== undefined) {
-                protectedAreasAlerts += useValueOrAlertCount(true, al.alert__count);
-            }
-
-            if (al.gfw_plantation__type !== 0 && al.gfw_plantation__type !== '0') {
-                plantationAlerts += useValueOrAlertCount(true, al.alert__count);
-            }
+            if (wdpaKey !== undefined || (al[wdpaKey] !== 0 && al[wdpaKey] !== '0')) protectedAreasAlerts += al.alert__count;
+            if (al.gfw_plantation__type !== 0 && al.gfw_plantation__type !== '0') plantationAlerts += al.alert__count;
         });
 
         const otherAlerts = total - intactForestAlerts - primaryForestAlerts - peatAlerts - protectedAreasAlerts - plantationAlerts;
