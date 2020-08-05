@@ -188,7 +188,6 @@ describe('VIIRS Fires alert emails', () => {
                         subscriptionOne,
                         'en',
                         'average',
-                        'ISO Code: IDN',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
@@ -237,7 +236,6 @@ describe('VIIRS Fires alert emails', () => {
                         subscriptionOne,
                         'en',
                         'average',
-                        'ISO Code: IDN, ID1: 3',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
@@ -286,7 +284,6 @@ describe('VIIRS Fires alert emails', () => {
                         subscriptionOne,
                         'en',
                         'average',
-                        'ISO Code: BRA, ID1: 1, ID2: 1',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
@@ -335,7 +332,6 @@ describe('VIIRS Fires alert emails', () => {
                         subscriptionOne,
                         'en',
                         'average',
-                        'WDPA ID: 1',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
@@ -384,7 +380,6 @@ describe('VIIRS Fires alert emails', () => {
                         subscriptionOne,
                         'en',
                         'average',
-                        'Custom Area',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
