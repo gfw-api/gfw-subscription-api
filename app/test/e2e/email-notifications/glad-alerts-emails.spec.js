@@ -101,7 +101,7 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-fr':
-                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'fr', 'moyenne');
+                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage);
@@ -140,7 +140,7 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-zh':
-                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'zh', '平均');
+                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage);
@@ -185,7 +185,6 @@ describe('GLAD alert emails', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
@@ -233,7 +232,6 @@ describe('GLAD alert emails', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
@@ -281,7 +279,6 @@ describe('GLAD alert emails', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
@@ -329,7 +326,6 @@ describe('GLAD alert emails', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
@@ -377,7 +373,6 @@ describe('GLAD alert emails', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
