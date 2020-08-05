@@ -93,9 +93,9 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
         intact_forest: 41,
         primary_forest: 41,
         peat: 1171,
-        protected_areas: 1640,
+        protected_areas: 258,
         plantations: 81,
-        other: 258,
+        other: 1640,
     });
 
     jsonMessage.data.should.have.property('value').and.equal(3232);
@@ -121,9 +121,9 @@ const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, en
         intact_forest: 47,
         primary_forest: 48,
         peat: 1179,
-        protected_areas: 3298,
+        protected_areas: 534,
         plantations: 182,
-        other: 1812,
+        other: 4576,
     });
 
     jsonMessage.data.should.have.property('alert_count').and.equal(3283);
