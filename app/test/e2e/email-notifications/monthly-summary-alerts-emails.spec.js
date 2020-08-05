@@ -190,7 +190,6 @@ describe('Monthly summary notifications', () => {
                         subscriptionOne,
                         'en',
                         'average',
-                        'ISO Code: IDN',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -238,7 +237,6 @@ describe('Monthly summary notifications', () => {
                         subscriptionOne,
                         'en',
                         'average',
-                        'ISO Code: IDN, ID1: 3',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -286,7 +284,6 @@ describe('Monthly summary notifications', () => {
                         subscriptionOne,
                         'en',
                         'average',
-                        'ISO Code: BRA, ID1: 1, ID2: 1',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -334,7 +331,6 @@ describe('Monthly summary notifications', () => {
                         subscriptionOne,
                         'en',
                         'average',
-                        'WDPA ID: 1',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -383,7 +379,6 @@ describe('Monthly summary notifications', () => {
                         subscriptionOne,
                         'en',
                         'average',
-                        'Custom Area',
                     );
                     break;
                 case 'subscriptions-stats':

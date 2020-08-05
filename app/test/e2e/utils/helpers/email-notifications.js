@@ -29,7 +29,6 @@ const validateCommonNotificationParams = (
     endDate,
     sub,
     lang = 'en',
-    areaName = 'Custom Area',
 ) => {
     jsonMessage.should.have.property('sender').and.equal('gfw');
     jsonMessage.should.have.property('data').and.be.a('object');
@@ -47,7 +46,6 @@ const validateCommonNotificationParams = (
     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
     jsonMessage.data.should.have.property('alert_name').and.equal(sub.name);
-    jsonMessage.data.should.have.property('selected_area').and.equal(areaName);
     jsonMessage.data.should.have.property('subscriptions_url').and.equal(`http://staging.globalforestwatch.org/my-gfw?lang=${lang}`);
     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${lang}`);
 };
@@ -165,10 +163,9 @@ const validateGLADNotificationParams = (
     sub,
     lang = 'en',
     frequency = 'average',
-    areaName = 'Custom Area',
     geostoreId = '423e5dfb0448e692f97b590c61f45f22',
 ) => {
-    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub, lang, areaName);
+    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub, lang);
     validateGLADSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
     validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub, geostoreId);
 };
@@ -180,10 +177,9 @@ const validateVIIRSNotificationParams = (
     sub,
     lang = 'en',
     frequency = 'average',
-    areaName = 'Custom Area',
     geostoreId = '423e5dfb0448e692f97b590c61f45f22',
 ) => {
-    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub, lang, areaName);
+    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub, lang);
     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
     validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub, geostoreId);
 };
@@ -195,9 +191,8 @@ const validateMonthlySummaryNotificationParams = (
     sub,
     lang = 'en',
     frequency = 'average',
-    areaName = 'Custom Area',
 ) => {
-    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub, lang, areaName);
+    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub, lang);
     validateGLADSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
     validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub);
