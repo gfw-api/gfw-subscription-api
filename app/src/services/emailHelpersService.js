@@ -76,9 +76,7 @@ class EmailHelpersService {
             if (al.is__ifl_intact_forest_landscape_2016) intactForestAlerts += al.alert__count;
             if (al.is__umd_regional_primary_forest_2001) primaryForestAlerts += al.alert__count;
             if (al.is__peatland) peatAlerts += al.alert__count;
-
-            const wdpaKey = Object.keys(al).find((key) => /wdpa/.test(key));
-            if (wdpaKey !== undefined || (al[wdpaKey] !== 0 && al[wdpaKey] !== '0')) protectedAreasAlerts += al.alert__count;
+            if (al.wdpa_protected_area__iucn_cat !== 0 && al.wdpa_protected_area__iucn_cat !== '0') protectedAreasAlerts += al.alert__count;
             if (al.gfw_plantation__type !== 0 && al.gfw_plantation__type !== '0') plantationAlerts += al.alert__count;
         });
 
@@ -90,7 +88,7 @@ class EmailHelpersService {
             peat: peatAlerts,
             protected_areas: protectedAreasAlerts,
             plantations: plantationAlerts,
-            other: otherAlerts,
+            other: otherAlerts
         };
     }
 
@@ -105,9 +103,7 @@ class EmailHelpersService {
             if (al.is__intact_forest_landscapes_2016) intactForestAlerts += al.alert__count;
             if (al.is__regional_primary_forest) primaryForestAlerts += al.alert__count;
             if (al.is__peat_land) peatAlerts += al.alert__count;
-
-            const wdpaKey = Object.keys(al).find((key) => /wdpa/.test(key));
-            if (wdpaKey !== undefined || (al[wdpaKey] !== 0 && al[wdpaKey] !== '0')) protectedAreasAlerts += al.alert__count;
+            if (al.wdpa_protected_area__iucn_cat !== 0 && al.wdpa_protected_area__iucn_cat !== '0') protectedAreasAlerts += al.alert__count;
             if (al.gfw_plantation__type !== 0 && al.gfw_plantation__type !== '0') plantationAlerts += al.alert__count;
         });
 
@@ -119,7 +115,7 @@ class EmailHelpersService {
             peat: peatAlerts,
             protected_areas: protectedAreasAlerts,
             plantations: plantationAlerts,
-            other: otherAlerts,
+            other: otherAlerts
         };
     }
 
