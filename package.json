@@ -34,6 +34,8 @@
     "config": "1.19.0",
     "cron": "^1.7.2",
     "ct-register-microservice-node": "^2.1.7",
+    "d3": "^5.16.0",
+    "d3-format": "^1.4.4",
     "jsonapi-serializer": "^3.6.5",
     "julian": "0.2.0",
     "koa": "^2.11.0",

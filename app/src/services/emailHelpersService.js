@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const moment = require('moment');
+const d3 = require('d3');
 
 class EmailHelpersService {
 
@@ -142,6 +143,25 @@ class EmailHelpersService {
         }
 
         return EmailHelpersService.translateFrequency(status, lang);
+    }
+
+    static formatAlertCount(alertCount) {
+        const formatter = d3.format(',.0s');
+
+        return formatter(alertCount);
+    }
+
+    static formatPriorityAreas(priorityAreas) {
+        const formatter = d3.format(',.0s');
+
+        return {
+            intact_forest: formatter(priorityAreas.intact_forest),
+            primary_forest: formatter(priorityAreas.primary_forest),
+            peat: formatter(priorityAreas.peat),
+            protected_areas: formatter(priorityAreas.protected_areas),
+            plantations: formatter(priorityAreas.plantations),
+            other: formatter(priorityAreas.other),
+        };
     }
 
 }
