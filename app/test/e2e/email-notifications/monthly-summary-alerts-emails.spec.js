@@ -103,7 +103,7 @@ describe('Monthly summary notifications', () => {
             switch (jsonMessage.template) {
 
                 case 'monthly-summary-fr':
-                    validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'fr', 'moyenne');
+                    validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage);
@@ -143,7 +143,7 @@ describe('Monthly summary notifications', () => {
             switch (jsonMessage.template) {
 
                 case 'monthly-summary-zh':
-                    validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'zh', '平均');
+                    validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage);
@@ -188,7 +188,6 @@ describe('Monthly summary notifications', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                     );
                     break;
@@ -235,7 +234,6 @@ describe('Monthly summary notifications', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                     );
                     break;
@@ -282,7 +280,6 @@ describe('Monthly summary notifications', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                     );
                     break;
@@ -329,7 +326,6 @@ describe('Monthly summary notifications', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                     );
                     break;
@@ -377,7 +373,6 @@ describe('Monthly summary notifications', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                     );
                     break;

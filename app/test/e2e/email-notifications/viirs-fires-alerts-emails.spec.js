@@ -102,7 +102,7 @@ describe('VIIRS Fires alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-fr':
-                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'fr', 'moyenne');
+                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage);
@@ -141,7 +141,7 @@ describe('VIIRS Fires alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-zh':
-                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'zh', '平均');
+                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
                     break;
                 case 'subscriptions-stats':
                     assertSubscriptionStatsNotificationEvent(jsonMessage);
@@ -186,7 +186,6 @@ describe('VIIRS Fires alert emails', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
@@ -234,7 +233,6 @@ describe('VIIRS Fires alert emails', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
@@ -282,7 +280,6 @@ describe('VIIRS Fires alert emails', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
@@ -330,7 +327,6 @@ describe('VIIRS Fires alert emails', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
@@ -378,7 +374,6 @@ describe('VIIRS Fires alert emails', () => {
                         beginDate,
                         endDate,
                         subscriptionOne,
-                        'en',
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
