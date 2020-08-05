@@ -42,8 +42,8 @@ class MonthlySummaryPresenter {
             results.alert_count = allAlerts.reduce((acc, curr) => acc + curr.alert__count, 0);
 
             // Find values for priority areas
-            results.glad_alerts = EmailHelpersService.calculateGLADPriorityAreaValues(allAlerts, results.alert_count);
-            results.viirs_alerts = EmailHelpersService.calculateVIIRSPriorityAreaValues(allAlerts, results.alert_count);
+            results.glad_alerts = EmailHelpersService.calculateGLADPriorityAreaValues(allAlerts, results.glad_count);
+            results.viirs_alerts = EmailHelpersService.calculateVIIRSPriorityAreaValues(allAlerts, results.viirs_count);
             results.priority_areas = {
                 intact_forest: results.glad_alerts.intact_forest + results.viirs_alerts.intact_forest,
                 primary_forest: results.glad_alerts.primary_forest + results.viirs_alerts.primary_forest,
@@ -69,6 +69,12 @@ class MonthlySummaryPresenter {
             results.viirs_day_end = endDate.format('DD/MM/YYYY');
             results.location = subscription.name;
 
+            results.formatted_alert_count = EmailHelpersService.formatAlertCount(results.alert_count);
+            results.formatted_glad_count = EmailHelpersService.formatAlertCount(results.glad_count);
+            results.formatted_viirs_count = EmailHelpersService.formatAlertCount(results.viirs_count);
+            results.formatted_priority_areas = EmailHelpersService.formatPriorityAreas(results.priority_areas);
+            results.formatted_glad_priority_areas = EmailHelpersService.formatPriorityAreas(results.glad_alerts);
+            results.formatted_viirs_priority_areas = EmailHelpersService.formatPriorityAreas(results.viirs_alerts);
         } catch (err) {
             logger.error(err);
             results.alerts = [];
