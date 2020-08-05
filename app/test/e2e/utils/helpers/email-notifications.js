@@ -115,7 +115,7 @@ const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, en
         peat: 1179,
         protected_areas: 534,
         plantations: 182,
-        other: 4576,
+        other: 1293,
     });
 
     jsonMessage.data.should.have.property('alert_count').and.equal(3283);

@@ -40,6 +40,9 @@ class GLADPresenter {
             // Finding alerts for the same period last year and calculate frequency
             const lastYearAlerts = await GLADAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
             results.glad_frequency = await EmailHelpersService.calculateAlertFrequency(alerts, lastYearAlerts, subscription.language);
+
+            results.formatted_alert_count = EmailHelpersService.formatAlertCount(results.alert_count);
+            results.formatted_priority_areas = EmailHelpersService.formatPriorityAreas(results.priority_areas);
         } catch (err) {
             logger.error(err);
             results.alerts = [];
