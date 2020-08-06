@@ -125,7 +125,7 @@ class SubscriptionsRouter {
 
             ctx.redirect(UrlService.flagshipUrlRW('/myrw/areas', subscription.data.attributes.env));
         } else {
-            ctx.redirect(UrlService.flagshipUrl('/my_gfw/subscriptions?subscription_confirmed=true'));
+            ctx.redirect(UrlService.flagshipUrl('/my-gfw/subscriptions?subscription_confirmed=true'));
         }
     }
 
@@ -141,11 +141,11 @@ class SubscriptionsRouter {
 
         try {
             SubscriptionService.sendConfirmation(subscription);
-            logger.info(`Redirect to: ${config.get('gfw.flagshipUrl')}/my_gfw/subscriptions`);
+            logger.info(`Redirect to: ${config.get('gfw.flagshipUrl')}/my-gfw/subscriptions`);
 
             // Allows redirect=false flag to be provided, but defaults to applying the redirect
             if (ctx.query.redirect !== 'false') {
-                ctx.redirect(`${config.get('gfw.flagshipUrl')}/my_gfw/subscriptions`);
+                ctx.redirect(`${config.get('gfw.flagshipUrl')}/my-gfw/subscriptions`);
                 return;
             }
 
@@ -180,7 +180,7 @@ class SubscriptionsRouter {
         }
         if (ctx.query.redirect) {
             ctx.redirect(UrlService.flagshipUrl(
-                '/my_gfw/subscriptions?unsubscription_confirmed=true'
+                '/my-gfw/subscriptions?unsubscription_confirmed=true'
             ));
             return;
         }
