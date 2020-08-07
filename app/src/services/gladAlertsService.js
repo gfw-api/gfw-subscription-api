@@ -69,6 +69,28 @@ class GLADAlertsService {
     }
 
     /**
+     * Returns the URL for the query for GLAD alerts for the provided period (startDate to endDate). The params are
+     * taken into account to decide which dataset will be used to fetch the alerts.
+     *
+     * @param startDate
+     * @param endDate
+     * @param params
+     * @returns {Promise<*>}
+     */
+    static async getURLInPeriodForSubscription(startDate, endDate, params) {
+        if (params && params.iso) {
+            return GLADAlertsService.getURLInPeriodForISO(startDate, endDate, params);
+        }
+
+        if (params && params.wdpaid) {
+            return GLADAlertsService.getURLInPeriodForWDPA(startDate, endDate, params);
+        }
+
+        const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
+        return GLADAlertsService.getURLInPeriodForGeostore(startDate, endDate, geostoreId);
+    }
+
+    /**
      * Returns an array of GLAD alerts for the provided period (startDate to endDate). The params are
      * taken into account to decide which dataset will be used to fetch the alerts.
      *
@@ -79,17 +101,7 @@ class GLADAlertsService {
      */
     static async getAnalysisInPeriodForSubscription(startDate, endDate, params) {
         logger.info('Entering GLAD analysis endpoint with params', startDate, endDate, params);
-
-        let uri;
-        if (params && params.iso) {
-            uri = GLADAlertsService.getURLInPeriodForISO(startDate, endDate, params);
-        } else if (params && params.wdpaid) {
-            uri = GLADAlertsService.getURLInPeriodForWDPA(startDate, endDate, params);
-        } else {
-            const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
-            uri = GLADAlertsService.getURLInPeriodForGeostore(startDate, endDate, geostoreId);
-        }
-
+        const uri = await GLADAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
         const response = await ctRegisterMicroservice.requestToMicroservice({ uri, method: 'GET', json: true });
         return response.data;
     }
@@ -110,6 +122,22 @@ class GLADAlertsService {
             lastYearEndDate.format('YYYY-MM-DD'),
             params
         );
+    }
+
+    /**
+     * Returns an object with URLs for downloading GLAD alerts for the provided period and subscription.
+     *
+     * @param startDate
+     * @param endDate
+     * @param params
+     * @returns {Promise<{csv: string, json: string}>}
+     */
+    static async getDownloadURLs(startDate, endDate, params) {
+        const queryURL = await GLADAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
+        return {
+            csv: `${config.get('apiGateway.externalUrl')}/v1${queryURL.replace('query', 'download')}&format=csv`,
+            json: `${config.get('apiGateway.externalUrl')}/v1${queryURL.replace('query', 'download')}&format=json`,
+        };
     }
 
 }

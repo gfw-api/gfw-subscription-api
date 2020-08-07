@@ -1,8 +1,7 @@
 /* eslint-disable max-len */
 const logger = require('logger');
 const moment = require('moment');
-const config = require('config');
-const GeostoreService = require('services/geostoreService');
+
 const GLADAlertsService = require('services/gladAlertsService');
 const EmailHelpersService = require('services/emailHelpersService');
 
@@ -28,11 +27,13 @@ class GLADPresenter {
             results.week_end = endDate.format('DD/MM/YYYY');
             results.glad_count = alerts.reduce((acc, curr) => acc + curr.alert__count, 0);
             results.alert_count = alerts.reduce((acc, curr) => acc + curr.alert__count, 0);
-            const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
-            results.downloadUrls = {
-                csv: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`,
-                json: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`,
-            };
+
+            // Add download URLs
+            results.downloadUrls = await GLADAlertsService.getDownloadURLs(
+                startDate.format('YYYY-MM-DD'),
+                endDate.format('YYYY-MM-DD'),
+                subscription.params
+            );
 
             // Find values for priority areas
             results.priority_areas = EmailHelpersService.calculateGLADPriorityAreaValues(alerts, results.alert_count);

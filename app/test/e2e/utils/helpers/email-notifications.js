@@ -44,12 +44,18 @@ const validateCommonNotificationParams = (jsonMessage, beginDate, endDate, sub) 
     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${sub.language}`);
 };
 
-const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub, geostoreId) => {
+const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub) => {
     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
-    // eslint-disable-next-line max-len
-    jsonMessage.data.downloadUrls.should.have.property('csv').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`);
-    // eslint-disable-next-line max-len
-    jsonMessage.data.downloadUrls.should.have.property('json').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/glad-alerts/download/?period=${moment(beginDate).format('YYYY-MM-DD')},${moment(endDate).format('YYYY-MM-DD')}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`);
+
+    // Validate download URLs
+    jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
+    jsonMessage.data.downloadUrls.should.have.property('csv')
+        .and.be.a('string')
+        .and.match(/.*v1\/download.*&format=csv$/);
+    jsonMessage.data.downloadUrls.should.have.property('json')
+        .and.be.a('string')
+        .and.match(/.*v1\/download.*&format=json$/);
+
     jsonMessage.data.should.have.property('priority_areas').and.deep.equal({
         intact_forest: 6,
         primary_forest: 7,
@@ -156,11 +162,10 @@ const validateGLADNotificationParams = (
     endDate,
     sub,
     frequency = 'average',
-    geostoreId = '423e5dfb0448e692f97b590c61f45f22',
 ) => {
     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
     validateGLADSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
-    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub, geostoreId);
+    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub);
 };
 
 const validateVIIRSNotificationParams = (
