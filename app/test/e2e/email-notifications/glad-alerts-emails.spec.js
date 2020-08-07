@@ -170,7 +170,6 @@ describe('GLAD alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
-        createMockGeostore('/v2/geostore/admin/IDN');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -186,7 +185,6 @@ describe('GLAD alert emails', () => {
                         endDate,
                         subscriptionOne,
                         'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -217,7 +215,6 @@ describe('GLAD alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
-        createMockGeostore('/v2/geostore/admin/IDN/3');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -233,7 +230,6 @@ describe('GLAD alert emails', () => {
                         endDate,
                         subscriptionOne,
                         'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -264,7 +260,6 @@ describe('GLAD alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
-        createMockGeostore('/v2/geostore/admin/BRA/1/1');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -280,7 +275,6 @@ describe('GLAD alert emails', () => {
                         endDate,
                         subscriptionOne,
                         'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -311,7 +305,6 @@ describe('GLAD alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADAlertsQuery(3, config.get('datasets.gladWDPADataset'));
-        createMockGeostore('/v2/geostore/wdpa/1');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -327,7 +320,6 @@ describe('GLAD alert emails', () => {
                         endDate,
                         subscriptionOne,
                         'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -374,7 +366,6 @@ describe('GLAD alert emails', () => {
                         endDate,
                         subscriptionOne,
                         'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
