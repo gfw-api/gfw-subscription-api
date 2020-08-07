@@ -171,7 +171,6 @@ describe('VIIRS Fires alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
-        createMockGeostore('/v2/geostore/admin/IDN');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -187,7 +186,6 @@ describe('VIIRS Fires alert emails', () => {
                         endDate,
                         subscriptionOne,
                         'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -218,7 +216,6 @@ describe('VIIRS Fires alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
-        createMockGeostore('/v2/geostore/admin/IDN/3');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -234,7 +231,6 @@ describe('VIIRS Fires alert emails', () => {
                         endDate,
                         subscriptionOne,
                         'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -265,7 +261,6 @@ describe('VIIRS Fires alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
-        createMockGeostore('/v2/geostore/admin/BRA/1/1');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -281,7 +276,6 @@ describe('VIIRS Fires alert emails', () => {
                         endDate,
                         subscriptionOne,
                         'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -312,7 +306,6 @@ describe('VIIRS Fires alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsQuery(3, config.get('datasets.viirsWDPADataset'));
-        createMockGeostore('/v2/geostore/wdpa/1');
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -328,7 +321,6 @@ describe('VIIRS Fires alert emails', () => {
                         endDate,
                         subscriptionOne,
                         'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':
@@ -375,7 +367,6 @@ describe('VIIRS Fires alert emails', () => {
                         endDate,
                         subscriptionOne,
                         'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
                 case 'subscriptions-stats':

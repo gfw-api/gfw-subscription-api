@@ -1,8 +1,7 @@
 /* eslint-disable max-len */
 const logger = require('logger');
 const moment = require('moment');
-const config = require('config');
-const GeostoreService = require('services/geostoreService');
+
 const ViirsAlertsService = require('services/viirsAlertsService');
 const EmailHelpersService = require('services/emailHelpersService');
 
@@ -15,7 +14,6 @@ class ViirsPresenter {
         try {
             const startDate = moment(begin);
             const endDate = moment(end);
-            const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(subscription.params);
 
             const alerts = await ViirsAlertsService.getAnalysisInPeriodForSubscription(
                 startDate.format('YYYY-MM-DD'),
@@ -30,10 +28,13 @@ class ViirsPresenter {
             results.week_end = endDate.format('DD/MM/YYYY');
             results.viirs_count = alerts.reduce((acc, curr) => acc + curr.alert__count, 0);
             results.alert_count = alerts.reduce((acc, curr) => acc + curr.alert__count, 0);
-            results.downloadUrls = {
-                csv: `${config.get('apiGateway.externalUrl')}/viirs-active-fires/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`,
-                json: `${config.get('apiGateway.externalUrl')}/viirs-active-fires/download/?period=${startDate.format('YYYY-MM-DD')},${endDate.format('YYYY-MM-DD')}&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`,
-            };
+
+            // Add download URLs
+            results.downloadUrls = await ViirsAlertsService.getDownloadURLs(
+                startDate.format('YYYY-MM-DD'),
+                endDate.format('YYYY-MM-DD'),
+                subscription.params
+            );
 
             // Calculate alerts grouped by area types
             results.priority_areas = EmailHelpersService.calculateVIIRSPriorityAreaValues(alerts, results.alert_count);
