@@ -1,3 +1,9 @@
+# v.1.6.4
+
+## 10/08/2020
+
+- Apply formatting to subscription email values only if they are greater or equal than 1000.
+
 # v.1.6.3
 
 ## 07/08/2020
