@@ -146,21 +146,18 @@ class EmailHelpersService {
     }
 
     static formatAlertCount(alertCount) {
-        const formatter = d3.format(',.0s');
-
-        return formatter(alertCount);
+        return alertCount >= 1000 ? d3.format(',.0s')(alertCount) : alertCount.toString();
     }
 
     static formatPriorityAreas(priorityAreas) {
         const formatter = d3.format(',.0s');
-
         return {
-            intact_forest: formatter(priorityAreas.intact_forest),
-            primary_forest: formatter(priorityAreas.primary_forest),
-            peat: formatter(priorityAreas.peat),
-            protected_areas: formatter(priorityAreas.protected_areas),
-            plantations: formatter(priorityAreas.plantations),
-            other: formatter(priorityAreas.other),
+            intact_forest: priorityAreas.intact_forest >= 1000 ? formatter(priorityAreas.intact_forest) : priorityAreas.intact_forest.toString(),
+            primary_forest: priorityAreas.primary_forest >= 1000 ? formatter(priorityAreas.primary_forest) : priorityAreas.primary_forest.toString(),
+            peat: priorityAreas.peat >= 1000 ? formatter(priorityAreas.peat) : priorityAreas.peat.toString(),
+            protected_areas: priorityAreas.protected_areas >= 1000 ? formatter(priorityAreas.protected_areas) : priorityAreas.protected_areas.toString(),
+            plantations: priorityAreas.plantations >= 1000 ? formatter(priorityAreas.plantations) : priorityAreas.plantations.toString(),
+            other: priorityAreas.other >= 1000 ? formatter(priorityAreas.other) : priorityAreas.other.toString(),
         };
     }
 
