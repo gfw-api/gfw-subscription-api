@@ -605,6 +605,55 @@ describe('VIIRS Fires alert emails', () => {
         }));
     });
 
+    it('Legacy subscription parameters are correctly handled, triggering a new email being queued using the correct email template with the correct data', async () => {
+        const subscriptionOne = await new Subscription(createSubscription(
+            ROLES.USER.id,
+            'viirs-active-fires',
+            {
+                params: {
+                    iso: {
+                        subRegion: null,
+                        region: null,
+                        country: null
+                    },
+                    wdpaid: null,
+                    use: null,
+                    useid: null,
+                    geostore: '423e5dfb0448e692f97b590c61f45f22'
+                }
+            },
+        )).save();
+
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        // Despite the payload of the params object, geostore dataset should be used
+        mockVIIRSAlertsQuery(3);
+
+        redisClient.on('message', (channel, message) => {
+            const jsonMessage = JSON.parse(message);
+            jsonMessage.should.have.property('template');
+
+            switch (jsonMessage.template) {
+
+                case 'forest-fires-notification-viirs-en':
+                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    break;
+                case 'subscriptions-stats':
+                    assertSubscriptionStatsNotificationEvent(jsonMessage);
+                    break;
+                default:
+                    should.fail('Unsupported message type: ', jsonMessage.template);
+                    break;
+
+            }
+        });
+
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'viirs-active-fires',
+            begin_date: beginDate,
+            end_date: endDate
+        }));
+    });
+
     afterEach(async () => {
         redisClient.removeAllListeners();
         process.removeAllListeners('unhandledRejection');
