@@ -2,6 +2,7 @@ const config = require('config');
 const logger = require('logger');
 const moment = require('moment');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
+
 const GeostoreService = require('services/geostoreService');
 
 class GLADAlertsService {
@@ -78,11 +79,12 @@ class GLADAlertsService {
      * @returns {Promise<*>}
      */
     static async getURLInPeriodForSubscription(startDate, endDate, params) {
-        if (params && params.iso) {
+        // At least country must be defined to use the ISO dataset
+        if (!!params && !!params.iso && !!params.iso.country) {
             return GLADAlertsService.getURLInPeriodForISO(startDate, endDate, params);
         }
 
-        if (params && params.wdpaid) {
+        if (!!params && !!params.wdpaid) {
             return GLADAlertsService.getURLInPeriodForWDPA(startDate, endDate, params);
         }
 
