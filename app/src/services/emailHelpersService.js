@@ -146,22 +146,31 @@ class EmailHelpersService {
     }
 
     static formatAlertCount(alertCount) {
-        const formatter = d3.format(',.0s');
-
-        return formatter(alertCount);
+        return EmailHelpersService.globalFormatter(alertCount);
     }
 
     static formatPriorityAreas(priorityAreas) {
-        const formatter = d3.format(',.0s');
-
         return {
-            intact_forest: formatter(priorityAreas.intact_forest),
-            primary_forest: formatter(priorityAreas.primary_forest),
-            peat: formatter(priorityAreas.peat),
-            protected_areas: formatter(priorityAreas.protected_areas),
-            plantations: formatter(priorityAreas.plantations),
-            other: formatter(priorityAreas.other),
+            intact_forest: EmailHelpersService.globalFormatter(priorityAreas.intact_forest),
+            primary_forest: EmailHelpersService.globalFormatter(priorityAreas.primary_forest),
+            peat: EmailHelpersService.globalFormatter(priorityAreas.peat),
+            protected_areas: EmailHelpersService.globalFormatter(priorityAreas.protected_areas),
+            plantations: EmailHelpersService.globalFormatter(priorityAreas.plantations),
+            other: EmailHelpersService.globalFormatter(priorityAreas.other),
         };
+    }
+
+    static globalFormatter(val) {
+        if (val < 1000) {
+            return val.toString();
+        }
+
+        if (val < 100000) {
+            return d3.format('.2s')(val);
+        }
+
+        // Greater than 10000
+        return d3.format('.1s')(val);
     }
 
 }

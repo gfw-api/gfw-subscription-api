@@ -78,11 +78,12 @@ class ViirsAlertsService {
      * @returns {Promise<*>}
      */
     static async getURLInPeriodForSubscription(startDate, endDate, params) {
-        if (params && params.iso) {
+        // At least country must be defined to use the ISO dataset
+        if (!!params && !!params.iso && !!params.iso.country) {
             return ViirsAlertsService.getURLInPeriodForISO(startDate, endDate, params);
         }
 
-        if (params && params.wdpaid) {
+        if (!!params && !!params.wdpaid) {
             return ViirsAlertsService.getURLInPeriodForWDPA(startDate, endDate, params);
         }
 
