@@ -146,19 +146,31 @@ class EmailHelpersService {
     }
 
     static formatAlertCount(alertCount) {
-        return alertCount >= 1000 ? d3.format(',.0s')(alertCount) : alertCount.toString();
+        return EmailHelpersService.globalFormatter(alertCount);
     }
 
     static formatPriorityAreas(priorityAreas) {
-        const formatter = d3.format(',.0s');
         return {
-            intact_forest: priorityAreas.intact_forest >= 1000 ? formatter(priorityAreas.intact_forest) : priorityAreas.intact_forest.toString(),
-            primary_forest: priorityAreas.primary_forest >= 1000 ? formatter(priorityAreas.primary_forest) : priorityAreas.primary_forest.toString(),
-            peat: priorityAreas.peat >= 1000 ? formatter(priorityAreas.peat) : priorityAreas.peat.toString(),
-            protected_areas: priorityAreas.protected_areas >= 1000 ? formatter(priorityAreas.protected_areas) : priorityAreas.protected_areas.toString(),
-            plantations: priorityAreas.plantations >= 1000 ? formatter(priorityAreas.plantations) : priorityAreas.plantations.toString(),
-            other: priorityAreas.other >= 1000 ? formatter(priorityAreas.other) : priorityAreas.other.toString(),
+            intact_forest: EmailHelpersService.globalFormatter(priorityAreas.intact_forest),
+            primary_forest: EmailHelpersService.globalFormatter(priorityAreas.primary_forest),
+            peat: EmailHelpersService.globalFormatter(priorityAreas.peat),
+            protected_areas: EmailHelpersService.globalFormatter(priorityAreas.protected_areas),
+            plantations: EmailHelpersService.globalFormatter(priorityAreas.plantations),
+            other: EmailHelpersService.globalFormatter(priorityAreas.other),
         };
+    }
+
+    static globalFormatter(val) {
+        if (val < 1000) {
+            return val.toString();
+        }
+
+        if (val < 100000) {
+            return d3.format('.2s')(val);
+        }
+
+        // Greater than 10000
+        return d3.format('.1s')(val);
     }
 
 }
