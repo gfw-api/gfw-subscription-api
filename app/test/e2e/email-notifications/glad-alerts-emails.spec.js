@@ -495,6 +495,78 @@ describe('GLAD alert emails', () => {
         }));
     });
 
+    it('GLAD alerts are correctly formatted with k and M only if values are greater than 999', async () => {
+        await new Subscription(createSubscription(
+            ROLES.USER.id,
+            'glad-alerts',
+            { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
+        )).save();
+
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        mockGLADAlertsQuery(3, undefined, {
+            data: [{
+                geostore__id: 'test',
+                alert__date: '2019-10-10',
+                is__confirmed_alert: false,
+                is__umd_regional_primary_forest_2001: false,
+                is__alliance_for_zero_extinction_site: false,
+                is__key_biodiversity_area: false,
+                is__landmark: false,
+                gfw_plantation__type: 0,
+                is__gfw_mining: true,
+                is__gfw_logging: false,
+                rspo_oil_palm__certification_status: 0,
+                is__gfw_wood_fiber: false,
+                is__peatland: false,
+                is__idn_forest_moratorium: false,
+                is__gfw_oil_palm: false,
+                idn_forest_area__type: 0,
+                per_forest_concession__type: 0,
+                is__gfw_oil_gas: false,
+                is__mangroves_2016: true,
+                is__ifl_intact_forest_landscape_2016: true,
+                bra_biome__name: 'Amazônia',
+                wdpa_protected_area__iucn_cat: 0,
+                alert__count: 999,
+                alert_area__ha: 0.45252535669866123,
+                aboveground_co2_emissions__Mg: 117.25617750097409,
+                _id: 'AW6O0fqMLu2ttL7ZDM5u'
+            }]
+        });
+
+        redisClient.on('message', (channel, message) => {
+            const jsonMessage = JSON.parse(message);
+            jsonMessage.should.have.property('template');
+            switch (jsonMessage.template) {
+
+                case 'forest-change-notification-glads-en':
+                    jsonMessage.data.should.have.property('formatted_alert_count').and.equal('999');
+                    jsonMessage.data.should.have.property('formatted_priority_areas').and.deep.equal({
+                        intact_forest: '999',
+                        primary_forest: '0',
+                        peat: '0',
+                        protected_areas: '0',
+                        plantations: '0',
+                        other: '0',
+                    });
+                    break;
+                case 'subscriptions-stats':
+                    assertSubscriptionStatsNotificationEvent(jsonMessage);
+                    break;
+                default:
+                    should.fail('Unsupported message type: ', jsonMessage.template);
+                    break;
+
+            }
+        });
+
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'glad-alerts',
+            begin_date: beginDate,
+            end_date: endDate
+        }));
+    });
+
     afterEach(async () => {
         redisClient.removeAllListeners();
         process.removeAllListeners('unhandledRejection');
