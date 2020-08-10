@@ -42,8 +42,8 @@ class MonthlySummaryPresenter {
             results.alert_count = allAlerts.reduce((acc, curr) => acc + curr.alert__count, 0);
 
             // Find values for priority areas
-            results.glad_alerts = EmailHelpersService.calculateGLADPriorityAreaValues(allAlerts, results.glad_count);
-            results.viirs_alerts = EmailHelpersService.calculateVIIRSPriorityAreaValues(allAlerts, results.viirs_count);
+            results.glad_alerts = EmailHelpersService.calculateGLADPriorityAreaValues(gladAlerts, results.glad_count);
+            results.viirs_alerts = EmailHelpersService.calculateVIIRSPriorityAreaValues(viirsAlerts, results.viirs_count);
             results.priority_areas = {
                 intact_forest: results.glad_alerts.intact_forest + results.viirs_alerts.intact_forest,
                 primary_forest: results.glad_alerts.primary_forest + results.viirs_alerts.primary_forest,
