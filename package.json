@@ -1,6 +1,6 @@
 {
   "name": "gfw-subscription-api",
-  "version": "1.6.4",
+  "version": "1.6.5",
   "description": "Global Forest Watch - Subscription API",
   "main": "app/index.js",
   "scripts": {

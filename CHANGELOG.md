@@ -1,3 +1,9 @@
+# v.1.6.5
+
+## 01/09/2020
+
+- Revert fixes made on 1.6.3 on the download URLs in the payload data for GLAD and VIIRS email alerts.
+
 # v.1.6.4
 
 ## 10/08/2020
