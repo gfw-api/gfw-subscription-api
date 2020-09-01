@@ -135,10 +135,12 @@ class GLADAlertsService {
      * @returns {Promise<{csv: string, json: string}>}
      */
     static async getDownloadURLs(startDate, endDate, params) {
-        const queryURL = await GLADAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
+        const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
         return {
-            csv: `${config.get('apiGateway.externalUrl')}/v1${queryURL.replace('query', 'download')}&format=csv`,
-            json: `${config.get('apiGateway.externalUrl')}/v1${queryURL.replace('query', 'download')}&format=json`,
+            // eslint-disable-next-line max-len
+            csv: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate},${endDate}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv.csv`,
+            // eslint-disable-next-line max-len
+            json: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate},${endDate}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`,
         };
     }
 

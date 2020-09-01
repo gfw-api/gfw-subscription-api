@@ -65,7 +65,6 @@ describe('AlertQueue ', () => {
         await assertMessageProcessing();
     });
 
-
     it('POST request to a web-hook URL triggered when a dataset Redis message is received for a subscription with a valid resource type URL (happy case)', async () => {
         await createDatasetWithWebHook('http://www.webhook.com');
         mockGLADAlertsQuery(3);
