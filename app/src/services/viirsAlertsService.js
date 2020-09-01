@@ -135,11 +135,10 @@ class ViirsAlertsService {
      */
     static async getDownloadURLs(startDate, endDate, params) {
         const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
+        const baseURL = `${config.get('apiGateway.externalUrl')}/v1/download/${config.get('datasets.viirsAllDataset')}`;
         return {
-            // eslint-disable-next-line max-len
-            csv: `${config.get('apiGateway.externalUrl')}/viirs-active-fires/download/?period=${startDate},${endDate}&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv.csv`,
-            // eslint-disable-next-line max-len
-            json: `${config.get('apiGateway.externalUrl')}/viirs-active-fires/download/?period=${startDate},${endDate}&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`,
+            csv: `${baseURL}?sql=SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}'&geostore=${geostoreId}&format=csv`,
+            json: `${baseURL}?sql=SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}'&geostore=${geostoreId}&format=json`,
         };
     }
 

@@ -86,10 +86,16 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
     // Validate download URLs
     jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
     jsonMessage.data.downloadUrls.should.have.property('csv')
-        .and.be.a('string').and.match(/.*\/viirs-active-fires.*\.csv$/).and.contain(geostoreId);
+        .and.be.a('string')
+        .and.match(/.*\/v1\/download.*$/)
+        .and.contain('format=csv')
+        .and.contain(`geostore=${geostoreId}`);
 
     jsonMessage.data.downloadUrls.should.have.property('json')
-        .and.be.a('string').and.match(/.*\/viirs-active-fires.*$/).and.contain(geostoreId);
+        .and.be.a('string')
+        .and.match(/.*\/v1\/download.*$/)
+        .and.contain('format=json')
+        .and.contain(`geostore=${geostoreId}`);
 
     jsonMessage.data.should.have.property('priority_areas').and.deep.equal({
         intact_forest: 41,
