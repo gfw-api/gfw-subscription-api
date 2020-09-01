@@ -80,17 +80,16 @@ const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub
     ));
 };
 
-const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub) => {
+const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub, geostoreId) => {
     jsonMessage.data.should.have.property('layerSlug').and.equal('viirs-active-fires');
 
     // Validate download URLs
     jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
     jsonMessage.data.downloadUrls.should.have.property('csv')
-        .and.be.a('string')
-        .and.match(/.*v1\/download.*&format=csv$/);
+        .and.be.a('string').and.match(/.*\/viirs-active-fires.*\.csv$/).and.contain(geostoreId);
+
     jsonMessage.data.downloadUrls.should.have.property('json')
-        .and.be.a('string')
-        .and.match(/.*v1\/download.*&format=json$/);
+        .and.be.a('string').and.match(/.*\/viirs-active-fires.*$/).and.contain(geostoreId);
 
     jsonMessage.data.should.have.property('priority_areas').and.deep.equal({
         intact_forest: 41,
@@ -180,10 +179,11 @@ const validateVIIRSNotificationParams = (
     endDate,
     sub,
     frequency = 'average',
+    geostoreId = '423e5dfb0448e692f97b590c61f45f22',
 ) => {
     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
-    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub);
+    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub, geostoreId);
 };
 
 const validateMonthlySummaryNotificationParams = (
