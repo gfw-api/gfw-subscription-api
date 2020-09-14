@@ -50,7 +50,7 @@ const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub
     // Validate download URLs
     jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
     jsonMessage.data.downloadUrls.should.have.property('csv')
-        .and.be.a('string').and.match(/.*\/glad-alerts.*\.csv$/).and.contain(geostoreId);
+        .and.be.a('string').and.match(/.*\/glad-alerts.*format=csv$/).and.contain(geostoreId);
 
     jsonMessage.data.downloadUrls.should.have.property('json')
         .and.be.a('string').and.match(/.*\/glad-alerts.*$/).and.contain(geostoreId);
