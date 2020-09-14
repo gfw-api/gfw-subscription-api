@@ -138,7 +138,7 @@ class GLADAlertsService {
         const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
         return {
             // eslint-disable-next-line max-len
-            csv: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate},${endDate}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv.csv`,
+            csv: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate},${endDate}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`,
             // eslint-disable-next-line max-len
             json: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate},${endDate}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`,
         };
