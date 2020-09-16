@@ -4,6 +4,7 @@ const { CronJob } = require('cron');
 const config = require('config');
 const UpdateService = require('services/updateService');
 const redis = require('redis');
+const EmailValidationService = require('services/emailValidationService');
 const taskConfig = require('../../config/cron.json');
 
 const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
@@ -20,6 +21,12 @@ const getTask = async (task) => {
         }));
         return;
     }
+
+    if (task.dataset === 'subs-emails-validation') {
+        await EmailValidationService.validateSubscriptionEmailCount(moment());
+        return;
+    }
+
     if (
         task.dataset !== 'viirs-active-fires'
         && task.dataset !== 'story'

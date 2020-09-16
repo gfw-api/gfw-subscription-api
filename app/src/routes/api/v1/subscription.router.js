@@ -7,7 +7,7 @@ const request = require('request-promise-native');
 const Subscription = require('models/subscription');
 const SubscriptionService = require('services/subscriptionService');
 const SubscriptionSerializer = require('serializers/subscriptionSerializer');
-const SlackService = require('services/slackService');
+const EmailValidationService = require('services/emailValidationService');
 const UpdateService = require('services/updateService');
 const DatasetService = require('services/datasetService');
 const StatisticsService = require('services/statisticsService');
@@ -354,26 +354,7 @@ class SubscriptionsRouter {
             ctx.throw(400, 'Invalid date provided.');
         }
 
-        logger.info(`[SubscriptionValidation] Starting validation process for subscriptions for date ${date.toISOString()}`);
-
-        const glad = await StatisticsService.getGLADEmailsValidationObject(date);
-        const viirs = await StatisticsService.getVIIRSEmailsValidationObject(date);
-        const monthly = await StatisticsService.getMonthlyEmailsValidationObject(date);
-
-        if (glad.success && viirs.success && monthly.success) {
-            logger.info(`[SubscriptionValidation] Validation process was successful for ${date.toISOString()}, triggering success action`);
-            await SlackService.subscriptionsValidationSuccessMessage(date, glad, viirs, monthly);
-        } else {
-            logger.info(`[SubscriptionValidation] Validation process was NOT successful for ${date.toISOString()}, triggering failure action`);
-            await SlackService.subscriptionsValidationFailureMessage(date, glad, viirs, monthly);
-        }
-
-        ctx.body = {
-            date,
-            glad,
-            viirs,
-            monthly,
-        };
+        ctx.body = await EmailValidationService.validateSubscriptionEmailCount(date);
     }
 
 }
