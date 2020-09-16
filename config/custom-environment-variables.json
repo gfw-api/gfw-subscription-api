@@ -46,5 +46,8 @@
     "viirsISODataset": "NEW_VIIRS_ISO_DATASET_ID",
     "viirsWDPADataset": "NEW_VIIRS_WDPA_DATASET_ID",
     "viirsGeostoreDataset": "NEW_VIIRS_ALERTS_DATASET_ID"
+  },
+  "sparkpost": {
+    "apiKey": "SPARKPOST_KEY"
   }
 }

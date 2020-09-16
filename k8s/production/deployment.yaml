@@ -113,6 +113,11 @@ spec:
             value: localhost
           - name: REDIS_PORT_6379_TCP_PORT
             value: "6379"
+          - name: SPARKPOST_KEY
+            valueFrom:
+              secretKeyRef:
+                name: mssecrets
+                key: SPARKPOST_KEY
 
         ports:
           - containerPort: 3600
