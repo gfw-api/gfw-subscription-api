@@ -293,7 +293,7 @@ class StatisticsService {
         const gladSparkpostCount = await SparkpostService.getGLADCountInjectedOnDate(date);
 
         return {
-            success: true,
+            success: gladSubs.length === gladSent && gladSent === gladSparkpostCount,
             expectedSubscriptionEmailsSent: gladSubs.length,
             actualSubscriptionEmailsSent: gladSent,
             sparkPostAPICalls: gladSparkpostCount,
@@ -306,7 +306,7 @@ class StatisticsService {
         const viirsSparkpostCount = await SparkpostService.getVIIRSCountInjectedOnDate(date);
 
         return {
-            success: true,
+            success: viirsSubs.length === viirsSent && viirsSent === viirsSparkpostCount,
             expectedSubscriptionEmailsSent: viirsSubs.length,
             actualSubscriptionEmailsSent: viirsSent,
             sparkPostAPICalls: viirsSparkpostCount,
@@ -319,7 +319,7 @@ class StatisticsService {
         const monthlySparkpostCount = await SparkpostService.getMonthlyCountInjectedOnDate(date);
 
         return {
-            success: true,
+            success: monthlySubs.length === monthlySent && monthlySent === monthlySparkpostCount,
             expectedSubscriptionEmailsSent: monthlySubs.length,
             actualSubscriptionEmailsSent: monthlySent,
             sparkPostAPICalls: monthlySparkpostCount,
