@@ -4,6 +4,8 @@ const logger = require('logger');
 const SubscriptionModel = require('models/subscription');
 const StatisticModel = require('models/statistic');
 const GenericError = require('errors/genericError');
+const SubscriptionService = require('services/subscriptionService');
+const SparkpostService = require('services/sparkpostService');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 
 const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
@@ -263,6 +265,64 @@ class StatisticsService {
             usersWithSubscription,
             newUsers: users ? users.length : 0,
             groupStatistics
+        };
+    }
+
+    static async countEmailsSentForSlugOnDate(date, slug) {
+        return StatisticModel.countDocuments({
+            slug,
+            createdAt: {
+                $gte: date.clone()
+                    .hours(0)
+                    .minutes(0)
+                    .seconds(0)
+                    .toDate(),
+
+                $lt: date.clone()
+                    .hours(23)
+                    .minutes(59)
+                    .seconds(59)
+                    .toDate(),
+            },
+        });
+    }
+
+    static async getGLADEmailsValidationObject(date) {
+        const gladSubs = await SubscriptionService.findGLADEmailSubscriptions();
+        const gladSent = await StatisticsService.countEmailsSentForSlugOnDate(date, 'glad-alerts');
+        const gladSparkpostCount = await SparkpostService.getGLADCountInjectedOnDate(date);
+
+        return {
+            success: true,
+            expectedSubscriptionEmailsSent: gladSubs.length,
+            actualSubscriptionEmailsSent: gladSent,
+            sparkPostAPICalls: gladSparkpostCount,
+        };
+    }
+
+    static async getVIIRSEmailsValidationObject(date) {
+        const viirsSubs = await SubscriptionService.findVIIRSEmailSubscriptions();
+        const viirsSent = await StatisticsService.countEmailsSentForSlugOnDate(date, 'viirs-active-fires');
+        const viirsSparkpostCount = await SparkpostService.getVIIRSCountInjectedOnDate(date);
+
+        return {
+            success: true,
+            expectedSubscriptionEmailsSent: viirsSubs.length,
+            actualSubscriptionEmailsSent: viirsSent,
+            sparkPostAPICalls: viirsSparkpostCount,
+        };
+    }
+
+    static async getMonthlyEmailsValidationObject(date) {
+        const monthlySubs = await SubscriptionService.findMonthlySummaryEmailSubscriptions();
+        const monthlySent = await StatisticsService.countEmailsSentForSlugOnDate(date, 'monthly-summary');
+        const monthlySparkpostCount = await SparkpostService.getMonthlyCountInjectedOnDate(date);
+
+        return {
+            success: true,
+            expectedSubscriptionEmailsSent: monthlySubs.length,
+            actualSubscriptionEmailsSent: monthlySent,
+            sparkPostAPICalls: monthlySparkpostCount,
         };
     }
 

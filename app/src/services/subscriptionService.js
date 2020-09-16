@@ -184,6 +184,18 @@ class SubscriptionService {
         return SubscriptionSerializer.serialize(subscriptions);
     }
 
+    static async findGLADEmailSubscriptions() {
+        return Subscription.find({ 'resource.type': 'EMAIL', datasets: /glad-alerts/i });
+    }
+
+    static async findVIIRSEmailSubscriptions() {
+        return Subscription.find({ 'resource.type': 'EMAIL', datasets: /viirs/i });
+    }
+
+    static async findMonthlySummaryEmailSubscriptions() {
+        return Subscription.find({ 'resource.type': 'EMAIL', datasets: /monthly/i });
+    }
+
 }
 
 module.exports = SubscriptionService;

@@ -164,5 +164,14 @@
             "baseUrl": "#(service.uri)",
             "path": "/api/v1/subscriptions/check-hook"
         }]
+    }, {
+        "url": "/v1/subscriptions/validate-subscriptions",
+        "method": "GET",
+        "authenticated": false,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/subscriptions/validate-subscriptions"
+        }]
     }]
 }
