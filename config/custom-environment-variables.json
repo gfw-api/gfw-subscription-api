@@ -49,5 +49,9 @@
   },
   "sparkpost": {
     "apiKey": "SPARKPOST_KEY"
+  },
+  "slack": {
+    "apiKey": "SLACK_KEY",
+    "channel": "SLACK_CHANNEL_ID"
   }
 }
