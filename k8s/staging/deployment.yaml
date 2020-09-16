@@ -118,6 +118,16 @@ spec:
               secretKeyRef:
                 name: mssecrets
                 key: SPARKPOST_KEY
+          - name: SLACK_KEY
+            valueFrom:
+              secretKeyRef:
+                name: mssecrets
+                key: SLACK_KEY
+          - name: SLACK_CHANNEL_ID
+            valueFrom:
+              secretKeyRef:
+                name: mssecrets
+                key: SLACK_CHANNEL_ID
 
         ports:
           - containerPort: 3600
