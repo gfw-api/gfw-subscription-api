@@ -94,5 +94,10 @@
       "value": 1,
       "measure": "months"
     }
+  },
+  {
+    "name": "Subscription emails validation",
+    "dataset": "subs-emails-validation",
+    "crontab": "00 00 19 * * 0-6"
   }
 ]
