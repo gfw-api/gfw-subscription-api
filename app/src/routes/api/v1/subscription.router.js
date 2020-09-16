@@ -347,6 +347,22 @@ class SubscriptionsRouter {
         }
     }
 
+    static async validateSubscriptionEmailCount(ctx) {
+        const date = ctx.query.date ? moment(ctx.query.date) : moment();
+        if (!date.isValid()) {
+            ctx.throw(400, 'Invalid date provided.');
+        }
+
+        logger.info(`[SubscriptionValidation] Starting validation process for subscriptions for date ${date.toISOString()}`);
+
+        ctx.body = {
+            date,
+            glad: await StatisticsService.getGLADEmailsValidationObject(date),
+            viirs: await StatisticsService.getVIIRSEmailsValidationObject(date),
+            monthly: await StatisticsService.getMonthlyEmailsValidationObject(date),
+        };
+    }
+
 }
 
 const isAdmin = async (ctx, next) => {
@@ -435,6 +451,7 @@ const validateLoggedUserOrMicroserviceAuth = async (ctx, next) => {
 
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', validateLoggedUserAuth, SubscriptionsRouter.getSubscriptions);
+router.get('/validate-subscriptions', isAdmin, SubscriptionsRouter.validateSubscriptionEmailCount);
 router.get('/find-all', validateMicroserviceAuth, SubscriptionsRouter.findAllSubscriptions);
 router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
 router.get('/statistics-group', isAdmin, SubscriptionsRouter.statisticsGroup);
