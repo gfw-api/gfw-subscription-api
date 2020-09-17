@@ -7,7 +7,6 @@ const request = require('request-promise-native');
 const Subscription = require('models/subscription');
 const SubscriptionService = require('services/subscriptionService');
 const SubscriptionSerializer = require('serializers/subscriptionSerializer');
-const EmailValidationService = require('services/emailValidationService');
 const UpdateService = require('services/updateService');
 const DatasetService = require('services/datasetService');
 const StatisticsService = require('services/statisticsService');
@@ -348,15 +347,6 @@ class SubscriptionsRouter {
         }
     }
 
-    static async validateSubscriptionEmailCount(ctx) {
-        const date = ctx.query.date ? moment(ctx.query.date) : moment();
-        if (!date.isValid()) {
-            ctx.throw(400, 'Invalid date provided.');
-        }
-
-        ctx.body = await EmailValidationService.validateSubscriptionEmailCount(date);
-    }
-
 }
 
 const isAdmin = async (ctx, next) => {
@@ -445,7 +435,6 @@ const validateLoggedUserOrMicroserviceAuth = async (ctx, next) => {
 
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', validateLoggedUserAuth, SubscriptionsRouter.getSubscriptions);
-router.get('/validate-subscriptions', isAdmin, SubscriptionsRouter.validateSubscriptionEmailCount);
 router.get('/find-all', validateMicroserviceAuth, SubscriptionsRouter.findAllSubscriptions);
 router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
 router.get('/statistics-group', isAdmin, SubscriptionsRouter.statisticsGroup);
