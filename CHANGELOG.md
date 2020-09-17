@@ -1,3 +1,10 @@
+# v.1.7.0
+
+## 17/09/2020
+
+- Add daily cronjob to validate subscription emails sent on that day - includes Slack notification with status at the
+end of the process.
+
 # v.1.6.5
 
 ## 01/09/2020
