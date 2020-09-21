@@ -2,8 +2,9 @@
 
 ## 17/09/2020
 
-- Add daily cronjob to validate subscription emails sent on that day - includes Slack notification with status at the
-end of the process.
+- Add daily cronjob to validate subscription emails sent on that day - includes Slack notification with status at the end of the process.
+- Update k8s files to version 1.16
+- Update Jenkinsfile to enable 3-branch strategy.
 
 # v.1.6.5
 
