@@ -52,8 +52,8 @@ class EmailValidationService {
         const viirsSparkpostCount = await SparkpostService.getVIIRSCountInjectedOnDate(date);
 
         return {
-            success: viirsSubs.length === viirsSent && viirsSent === viirsSparkpostCount,
-            expectedSubscriptionEmailsSent: viirsSubs.length,
+            success: viirsSubs === viirsSent && viirsSent === viirsSparkpostCount,
+            expectedSubscriptionEmailsSent: viirsSubs,
             actualSubscriptionEmailsSent: viirsSent,
             sparkPostAPICalls: viirsSparkpostCount,
         };
@@ -65,8 +65,8 @@ class EmailValidationService {
         const monthlySparkpostCount = await SparkpostService.getMonthlyCountInjectedOnDate(date);
 
         return {
-            success: monthlySubs.length === monthlySent && monthlySent === monthlySparkpostCount,
-            expectedSubscriptionEmailsSent: monthlySubs.length,
+            success: monthlySubs === monthlySent && monthlySent === monthlySparkpostCount,
+            expectedSubscriptionEmailsSent: monthlySubs,
             actualSubscriptionEmailsSent: monthlySent,
             sparkPostAPICalls: monthlySparkpostCount,
         };
@@ -110,66 +110,25 @@ class EmailValidationService {
     }
 
     static async findGLADEmailSubscriptions(date) {
-        let expectedNumberOfEmails = 0;
         const subs = await Subscription.find({ 'resource.type': 'EMAIL', datasets: /glad-alerts/i });
         const { beginDate, endDate } = EmailValidationService.getBeginAndEndDatesForCron('glad-alerts', date);
-
-        // eslint-disable-next-line no-restricted-syntax
-        for (const sub of subs) {
-            try {
-                if (await EmailValidationService.hasGLADAlertsForDate(beginDate, endDate, sub.params)) {
-                    expectedNumberOfEmails++;
-                }
-            } catch (err) {
-                // Suppressing errors for now
-                logger.error(err);
-            }
-        }
-
-        return expectedNumberOfEmails;
+        const results = await Promise.all(subs.map((sub) => EmailValidationService.hasGLADAlertsForDate(beginDate, endDate, sub.params)));
+        return results.filter((e) => e === true).length;
     }
 
     static async findVIIRSEmailSubscriptions(date) {
-        let expectedNumberOfEmails = 0;
         const subs = await Subscription.find({ 'resource.type': 'EMAIL', datasets: /viirs/i });
         const { beginDate, endDate } = EmailValidationService.getBeginAndEndDatesForCron('viirs-active-fires', date);
-
-        // eslint-disable-next-line no-restricted-syntax
-        for (const sub of subs) {
-            logger.info(`Processing number of GLAD alerts on date for sub with ID ${sub._id}`);
-            try {
-                if (await EmailValidationService.hasVIIRSAlertsForDate(beginDate, endDate, sub.params)) {
-                    expectedNumberOfEmails++;
-                }
-            } catch (err) {
-                // Suppressing errors for now
-                logger.error(err);
-            }
-        }
-
-        return expectedNumberOfEmails;
+        const results = await Promise.all(subs.map((sub) => EmailValidationService.hasVIIRSAlertsForDate(beginDate, endDate, sub.params)));
+        return results.filter((e) => e === true).length;
     }
 
     static async findMonthlySummaryEmailSubscriptions(date) {
-        let expectedNumberOfEmails = 0;
         const subs = await Subscription.find({ 'resource.type': 'EMAIL', datasets: /monthly/i });
         const { beginDate, endDate } = EmailValidationService.getBeginAndEndDatesForCron('monthly-summary', date);
-
-        // eslint-disable-next-line no-restricted-syntax
-        for (const sub of subs) {
-            try {
-                if (await EmailValidationService.hasGLADAlertsForDate(beginDate, endDate, sub.params)) {
-                    expectedNumberOfEmails++;
-                } else if (await EmailValidationService.hasVIIRSAlertsForDate(beginDate, endDate, sub.params)) {
-                    expectedNumberOfEmails++;
-                }
-            } catch (err) {
-                // Suppressing errors for now
-                logger.error(err);
-            }
-        }
-
-        return expectedNumberOfEmails;
+        const gladResults = await Promise.all(subs.map((sub) => EmailValidationService.hasGLADAlertsForDate(beginDate, endDate, sub.params)));
+        const viirsResults = await Promise.all(subs.map((sub) => EmailValidationService.hasVIIRSAlertsForDate(beginDate, endDate, sub.params)));
+        return gladResults.filter((e, idx) => e === true && viirsResults[idx]).length;
     }
 
     static async validateSubscriptionEmailCount(date = moment()) {
