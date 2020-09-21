@@ -1,16 +1,28 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: gfw
+  creationTimestamp: null
   labels:
     name: subscriptions
   name: subscriptions
+  namespace: gfw
 spec:
+  progressDeadlineSeconds: 2147483647
+  replicas: 1
   revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      name: subscriptions
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
   template:
     metadata:
       annotations:
         chaos.alpha.kubernetes.io/enabled: "true"
+      creationTimestamp: null
       labels:
         name: subscriptions
     spec:
@@ -24,129 +36,138 @@ spec:
                     values:
                       - apps
       containers:
-      - name: subscriptions
-        image: vizzuality/subscriptions
-        imagePullPolicy: Always
-        resources:
-          requests:
-            memory: "0Mi"
-            cpu: "0m"
-        args:
-          - start
-        env:
-          - name: PORT
-            value: "3600"
-          - name: LOGGER_LEVEL
-            value: "info"
-          - name: NODE_ENV
-            value: staging
-          - name: NODE_PATH
-            value: app/src
-          - name: LOCAL_URL
-            value: http://subscriptions.gfw.svc.cluster.local:3600
-          - name: MONGO_USE_UNIFIED_TOPOLOGY
-            value: "false"
-          - name: MONGO_URI
-            valueFrom:
+        - args:
+            - start
+          env:
+            - name: PORT
+              value: "3600"
+            - name: LOGGER_LEVEL
+              value: info
+            - name: NODE_ENV
+              value: staging
+            - name: NODE_PATH
+              value: app/src
+            - name: LOCAL_URL
+              value: http://subscriptions.gfw.svc.cluster.local:3600
+            - name: MONGO_USE_UNIFIED_TOPOLOGY
+              value: "false"
+            - name: MONGO_URI
+              valueFrom:
                 secretKeyRef:
-                  name: dbsecrets
                   key: SUBSCRIPTIONS_MONGO_URI
-          - name: CT_URL
-            valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: CT_URL
-          - name: CT_TOKEN
-            valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: CT_TOKEN
-          - name: CT_REGISTER_MODE
-            valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: CT_REGISTER_MODE
-          - name: API_VERSION
-            valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: API_VERSION
-          - name: STATS_RECIPIENTS
-            value: henrique.pacheco@vizzuality.com
-          - name: FLAGSHIP_URL
-            value: http://staging.globalforestwatch.org
-          - name: API_GATEWAY_EXTERNAL_URL
-            value: http://staging-api.globalforestwatch.org
-          - name: API_URL
-            value: http://staging-api.globalforestwatch.org
-          - name: RW_FLAGSHIP_URL_PREPRODUCTION
-            value: http://preproduction.resourcewatch.org
-          - name: RW_FLAGSHIP_URL_PRODUCTION
-            value: http://resourcewatch.org
-          - name: RW_FLAGSHIP_URL_STAGING
-            value: http://staging.resourcewatch.org
-          - name: CARTODB_USER
-            valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: CARTODB_USER
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: SUBSCRIPTIONS_AWS_ACCESS_KEY_ID
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: SUBSCRIPTIONS_AWS_SECRET_ACCESS_KEY
-          - name: API_GATEWAY_QUEUE_PROVIDER
-            value: redis
-          - name: API_GATEWAY_QUEUE_NAME
-            value: mail_staging
-          - name: REDIS_URL
-            valueFrom:
-                secretKeyRef:
                   name: dbsecrets
+            - name: CT_URL
+              valueFrom:
+                secretKeyRef:
+                  key: CT_URL
+                  name: mssecrets
+            - name: CT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: CT_TOKEN
+                  name: mssecrets
+            - name: CT_REGISTER_MODE
+              valueFrom:
+                secretKeyRef:
+                  key: CT_REGISTER_MODE
+                  name: mssecrets
+            - name: API_VERSION
+              valueFrom:
+                secretKeyRef:
+                  key: API_VERSION
+                  name: mssecrets
+            - name: STATS_RECIPIENTS
+              value: henrique.pacheco@vizzuality.com
+            - name: FLAGSHIP_URL
+              value: http://staging.globalforestwatch.org
+            - name: API_GATEWAY_EXTERNAL_URL
+              value: http://staging-api.globalforestwatch.org
+            - name: API_URL
+              value: http://staging-api.globalforestwatch.org
+            - name: RW_FLAGSHIP_URL_PREPRODUCTION
+              value: http://preproduction.resourcewatch.org
+            - name: RW_FLAGSHIP_URL_PRODUCTION
+              value: http://resourcewatch.org
+            - name: RW_FLAGSHIP_URL_STAGING
+              value: http://staging.resourcewatch.org
+            - name: CARTODB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: CARTODB_USER
+                  name: mssecrets
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  key: SUBSCRIPTIONS_AWS_ACCESS_KEY_ID
+                  name: mssecrets
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: SUBSCRIPTIONS_AWS_SECRET_ACCESS_KEY
+                  name: mssecrets
+            - name: API_GATEWAY_QUEUE_PROVIDER
+              value: redis
+            - name: API_GATEWAY_QUEUE_NAME
+              value: mail_staging
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
                   key: REDIS_URI
-          - name: REDIS_PORT_6379_TCP_ADDR
-            value: localhost
-          - name: REDIS_PORT_6379_TCP_PORT
-            value: "6379"
-          - name: SPARKPOST_KEY
-            valueFrom:
-              secretKeyRef:
-                name: mssecrets
-                key: SPARKPOST_KEY
-          - name: SLACK_KEY
-            valueFrom:
-              secretKeyRef:
-                name: mssecrets
-                key: SLACK_KEY
-          - name: SLACK_CHANNEL_ID
-            valueFrom:
-              secretKeyRef:
-                name: mssecrets
-                key: SLACK_CHANNEL_ID
-
-        ports:
-          - containerPort: 3600
-        readinessProbe:
-          httpGet:
-            scheme: HTTP
-            path: /healthcheck
-            port: 3600
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
-          periodSeconds: 15
-        livenessProbe:
-          httpGet:
-            scheme: HTTP
-            path: /healthcheck
-            port: 3600
-          failureThreshold: 3
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
-          periodSeconds: 15
-
+                  name: dbsecrets
+            - name: REDIS_PORT_6379_TCP_ADDR
+              value: localhost
+            - name: REDIS_PORT_6379_TCP_PORT
+              value: "6379"
+            - name: SPARKPOST_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: SPARKPOST_KEY
+                  name: mssecrets
+            - name: SLACK_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: SLACK_KEY
+                  name: mssecrets
+            - name: SLACK_CHANNEL_ID
+              valueFrom:
+                secretKeyRef:
+                  key: SLACK_CHANNEL_ID
+                  name: mssecrets
+          image: vizzuality/subscriptions
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthcheck
+              port: 3600
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: subscriptions
+          ports:
+            - containerPort: 3600
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthcheck
+              port: 3600
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: "0"
+              memory: "0"
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
       restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status: {}
