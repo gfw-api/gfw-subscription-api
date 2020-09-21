@@ -1,6 +1,6 @@
 # Global Forest Watch - Subscription API
 
-[![Build Status](https://travis-ci.org/gfw-api/gfw-subscription-api.svg?branch=develop)](https://travis-ci.org/gfw-api/gfw-subscription-api)
+[![Build Status](https://travis-ci.org/gfw-api/gfw-subscription-api.svg?branch=dev)](https://travis-ci.org/gfw-api/gfw-subscription-api)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/fd35453ead111fbb221c/test_coverage)](https://codeclimate.com/github/gfw-api/gfw-subscription-api/test_coverage)
 
 This repository contains the microservice that handles subscriptions to
