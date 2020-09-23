@@ -112,22 +112,36 @@ class EmailValidationService {
     static async findGLADEmailSubscriptions(date) {
         const subs = await Subscription.find({ 'resource.type': 'EMAIL', datasets: /glad-alerts/i });
         const { beginDate, endDate } = EmailValidationService.getBeginAndEndDatesForCron('glad-alerts', date);
-        const results = await Promise.all(subs.map((sub) => EmailValidationService.hasGLADAlertsForDate(beginDate, endDate, sub.params)));
+        const results = await Promise.all(subs.map((sub) => EmailValidationService
+            .hasGLADAlertsForDate(beginDate, endDate, sub.params)
+            // Suppress errors
+            .catch((e) => logger.error(e))));
         return results.filter((e) => e === true).length;
     }
 
     static async findVIIRSEmailSubscriptions(date) {
         const subs = await Subscription.find({ 'resource.type': 'EMAIL', datasets: /viirs/i });
         const { beginDate, endDate } = EmailValidationService.getBeginAndEndDatesForCron('viirs-active-fires', date);
-        const results = await Promise.all(subs.map((sub) => EmailValidationService.hasVIIRSAlertsForDate(beginDate, endDate, sub.params)));
+        const results = await Promise.all(subs.map((sub) => EmailValidationService
+            .hasVIIRSAlertsForDate(beginDate, endDate, sub.params)
+            // Suppress errors
+            .catch((e) => logger.error(e))));
         return results.filter((e) => e === true).length;
     }
 
     static async findMonthlySummaryEmailSubscriptions(date) {
         const subs = await Subscription.find({ 'resource.type': 'EMAIL', datasets: /monthly/i });
         const { beginDate, endDate } = EmailValidationService.getBeginAndEndDatesForCron('monthly-summary', date);
-        const gladResults = await Promise.all(subs.map((sub) => EmailValidationService.hasGLADAlertsForDate(beginDate, endDate, sub.params)));
-        const viirsResults = await Promise.all(subs.map((sub) => EmailValidationService.hasVIIRSAlertsForDate(beginDate, endDate, sub.params)));
+        const gladResults = await Promise.all(subs.map((sub) => EmailValidationService
+            .hasGLADAlertsForDate(beginDate, endDate, sub.params)
+            // Suppress errors
+            .catch((e) => logger.error(e))));
+
+        const viirsResults = await Promise.all(subs.map((sub) => EmailValidationService
+            .hasVIIRSAlertsForDate(beginDate, endDate, sub.params)
+            // Suppress errors
+            .catch((e) => logger.error(e))));
+
         return gladResults.filter((e, idx) => e === true && viirsResults[idx]).length;
     }
 
