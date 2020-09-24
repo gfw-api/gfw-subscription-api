@@ -14,7 +14,7 @@ class SlackService {
     }
 
     static async subscriptionsValidationSuccessMessage(date, glad, viirs, monthly) {
-        const message = `*[${date.toLocaleString()}] Subscription validation process PASSED :heavy_check_mark:*
+        const message = `*[${date.toLocaleString()}] [${process.env.NODE_ENV}] Subscription validation process PASSED :heavy_check_mark:*
 
 GLAD alerts - ${glad.sparkPostAPICalls} emails sent today.
 VIIRS alerts - ${viirs.sparkPostAPICalls} emails sent today.
@@ -24,7 +24,7 @@ Monthly summary alerts - ${monthly.sparkPostAPICalls} emails sent today.
     }
 
     static async subscriptionsValidationFailureMessage(date, glad, viirs, monthly) {
-        const message = `*[${date.toLocaleString()}] Subscription validation process FAILED :x:*
+        const message = `*[${date.toLocaleString()}] [${process.env.NODE_ENV}] Subscription validation process FAILED :x:*
 
 GLAD alerts: expected ${glad.expectedSubscriptionEmailsSent} emails, got ${glad.sparkPostAPICalls} calls to the Sparkpost API.
 VIIRS alerts: expected ${viirs.expectedSubscriptionEmailsSent} emails, got ${viirs.sparkPostAPICalls} calls to the Sparkpost API.
