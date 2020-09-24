@@ -12,6 +12,8 @@ const SparkpostService = require('services/sparkpostService');
 
 const taskConfig = require('../../../config/cron.json');
 
+const SUCCESS_RANGE = 0.05;
+
 class EmailValidationService {
 
     static async countEmailsSentForSlugOnDate(date, slug) {
@@ -38,8 +40,10 @@ class EmailValidationService {
         const gladSent = await EmailValidationService.countEmailsSentForSlugOnDate(date, 'glad-alerts');
         const gladSparkpostCount = await SparkpostService.getGLADCountInjectedOnDate(date);
 
+        const expectedUpperLimit = gladExpected + (SUCCESS_RANGE * gladExpected);
+        const expectedLowerLimit = gladExpected - (SUCCESS_RANGE * gladExpected);
         return {
-            success: gladExpected === gladSent && gladSent === gladSparkpostCount,
+            success: gladSparkpostCount >= expectedLowerLimit && gladSparkpostCount <= expectedUpperLimit,
             expectedSubscriptionEmailsSent: gladExpected,
             actualSubscriptionEmailsSent: gladSent,
             sparkPostAPICalls: gladSparkpostCount,
@@ -47,26 +51,30 @@ class EmailValidationService {
     }
 
     static async getVIIRSEmailsValidationObject(date) {
-        const viirsSubs = await EmailValidationService.findVIIRSEmailSubscriptions(date);
+        const viirsExpected = await EmailValidationService.findVIIRSEmailSubscriptions(date);
         const viirsSent = await EmailValidationService.countEmailsSentForSlugOnDate(date, 'viirs-active-fires');
         const viirsSparkpostCount = await SparkpostService.getVIIRSCountInjectedOnDate(date);
 
+        const expectedUpperLimit = viirsExpected + (SUCCESS_RANGE * viirsExpected);
+        const expectedLowerLimit = viirsExpected - (SUCCESS_RANGE * viirsExpected);
         return {
-            success: viirsSubs === viirsSent && viirsSent === viirsSparkpostCount,
-            expectedSubscriptionEmailsSent: viirsSubs,
+            success: viirsSparkpostCount >= expectedLowerLimit && viirsSparkpostCount <= expectedUpperLimit,
+            expectedSubscriptionEmailsSent: viirsExpected,
             actualSubscriptionEmailsSent: viirsSent,
             sparkPostAPICalls: viirsSparkpostCount,
         };
     }
 
     static async getMonthlyEmailsValidationObject(date) {
-        const monthlySubs = await EmailValidationService.findMonthlySummaryEmailSubscriptions(date);
+        const monthlyExpected = await EmailValidationService.findMonthlySummaryEmailSubscriptions(date);
         const monthlySent = await EmailValidationService.countEmailsSentForSlugOnDate(date, 'monthly-summary');
         const monthlySparkpostCount = await SparkpostService.getMonthlyCountInjectedOnDate(date);
 
+        const expectedUpperLimit = monthlyExpected + (SUCCESS_RANGE * monthlyExpected);
+        const expectedLowerLimit = monthlyExpected - (SUCCESS_RANGE * monthlyExpected);
         return {
-            success: monthlySubs === monthlySent && monthlySent === monthlySparkpostCount,
-            expectedSubscriptionEmailsSent: monthlySubs,
+            success: monthlySparkpostCount >= expectedLowerLimit && monthlySparkpostCount <= expectedUpperLimit,
+            expectedSubscriptionEmailsSent: monthlyExpected,
             actualSubscriptionEmailsSent: monthlySent,
             sparkPostAPICalls: monthlySparkpostCount,
         };
