@@ -66,17 +66,26 @@ class EmailValidationService {
     }
 
     static async getMonthlyEmailsValidationObject(date) {
-        const monthlyExpected = await EmailValidationService.findMonthlySummaryEmailSubscriptions(date);
-        const monthlySent = await EmailValidationService.countEmailsSentForSlugOnDate(date, 'monthly-summary');
-        const monthlySparkpostCount = await SparkpostService.getMonthlyCountInjectedOnDate(date);
+        if (date.date() === 1) {
+            const monthlyExpected = await EmailValidationService.findMonthlySummaryEmailSubscriptions(date);
+            const monthlySent = await EmailValidationService.countEmailsSentForSlugOnDate(date, 'monthly-summary');
+            const monthlySparkpostCount = await SparkpostService.getMonthlyCountInjectedOnDate(date);
 
-        const expectedUpperLimit = monthlyExpected + (SUCCESS_RANGE * monthlyExpected);
-        const expectedLowerLimit = monthlyExpected - (SUCCESS_RANGE * monthlyExpected);
+            const expectedUpperLimit = monthlyExpected + (SUCCESS_RANGE * monthlyExpected);
+            const expectedLowerLimit = monthlyExpected - (SUCCESS_RANGE * monthlyExpected);
+            return {
+                success: monthlySparkpostCount >= expectedLowerLimit && monthlySparkpostCount <= expectedUpperLimit,
+                expectedSubscriptionEmailsSent: monthlyExpected,
+                actualSubscriptionEmailsSent: monthlySent,
+                sparkPostAPICalls: monthlySparkpostCount,
+            };
+        }
+
         return {
-            success: monthlySparkpostCount >= expectedLowerLimit && monthlySparkpostCount <= expectedUpperLimit,
-            expectedSubscriptionEmailsSent: monthlyExpected,
-            actualSubscriptionEmailsSent: monthlySent,
-            sparkPostAPICalls: monthlySparkpostCount,
+            success: true,
+            expectedSubscriptionEmailsSent: 0,
+            actualSubscriptionEmailsSent: 0,
+            sparkPostAPICalls: 0,
         };
     }
 
