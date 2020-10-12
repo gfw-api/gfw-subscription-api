@@ -1,3 +1,10 @@
+# v.1.7.1
+
+## 12/10/2020
+
+- Performance updates on the subscription email processes.
+- Remove code for subscription statistics email.
+
 # v.1.7.0
 
 ## 17/09/2020
