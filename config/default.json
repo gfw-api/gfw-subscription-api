@@ -32,9 +32,6 @@
   "cartoDB": {
     "user": null
   },
-  "mails": {
-    "statsRecipients": "henrique.pacheco@vizzuality.com"
-  },
   "gfw": {
     "flagshipUrl": "http://staging.globalforestwatch.org",
     "apiUrl": "http://mymachine:9000"

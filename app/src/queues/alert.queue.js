@@ -5,9 +5,7 @@ const redis = require('redis');
 const SubscriptionService = require('services/subscriptionService');
 const DatasetService = require('services/datasetService');
 const MessageProcessor = require('services/messageProcessor');
-const EmailPublisher = require('publishers/emailPublisher');
 
-const STATS_MAILS = config.get('mails.statsRecipients').split(',');
 const CHANNEL = config.get('apiGateway.subscriptionAlertsChannelName');
 
 class AlertQueue {
@@ -53,40 +51,21 @@ class AlertQueue {
                 return;
             }
 
-            let mailCounter = 0;
-            let notSentCounter = 0;
-            const errorSubscriptions = [];
             for (let i = 0, { length } = subscriptions; i < length; i++) {
                 try {
                     const subscription = await SubscriptionService.getSubscriptionById(subscriptions[i]._id);
                     const layer = { name: layerSlug, slug: layerSlug };
-                    const sent = await subscription.publish(layer, begin, end);
-                    if (sent) {
-                        mailCounter++;
-                    } else {
-                        notSentCounter++;
-                        errorSubscriptions.push(subscription._id.toString());
-                    }
+                    await subscription.publish(layer, begin, end);
                 } catch (e) {
                     logger.error(e);
                 }
             }
 
-            EmailPublisher.sendStats(
-                STATS_MAILS,
-                {
-                    counter: mailCounter,
-                    notSentCounter,
-                    dataset: layerSlug,
-                    errorSubscriptions,
-                }
-            );
         } catch (e) {
             logger.error(e);
         }
     }
 
 }
-
 
 module.exports = AlertQueue;
