@@ -53,16 +53,6 @@ class MonthlySummaryPresenter {
                 other: results.glad_alerts.other + results.viirs_alerts.other,
             };
 
-            // Finding alerts for the same period last year and calculate frequency
-            const gladLastYearAlerts = await GLADAlertsService.getAnalysisSamePeriodLastYearForSubscription(
-                begin, end, subscription.params
-            );
-            results.glad_frequency = await EmailHelpersService.calculateAlertFrequency(gladAlerts, gladLastYearAlerts, subscription.language);
-
-            // Finding alerts for the same period last year and calculate frequency
-            const viirsLastYearAlerts = await ViirsAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
-            results.viirs_frequency = await EmailHelpersService.calculateAlertFrequency(viirsAlerts, viirsLastYearAlerts, subscription.language);
-
             // VIIRS specific properties
             results.viirs_days_count = endDate.diff(startDate, 'days');
             results.viirs_day_start = startDate.format('DD/MM/YYYY');
@@ -75,9 +65,18 @@ class MonthlySummaryPresenter {
             results.formatted_priority_areas = EmailHelpersService.formatPriorityAreas(results.priority_areas);
             results.formatted_glad_priority_areas = EmailHelpersService.formatPriorityAreas(results.glad_alerts);
             results.formatted_viirs_priority_areas = EmailHelpersService.formatPriorityAreas(results.viirs_alerts);
+
+            // Finding alerts for the same period last year and calculate frequency
+            const gladLastYearAlerts = await GLADAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
+            results.glad_frequency = await EmailHelpersService.calculateAlertFrequency(gladAlerts, gladLastYearAlerts, subscription.language);
+
+            // Finding alerts for the same period last year and calculate frequency
+            const viirsLastYearAlerts = await ViirsAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
+            results.viirs_frequency = await EmailHelpersService.calculateAlertFrequency(viirsAlerts, viirsLastYearAlerts, subscription.language);
         } catch (err) {
             logger.error(err);
             results.alerts = [];
+            throw err;
         }
         logger.info('Glad P Results ', results);
         return results;
