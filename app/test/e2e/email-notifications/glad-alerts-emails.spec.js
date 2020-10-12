@@ -12,13 +12,8 @@ const EmailHelpersService = require('services/emailHelpersService');
 const { getTestServer } = require('../utils/test-server');
 const { createSubscription, assertNoEmailSent } = require('../utils/helpers');
 const { mockGLADAlertsQuery, createMockGeostore } = require('../utils/mock');
+const { bootstrapEmailNotificationTests, validateGLADNotificationParams } = require('../utils/helpers/email-notifications');
 const { ROLES } = require('../utils/test.constants');
-
-const {
-    assertSubscriptionStatsNotificationEvent,
-    bootstrapEmailNotificationTests,
-    validateGLADNotificationParams,
-} = require('../utils/helpers/email-notifications');
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -64,9 +59,6 @@ describe('GLAD alert emails', () => {
                 case 'forest-change-notification-glads-en':
                     validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -103,9 +95,6 @@ describe('GLAD alert emails', () => {
                 case 'forest-change-notification-glads-fr':
                     validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -141,9 +130,6 @@ describe('GLAD alert emails', () => {
 
                 case 'forest-change-notification-glads-zh':
                     validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -189,9 +175,6 @@ describe('GLAD alert emails', () => {
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -235,9 +218,6 @@ describe('GLAD alert emails', () => {
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -283,9 +263,6 @@ describe('GLAD alert emails', () => {
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -329,9 +306,6 @@ describe('GLAD alert emails', () => {
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -377,9 +351,6 @@ describe('GLAD alert emails', () => {
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -404,7 +375,7 @@ describe('GLAD alert emails', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADAlertsQuery(1, undefined, { data: [] });
 
-        assertNoEmailSent(redisClient, 'glad-alerts');
+        assertNoEmailSent(redisClient);
 
         await AlertQueue.processMessage(null, JSON.stringify({
             layer_slug: 'glad-alerts',
@@ -424,7 +395,7 @@ describe('GLAD alert emails', () => {
         mockGLADAlertsQuery(1);
         mockGLADAlertsQuery(1, undefined, {}, 500);
 
-        assertNoEmailSent(redisClient, 'glad-alerts');
+        assertNoEmailSent(redisClient);
 
         await AlertQueue.processMessage(null, JSON.stringify({
             layer_slug: 'glad-alerts',
@@ -597,9 +568,6 @@ describe('GLAD alert emails', () => {
                         other: '0',
                     });
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -644,9 +612,6 @@ describe('GLAD alert emails', () => {
 
                 case 'forest-change-notification-glads-en':
                     validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);

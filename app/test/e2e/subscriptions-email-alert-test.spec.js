@@ -113,8 +113,6 @@ describe('Test email alerts spec', () => {
                         .and.have.property('email')
                         .and.equal(body.email);
                     break;
-                case 'subscriptions-stats':
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
