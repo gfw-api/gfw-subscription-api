@@ -12,13 +12,8 @@ const EmailHelpersService = require('services/emailHelpersService');
 const { getTestServer } = require('../utils/test-server');
 const { createSubscription, assertNoEmailSent } = require('../utils/helpers');
 const { mockGLADAlertsQuery, mockVIIRSAlertsQuery, createMockGeostore } = require('../utils/mock');
+const { bootstrapEmailNotificationTests, validateMonthlySummaryNotificationParams } = require('../utils/helpers/email-notifications');
 const { ROLES } = require('../utils/test.constants');
-
-const {
-    assertSubscriptionStatsNotificationEvent,
-    bootstrapEmailNotificationTests,
-    validateMonthlySummaryNotificationParams,
-} = require('../utils/helpers/email-notifications');
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -65,9 +60,6 @@ describe('Monthly summary notifications', () => {
                 case 'monthly-summary-en':
                     validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -105,9 +97,6 @@ describe('Monthly summary notifications', () => {
                 case 'monthly-summary-fr':
                     validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -144,9 +133,6 @@ describe('Monthly summary notifications', () => {
 
                 case 'monthly-summary-zh':
                     validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -191,9 +177,6 @@ describe('Monthly summary notifications', () => {
                         'average',
                     );
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -236,9 +219,6 @@ describe('Monthly summary notifications', () => {
                         subscriptionOne,
                         'average',
                     );
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -283,9 +263,6 @@ describe('Monthly summary notifications', () => {
                         'average',
                     );
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -328,9 +305,6 @@ describe('Monthly summary notifications', () => {
                         subscriptionOne,
                         'average',
                     );
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -376,9 +350,6 @@ describe('Monthly summary notifications', () => {
                         'average',
                     );
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -404,7 +375,7 @@ describe('Monthly summary notifications', () => {
         mockGLADAlertsQuery(1, undefined, { data: [] });
         mockVIIRSAlertsQuery(1, undefined, { data: [] });
 
-        assertNoEmailSent(redisClient, 'monthly-summary');
+        assertNoEmailSent(redisClient);
 
         await AlertQueue.processMessage(null, JSON.stringify({
             layer_slug: 'monthly-summary',
@@ -486,9 +457,6 @@ describe('Monthly summary notifications', () => {
                         plantations: '0',
                         other: '0',
                     });
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -687,9 +655,6 @@ describe('Monthly summary notifications', () => {
                         other: '0',
                     });
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -735,9 +700,6 @@ describe('Monthly summary notifications', () => {
 
                 case 'monthly-summary-en':
                     validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);

@@ -1,20 +1,9 @@
 const chai = require('chai');
-const config = require('config');
 const moment = require('moment');
 
 const AlertUrlService = require('services/alertUrlService');
 
 const should = chai.should();
-
-const assertSubscriptionStatsNotificationEvent = (jsonMessage) => {
-    jsonMessage.should.have.property('sender').and.equal('gfw');
-    jsonMessage.should.have.property('data').and.be.a('object');
-    jsonMessage.data.should.have.property('counter').and.equal(1);
-    jsonMessage.data.should.have.property('dataset').and.equal('viirs-active-fires');
-    jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
-    jsonMessage.recipients[0].should.be.an('object').and.have.property('address')
-        .and.have.property('email').and.equal(config.get('mails.statsRecipients'));
-};
 
 const bootstrapEmailNotificationTests = (amount = '1', unit = 'w') => {
     const beginDate = moment().subtract(amount, unit);
@@ -206,7 +195,6 @@ const validateMonthlySummaryNotificationParams = (
 };
 
 module.exports = {
-    assertSubscriptionStatsNotificationEvent,
     bootstrapEmailNotificationTests,
     validateGLADNotificationParams,
     validateVIIRSNotificationParams,
