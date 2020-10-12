@@ -54,7 +54,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(3);
+        mockVIIRSAlertsQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -92,7 +92,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(3);
+        mockVIIRSAlertsQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -131,7 +131,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(3);
+        mockVIIRSAlertsQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -170,7 +170,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
+        mockVIIRSAlertsQuery(2, config.get('datasets.viirsISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN');
 
         redisClient.on('message', (channel, message) => {
@@ -217,7 +217,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
+        mockVIIRSAlertsQuery(2, config.get('datasets.viirsISODataset'));
         createMockGeostore('/v2/geostore/admin/IDN/3');
 
         redisClient.on('message', (channel, message) => {
@@ -264,7 +264,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
+        mockVIIRSAlertsQuery(2, config.get('datasets.viirsISODataset'));
         createMockGeostore('/v2/geostore/admin/BRA/1/1');
 
         redisClient.on('message', (channel, message) => {
@@ -311,7 +311,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(3, config.get('datasets.viirsWDPADataset'));
+        mockVIIRSAlertsQuery(2, config.get('datasets.viirsWDPADataset'));
         createMockGeostore('/v2/geostore/wdpa/1');
 
         redisClient.on('message', (channel, message) => {
@@ -358,8 +358,8 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(3);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
+        mockVIIRSAlertsQuery(2);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 3);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -434,26 +434,6 @@ describe('VIIRS Fires alert emails', () => {
         }));
     });
 
-    it('Problems with intermediate calls do not result in an email being sent with incomplete data (third call failing)', async () => {
-        await new Subscription(createSubscription(
-            ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
-        )).save();
-
-        const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(2);
-        mockVIIRSAlertsQuery(1, undefined, {}, 500);
-
-        assertNoEmailSent(redisClient, 'viirs-active-fires');
-
-        await AlertQueue.processMessage(null, JSON.stringify({
-            layer_slug: 'viirs-active-fires',
-            begin_date: beginDate,
-            end_date: endDate
-        }));
-    });
-
     it('VIIRS alerts are correctly formatted with k and M if values are high', async () => {
         await new Subscription(createSubscription(
             ROLES.USER.id,
@@ -462,7 +442,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(3, undefined, {
+        mockVIIRSAlertsQuery(2, undefined, {
             data: [
                 {
                     alert__date: '2019-10-10',
@@ -656,7 +636,7 @@ describe('VIIRS Fires alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         // Despite the payload of the params object, geostore dataset should be used
-        mockVIIRSAlertsQuery(3);
+        mockVIIRSAlertsQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
