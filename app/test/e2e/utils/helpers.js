@@ -1,7 +1,10 @@
+const chai = require('chai');
+const config = require('config');
+const nock = require('nock');
+
 const Statistic = require('models/statistic');
 const Subscription = require('models/subscription');
 const UrlService = require('services/urlService');
-const nock = require('nock');
 const { ROLES } = require('./test.constants');
 
 const getUUID = () => Math.random().toString(36).substring(7);
@@ -143,6 +146,28 @@ const createDatasetWithWebHook = async (url, extraMock = false) => {
     }
 };
 
+const assertNoEmailSent = (redisClient, dataset) => {
+    redisClient.on('message', (channel, message) => {
+        const jsonMessage = JSON.parse(message);
+        jsonMessage.should.have.property('template');
+        switch (jsonMessage.template) {
+
+            case 'subscriptions-stats':
+                jsonMessage.should.have.property('sender').and.equal('gfw');
+                jsonMessage.should.have.property('data').and.be.a('object');
+                jsonMessage.data.should.have.property('counter').and.equal(0);
+                jsonMessage.data.should.have.property('dataset').and.equal(dataset);
+                jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
+                jsonMessage.recipients[0].should.be.an('object').and.have.property('address')
+                    .and.have.property('email').and.equal(config.get('mails.statsRecipients'));
+                break;
+            default:
+                chai.should().fail('Unsupported message type: ', jsonMessage.template);
+                break;
+
+        }
+    });
+};
 module.exports = {
     createSubscription,
     getUUID,
@@ -153,5 +178,6 @@ module.exports = {
     getDateWithDecreaseYear,
     createAuthCases,
     validRedisMessage,
-    createDatasetWithWebHook
+    createDatasetWithWebHook,
+    assertNoEmailSent,
 };

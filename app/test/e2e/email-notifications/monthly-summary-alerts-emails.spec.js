@@ -10,7 +10,7 @@ const AlertQueue = require('queues/alert.queue');
 const EmailHelpersService = require('services/emailHelpersService');
 
 const { getTestServer } = require('../utils/test-server');
-const { createSubscription } = require('../utils/helpers');
+const { createSubscription, assertNoEmailSent } = require('../utils/helpers');
 const { mockGLADAlertsQuery, mockVIIRSAlertsQuery, createMockGeostore } = require('../utils/mock');
 const { ROLES } = require('../utils/test.constants');
 
@@ -404,26 +404,7 @@ describe('Monthly summary notifications', () => {
         mockGLADAlertsQuery(1, undefined, { data: [] });
         mockVIIRSAlertsQuery(1, undefined, { data: [] });
 
-        redisClient.on('message', (channel, message) => {
-            const jsonMessage = JSON.parse(message);
-            jsonMessage.should.have.property('template');
-            switch (jsonMessage.template) {
-
-                case 'subscriptions-stats':
-                    jsonMessage.should.have.property('sender').and.equal('gfw');
-                    jsonMessage.should.have.property('data').and.be.a('object');
-                    jsonMessage.data.should.have.property('counter').and.equal(0);
-                    jsonMessage.data.should.have.property('dataset').and.equal('monthly-summary');
-                    jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
-                    jsonMessage.recipients[0].should.be.an('object').and.have.property('address')
-                        .and.have.property('email').and.equal(config.get('mails.statsRecipients'));
-                    break;
-                default:
-                    should.fail('Unsupported message type: ', jsonMessage.template);
-                    break;
-
-            }
-        });
+        assertNoEmailSent(redisClient, 'monthly-summary');
 
         await AlertQueue.processMessage(null, JSON.stringify({
             layer_slug: 'monthly-summary',

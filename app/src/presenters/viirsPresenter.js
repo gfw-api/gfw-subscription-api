@@ -38,16 +38,16 @@ class ViirsPresenter {
 
             // Calculate alerts grouped by area types
             results.priority_areas = EmailHelpersService.calculateVIIRSPriorityAreaValues(alerts, results.alert_count);
+            results.formatted_alert_count = EmailHelpersService.formatAlertCount(results.alert_count);
+            results.formatted_priority_areas = EmailHelpersService.formatPriorityAreas(results.priority_areas);
 
             // Finding alerts for the same period last year and calculate frequency
             const lastYearAlerts = await ViirsAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
             results.viirs_frequency = await EmailHelpersService.calculateAlertFrequency(alerts, lastYearAlerts, subscription.language);
-
-            results.formatted_alert_count = EmailHelpersService.formatAlertCount(results.alert_count);
-            results.formatted_priority_areas = EmailHelpersService.formatPriorityAreas(results.priority_areas);
         } catch (err) {
             logger.error(err);
             results.alerts = [];
+            throw err;
         }
         logger.info('VIIRS Active Fires results: ', results);
         return results;

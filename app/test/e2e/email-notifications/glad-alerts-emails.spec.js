@@ -10,7 +10,7 @@ const AlertQueue = require('queues/alert.queue');
 const EmailHelpersService = require('services/emailHelpersService');
 
 const { getTestServer } = require('../utils/test-server');
-const { createSubscription } = require('../utils/helpers');
+const { createSubscription, assertNoEmailSent } = require('../utils/helpers');
 const { mockGLADAlertsQuery, createMockGeostore } = require('../utils/mock');
 const { ROLES } = require('../utils/test.constants');
 
@@ -404,26 +404,47 @@ describe('GLAD alert emails', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADAlertsQuery(1, undefined, { data: [] });
 
-        redisClient.on('message', (channel, message) => {
-            const jsonMessage = JSON.parse(message);
-            jsonMessage.should.have.property('template');
-            switch (jsonMessage.template) {
+        assertNoEmailSent(redisClient, 'glad-alerts');
 
-                case 'subscriptions-stats':
-                    jsonMessage.should.have.property('sender').and.equal('gfw');
-                    jsonMessage.should.have.property('data').and.be.a('object');
-                    jsonMessage.data.should.have.property('counter').and.equal(0);
-                    jsonMessage.data.should.have.property('dataset').and.equal('glad-alerts');
-                    jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
-                    jsonMessage.recipients[0].should.be.an('object').and.have.property('address')
-                        .and.have.property('email').and.equal(config.get('mails.statsRecipients'));
-                    break;
-                default:
-                    should.fail('Unsupported message type: ', jsonMessage.template);
-                    break;
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'glad-alerts',
+            begin_date: beginDate,
+            end_date: endDate
+        }));
+    });
 
-            }
-        });
+    it('Problems with intermediate calls do not result in an email being sent with incomplete data (second call failing)', async () => {
+        await new Subscription(createSubscription(
+            ROLES.USER.id,
+            'glad-alerts',
+            { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
+        )).save();
+
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        mockGLADAlertsQuery(1);
+        mockGLADAlertsQuery(1, undefined, {}, 500);
+
+        assertNoEmailSent(redisClient, 'glad-alerts');
+
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'glad-alerts',
+            begin_date: beginDate,
+            end_date: endDate
+        }));
+    });
+
+    it('Problems with intermediate calls do not result in an email being sent with incomplete data (third call failing)', async () => {
+        await new Subscription(createSubscription(
+            ROLES.USER.id,
+            'glad-alerts',
+            { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
+        )).save();
+
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        mockGLADAlertsQuery(2);
+        mockGLADAlertsQuery(1, undefined, {}, 500);
+
+        assertNoEmailSent(redisClient, 'glad-alerts');
 
         await AlertQueue.processMessage(null, JSON.stringify({
             layer_slug: 'glad-alerts',
