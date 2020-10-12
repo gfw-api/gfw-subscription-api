@@ -12,13 +12,8 @@ const EmailHelpersService = require('services/emailHelpersService');
 const { getTestServer } = require('../utils/test-server');
 const { createSubscription, assertNoEmailSent } = require('../utils/helpers');
 const { mockVIIRSAlertsQuery, createMockGeostore } = require('../utils/mock');
+const { bootstrapEmailNotificationTests, validateVIIRSNotificationParams } = require('../utils/helpers/email-notifications');
 const { ROLES } = require('../utils/test.constants');
-
-const {
-    assertSubscriptionStatsNotificationEvent,
-    bootstrapEmailNotificationTests,
-    validateVIIRSNotificationParams,
-} = require('../utils/helpers/email-notifications');
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -65,9 +60,6 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-en':
                     validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -104,9 +96,6 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-fr':
                     validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -142,9 +131,6 @@ describe('VIIRS Fires alert emails', () => {
 
                 case 'forest-fires-notification-viirs-zh':
                     validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -190,9 +176,6 @@ describe('VIIRS Fires alert emails', () => {
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -236,9 +219,6 @@ describe('VIIRS Fires alert emails', () => {
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -284,9 +264,6 @@ describe('VIIRS Fires alert emails', () => {
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -330,9 +307,6 @@ describe('VIIRS Fires alert emails', () => {
                         'average',
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -378,9 +352,6 @@ describe('VIIRS Fires alert emails', () => {
                         'f98f505878dcee72a2e92e7510a07d6f',
                     );
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -405,7 +376,7 @@ describe('VIIRS Fires alert emails', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsQuery(1, undefined, { data: [] });
 
-        assertNoEmailSent(redisClient, 'viirs-active-fires');
+        assertNoEmailSent(redisClient);
 
         await AlertQueue.processMessage(null, JSON.stringify({
             layer_slug: 'viirs-active-fires',
@@ -425,7 +396,7 @@ describe('VIIRS Fires alert emails', () => {
         mockVIIRSAlertsQuery(1);
         mockVIIRSAlertsQuery(1, undefined, {}, 500);
 
-        assertNoEmailSent(redisClient, 'viirs-active-fires');
+        assertNoEmailSent(redisClient);
 
         await AlertQueue.processMessage(null, JSON.stringify({
             layer_slug: 'viirs-active-fires',
@@ -598,9 +569,6 @@ describe('VIIRS Fires alert emails', () => {
                         other: '0',
                     });
                     break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
-                    break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
                     break;
@@ -646,9 +614,6 @@ describe('VIIRS Fires alert emails', () => {
 
                 case 'forest-fires-notification-viirs-en':
                     validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
-                    break;
-                case 'subscriptions-stats':
-                    assertSubscriptionStatsNotificationEvent(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
