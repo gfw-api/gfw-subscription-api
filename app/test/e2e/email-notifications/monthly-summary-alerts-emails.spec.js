@@ -54,8 +54,8 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsQuery(3);
-        mockVIIRSAlertsQuery(3);
+        mockGLADAlertsQuery(2);
+        mockVIIRSAlertsQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -92,8 +92,8 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsQuery(3);
-        mockVIIRSAlertsQuery(3);
+        mockGLADAlertsQuery(2);
+        mockVIIRSAlertsQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -132,8 +132,8 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsQuery(3);
-        mockVIIRSAlertsQuery(3);
+        mockGLADAlertsQuery(2);
+        mockVIIRSAlertsQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -172,8 +172,8 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
-        mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
+        mockGLADAlertsQuery(2, config.get('datasets.gladISODataset'));
+        mockVIIRSAlertsQuery(2, config.get('datasets.viirsISODataset'));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -218,8 +218,8 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
-        mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
+        mockGLADAlertsQuery(2, config.get('datasets.gladISODataset'));
+        mockVIIRSAlertsQuery(2, config.get('datasets.viirsISODataset'));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -264,8 +264,8 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsQuery(3, config.get('datasets.gladISODataset'));
-        mockVIIRSAlertsQuery(3, config.get('datasets.viirsISODataset'));
+        mockGLADAlertsQuery(2, config.get('datasets.gladISODataset'));
+        mockVIIRSAlertsQuery(2, config.get('datasets.viirsISODataset'));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -310,8 +310,8 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsQuery(3, config.get('datasets.gladWDPADataset'));
-        mockVIIRSAlertsQuery(3, config.get('datasets.viirsWDPADataset'));
+        mockGLADAlertsQuery(2, config.get('datasets.gladWDPADataset'));
+        mockVIIRSAlertsQuery(2, config.get('datasets.viirsWDPADataset'));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -356,9 +356,9 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsQuery(3);
-        mockVIIRSAlertsQuery(3);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 6);
+        mockGLADAlertsQuery(2);
+        mockVIIRSAlertsQuery(2);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -421,7 +421,7 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsQuery(3, undefined, {
+        mockGLADAlertsQuery(2, undefined, {
             data: [{
                 geostore__id: 'test',
                 alert__date: '2019-10-10',
@@ -451,7 +451,7 @@ describe('Monthly summary notifications', () => {
                 _id: 'AW6O0fqMLu2ttL7ZDM5u'
             }]
         });
-        mockVIIRSAlertsQuery(3, undefined, { data: [] });
+        mockVIIRSAlertsQuery(2, undefined, { data: [] });
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -512,7 +512,7 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsQuery(3, undefined, {
+        mockGLADAlertsQuery(2, undefined, {
             data: [
                 {
                     alert__date: '2019-10-10',
@@ -651,7 +651,7 @@ describe('Monthly summary notifications', () => {
                 }
             ]
         });
-        mockVIIRSAlertsQuery(3, undefined, { data: [] });
+        mockVIIRSAlertsQuery(2, undefined, { data: [] });
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -725,8 +725,8 @@ describe('Monthly summary notifications', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         // Despite the payload of the params object, geostore dataset should be used
-        mockGLADAlertsQuery(3);
-        mockVIIRSAlertsQuery(3);
+        mockGLADAlertsQuery(2);
+        mockVIIRSAlertsQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);

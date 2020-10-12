@@ -6,7 +6,7 @@ class GladAdapter {
 
     transform() {
         const value = this.results.reduce((acc, curr) => acc + curr.alert__count, 0);
-        return { value };
+        return { value, data: this.results };
     }
 
 }
