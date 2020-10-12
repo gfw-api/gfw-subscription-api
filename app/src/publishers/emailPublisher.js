@@ -29,15 +29,6 @@ class EmailPublisher {
         mailService.sendMail(template, results, recipients);
     }
 
-    static sendStats(emails, stats) {
-        logger.info('Publishing email with stats', stats);
-        const template = 'subscriptions-stats';
-        logger.info('MAIL TEMPLATE', template);
-        const recipients = emails.map((el) => ({ address: { email: el } }));
-        logger.info('Subscription stats email recipients', emails);
-        mailService.sendMail(template, stats, recipients);
-    }
-
 }
 
 module.exports = EmailPublisher;

@@ -75,8 +75,6 @@ spec:
                 secretKeyRef:
                   key: API_VERSION
                   name: mssecrets
-            - name: STATS_RECIPIENTS
-              value: henrique.pacheco@vizzuality.com
             - name: FLAGSHIP_URL
               value: http://www.globalforestwatch.org
             - name: RW_FLAGSHIP_URL_PREPRODUCTION

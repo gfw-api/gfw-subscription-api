@@ -76,8 +76,6 @@ spec:
                 secretKeyRef:
                   key: API_VERSION
                   name: mssecrets
-            - name: STATS_RECIPIENTS
-              value: henrique.pacheco@vizzuality.com
             - name: FLAGSHIP_URL
               value: http://staging.globalforestwatch.org
             - name: API_GATEWAY_EXTERNAL_URL
