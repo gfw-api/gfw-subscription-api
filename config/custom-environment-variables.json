@@ -33,9 +33,6 @@
   "cartoDB": {
     "user": "CARTODB_USER"
   },
-  "mails": {
-    "statsRecipients": "STATS_RECIPIENTS"
-  },
   "settings": {
     "loadCron": "LOAD_CRON"
   },
