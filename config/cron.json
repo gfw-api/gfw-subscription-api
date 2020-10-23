@@ -13,19 +13,6 @@
     }
   },
   {
-    "name": "Imazon alerts",
-    "dataset": "imazon-alerts",
-    "crontab": "00 00 10 1 * *",
-    "gap": {
-      "value": 1,
-      "measure": "months"
-    },
-    "periodicity": {
-      "value": 1,
-      "measure": "months"
-    }
-  },
-  {
     "name": "Stories",
     "dataset": "story",
     "crontab": "00 00 22 * * 0-6",
