@@ -6,8 +6,6 @@ const VIIRSPresenter = require('presenters/viirsPresenter');
 const GLADPresenter = require('presenters/gladPresenter');
 const TerraiPresenter = require('presenters/terraiPresenter');
 const StoryPresenter = require('presenters/storyPresenter');
-const FormaPresenter = require('presenters/formaPresenter');
-const Forma250GFWPresenter = require('presenters/forma250GFWPresenter');
 const MonthlySummaryPresenter = require('presenters/monthlySummaryPresenter');
 
 const UrlService = require('services/urlService');
@@ -19,8 +17,6 @@ const PRESENTER_MAP = {
     'glad-alerts': GLADPresenter,
     'terrai-alerts': TerraiPresenter,
     story: StoryPresenter,
-    'forma-alerts': FormaPresenter,
-    forma250GFW: Forma250GFWPresenter,
 };
 
 const decorateWithName = (results, subscription) => {

@@ -30,8 +30,6 @@ const getTask = async (task) => {
     if (
         task.dataset !== 'viirs-active-fires'
         && task.dataset !== 'story'
-        && task.dataset !== 'forma-alerts'
-        && task.dataset !== 'forma250GFW'
         && task.dataset !== 'glad-alerts'
         && task.dataset !== 'monthly-summary'
     ) {
