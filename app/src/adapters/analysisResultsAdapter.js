@@ -4,7 +4,6 @@ const GENERIC_ADAPTER = require('adapters/genericAdapter');
 const GladAdapter = require('adapters/gladAdapter');
 const StoryAdapter = require('adapters/storyAdapter');
 const MonthlySummaryAdapter = require('adapters/monthlySummaryAdapter');
-const TerraiAdapter = require('adapters/terraiAdapter');
 const ViirsAdapter = require('adapters/viirsAdapter');
 
 const ADAPTER_MAP = {
@@ -12,7 +11,6 @@ const ADAPTER_MAP = {
     'viirs-active-fires': ViirsAdapter,
     'monthly-summary': MonthlySummaryAdapter,
     story: StoryAdapter,
-    'terrai-alerts': TerraiAdapter
 };
 
 class AnalysisResultsAdapter {
