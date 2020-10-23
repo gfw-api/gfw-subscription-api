@@ -106,41 +106,6 @@ describe('CronLoader task queueing', () => {
         });
     });
 
-    it('Test forma-alerts cron task queues the expected message', async () => {
-        const task = taskConfig.find((e) => e.dataset === 'forma-alerts');
-        cronLoader.getTask(task);
-
-        let expectedMessageCount = 1;
-
-        const validateMessage = (resolve) => async (channel, message) => {
-            const jsonMessage = JSON.parse(message);
-
-            jsonMessage.should.have.property('layer_slug').and.equal('forma-alerts');
-
-            jsonMessage.should.have.property('begin_date');
-            new Date(jsonMessage.begin_date).should.beforeDate(new Date());
-
-            jsonMessage.should.have.property('end_date');
-            new Date(jsonMessage.end_date).should.beforeDate(new Date());
-
-            new Date(jsonMessage.begin_date).should.beforeDate(new Date(jsonMessage.end_date));
-
-            expectedMessageCount -= 1;
-
-            if (expectedMessageCount < 0) {
-                throw new Error(`Unexpected message count - expectedMessageCount:${expectedMessageCount}`);
-            }
-
-            if (expectedMessageCount === 0) {
-                resolve();
-            }
-        };
-
-        return new Promise((resolve) => {
-            redisClient.on('message', validateMessage(resolve));
-        });
-    });
-
     it('Test dataset cron task queues the expected message', async () => {
         await new LastUpdateModel({ dataset: 'dataset', date: '2010-01-01' }).save();
 
@@ -153,41 +118,6 @@ describe('CronLoader task queueing', () => {
             const jsonMessage = JSON.parse(message);
 
             jsonMessage.should.have.property('layer_slug').and.equal('dataset');
-
-            expectedMessageCount -= 1;
-
-            if (expectedMessageCount < 0) {
-                throw new Error(`Unexpected message count - expectedMessageCount:${expectedMessageCount}`);
-            }
-
-            if (expectedMessageCount === 0) {
-                resolve();
-            }
-        };
-
-        return new Promise((resolve) => {
-            redisClient.on('message', validateMessage(resolve));
-        });
-    });
-
-    it('Test forma250GFW cron task queues the expected message', async () => {
-        const task = taskConfig.find((e) => e.dataset === 'forma250GFW');
-        cronLoader.getTask(task);
-
-        let expectedMessageCount = 1;
-
-        const validateMessage = (resolve) => async (channel, message) => {
-            const jsonMessage = JSON.parse(message);
-
-            jsonMessage.should.have.property('layer_slug').and.equal('forma250GFW');
-
-            jsonMessage.should.have.property('begin_date');
-            new Date(jsonMessage.begin_date).should.beforeDate(new Date());
-
-            jsonMessage.should.have.property('end_date');
-            new Date(jsonMessage.end_date).should.beforeDate(new Date());
-
-            new Date(jsonMessage.begin_date).should.beforeDate(new Date(jsonMessage.end_date));
 
             expectedMessageCount -= 1;
 

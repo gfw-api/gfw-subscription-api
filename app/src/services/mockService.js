@@ -35,35 +35,6 @@ const MOCK_DATA = {
             image: 'http://gfw2stories.s3.amazonaws.com/uploads/14690228334704e26fbed5044e02012cf33c267c6f9bekaapor1.jpeg'
         }]
     },
-    'forma-alerts': {
-        layerSlug: 'forma-alerts',
-        alert_name: 'Brazil Alerts',
-        selected_area: 'ISO Code: BRA',
-        unsubscribe_url: 'http://www.globalforestwatch.org/unsubscribe_url',
-        subscriptions_url: 'http://www.globalforestwatch.org/my-gfw/subscriptions',
-        alert_link: 'http://www.globalforestwatch.org/map/3/15.00/27.00/ALL/grayscale/forma_activity?tab=basemaps-tab&begin=2017-07-21&end=2017-08-21',
-        alert_date_begin: '2017-07-21',
-        alert_date_end: '2017-08-21',
-        alert_count: 9035,
-        alerts: [{
-            acq_date: '2017-08-20',
-            acq_time: '04:24',
-            latitude: -22.50847,
-            longitude: -44.10447
-        }],
-        map_image: 'https://gfw2stories.s3.amazonaws.com/map_preview/b5f2e3e52e1412c003c787aa0f2007ce%3A1500987953812_-74.9882431030273%2C-34.7470817565917%2C-27.8472194671629%2C6.2648777961731.png',
-    },
-    forma250GFW: {
-        layerSlug: 'forma250GFW',
-        alert_name: 'Brazil Alerts',
-        selected_area: 'ISO Code: BRA',
-        unsubscribe_url: 'http://www.globalforestwatch.org/unsubscribe_url',
-        subscriptions_url: 'http://www.globalforestwatch.org/my-gfw/subscriptions',
-        alert_link: 'http://www.globalforestwatch.org/map/3/15.00/27.00/ALL/grayscale/forma_month_3?tab=basemaps-tab&begin=2017-01-19&end=2017-08-19',
-        alert_date_begin: '2017-01-19',
-        alert_date_end: '2017-08-19',
-        alert_count: 9035
-    },
     'terrai-alerts': {
         layerSlug: 'terrai-alerts',
         alert_name: 'Brazil Alerts',

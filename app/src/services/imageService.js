@@ -10,11 +10,9 @@ const AWS = require('aws-sdk');
 
 const geoQuery = require('services/imageService/geoQuery.json');
 const viirsTemplate = require('services/imageService/template/viirs.json');
-const formaAlertsTemplate = require('services/imageService/template/forma-alerts.json');
 
 const LAYERS_PARAMS_MAP = {
     'viirs-active-fires': viirsTemplate,
-    'forma-alerts': formaAlertsTemplate,
 };
 
 const executeThunk = (client, sql, params) => (

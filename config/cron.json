@@ -26,35 +26,9 @@
     }
   },
   {
-    "name": "Forma",
-    "dataset": "forma-alerts",
-    "crontab": "00 45 12 * * 0-6",
-    "gap": {
-      "value": 1,
-      "measure": "day"
-    },
-    "periodicity": {
-      "value": 1,
-      "measure": "day"
-    }
-  },
-  {
     "name": "Dataset",
     "dataset": "dataset",
     "crontab": "00 15 12 * * 0-6"
-  },
-  {
-    "name": "Forma250",
-    "dataset": "forma250GFW",
-    "crontab": "00 15 13 * * 0-6",
-    "gap": {
-      "value": 1,
-      "measure": "day"
-    },
-    "periodicity": {
-      "value": 1,
-      "measure": "day"
-    }
   },
   {
     "name": "Glad Alerts",
