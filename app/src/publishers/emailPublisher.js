@@ -5,7 +5,6 @@ const DEFAULT_TEMPLATE = 'forest-change-notification';
 const TEMPLATE_MAP = {
     'viirs-active-fires': 'forest-fires-notification-viirs',
     story: 'stories-alerts',
-    'terrai-alerts': 'forest-change-notification',
     'glad-alerts': 'forest-change-notification-glads',
     'monthly-summary': 'monthly-summary',
 };
