@@ -7,12 +7,6 @@ const LAYERS = [{
     datasetId: config.get('layers.umdLossGainLayerDataset'),
     layerId: config.get('layers.umdLossGainLayer')
 }, {
-    name: 'terrailoss',
-    slug: 'terrai-alerts',
-    subscription: true,
-    datasetId: config.get('layers.terraILayerDataset'),
-    layerId: config.get('layers.terraILayer')
-}, {
     name: 'prodes',
     slug: 'prodes-loss',
     subscription: true,
