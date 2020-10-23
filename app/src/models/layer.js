@@ -59,16 +59,6 @@ const LAYERS = [{
     slug: 'story',
     subscription: true
 }, {
-    // no longer on flagship
-    name: 'forma-alerts',
-    slug: 'forma-alerts',
-    subscription: true
-}, {
-    // no longer on flagship
-    name: 'forma250GFW',
-    slug: 'forma250GFW',
-    subscription: true
-}, {
     name: 'monthly-summary',
     slug: 'monthly-summary',
     subscription: true,
