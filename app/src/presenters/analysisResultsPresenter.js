@@ -6,7 +6,6 @@ const VIIRSPresenter = require('presenters/viirsPresenter');
 const GLADPresenter = require('presenters/gladPresenter');
 const TerraiPresenter = require('presenters/terraiPresenter');
 const StoryPresenter = require('presenters/storyPresenter');
-const ImazonPresenter = require('presenters/imazonPresenter');
 const FormaPresenter = require('presenters/formaPresenter');
 const Forma250GFWPresenter = require('presenters/forma250GFWPresenter');
 const MonthlySummaryPresenter = require('presenters/monthlySummaryPresenter');
@@ -18,7 +17,6 @@ const PRESENTER_MAP = {
     'monthly-summary': MonthlySummaryPresenter,
     'viirs-active-fires': VIIRSPresenter,
     'glad-alerts': GLADPresenter,
-    'imazon-alerts': ImazonPresenter,
     'terrai-alerts': TerraiPresenter,
     story: StoryPresenter,
     'forma-alerts': FormaPresenter,

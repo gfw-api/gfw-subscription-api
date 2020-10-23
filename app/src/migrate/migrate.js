@@ -48,7 +48,6 @@ const obtainNewUserId = async (userId) => {
         //     json: true
         // });
 
-
         // cacheUsers[userId] = result.body.data.id;
         // return result.body.data.id;
     } catch (e) {
@@ -72,7 +71,6 @@ const createGeoJSON = async (geojsonParam) => {
         //     json: true
         // });
 
-
         // return result;
     } catch (e) {
         logger.error(e);
@@ -90,7 +88,6 @@ const oldDatasets = {
     'alerts/prodes': 'prodes-loss',
     'alerts/viirs': 'viirs-active-fires',
     'alerts/guyra': 'guira-loss',
-    'alerts/sad': 'imazon-alerts'
 };
 
 const tranformDataset = (oldDataset) => {
