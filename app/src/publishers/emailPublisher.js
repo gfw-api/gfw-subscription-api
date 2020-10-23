@@ -4,7 +4,6 @@ const mailService = require('services/mailService');
 const DEFAULT_TEMPLATE = 'forest-change-notification';
 const TEMPLATE_MAP = {
     'viirs-active-fires': 'forest-fires-notification-viirs',
-    'imazon-alerts': 'forest-change-imazon-alerts',
     story: 'stories-alerts',
     'forma-alerts': 'forest-change-notification',
     forma250GFW: 'forest-change-notification',
