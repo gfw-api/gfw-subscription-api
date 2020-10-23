@@ -195,6 +195,27 @@ class EmailValidationService {
         const viirs = await EmailValidationService.getVIIRSEmailsValidationObject(date);
         const monthly = await EmailValidationService.getMonthlyEmailsValidationObject(date);
 
+        logger.info(`[SubscriptionValidation] [GLAD] 
+            success: ${glad.success}, 
+            expectedSubscriptionEmailsSent: ${glad.expectedSubscriptionEmailsSent}
+            actualSubscriptionEmailsSent: ${glad.actualSubscriptionEmailsSent}
+            sparkPostAPICalls: ${glad.sparkPostAPICalls}
+        `);
+
+        logger.info(`[SubscriptionValidation] [VIIRS] 
+            success: ${viirs.success}, 
+            expectedSubscriptionEmailsSent: ${viirs.expectedSubscriptionEmailsSent}
+            actualSubscriptionEmailsSent: ${viirs.actualSubscriptionEmailsSent}
+            sparkPostAPICalls: ${viirs.sparkPostAPICalls}
+        `);
+
+        logger.info(`[SubscriptionValidation] [Monthly summary] 
+            success: ${monthly.success}, 
+            expectedSubscriptionEmailsSent: ${monthly.expectedSubscriptionEmailsSent}
+            actualSubscriptionEmailsSent: ${monthly.actualSubscriptionEmailsSent}
+            sparkPostAPICalls: ${monthly.sparkPostAPICalls}
+        `);
+
         if (glad.success && viirs.success && monthly.success) {
             logger.info(`[SubscriptionValidation] Validation process was successful for ${date.toISOString()}, triggering success action`);
             await SlackService.subscriptionsValidationSuccessMessage(date, glad, viirs, monthly);
