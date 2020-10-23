@@ -48,11 +48,6 @@ const LAYERS = [{
     datasetId: config.get('layers.gladAlertLayerDataset'),
     layerId: config.get('layers.gladAlertLayer')
 }, {
-    // depreciated
-    name: 'story',
-    slug: 'story',
-    subscription: true
-}, {
     name: 'monthly-summary',
     slug: 'monthly-summary',
     subscription: true,
