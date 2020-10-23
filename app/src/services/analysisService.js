@@ -25,7 +25,7 @@ class AnalysisService {
             query.forSubscription = true;
         }
 
-        const path = AnalysisClassifier.pathFor(subscription, layerSlug);
+        const path = AnalysisClassifier.pathFor(subscription);
         const url = `/${layerSlug}${path}`;
         logger.debug('subscription id: ', subscription._id, 'Url ', url, 'and query ', query);
         try {

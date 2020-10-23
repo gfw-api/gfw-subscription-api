@@ -27,12 +27,7 @@ const getTask = async (task) => {
         return;
     }
 
-    if (
-        task.dataset !== 'viirs-active-fires'
-        && task.dataset !== 'story'
-        && task.dataset !== 'glad-alerts'
-        && task.dataset !== 'monthly-summary'
-    ) {
+    if (task.dataset !== 'viirs-active-fires' && task.dataset !== 'glad-alerts' && task.dataset !== 'monthly-summary') {
         logger.info(`Checking if dataset '${task.dataset}' was updated`);
         const result = await UpdateService.checkUpdated(task.dataset);
         if (result.updated) {
