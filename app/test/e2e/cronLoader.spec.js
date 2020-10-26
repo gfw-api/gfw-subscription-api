@@ -75,7 +75,7 @@ describe('CronLoader task queueing', () => {
         await new LastUpdateModel({ dataset: 'dataset', date: '2010-01-01' }).save();
 
         const task = taskConfig.find((e) => e.dataset === 'dataset');
-        cronLoader.getTask(task);
+        await cronLoader.getTask(task);
 
         let expectedMessageCount = 1;
 

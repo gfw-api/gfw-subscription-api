@@ -8,8 +8,7 @@ const ALERT_TYPES = ['EMAIL', 'URL'];
 const alertPublishers = {};
 ALERT_TYPES.forEach((type) => {
     // eslint-disable-next-line import/no-dynamic-require
-    const typePublisher = require(`publishers/${type.toLowerCase()}Publisher`);
-    alertPublishers[type] = typePublisher;
+    alertPublishers[type] = require(`publishers/${type.toLowerCase()}Publisher`);
 });
 
 const Layer = require('models/layer');

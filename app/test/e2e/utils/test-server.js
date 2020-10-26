@@ -7,7 +7,6 @@ let createdServer;
 
 chai.use(chaiHttp);
 
-
 const getTestServer = async function getTestServer() {
     if (requester) {
         return requester;
@@ -29,7 +28,6 @@ const getTestServer = async function getTestServer() {
 
     return requester;
 };
-
 
 const createRequest = async (prefix, method) => {
     if (!createdServer && !requester) {
