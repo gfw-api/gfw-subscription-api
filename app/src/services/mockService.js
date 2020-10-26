@@ -57,16 +57,6 @@ const MOCK_DATA = {
         alert_link: 'http://www.globalforestwatch.org/map/3/15.00/27.00/ALL/grayscale/loss,forestgain?tab=analysis-tab&begin=2001-01-01&end=2017-08-21&threshold=30',
         alert_date_begin: '2001-01-01',
         alert_date_end: '2017-08-21',
-    },
-    'prodes-loss': {
-        layerSlug: 'prodes-loss',
-        alert_name: 'Brazil Alerts',
-        selected_area: 'ISO Code: BRA',
-        unsubscribe_url: 'http://www.globalforestwatch.org/unsubscribe_url',
-        subscriptions_url: 'http://www.globalforestwatch.org/my-gfw/subscriptions',
-        alert_link: 'http://www.globalforestwatch.org/map/3/15.00/27.00/ALL/grayscale/prodes?tab=analysis-tab&begin=2001-01-01&end=2016-12-31',
-        alert_date_begin: '2001-01-01',
-        alert_date_end: '2016-12-31',
     }
 };
 
