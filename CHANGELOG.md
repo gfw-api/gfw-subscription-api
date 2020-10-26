@@ -1,3 +1,14 @@
+# v.1.7.2
+
+## 26/10/2020
+
+- Remove alert types that are no longer needed:
+  - PRODES
+  - Story
+  - TerraI
+  - Forma and Forma250GFW
+  - Imazon
+
 # v.1.7.1
 
 ## 12/10/2020
