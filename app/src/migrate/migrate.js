@@ -84,7 +84,6 @@ logger.info('Setting info', process.env.API_GATEWAY_URL_MIGRATE);
 const oldDatasets = {
     'alerts/treeloss': 'umd-loss-gain',
     'alerts/glad': 'glad-alerts',
-    'alerts/prodes': 'prodes-loss',
     'alerts/viirs': 'viirs-active-fires',
     'alerts/guyra': 'guira-loss',
 };
