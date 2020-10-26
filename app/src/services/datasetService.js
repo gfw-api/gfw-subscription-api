@@ -57,7 +57,6 @@ class DatasetService {
                 }
                 if (!result) {
                     logger.error('Error processing subs query');
-                    continue;
                 } else {
                     logger.debug('Result: ', result);
                     try {
@@ -99,6 +98,7 @@ class DatasetService {
                                         return;
                                     }
 
+                                    // eslint-disable-next-line max-len
                                     logger.warn(`Error in call to subscription webhook. Subscription id: ${subscription.id} || POST url: ${subscription.resource.content} || POST body: ${JSON.stringify(data)} || Response code: ${res && res.statusCode} || Response body: ${body && JSON.stringify(body)} || error: ${error && JSON.stringify(error)}`);
                                 });
                             }
@@ -118,7 +118,6 @@ class DatasetService {
                         }
                     } catch (e) {
                         logger.error(e);
-                        continue;
                     }
                 }
             } catch (e) {
@@ -133,10 +132,8 @@ class DatasetService {
     // for data endpoint
     static async processSubscriptionData(subscriptionId) {
         const subscription = await Subscription.findById(subscriptionId).exec();
-        const data = await DatasetService.runSubscriptionQuery(subscription, 'dataQuery');
-        return data;
+        return DatasetService.runSubscriptionQuery(subscription, 'dataQuery');
     }
-
 
     static async processSubscriptions() {
         logger.info('Processing dataset subs');
@@ -302,7 +299,7 @@ class DatasetService {
             .replace('{{yearEnd}}', yearEnd);
         logger.debug('Doing query: ', finalQuery);
         try {
-            const result = await ctRegisterMicroservice.requestToMicroservice({
+            return ctRegisterMicroservice.requestToMicroservice({
                 uri: '/query',
                 qs: {
                     sql: finalQuery,
@@ -312,7 +309,6 @@ class DatasetService {
                 method: 'GET',
                 json: true
             });
-            return result;
         } catch (error) {
             logger.error(error);
             return null;
@@ -340,6 +336,5 @@ class DatasetService {
     }
 
 }
-
 
 module.exports = DatasetService;

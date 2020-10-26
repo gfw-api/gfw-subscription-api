@@ -36,7 +36,6 @@ if (config.get('logger.level') === 'debug') {
     });
 }
 
-
 async function init() {
     return new Promise((resolve, reject) => {
         async function onDbReady(mongoConnectionError) {
@@ -79,7 +78,7 @@ async function init() {
                 try {
                     await next();
                 } catch (inErr) {
-                    let error = inErr;
+                    let error;
                     try {
                         error = JSON.parse(inErr);
                     } catch (e) {
@@ -155,6 +154,5 @@ async function init() {
         mongoose.connect(mongoUri, mongooseOptions, onDbReady);
     });
 }
-
 
 module.exports = init;
