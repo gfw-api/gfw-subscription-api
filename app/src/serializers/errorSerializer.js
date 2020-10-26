@@ -2,7 +2,7 @@ class ErrorSerializer {
 
     static serializeValidationError(data, typeParam) {
         const keys = Object.keys(data);
-        let message = '';
+        let message;
         switch (typeParam) {
 
             case 'body':
