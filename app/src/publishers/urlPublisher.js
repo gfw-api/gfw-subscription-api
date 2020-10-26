@@ -1,7 +1,6 @@
 const logger = require('logger');
 const request = require('request-promise-native');
 
-
 class UrlPublisher {
 
     static async publish(subscription, results) {
