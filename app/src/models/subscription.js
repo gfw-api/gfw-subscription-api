@@ -54,7 +54,7 @@ const Subscription = new Schema({
 
 // this cant be converted to an arrow function, as it will change the behavior of things and cause tests to rightfully fail
 // eslint-disable-next-line func-names
-Subscription.methods.publish = async function (layerConfig, begin, end) {
+Subscription.methods.publish = async function (layerConfig, begin, end, sendEmail = true) {
     logger.info('Publishing subscription with data', layerConfig, begin, end);
     const layer = await Layer.findBySlug(layerConfig.name);
     if (!layer) {
@@ -77,9 +77,12 @@ Subscription.methods.publish = async function (layerConfig, begin, end) {
         results, this, layer, begin, end
     );
 
-    await alertPublishers[this.resource.type].publish(this, results, layer);
-    logger.info('Saving statistic');
-    await new Statistic({ slug: layerConfig.slug, application: this.application }).save();
+    if (sendEmail) {
+        await alertPublishers[this.resource.type].publish(this, results, layer);
+        logger.info('Saving statistic');
+        await new Statistic({ slug: layerConfig.slug, application: this.application }).save();
+    }
+
     return true;
 };
 
