@@ -30,7 +30,11 @@ class EmailValidationService {
 
     static async findExpectedEmailsForSubType(date, type) {
         let expectedNumberOfEmails = 0;
-        const subs = await Subscription.find({ 'resource.type': 'EMAIL', datasets: new RegExp(type) });
+        const subs = await Subscription.find({
+            datasets: new RegExp(type),
+            'resource.type': 'EMAIL',
+            confirmed: true,
+        });
         const { beginDate, endDate } = EmailValidationService.getBeginAndEndDatesForCron(type, date);
 
         for (const sub of subs) {
