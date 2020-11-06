@@ -116,12 +116,14 @@ class EmailValidationService {
         logger.info(`[SubscriptionValidation] VIIRS: ${JSON.stringify(viirs)}`);
         logger.info(`[SubscriptionValidation] Monthly: ${JSON.stringify(monthly)}`);
 
-        if (glad.success && viirs.success && monthly.success) {
-            logger.info(`[SubscriptionValidation] Validation process was successful for ${date.toISOString()}, triggering success action`);
-            await SlackService.subscriptionsValidationSuccessMessage(date, glad, viirs, monthly);
-        } else {
-            logger.info(`[SubscriptionValidation] Validation process was NOT successful for ${date.toISOString()}, triggering failure action`);
-            await SlackService.subscriptionsValidationFailureMessage(date, glad, viirs, monthly);
+        if (process.env.NODE_ENV === 'prod') {
+            if (glad.success && viirs.success && monthly.success) {
+                logger.info(`[SubscriptionValidation] Validation process was successful for ${date.toISOString()}, triggering success action`);
+                await SlackService.subscriptionsValidationSuccessMessage(date, glad, viirs, monthly);
+            } else {
+                logger.info(`[SubscriptionValidation] Validation process was NOT successful for ${date.toISOString()}, triggering failure action`);
+                await SlackService.subscriptionsValidationFailureMessage(date, glad, viirs, monthly);
+            }
         }
 
         return {
