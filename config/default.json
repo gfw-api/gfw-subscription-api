@@ -26,9 +26,6 @@
     "port": 27017,
     "useUnifiedTopology": true
   },
-  "migrate": {
-    "uri": ""
-  },
   "cartoDB": {
     "user": null
   },

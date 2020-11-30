@@ -4,7 +4,6 @@
   "description": "Global Forest Watch - Subscription API",
   "main": "app/index.js",
   "scripts": {
-    "migrate": "NODE_PATH=app/src node $NODE_DEBUG_OPTION app/src/migrate/migrate.js",
     "start": "NODE_PATH=app/src node $NODE_DEBUG_OPTION app/index.js",
     "test": "NODE_PATH=app/src node $NODE_DEBUG_OPTION ./node_modules/.bin/grunt --gruntfile app/Gruntfile.js test",
     "coverage": "NODE_PATH=app/src node $NODE_DEBUG_OPTION ./node_modules/.bin/grunt --gruntfile app/Gruntfile.js nyc"
