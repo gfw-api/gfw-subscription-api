@@ -26,15 +26,12 @@
     "node": "~12"
   },
   "dependencies": {
-    "aws-sdk": "^2.90.0",
     "btoa": "^1.2.1",
     "bunyan": "^1.8.12",
-    "cartodb": "^0.5.1",
     "config": "1.19.0",
     "cron": "^1.7.2",
     "ct-register-microservice-node": "^2.1.7",
     "d3": "^5.16.0",
-    "d3-format": "^1.4.4",
     "jsonapi-serializer": "^3.6.5",
     "julian": "0.2.0",
     "koa": "^2.11.0",
@@ -49,13 +46,11 @@
     "moment": "^2.13.0",
     "mongoose": "^5.9.13",
     "mongoose-paginate": "^5.0.3",
-    "mustache": "^3.1.0",
     "qs": "^6.9.3",
     "redis": "^2.8.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8",
     "sleep": "^6.1.0",
-    "turf-explode": "^3.0.12",
     "url": "0.11.0"
   },
   "devDependencies": {
@@ -82,7 +77,7 @@
     "husky": "^4.2.3",
     "lint-staged": "^10.0.9",
     "load-grunt-tasks": "^5.1.0",
-    "mocha": "^6.2.0",
+    "mocha": "^8.2.1",
     "nock": "^10.0.6",
     "nyc": "^14.1.1"
   },

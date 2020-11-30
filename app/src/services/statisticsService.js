@@ -37,32 +37,32 @@ class StatisticsService {
             createdAt: { $gte: startDate, $lt: endDate },
             application: { $eq: application },
         };
-        topSubs.geostore = await SubscriptionModel.count({
+        topSubs.geostore = await SubscriptionModel.countDocuments({
             ...defaultFilter,
             'params.geostore': {
                 $ne: null
             }
         });
-        topSubs.country = await SubscriptionModel.count({
+        topSubs.country = await SubscriptionModel.countDocuments({
             ...defaultFilter,
             'params.iso.country': {
                 $ne: null
             },
             'params.iso.region': null
         });
-        topSubs.region = await SubscriptionModel.count({
+        topSubs.region = await SubscriptionModel.countDocuments({
             ...defaultFilter,
             'params.iso.region': {
                 $ne: null
             }
         });
-        topSubs.wdpa = await SubscriptionModel.count({
+        topSubs.wdpa = await SubscriptionModel.countDocuments({
             ...defaultFilter,
             'params.wdpaid': {
                 $ne: null
             }
         });
-        topSubs.use = await SubscriptionModel.count({
+        topSubs.use = await SubscriptionModel.countDocuments({
             ...defaultFilter,
             'params.use': {
                 $ne: null
@@ -208,8 +208,8 @@ class StatisticsService {
             application: { $eq: application },
         };
 
-        info.numSubscriptions = await SubscriptionModel.count(defaultFilter);
-        info.totalSubscriptions = await SubscriptionModel.count();
+        info.numSubscriptions = await SubscriptionModel.countDocuments(defaultFilter);
+        info.totalSubscriptions = await SubscriptionModel.countDocuments();
         logger.debug(SubscriptionModel.aggregate([
             { $match: { application: { $eq: application } } },
             { $group: { _id: '$userId' } },
@@ -233,8 +233,8 @@ class StatisticsService {
         info.usersWithSubscriptions = usersWithSubscriptionResult.length > 0
             ? usersWithSubscriptionResult[0].count
             : 0;
-        info.totalEmailsSentInThisQ = await StatisticModel.count(defaultFilter);
-        info.totalEmailsSended = await StatisticModel.count();
+        info.totalEmailsSentInThisQ = await StatisticModel.countDocuments(defaultFilter);
+        info.totalEmailsSended = await StatisticModel.countDocuments();
 
         return info;
     }
@@ -243,7 +243,7 @@ class StatisticsService {
         let usersCount = 0;
         if (users) {
             for (let i = 0, { length } = users; i < length; i++) {
-                usersCount += await SubscriptionModel.count({
+                usersCount += await SubscriptionModel.countDocuments({
                     userId: users[i].id,
                     application: { $eq: application },
                 });
