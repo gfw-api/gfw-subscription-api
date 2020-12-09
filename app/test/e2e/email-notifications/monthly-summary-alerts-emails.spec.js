@@ -715,6 +715,39 @@ describe('Monthly summary notifications', () => {
         }));
     });
 
+    it('Monthly summary subs referring to a Data API geostore ID should trigger an email with the correct email template and all the needed data', async () => {
+        const subscriptionOne = await new Subscription(createSubscription(
+            ROLES.USER.id,
+            'monthly-summary',
+            { params: { geostoreDataApi: '423e5dfb0448e692f97b590c61f45f22' } },
+        )).save();
+
+        const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+        mockGLADAlertsQuery(2);
+        mockVIIRSAlertsQuery(2);
+
+        redisClient.on('message', (channel, message) => {
+            const jsonMessage = JSON.parse(message);
+            jsonMessage.should.have.property('template');
+            switch (jsonMessage.template) {
+
+                case 'monthly-summary-en':
+                    validateMonthlySummaryNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    break;
+                default:
+                    should.fail('Unsupported message type: ', jsonMessage.template);
+                    break;
+
+            }
+        });
+
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'monthly-summary',
+            begin_date: beginDate,
+            end_date: endDate
+        }));
+    });
+
     afterEach(async () => {
         redisClient.removeAllListeners();
         process.removeAllListeners('unhandledRejection');

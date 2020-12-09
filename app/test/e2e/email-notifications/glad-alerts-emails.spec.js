@@ -627,6 +627,38 @@ describe('GLAD alert emails', () => {
         }));
     });
 
+    it('GLAD subs referring to a Data API geostore ID should trigger an email with the correct email template and all the needed data', async () => {
+        const subscriptionOne = await new Subscription(createSubscription(
+            ROLES.USER.id,
+            'glad-alerts',
+            { params: { geostoreDataApi: '423e5dfb0448e692f97b590c61f45f22' } },
+        )).save();
+
+        const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        mockGLADAlertsQuery(2);
+
+        redisClient.on('message', (channel, message) => {
+            const jsonMessage = JSON.parse(message);
+            jsonMessage.should.have.property('template');
+            switch (jsonMessage.template) {
+
+                case 'forest-change-notification-glads-en':
+                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    break;
+                default:
+                    should.fail('Unsupported message type: ', jsonMessage.template);
+                    break;
+
+            }
+        });
+
+        await AlertQueue.processMessage(null, JSON.stringify({
+            layer_slug: 'glad-alerts',
+            begin_date: beginDate,
+            end_date: endDate
+        }));
+    });
+
     afterEach(async () => {
         redisClient.removeAllListeners();
         process.removeAllListeners('unhandledRejection');

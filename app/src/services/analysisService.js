@@ -12,7 +12,24 @@ const formatDate = (date) => moment(date).format('YYYY-MM-DD');
 class AnalysisService {
 
     static async execute(subscription, layerSlug, begin, end, forSubscription) {
+        // Override results in the case of glad-alerts
+        if (layerSlug === 'glad-alerts') {
+            return GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+        }
 
+        // Override results in the case of viirs-active-fires
+        if (layerSlug === 'viirs-active-fires') {
+            return ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+        }
+
+        // Override results in the case of monthly-summary
+        if (layerSlug === 'monthly-summary') {
+            const gladAlerts = await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+            const viirsAlerts = await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+            return { gladAlerts, viirsAlerts };
+        }
+
+        // Legacy code
         logger.info('Executing analysis for', layerSlug, begin, end);
 
         const period = `${formatDate(begin)},${formatDate(end)}`;
@@ -29,23 +46,6 @@ class AnalysisService {
         const url = `/${layerSlug}${path}`;
         logger.debug('subscription id: ', subscription._id, 'Url ', url, 'and query ', query);
         try {
-            // Override results in the case of glad-alerts
-            if (layerSlug === 'glad-alerts') {
-                return await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
-            }
-
-            // Override results in the case of viirs-active-fires
-            if (layerSlug === 'viirs-active-fires') {
-                return await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
-            }
-
-            // Override results in the case of monthly-summary
-            if (layerSlug === 'monthly-summary') {
-                const gladAlerts = await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                const viirsAlerts = await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                return { gladAlerts, viirsAlerts };
-            }
-
             const result = await ctRegisterMicroservice.requestToMicroservice({
                 uri: url,
                 method: 'GET',
