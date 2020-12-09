@@ -4,6 +4,10 @@ const ctRegisterMicroservice = require('ct-register-microservice-node');
 class GeostoreService {
 
     static async getGeostoreIdFromSubscriptionParams(params) {
+        if (params.geostoreDataApi) {
+            return params.geostoreDataApi;
+        }
+
         if (params.geostore) {
             return params.geostore;
         }
