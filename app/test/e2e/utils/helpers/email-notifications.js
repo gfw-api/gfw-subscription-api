@@ -104,8 +104,8 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
             name: 'viirs_fires_alerts',
             slug: 'viirs-active-fires',
             subscription: true,
-            datasetId: '1d3ccf9b-102e-4c0b-b2ea-2abcc712e194',
-            layerId: '93e33932-3959-4201-b8c8-6ec0b32596e0'
+            datasetId: 'fire-alerts-viirs',
+            layerId: 'fire-alerts-viirs'
         },
         beginDate,
         endDate,
@@ -132,8 +132,8 @@ const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, en
             name: 'monthly-summary',
             slug: 'monthly-summary',
             subscription: true,
-            datasetId: '1d3ccf9b-102e-4c0b-b2ea-2abcc712e194',
-            layerId: '93e33932-3959-4201-b8c8-6ec0b32596e0'
+            datasetId: 'fire-alerts-viirs',
+            layerId: 'fire-alerts-viirs'
         },
         beginDate,
         endDate,
