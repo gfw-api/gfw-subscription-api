@@ -1,3 +1,9 @@
+# v.1.7.3
+
+## 09/12/2020
+
+- Fix "See on map" URL for VIIRS Fires subscription emails
+
 # v.1.7.2
 
 ## 26/10/2020
