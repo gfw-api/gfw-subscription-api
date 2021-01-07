@@ -24,11 +24,11 @@ class ViirsAlertsService {
         }
 
         if (region) {
-            sql += `AND adm1 = '${region}' `;
+            sql += `AND adm1 = ${region} `;
         }
 
         if (subregion) {
-            sql += `AND adm2 = '${subregion}' `;
+            sql += `AND adm2 = ${subregion} `;
         }
 
         sql += ' ORDER BY alert__date';
