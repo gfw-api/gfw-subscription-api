@@ -1,19 +1,13 @@
 const nock = require('nock');
 const config = require('config');
 const {
-    mockDataset, MOCK_FILE, MOCK_USERS
+    mockDataset, MOCK_USERS
 } = require('./test.constants');
 
 const createMockDataset = (id) => nock(process.env.CT_URL)
     .get(`/v1/dataset/${id}`)
     .reply(200, {
         data: mockDataset(id)
-    });
-
-const createMockQuery = () => nock(process.env.CT_URL)
-    .get(/\/v1\/query\?(.)*/)
-    .reply(200, {
-        data: { url: MOCK_FILE }
     });
 
 const createMockUsersWithRange = (startDate, endDate) => nock(process.env.CT_URL)
@@ -478,7 +472,6 @@ module.exports = {
     createMockSendConfirmationSUB,
     createMockDataset,
     createMockConfirmSUB,
-    createMockQuery,
     createMockUsersWithRange,
     createMockUsers,
     createMockLatestDataset,

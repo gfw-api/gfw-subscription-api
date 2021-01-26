@@ -1,6 +1,7 @@
 /* eslint-disable no-continue */
 const Subscription = require('models/subscription');
-const ctRegisterMicroservice = require('ct-register-microservice-node');
+const { RWAPIMicroservice } = require('rw-api-microservice-node');
+
 const MailService = require('services/mailService');
 const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 const julian = require('julian');
@@ -151,7 +152,7 @@ class DatasetService {
 
     static async getDataset(datasetId) {
         try {
-            const result = await ctRegisterMicroservice.requestToMicroservice({
+            const result = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/dataset/${datasetId}`,
                 method: 'GET',
                 json: true
@@ -165,7 +166,7 @@ class DatasetService {
 
     static async getMetadata(datasetId, application, language) {
         try {
-            const result = await ctRegisterMicroservice.requestToMicroservice({
+            const result = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/dataset/${datasetId}/metadata?application=${application}&language=${language}`,
                 method: 'GET',
                 json: true
@@ -180,7 +181,7 @@ class DatasetService {
     static async getGeostoreIdByArea(idArea) {
         try {
             logger.info('Obtaining area with id: ', idArea);
-            const areaResult = await ctRegisterMicroservice.requestToMicroservice({
+            const areaResult = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/area/${idArea}`,
                 method: 'GET',
                 json: true
@@ -211,7 +212,7 @@ class DatasetService {
             }
             try {
                 logger.info('Uri', uri);
-                const result = await ctRegisterMicroservice.requestToMicroservice({
+                const result = await RWAPIMicroservice.requestToMicroservice({
                     uri,
                     method: 'GET',
                     json: true
@@ -233,7 +234,7 @@ class DatasetService {
     static async getAreaName(idArea) {
         try {
             logger.info('Obtaining area with id: ', idArea);
-            const result = await ctRegisterMicroservice.requestToMicroservice({
+            const result = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/area/${idArea}`,
                 method: 'GET',
                 json: true
@@ -268,7 +269,7 @@ class DatasetService {
             }
             try {
                 logger.info('Uri', uri);
-                const result = await ctRegisterMicroservice.requestToMicroservice({
+                const result = await RWAPIMicroservice.requestToMicroservice({
                     uri,
                     method: 'GET',
                     json: true
@@ -299,7 +300,7 @@ class DatasetService {
             .replace('{{yearEnd}}', yearEnd);
         logger.debug('Doing query: ', finalQuery);
         try {
-            return ctRegisterMicroservice.requestToMicroservice({
+            return RWAPIMicroservice.requestToMicroservice({
                 uri: '/query',
                 qs: {
                     sql: finalQuery,
@@ -320,7 +321,7 @@ class DatasetService {
         const query = `select max(${datasetMainDateField}) as lastdate from ${datasetSlug}`;
         logger.debug('Doing query: ', query);
         try {
-            const result = await ctRegisterMicroservice.requestToMicroservice({
+            const result = await RWAPIMicroservice.requestToMicroservice({
                 uri: '/query',
                 qs: {
                     sql: query

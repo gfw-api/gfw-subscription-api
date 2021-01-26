@@ -1,7 +1,7 @@
 /* eslint-disable operator-assignment */
 
 const logger = require('logger');
-const ctRegisterMicroservice = require('ct-register-microservice-node');
+const { RWAPIMicroservice } = require('rw-api-microservice-node');
 
 const SubscriptionModel = require('models/subscription');
 const StatisticModel = require('models/statistic');
@@ -14,7 +14,7 @@ class StatisticsService {
     static async getUsers(startDate, endDate) {
         logger.info('[StatisticsService] Loading users');
         try {
-            const result = await ctRegisterMicroservice.requestToMicroservice({
+            const result = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/user/obtain/all-users?start=${startDate.toISOString().substring(0, 10)}&end=${endDate.toISOString().substring(0, 10)}`,
                 method: 'GET',
                 json: true
@@ -74,7 +74,7 @@ class StatisticsService {
 
     static async getUser(userId) {
         try {
-            const result = await ctRegisterMicroservice.requestToMicroservice({
+            const result = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/user/${userId}`,
                 method: 'GET',
                 json: true

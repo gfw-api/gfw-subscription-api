@@ -1,5 +1,6 @@
 const logger = require('logger');
-const ctRegisterMicroservice = require('ct-register-microservice-node');
+const { RWAPIMicroservice } = require('rw-api-microservice-node');
+
 const LastUpdate = require('models/lastUpdate');
 const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
@@ -8,7 +9,7 @@ class UpdateService {
     static async checkUpdated(dataset) {
         logger.info(`Checking if dataset ${dataset} was updated`);
         try {
-            const result = await ctRegisterMicroservice.requestToMicroservice({
+            const result = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/${dataset}/latest`,
                 method: 'GET',
                 json: true

@@ -2,7 +2,7 @@
 const nock = require('nock');
 const chai = require('chai');
 const Subscription = require('models/subscription');
-const { createSubscription } = require('./utils/helpers');
+const { createSubscription, mockGetUserFromToken } = require('./utils/helpers');
 const { ROLES } = require('./utils/test.constants');
 const { getTestServer } = require('./utils/test-server');
 
@@ -29,38 +29,57 @@ describe('Find all subscriptions tests', () => {
         const noTokenResponse = await requester.get(`/api/v1/subscriptions/find-all`).send();
         noTokenResponse.status.should.equal(401);
 
-        const userResponse = await requester.get(`/api/v1/subscriptions/find-all`).query({ loggedUser: JSON.stringify(ROLES.USER) }).send();
+        mockGetUserFromToken(ROLES.USER);
+        const userResponse = await requester.get(`/api/v1/subscriptions/find-all`)
+            .set('Authorization', `Bearer abcd`)
+            .send();
         userResponse.status.should.equal(401);
 
-        const managerResponse = await requester.get(`/api/v1/subscriptions/find-all`).query({ loggedUser: JSON.stringify(ROLES.MANAGER) }).send();
+        mockGetUserFromToken(ROLES.MANAGER);
+        const managerResponse = await requester.get(`/api/v1/subscriptions/find-all`)
+            .set('Authorization', `Bearer abcd`)
+            .send();
         managerResponse.status.should.equal(401);
 
-        const adminResponse = await requester.get(`/api/v1/subscriptions/find-all`).query({ loggedUser: JSON.stringify(ROLES.ADMIN) }).send();
+        mockGetUserFromToken(ROLES.ADMIN);
+        const adminResponse = await requester.get(`/api/v1/subscriptions/find-all`)
+            .set('Authorization', `Bearer abcd`)
+            .send();
         adminResponse.status.should.equal(401);
 
-        const superAdminResponse = await requester.get(`/api/v1/subscriptions/find-all`).query({ loggedUser: JSON.stringify(ROLES.SUPERADMIN) }).send();
+        mockGetUserFromToken(ROLES.SUPERADMIN);
+        const superAdminResponse = await requester.get(`/api/v1/subscriptions/find-all`)
+            .set('Authorization', `Bearer abcd`)
+            .send();
         superAdminResponse.status.should.equal(401);
     });
 
     it('Finding all subscriptions has a maximum page[size] of 100, returning error for higher values', async () => {
+        mockGetUserFromToken(ROLES.MICROSERVICE);
+
         const response = await requester
             .get(`/api/v1/subscriptions/find-all`)
-            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), 'page[size]': 101 })
+            .set('Authorization', `Bearer abcd`)
+            .query({ 'page[size]': 101 })
             .send();
         response.status.should.equal(400);
         response.body.should.have.property('errors').with.lengthOf(1);
     });
 
     it('Finding all subscriptions when there are no existing subscriptions returns a 200 OK response with no data', async () => {
+        mockGetUserFromToken(ROLES.MICROSERVICE);
+
         const response = await requester
             .get(`/api/v1/subscriptions/find-all`)
-            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE) })
+            .set('Authorization', `Bearer abcd`)
             .send();
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(0);
     });
 
     it('Finding all subscriptions should return a 200 OK response with all the subscriptions', async () => {
+        mockGetUserFromToken(ROLES.MICROSERVICE);
+
         await new Subscription(createSubscription(ROLES.USER.id)).save();
         await new Subscription(createSubscription(ROLES.MANAGER.id)).save();
         await new Subscription(createSubscription(ROLES.ADMIN.id)).save();
@@ -69,13 +88,16 @@ describe('Find all subscriptions tests', () => {
 
         const response = await requester
             .get(`/api/v1/subscriptions/find-all`)
-            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE) })
+            .set('Authorization', `Bearer abcd`)
             .send();
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(5);
     });
 
     it('Finding all subscriptions allows filtering by application query param, returns 200 OK with the correct data', async () => {
+        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockGetUserFromToken(ROLES.MICROSERVICE);
+
         const gfwSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'gfw' })).save();
         const gfwSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { application: 'gfw' })).save();
         const rwSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw' })).save();
@@ -83,7 +105,8 @@ describe('Find all subscriptions tests', () => {
 
         const response1 = await requester
             .get(`/api/v1/subscriptions/find-all`)
-            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), application: 'gfw' })
+            .set('Authorization', `Bearer abcd`)
+            .query({ application: 'gfw' })
             .send();
         response1.status.should.equal(200);
         response1.body.should.have.property('data').with.lengthOf(2);
@@ -92,7 +115,8 @@ describe('Find all subscriptions tests', () => {
 
         const response2 = await requester
             .get(`/api/v1/subscriptions/find-all`)
-            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), application: 'rw' })
+            .set('Authorization', `Bearer abcd`)
+            .query({ application: 'rw' })
             .send();
         response2.status.should.equal(200);
         response2.body.should.have.property('data').with.lengthOf(2);
@@ -101,6 +125,9 @@ describe('Find all subscriptions tests', () => {
     });
 
     it('Finding subscriptions allows filtering by environment query param, returns 200 OK with the correct data', async () => {
+        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockGetUserFromToken(ROLES.MICROSERVICE);
+
         const prodSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'production' })).save();
         const prodSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'production' })).save();
         const stgSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
@@ -108,7 +135,8 @@ describe('Find all subscriptions tests', () => {
 
         const response1 = await requester
             .get(`/api/v1/subscriptions/find-all`)
-            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), env: 'production' })
+            .set('Authorization', `Bearer abcd`)
+            .query({ env: 'production' })
             .send();
         response1.status.should.equal(200);
         response1.body.should.have.property('data').with.lengthOf(2);
@@ -117,7 +145,8 @@ describe('Find all subscriptions tests', () => {
 
         const response2 = await requester
             .get(`/api/v1/subscriptions/find-all`)
-            .query({ loggedUser: JSON.stringify(ROLES.MICROSERVICE), env: 'staging' })
+            .set('Authorization', `Bearer abcd`)
+            .query({ env: 'staging' })
             .send();
         response2.status.should.equal(200);
         response2.body.should.have.property('data').with.lengthOf(2);

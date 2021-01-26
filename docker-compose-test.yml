@@ -27,6 +27,7 @@ services:
       NODE_PATH: app/src
       PORT: 35726
       REDIS_PORT_6379_TCP_ADDR: redis
+      FASTLY_ENABLED: "false"
     command: test
     depends_on:
       - mongo

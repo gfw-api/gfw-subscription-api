@@ -28,6 +28,7 @@ env:
     - MONGO_PORT_27017_TCP_DATABASE=gfw_subscription_db_test
     - CT_URL=http://192.168.1.172:9000
     - CARTODB_USER=cartodbuser
+    - FASTLY_ENABLED=false
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter

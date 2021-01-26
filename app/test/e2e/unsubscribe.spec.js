@@ -1,16 +1,16 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
 const chai = require('chai');
 const {
     createSubscription,
     ensureCorrectError,
+    mockGetUserFromToken
 } = require('./utils/helpers');
 const { createMockUnsubscribeSUB } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 const { createRequest } = require('./utils/test-server');
 
-const should = chai.should();
+chai.should();
 
 const prefix = '/api/v1/subscriptions';
 
@@ -49,12 +49,15 @@ describe('Unsubscribe endpoint', () => {
     });
 
     it('Unsubscribe subscription should return deleted subscription (happy case)', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         const subData = createSubscription(ROLES.USER.id);
 
         const createdSubscription = await new Subscription(subData).save();
         const response = await subscription
             .get(`/${createdSubscription._id}/unsubscribe`)
-            .query({ loggedUser: JSON.stringify(ROLES.USER), application: 'test' })
+            .set('Authorization', `Bearer abcd`)
+            .query({ application: 'test' })
             .send();
         response.status.should.equal(200);
         response.body.data.should.have.property('attributes');
@@ -75,11 +78,14 @@ describe('Unsubscribe endpoint', () => {
     });
 
     it('Unsubscribe subscription with query param redirect should redirect to flagship (happy case)', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         createMockUnsubscribeSUB();
         const createdSubscription = await new Subscription(createSubscription(ROLES.USER.id)).save();
         const response = await subscription
             .get(`/${createdSubscription._id}/unsubscribe?redirect=true`)
-            .query({ loggedUser: JSON.stringify(ROLES.USER), application: 'test' })
+            .set('Authorization', `Bearer abcd`)
+            .query({ application: 'test' })
             .send();
         response.status.should.equal(200);
         response.body.mockMessage.should.equal('Should redirect');

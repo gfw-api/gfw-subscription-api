@@ -1,6 +1,7 @@
 const logger = require('logger');
 const moment = require('moment');
-const ctRegisterMicroservice = require('ct-register-microservice-node');
+const { RWAPIMicroservice } = require('rw-api-microservice-node');
+
 const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 
 const AnalysisClassifier = require('services/analysisClassifier');
@@ -46,7 +47,7 @@ class AnalysisService {
                 return { gladAlerts, viirsAlerts };
             }
 
-            const result = await ctRegisterMicroservice.requestToMicroservice({
+            const result = await RWAPIMicroservice.requestToMicroservice({
                 uri: url,
                 method: 'GET',
                 json: true,

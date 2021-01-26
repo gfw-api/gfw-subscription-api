@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
 const chai = require('chai');
@@ -7,15 +6,15 @@ const {
     getUUID,
     createAuthCases,
     ensureCorrectError,
+    mockGetUserFromToken
 } = require('./utils/helpers');
 const {
-    createMockDataset,
-    createMockQuery
+    createMockDataset
 } = require('./utils/mock');
 const { ROLES, MOCK_FILE } = require('./utils/test.constants');
 const { createRequest } = require('./utils/test-server');
 
-const should = chai.should();
+chai.should();
 
 const prefix = '/api/v1/subscriptions';
 
@@ -38,44 +37,53 @@ describe('Get subscription endpoint', () => {
         await Subscription.deleteMany({}).exec();
     });
 
-    it('Getting subscription data without provide loggedUser should fall', authCases.isLoggedUserRequired());
-
-    it('Getting subscription data with provide loggedUser as not valid json string should fall', authCases.isLoggedUserJSONString());
-
-    it('Getting subscription data with provide loggedUser as not an object json string should fall', authCases.isLoggedUserJSONObject());
+    it('Getting subscription data without provided user should fall', authCases.isUserRequired());
 
     it('Getting subscription data with being authenticated but with not existing subscription for user should fall', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         await createSubInDB(ROLES.USER.id, getUUID());
         const response = await subscription
             .get('/41224d776a326fb40f000001/data')
-            .query({ loggedUser: JSON.stringify(ROLES.USER) })
+            .set('Authorization', `Bearer abcd`)
             .send();
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
     });
 
     it('Getting subscription data should return not found when subscription doesn\'t exist', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         const response = await subscription
             .get('/41224d776a326fb40f000001/data')
-            .query({ loggedUser: JSON.stringify(ROLES.USER) })
+            .set('Authorization', `Bearer abcd`)
             .send();
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
     });
 
     it('Getting subscription data should return bad request when id is not valid', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         const response = await subscription
             .get('/123/data')
-            .query({ loggedUser: JSON.stringify(ROLES.USER) })
+            .set('Authorization', `Bearer abcd`)
+            .set('Authorization', `Bearer abcd`)
             .send();
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'ID is not valid');
     });
 
     it('Getting subscription data should be returned (happy case)', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         const datasetID = getUUID();
         createMockDataset(datasetID);
-        createMockQuery();
+        nock(process.env.CT_URL)
+            .get('/v1/query')
+            .reply(200, {
+                data: { url: MOCK_FILE }
+            });
 
         const datasetQuery = {
             datasetsQuery: [{
@@ -87,7 +95,8 @@ describe('Get subscription endpoint', () => {
         const createdSubscription = await createSubInDB(ROLES.USER.id, datasetID, datasetQuery);
         const response = await subscription
             .get(`/${createdSubscription._id}/data`)
-            .query({ loggedUser: JSON.stringify(ROLES.USER), application: 'rw' })
+            .set('Authorization', `Bearer abcd`)
+            .query({ application: 'rw' })
             .send();
 
         response.status.should.equal(200);

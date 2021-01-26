@@ -1,5 +1,5 @@
 const logger = require('logger');
-const ctRegisterMicroservice = require('ct-register-microservice-node');
+const { RWAPIMicroservice } = require('rw-api-microservice-node');
 
 class GeostoreService {
 
@@ -34,7 +34,7 @@ class GeostoreService {
 
     static async getGeostoreFromISOCountryCode(countryCode) {
         const uri = `/v2/geostore/admin/${countryCode}`;
-        const response = await ctRegisterMicroservice.requestToMicroservice({
+        const response = await RWAPIMicroservice.requestToMicroservice({
             uri,
             method: 'GET',
             json: true,
@@ -45,7 +45,7 @@ class GeostoreService {
 
     static async getGeostoreFromISORegionCode(countryCode, regionCode) {
         const uri = `/v2/geostore/admin/${countryCode}/${regionCode}`;
-        const response = await ctRegisterMicroservice.requestToMicroservice({
+        const response = await RWAPIMicroservice.requestToMicroservice({
             uri,
             method: 'GET',
             json: true,
@@ -56,7 +56,7 @@ class GeostoreService {
 
     static async getGeostoreFromISOSubregionCode(countryCode, regionCode, subregionCode) {
         const uri = `/v2/geostore/admin/${countryCode}/${regionCode}/${subregionCode}`;
-        const response = await ctRegisterMicroservice.requestToMicroservice({
+        const response = await RWAPIMicroservice.requestToMicroservice({
             uri,
             method: 'GET',
             json: true,
@@ -67,7 +67,7 @@ class GeostoreService {
 
     static async getGeostoreFromWDPAID(wdpaId) {
         const uri = `/v2/geostore/wdpa/${wdpaId}`;
-        const response = await ctRegisterMicroservice.requestToMicroservice({
+        const response = await RWAPIMicroservice.requestToMicroservice({
             uri,
             method: 'GET',
             json: true,
@@ -78,7 +78,7 @@ class GeostoreService {
 
     static async getGeostoreFromUseId(use, useId) {
         const uri = `/v2/geostore/use/${use}/${useId}`;
-        const response = await ctRegisterMicroservice.requestToMicroservice({
+        const response = await RWAPIMicroservice.requestToMicroservice({
             uri,
             method: 'GET',
             json: true,

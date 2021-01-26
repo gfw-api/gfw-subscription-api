@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
 const Subscription = require('models/subscription');
@@ -7,7 +6,7 @@ const redis = require('redis');
 const { sleep } = require('sleep');
 const { ROLES } = require('./utils/test.constants');
 const { getTestServer } = require('./utils/test-server');
-const { validRedisMessage } = require('./utils/helpers');
+const { validRedisMessage, mockGetUserFromToken } = require('./utils/helpers');
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -57,13 +56,14 @@ describe('Create subscriptions tests', () => {
     });
 
     it('Create a subscription with no dataset or datasetsQuery should return a 400 error', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         this.channel.on('message', () => should.fail('should not be called'));
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
-            .send({
-                loggedUser: ROLES.ADMIN
-            });
+            .set('Authorization', `Bearer abcd`)
+            .send({});
 
         response.status.should.equal(400);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -74,13 +74,15 @@ describe('Create subscriptions tests', () => {
     });
 
     it('Create a subscription with no language should return a 400 error', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         this.channel.on('message', () => should.fail('should not be called'));
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
+            .set('Authorization', `Bearer abcd`)
             .send({
                 datasets: ['123456789'],
-                loggedUser: ROLES.ADMIN
             });
 
         response.status.should.equal(400);
@@ -92,14 +94,16 @@ describe('Create subscriptions tests', () => {
     });
 
     it('Create a subscription with no resource should return a 400 error', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         this.channel.on('message', () => should.fail('should not be called'));
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
+            .set('Authorization', `Bearer abcd`)
             .send({
                 datasets: ['123456789'],
                 language: 'en',
-                loggedUser: ROLES.ADMIN
             });
 
         response.status.should.equal(400);
@@ -111,10 +115,13 @@ describe('Create subscriptions tests', () => {
     });
 
     it('Create a subscription with no params should return a 400 error', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         this.channel.on('message', () => should.fail('should not be called'));
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
+            .set('Authorization', `Bearer abcd`)
             .send({
                 datasets: ['123456789'],
                 language: 'en',
@@ -122,7 +129,6 @@ describe('Create subscriptions tests', () => {
                     type: 'EMAIL',
                     content: 'email@address.com'
                 },
-                loggedUser: ROLES.ADMIN
             });
 
         response.status.should.equal(400);
@@ -134,6 +140,8 @@ describe('Create subscriptions tests', () => {
     });
 
     it('Create a subscription with the basic required fields should return a 200, create a subscription and emit a redis message (happy Case)', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         this.channel.on('message', validRedisMessage({
             template: 'subscription-confirmation-en',
             application: 'gfw',
@@ -142,6 +150,7 @@ describe('Create subscriptions tests', () => {
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
+            .set('Authorization', `Bearer abcd`)
             .send({
                 datasets: ['123456789'],
                 language: 'en',
@@ -152,13 +161,14 @@ describe('Create subscriptions tests', () => {
                 params: {
                     geostore: '35a6d982388ee5c4e141c2bceac3fb72'
                 },
-                loggedUser: ROLES.ADMIN
             });
 
         await assertSubscriptionResponse(response);
     });
 
     it('Create a subscription with the basic required fields with application = "test" should return a 200, create a subscription and emit a redis message(happy case)', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         this.channel.on('message', validRedisMessage({
             template: 'subscription-confirmation-test-en',
             application: 'gfw',
@@ -167,6 +177,7 @@ describe('Create subscriptions tests', () => {
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
+            .set('Authorization', `Bearer abcd`)
             .send({
                 datasets: ['123456789'],
                 language: 'en',
@@ -178,17 +189,19 @@ describe('Create subscriptions tests', () => {
                 params: {
                     geostore: '35a6d982388ee5c4e141c2bceac3fb72'
                 },
-                loggedUser: ROLES.ADMIN
             });
 
         await assertSubscriptionResponse(response);
     });
 
     it('Create a subscription with the basic required fields with resource_type = "URL" should return a 200, create a subscription, and don\'t emit a redis message (happy case)', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         this.channel.on('message', () => should.fail('should not be called'));
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
+            .set('Authorization', `Bearer abcd`)
             .send({
                 datasets: ['123456789'],
                 language: 'ru',
@@ -200,7 +213,6 @@ describe('Create subscriptions tests', () => {
                 params: {
                     geostore: '35a6d982388ee5c4e141c2bceac3fb72'
                 },
-                loggedUser: ROLES.ADMIN
             });
 
         await assertSubscriptionResponse(response);
@@ -208,6 +220,8 @@ describe('Create subscriptions tests', () => {
     });
 
     it('Create a subscription with an invalid language should sanitize the language, return a 200, create a subscription and emit a redis message (happy case)', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         this.channel.on('message', validRedisMessage({
             template: 'subscription-confirmation-en',
             application: 'gfw',
@@ -216,6 +230,7 @@ describe('Create subscriptions tests', () => {
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
+            .set('Authorization', `Bearer abcd`)
             .send({
                 datasets: ['123456789'],
                 language: 'ru',
@@ -226,7 +241,6 @@ describe('Create subscriptions tests', () => {
                 params: {
                     geostore: '35a6d982388ee5c4e141c2bceac3fb72'
                 },
-                loggedUser: ROLES.ADMIN
             });
 
         await assertSubscriptionResponse(response);

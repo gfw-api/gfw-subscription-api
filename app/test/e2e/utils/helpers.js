@@ -45,44 +45,48 @@ const createStatistic = (createdAt = new Date(), application = 'gfw') => new Sta
     createdAt,
 }).save();
 
+const mockGetUserFromToken = (userProfile) => {
+    nock(process.env.CT_URL, { reqheaders: { authorization: 'Bearer abcd' } })
+        .get('/auth/user/me')
+        .reply(200, userProfile);
+};
+
 const createAuthCases = (url, initMethod, providedRequester) => {
     let requester = providedRequester;
-    const { USER, MANAGER, WRONG_ADMIN } = ROLES;
-
     const setRequester = (req) => { requester = req; };
 
     const isUserForbidden = (method = initMethod) => async () => {
-        const response = await requester[method](url).query({ loggedUser: JSON.stringify(USER) }).send();
+        mockGetUserFromToken(ROLES.USER);
+
+        const response = await requester[method](url)
+            .set('Authorization', `Bearer abcd`)
+            .send();
         response.status.should.equal(403);
         ensureCorrectError(response.body, 'Not authorized');
     };
 
     const isManagerForbidden = (method = initMethod) => async () => {
-        const response = await requester[method](url).query({ loggedUser: JSON.stringify(MANAGER) }).send();
+        mockGetUserFromToken(ROLES.MANAGER);
+
+        const response = await requester[method](url)
+            .set('Authorization', `Bearer abcd`)
+            .send();
         response.status.should.equal(403);
         ensureCorrectError(response.body, 'Not authorized');
     };
 
     const isRightAppRequired = (method = initMethod) => async () => {
-        const response = await requester[method](url).query({ loggedUser: JSON.stringify(WRONG_ADMIN) }).send();
+        mockGetUserFromToken(ROLES.WRONG_ADMIN);
+
+        const response = await requester[method](url)
+            .set('Authorization', `Bearer abcd`)
+            .send();
         response.status.should.equal(403);
         ensureCorrectError(response.body, 'Not authorized');
     };
 
-    const isLoggedUserRequired = (method = initMethod) => async () => {
+    const isUserRequired = (method = initMethod) => async () => {
         const response = await requester[method](url).send();
-        response.status.should.equal(401);
-        ensureCorrectError(response.body, 'Not authorized');
-    };
-
-    const isLoggedUserJSONString = (method = initMethod) => async () => {
-        const response = await requester[method](url).query({ loggedUser: USER }).send();
-        response.status.should.equal(400);
-        ensureCorrectError(response.body, 'Invalid user token');
-    };
-
-    const isLoggedUserJSONObject = (method = initMethod) => async () => {
-        const response = await requester[method](url).query({ loggedUser: '[]' }).send();
         response.status.should.equal(401);
         ensureCorrectError(response.body, 'Not authorized');
     };
@@ -92,9 +96,7 @@ const createAuthCases = (url, initMethod, providedRequester) => {
         isRightAppRequired,
         isUserForbidden,
         isManagerForbidden,
-        isLoggedUserRequired,
-        isLoggedUserJSONString,
-        isLoggedUserJSONObject,
+        isUserRequired,
     };
 };
 
@@ -161,4 +163,5 @@ module.exports = {
     validRedisMessage,
     createDatasetWithWebHook,
     assertNoEmailSent,
+    mockGetUserFromToken
 };
