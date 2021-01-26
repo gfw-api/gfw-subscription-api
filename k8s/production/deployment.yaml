@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   labels:
     app: gfw
     name: subscriptions
@@ -21,7 +20,6 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      creationTimestamp: null
       labels:
         name: subscriptions
     spec:
@@ -130,7 +128,24 @@ spec:
                 secretKeyRef:
                   key: SLACK_CHANNEL_ID
                   name: mssecrets
-          image: vizzuality/subscriptions
+            - name: FASTLY_ENABLED
+              valueFrom:
+                secretKeyRef:
+                  key: FASTLY_ENABLED
+                  name: mssecrets
+            - name: FASTLY_APIKEY
+              valueFrom:
+                secretKeyRef:
+                  key: FASTLY_APIKEY
+                  name: mssecrets
+                  optional: true
+            - name: FASTLY_SERVICEID
+              valueFrom:
+                secretKeyRef:
+                  key: FASTLY_SERVICEID
+                  name: mssecrets
+                  optional: true
+          image: gfwdockerhub/subscriptions
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -168,6 +183,5 @@ spec:
         - name: regcred
       restartPolicy: Always
       schedulerName: default-scheduler
-      securityContext: {}
+      securityContext: { }
       terminationGracePeriodSeconds: 30
-status: {}
