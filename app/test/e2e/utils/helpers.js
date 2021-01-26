@@ -88,7 +88,7 @@ const createAuthCases = (url, initMethod, providedRequester) => {
     const isUserRequired = (method = initMethod) => async () => {
         const response = await requester[method](url).send();
         response.status.should.equal(401);
-        ensureCorrectError(response.body, 'Unauthorized');
+        ensureCorrectError(response.body, 'Not authorized');
     };
 
     return {
