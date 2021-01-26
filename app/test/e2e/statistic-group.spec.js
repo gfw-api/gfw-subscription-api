@@ -1,15 +1,14 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
 const chai = require('chai');
 const { getTestServer } = require('./utils/test-server');
 const {
-    createAuthCases, ensureCorrectError, getDateWithDecreaseYear, getDateWithIncreaseYear
+    createAuthCases, ensureCorrectError, getDateWithDecreaseYear, getDateWithIncreaseYear, mockGetUserFromToken
 } = require('./utils/helpers');
 const { ROLES } = require('./utils/test.constants');
 const { createSubscriptions, createExpectedGroupStatistics } = require('./utils/helpers/statistic');
 
-const should = chai.should();
+chai.should();
 
 const url = '/api/v1/subscriptions/statistics-group';
 
@@ -32,7 +31,7 @@ describe('Subscription group statistic endpoint', () => {
         await Subscription.deleteMany({}).exec();
     });
 
-    it('Getting group statistic without being authenticated should fall', authCases.isLoggedUserRequired());
+    it('Getting group statistic without being authenticated should fall', authCases.isUserRequired());
 
     it('Getting group statistic while being authenticated as USER should fall', authCases.isUserForbidden());
 
@@ -41,33 +40,44 @@ describe('Subscription group statistic endpoint', () => {
     it('Getting group statistic while being authenticated as ADMIN but with wrong apps should fall', authCases.isRightAppRequired());
 
     it('Getting group statistic without start date should fall', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const response = await statistic
             .get(url)
-            .query({ end: new Date(), application: 'gfw', loggedUser: JSON.stringify(ROLES.ADMIN) });
+            .set('Authorization', `Bearer abcd`)
+            .query({ end: new Date(), application: 'gfw' });
 
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'Start date required');
     });
 
     it('Getting group statistic without end date should fall', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const response = await statistic
             .get(url)
-            .query({ start: new Date(), application: 'gfw', loggedUser: JSON.stringify(ROLES.ADMIN) });
+            .set('Authorization', `Bearer abcd`)
+            .query({ start: new Date(), application: 'gfw' });
 
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'End date required');
     });
 
     it('Getting group statistic without application should fall', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const response = await statistic
             .get(url)
-            .query({ start: new Date(), end: new Date(), loggedUser: JSON.stringify(ROLES.ADMIN) });
+            .set('Authorization', `Bearer abcd`)
+            .query({ start: new Date(), end: new Date() });
 
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'Application required');
     });
 
     it('Getting group statistic should return right result (happy case)', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const outRangeDate = getDateWithDecreaseYear(4);
         const startDate = getDateWithDecreaseYear(1);
         const endDate = getDateWithIncreaseYear(1);
@@ -76,8 +86,9 @@ describe('Subscription group statistic endpoint', () => {
 
         const response = await statistic
             .get(url)
+            .set('Authorization', `Bearer abcd`)
             .query({
-                start: startDate, end: endDate, application: 'gfw', loggedUser: JSON.stringify(ROLES.ADMIN)
+                start: startDate, end: endDate, application: 'gfw'
             });
 
         response.status.should.equal(200);

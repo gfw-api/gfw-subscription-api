@@ -1,16 +1,15 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
 const { expect } = require('chai');
 const { omit } = require('lodash');
 const chai = require('chai');
 const { createRequest } = require('./utils/test-server');
-const { ROLES: { USER } } = require('./utils/test.constants');
+const { ROLES } = require('./utils/test.constants');
 const {
-    ensureCorrectError, createSubInDB, getUUID, createAuthCases
+    ensureCorrectError, createSubInDB, getUUID, createAuthCases, mockGetUserFromToken
 } = require('./utils/helpers');
 
-const should = chai.should();
+chai.should();
 
 const prefix = '/api/v1/subscriptions/';
 
@@ -32,45 +31,49 @@ describe('Delete subscription endpoint', () => {
         await Subscription.deleteMany({}).exec();
     });
 
-    it('Deleting subscription without provide loggedUser should fall', authCases.isLoggedUserRequired());
+    it('Deleting subscription without provided user should fall', authCases.isUserRequired());
 
-    it('Deleting subscription with provide loggedUser as not valid json string should fall', authCases.isLoggedUserJSONString());
+    it('Deleting subscription with provided user but with not existing subscription for user should fall', async () => {
+        mockGetUserFromToken(ROLES.USER);
 
-    it('Deleting subscription with provide loggedUser as not an object json string should fall', authCases.isLoggedUserJSONObject());
-
-    it('Deleting subscription with provide loggedUser but with not existing subscription for user should fall', async () => {
         await createSubInDB(getUUID());
         const response = await subscription
             .delete('41224d776a326fb40f000001')
-            .query({ loggedUser: JSON.stringify(USER) });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
     });
 
     it('Deleting subscription should return not found when subscription doesn\'t exist', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         const response = await subscription
             .delete('41224d776a326fb40f000001')
-            .query({ loggedUser: JSON.stringify(USER) });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
     });
 
     it('Deleting subscription should return bad request when id is not valid', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         const response = await subscription
             .delete('123')
-            .query({ loggedUser: JSON.stringify(USER) });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'ID is not valid');
     });
 
     it('Deleting subscription should return subscription and delete it (happy case)', async () => {
-        const createdSubscription = await createSubInDB(USER.id);
+        mockGetUserFromToken(ROLES.USER);
+
+        const createdSubscription = await createSubInDB(ROLES.USER.id);
         const response = await subscription
             .delete(createdSubscription._id)
-            .query({ loggedUser: JSON.stringify(USER) });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.instanceOf(Object);

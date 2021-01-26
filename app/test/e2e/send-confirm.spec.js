@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
 const config = require('config');
@@ -10,7 +9,8 @@ const {
     ensureCorrectError,
     createAuthCases,
     getUUID,
-    validRedisMessage
+    validRedisMessage,
+    mockGetUserFromToken
 } = require('./utils/helpers');
 const { createMockSendConfirmationSUB } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
@@ -44,19 +44,17 @@ describe('Send confirmation endpoint', () => {
         await Subscription.deleteMany({}).exec();
     });
 
-    it('Sending confirm subscription without provide loggedUser should fall', authCases.isLoggedUserRequired());
-
-    it('Sending confirm subscription with provide loggedUser as not valid json string should fall', authCases.isLoggedUserJSONString());
-
-    it('Sending confirm subscription with provide loggedUser as not an object json string should fall', authCases.isLoggedUserJSONObject());
+    it('Sending confirm subscription without provided user should fall', authCases.isUserRequired());
 
     it('Sending confirm subscription with being authenticated but with not existing subscription for user should fall', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         this.channel.on('message', () => should.fail('should not be called'));
 
         createSubscription(ROLES.USER.id, getUUID());
         const response = await subscription
             .get('/41224d776a326fb40f000001/send_confirmation')
-            .query({ loggedUser: JSON.stringify(ROLES.USER) })
+            .set('Authorization', `Bearer abcd`)
             .send();
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
@@ -65,11 +63,13 @@ describe('Send confirmation endpoint', () => {
     });
 
     it('Sending confirm subscription should return not found when subscription doesn\'t exist', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         this.channel.on('message', () => should.fail('should not be called'));
 
         const response = await subscription
             .get('/41224d776a326fb40f000001/send_confirmation')
-            .query({ loggedUser: JSON.stringify(ROLES.USER) })
+            .set('Authorization', `Bearer abcd`)
             .send();
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
@@ -78,11 +78,13 @@ describe('Send confirmation endpoint', () => {
     });
 
     it('Sending confirm subscription should return bad request when id is not valid', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         this.channel.on('message', () => should.fail('should not be called'));
 
         const response = await subscription
             .get('/123/send_confirmation')
-            .query({ loggedUser: JSON.stringify(ROLES.USER) })
+            .set('Authorization', `Bearer abcd`)
             .send();
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'ID is not valid');
@@ -91,6 +93,8 @@ describe('Send confirmation endpoint', () => {
     });
 
     it('Sending confirmation subscription should redirect to flagship and emit a redis message (happy case)', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         this.channel.on('message', validRedisMessage({
             template: 'subscription-confirmation-en',
             application: 'gfw',
@@ -101,7 +105,8 @@ describe('Send confirmation endpoint', () => {
         const createdSubscription = await new Subscription(createSubscription(ROLES.USER.id)).save();
         const response = await subscription
             .get(`/${createdSubscription._id}/send_confirmation`)
-            .query({ loggedUser: JSON.stringify(ROLES.USER), application: 'rw' })
+            .set('Authorization', `Bearer abcd`)
+            .query({ application: 'rw' })
             .send();
         response.status.should.equal(200);
         response.body.mockMessage.should.equal('Should redirect');
@@ -110,11 +115,13 @@ describe('Send confirmation endpoint', () => {
     });
 
     it('Providing redirect=false as query param disables the redirection (happy case)', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         const createdSubscription = await new Subscription(createSubscription(ROLES.USER.id)).save();
         const response = await subscription
             .get(`/${createdSubscription._id}/send_confirmation`)
+            .set('Authorization', `Bearer abcd`)
             .query({
-                loggedUser: JSON.stringify(ROLES.USER),
                 application: 'rw',
                 redirect: false,
             })

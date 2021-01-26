@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
 const Statistic = require('models/statistic');
@@ -13,11 +12,12 @@ const {
     ensureCorrectError,
     getDateWithDecreaseYear,
     getDateWithIncreaseYear,
+    mockGetUserFromToken
 } = require('./utils/helpers');
 const { createMockUsersWithRange } = require('./utils/mock');
 const { createSubscriptions, createExpectedGroupStatistics, createStatistics } = require('./utils/helpers/statistic');
 
-const should = chai.should();
+chai.should();
 
 const url = '/api/v1/subscriptions/statistics';
 
@@ -49,7 +49,7 @@ describe('Subscription statistic endpoint', () => {
         Statistic.deleteMany({}).exec();
     });
 
-    it('Getting statistic without provide loggedUser should fall', authCases.isLoggedUserRequired());
+    it('Getting statistic without provided user should fall', authCases.isUserRequired());
 
     it('Getting statistic while being authenticated as USER should fall', authCases.isUserForbidden());
 
@@ -58,23 +58,31 @@ describe('Subscription statistic endpoint', () => {
     it('Getting statistic while being authenticated as ADMIN but with wrong apps should fall', authCases.isRightAppRequired());
 
     it('Getting statistic without start date should fall', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const response = await statistic.get(url)
-            .query({ end: new Date(), loggedUser: JSON.stringify(ROLES.ADMIN) });
+            .set('Authorization', `Bearer abcd`)
+            .query({ end: new Date() });
 
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'Start date required');
     });
 
     it('Getting statistic without end date should fall', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const response = await statistic
             .get(url)
-            .query({ start: new Date(), loggedUser: JSON.stringify(ROLES.ADMIN) });
+            .set('Authorization', `Bearer abcd`)
+            .query({ start: new Date() });
 
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'End date required');
     });
 
     it('Getting statistic should return right result (happy case)', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const outRangeDate = getDateWithDecreaseYear(4);
         const startDate = getDateWithDecreaseYear(1);
         const endDate = getDateWithIncreaseYear(1);
@@ -91,11 +99,12 @@ describe('Subscription statistic endpoint', () => {
         const totalStatistics = statistics.length;
         const totalStatisticsInSearchedRange = statistics.length - 1;
 
-        const response = await statistic.get(url).query({
-            start: startDate,
-            end: endDate,
-            loggedUser: JSON.stringify(ROLES.ADMIN),
-        });
+        const response = await statistic
+            .get(url)
+            .set('Authorization', `Bearer abcd`).query({
+                start: startDate,
+                end: endDate,
+            });
 
         assertOKStatisticsResponse(response, {
             // created subscriptions has each type once, so there is one everywhere in topSubscriptions
@@ -116,6 +125,8 @@ describe('Subscription statistic endpoint', () => {
     });
 
     it('Getting statistic filtering by application "gfw" should return the right results (happy case)', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const outRangeDate = getDateWithDecreaseYear(4);
         const startDate = getDateWithDecreaseYear(1);
         const endDate = getDateWithIncreaseYear(1);
@@ -133,12 +144,13 @@ describe('Subscription statistic endpoint', () => {
         const totalStatisticsInSearchedRange = statistics.length - 1;
 
         // Fetch GFW statistics
-        const gfwResponse = await statistic.get(url).query({
-            start: startDate,
-            end: endDate,
-            loggedUser: JSON.stringify(ROLES.ADMIN),
-            application: 'gfw',
-        });
+        const gfwResponse = await statistic.get(url)
+            .set('Authorization', `Bearer abcd`)
+            .query({
+                start: startDate,
+                end: endDate,
+                application: 'gfw',
+            });
 
         assertOKStatisticsResponse(gfwResponse, {
             topSubscriptions: {
@@ -158,6 +170,8 @@ describe('Subscription statistic endpoint', () => {
     });
 
     it('Getting statistic filtering by application "rw" should return the right results (happy case)', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const outRangeDate = getDateWithDecreaseYear(4);
         const startDate = getDateWithDecreaseYear(1);
         const endDate = getDateWithIncreaseYear(1);
@@ -172,12 +186,14 @@ describe('Subscription statistic endpoint', () => {
         createMockUsersWithRange(startDate, endDate);
 
         // Fetch RW statistics
-        const rwResponse = await statistic.get(url).query({
-            start: startDate,
-            end: endDate,
-            loggedUser: JSON.stringify(ROLES.ADMIN),
-            application: 'rw',
-        });
+        const rwResponse = await statistic
+            .get(url)
+            .set('Authorization', `Bearer abcd`)
+            .query({
+                start: startDate,
+                end: endDate,
+                application: 'rw',
+            });
 
         assertOKStatisticsResponse(rwResponse, {
             topSubscriptions: {

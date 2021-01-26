@@ -6,7 +6,7 @@ const chai = require('chai');
 const { getTestServer } = require('./utils/test-server');
 const { MOCK_USER_IDS, SUBSCRIPTION_TO_UPDATE, ROLES } = require('./utils/test.constants');
 const {
-    ensureCorrectError, createSubInDB, getUUID, createAuthCases
+    ensureCorrectError, createSubInDB, getUUID, createAuthCases, mockGetUserFromToken
 } = require('./utils/helpers');
 
 chai.should();
@@ -31,9 +31,12 @@ const updateSubscription = async ({
     if (!subID && !defaultSub) {
         subscription = await createSubInDB(userID, datasetID);
     }
+    mockGetUserFromToken(ROLES.USER);
 
-    return requester.patch(`${prefix}/${subID || subscription._id}`)
-        .send({ ...subToUpdate, loggedUser: ROLES.USER });
+    return requester
+        .patch(`${prefix}/${subID || subscription._id}`)
+        .set('Authorization', `Bearer abcd`)
+        .send(subToUpdate);
 };
 
 describe('Update subscription endpoint', () => {
@@ -48,7 +51,7 @@ describe('Update subscription endpoint', () => {
         await Subscription.deleteMany({}).exec();
     });
 
-    it('Updating subscription without being authenticated should fall', authCases.isLoggedUserRequired());
+    it('Updating subscription without being authenticated should fall', authCases.isUserRequired());
 
     it('Updating subscription with being authenticated but with not existing subscription for user should fall', async () => {
         const response = await updateSubscription({ userID: MOCK_USER_IDS[0] });

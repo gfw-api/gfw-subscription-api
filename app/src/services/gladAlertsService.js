@@ -1,7 +1,7 @@
 const config = require('config');
 const logger = require('logger');
 const moment = require('moment');
-const ctRegisterMicroservice = require('ct-register-microservice-node');
+const { RWAPIMicroservice } = require('rw-api-microservice-node');
 
 const GeostoreService = require('services/geostoreService');
 
@@ -104,7 +104,7 @@ class GLADAlertsService {
     static async getAnalysisInPeriodForSubscription(startDate, endDate, params) {
         logger.info('Entering GLAD analysis endpoint with params', startDate, endDate, params);
         const uri = await GLADAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
-        const response = await ctRegisterMicroservice.requestToMicroservice({ uri, method: 'GET', json: true });
+        const response = await RWAPIMicroservice.requestToMicroservice({ uri, method: 'GET', json: true });
         return response.data;
     }
 

@@ -1,16 +1,15 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
 const chai = require('chai');
 const { getTestServer } = require('./utils/test-server');
 const {
-    createAuthCases, ensureCorrectError, getDateWithDecreaseYear, getDateWithIncreaseYear
+    createAuthCases, ensureCorrectError, getDateWithDecreaseYear, getDateWithIncreaseYear, mockGetUserFromToken
 } = require('./utils/helpers');
-const { ROLES, MOCK_USER_IDS, MOCK_USERS } = require('./utils/test.constants');
+const { ROLES, MOCK_USER_IDS } = require('./utils/test.constants');
 const { createMockUsers } = require('./utils/mock');
 const { createSubscriptions, getUserAsSingleObject } = require('./utils/helpers/statistic');
 
-const should = chai.should();
+chai.should();
 
 const url = '/api/v1/subscriptions/statistics-by-user';
 
@@ -33,7 +32,7 @@ describe('Subscription statistic by user endpoint', () => {
         await Subscription.deleteMany({}).exec();
     });
 
-    it('Getting statistic without being authenticated should fall', authCases.isLoggedUserRequired());
+    it('Getting statistic without being authenticated should fall', authCases.isUserRequired());
 
     it('Getting statistic while being authenticated as USER should fall', authCases.isUserForbidden());
 
@@ -42,33 +41,44 @@ describe('Subscription statistic by user endpoint', () => {
     it('Getting statistic while being authenticated as ADMIN but with wrong apps should fall', authCases.isRightAppRequired());
 
     it('Getting statistic by user without start date should fall', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const response = await statistic
             .get(url)
-            .query({ end: new Date(), application: 'gfw', loggedUser: JSON.stringify(ROLES.ADMIN) });
+            .set('Authorization', `Bearer abcd`)
+            .query({ end: new Date(), application: 'gfw' });
 
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'Start date required');
     });
 
     it('Getting statistic by user without end date should fall', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const response = await statistic
             .get(url)
-            .query({ start: new Date(), application: 'gfw', loggedUser: JSON.stringify(ROLES.ADMIN) });
+            .set('Authorization', `Bearer abcd`)
+            .query({ start: new Date(), application: 'gfw' });
 
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'End date required');
     });
 
     it('Getting statistic by user without application should fall', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const response = await statistic
             .get(url)
-            .query({ start: new Date(), end: new Date(), loggedUser: JSON.stringify(ROLES.ADMIN) });
+            .set('Authorization', `Bearer abcd`)
+            .query({ start: new Date(), end: new Date() });
 
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'Application required');
     });
 
     it('Getting statistic by user should return right result (happy case)', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const outRangeDate = getDateWithDecreaseYear(4);
         const startDate = getDateWithDecreaseYear(1);
         const endDate = getDateWithIncreaseYear(1);
@@ -83,11 +93,12 @@ describe('Subscription statistic by user endpoint', () => {
 
         const response = await statistic
             .get(url)
+            .set('Authorization', `Bearer abcd`)
             .query({
-                start: startDate, end: endDate, application: 'gfw', loggedUser: JSON.stringify(ROLES.ADMIN)
+                start: startDate, end: endDate, application: 'gfw'
             });
 
-        const subscriptionsWithUser = subscriptionsInSearchedRange.map(([key, subscription]) => ({
+        const subscriptionsWithUser = subscriptionsInSearchedRange.map(([, subscription]) => ({
             // eslint-disable-next-line no-underscore-dangle
             ...subscription._doc,
             _id: subscription._id.toString(),

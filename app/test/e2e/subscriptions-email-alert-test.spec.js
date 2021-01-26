@@ -5,7 +5,7 @@ const redis = require('redis');
 
 const Subscription = require('models/subscription');
 
-const { createSubscription } = require('./utils/helpers');
+const { createSubscription, mockGetUserFromToken } = require('./utils/helpers');
 const { mockGLADAlertsQuery } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 const { getTestServer } = require('./utils/test-server');
@@ -37,62 +37,85 @@ describe('Test email alerts spec', () => {
         const noTokenResponse = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send();
         noTokenResponse.status.should.equal(401);
 
-        const userResponse = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({ loggedUser: ROLES.USER });
+        mockGetUserFromToken(ROLES.USER);
+
+        const userResponse = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send({});
         userResponse.status.should.equal(403);
 
-        const managerResponse = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({ loggedUser: ROLES.MANAGER });
+        mockGetUserFromToken(ROLES.MANAGER);
+
+        const managerResponse = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send({});
         managerResponse.status.should.equal(403);
     });
 
     it('Validates the provided subscriptionId, rejecting if not provided', async () => {
-        const res = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({
-            loggedUser: ROLES.ADMIN,
-            email: 'henrique.pacheco@vizzuality.com',
-        });
+        mockGetUserFromToken(ROLES.ADMIN);
+
+        const res = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send({
+                email: 'henrique.pacheco@vizzuality.com',
+            });
         res.status.should.equal(400);
     });
 
     it('Validates the provided alert, rejecting everything else other than "glad-alerts", "viirs-active-fires" or "monthly-summary"', async () => {
-        const res1 = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({
-            loggedUser: ROLES.ADMIN,
-            email: 'henrique.pacheco@vizzuality.com',
-            subId: '123',
-            alert: 'glad-alerts',
-        });
+        mockGetUserFromToken(ROLES.ADMIN);
+        mockGetUserFromToken(ROLES.ADMIN);
+        mockGetUserFromToken(ROLES.ADMIN);
+        mockGetUserFromToken(ROLES.ADMIN);
+
+        const res1 = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send({
+
+                email: 'henrique.pacheco@vizzuality.com',
+                subId: '123',
+                alert: 'glad-alerts',
+            });
         res1.status.should.equal(200);
 
-        const res2 = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({
-            loggedUser: ROLES.ADMIN,
-            email: 'henrique.pacheco@vizzuality.com',
-            subId: '123',
-            alert: 'viirs-active-fires',
-        });
+        const res2 = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send({
+                email: 'henrique.pacheco@vizzuality.com',
+                subId: '123',
+                alert: 'viirs-active-fires',
+            });
         res2.status.should.equal(200);
 
-        const res3 = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({
-            loggedUser: ROLES.ADMIN,
-            email: 'henrique.pacheco@vizzuality.com',
-            subId: '123',
-            alert: 'monthly-summary',
-        });
+        const res3 = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send({
+
+                email: 'henrique.pacheco@vizzuality.com',
+                subId: '123',
+                alert: 'monthly-summary',
+            });
         res3.status.should.equal(200);
 
-        const res4 = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send({
-            loggedUser: ROLES.ADMIN,
-            email: 'henrique.pacheco@vizzuality.com',
-            subId: '123',
-            alert: 'other',
-        });
+        const res4 = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send({
+                email: 'henrique.pacheco@vizzuality.com',
+                subId: '123',
+                alert: 'other',
+            });
         res4.status.should.equal(400);
     });
 
     it('Testing an email alert for GLAD alerts should return a 200 OK response', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const sub = await new Subscription(createSubscription(ROLES.ADMIN.id, 'glad-alerts')).save();
         process.on('unhandledRejection', (args) => should.fail(...args));
         mockGLADAlertsQuery(2);
 
         const body = {
-            loggedUser: ROLES.ADMIN,
             email: 'henrique.pacheco@vizzuality.com',
             subId: sub._id,
             alert: 'glad-alerts',
@@ -120,7 +143,9 @@ describe('Test email alerts spec', () => {
             }
         });
 
-        const response = await requester.post(`/api/v1/subscriptions/test-email-alerts`).send(body);
+        const response = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send(body);
         response.status.should.equal(200);
         response.body.should.have.property('success').and.equal(true);
     });

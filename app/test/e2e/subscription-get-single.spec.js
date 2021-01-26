@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const Subscription = require('models/subscription');
 const { omit } = require('lodash');
@@ -6,10 +5,10 @@ const chai = require('chai');
 const { createRequest } = require('./utils/test-server');
 const { MOCK_USER_IDS, ROLES } = require('./utils/test.constants');
 const {
-    ensureCorrectError, createSubInDB, getUUID, createAuthCases
+    ensureCorrectError, createSubInDB, getUUID, createAuthCases, mockGetUserFromToken
 } = require('./utils/helpers');
 
-const should = chai.should();
+chai.should();
 
 const prefix = '/api/v1/subscriptions/';
 
@@ -31,18 +30,16 @@ describe('Get subscription by id endpoint', () => {
         await Subscription.deleteMany({}).exec();
     });
 
-    it('Getting subscription by id without provide loggedUser should fall', authCases.isLoggedUserRequired());
-
-    it('Getting subscription by id with provide loggedUser as not valid json string should fall', authCases.isLoggedUserJSONString());
-
-    it('Getting subscription by id with provide loggedUser as not an object json string should fall', authCases.isLoggedUserJSONObject());
+    it('Getting subscription by id without provided user should fall', authCases.isUserRequired());
 
     it('Getting subscription by id with being authenticated but with not existing subscription for user should fall', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         const createdSubscription = await createSubInDB(MOCK_USER_IDS[0], getUUID());
 
         const response = await subscription
             .get(createdSubscription._id)
-            .query({ loggedUser: JSON.stringify(ROLES.USER) })
+            .set('Authorization', `Bearer abcd`)
             .send();
 
         response.status.should.equal(404);
@@ -50,10 +47,12 @@ describe('Get subscription by id endpoint', () => {
     });
 
     it('Getting subscription by id should return not found when subscription doesn\'t exist', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         await createSubInDB(MOCK_USER_IDS[0], getUUID());
         const response = await subscription
             .get('41224d776a326fb40f000001')
-            .query({ loggedUser: JSON.stringify(ROLES.USER) })
+            .set('Authorization', `Bearer abcd`)
             .send();
 
         response.status.should.equal(404);
@@ -61,10 +60,12 @@ describe('Get subscription by id endpoint', () => {
     });
 
     it('Getting subscription by id should return bad request when id is not valid', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         await createSubInDB(MOCK_USER_IDS[0], getUUID());
         const response = await subscription
             .get('123')
-            .query({ loggedUser: JSON.stringify(ROLES.USER) })
+            .set('Authorization', `Bearer abcd`)
             .send();
 
         response.status.should.equal(400);
@@ -72,11 +73,13 @@ describe('Get subscription by id endpoint', () => {
     });
 
     it('Getting subscription by id should return the subscription (happy case)', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         const createSubscription = await createSubInDB(ROLES.USER.id, getUUID());
 
         const response = await subscription
             .get(createSubscription._id)
-            .query({ loggedUser: JSON.stringify(ROLES.USER) })
+            .set('Authorization', `Bearer abcd`)
             .send();
 
         response.status.should.equal(200);
@@ -98,9 +101,15 @@ describe('Get subscription by id endpoint', () => {
     });
 
     it('Getting a subscription by id as an ADMIN even when not the owner of the subscription should return the subscription (ADMIN override)', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
         const sub = await createSubInDB(ROLES.USER.id, getUUID());
 
-        const response = await subscription.get(sub._id).query({ loggedUser: JSON.stringify(ROLES.ADMIN) }).send();
+        const response = await subscription
+            .get(sub._id)
+            .set('Authorization', `Bearer abcd`)
+            .send();
+
         response.status.should.equal(200);
         response.body.should.have.property('data').and.instanceOf(Object);
         const { data } = response.body;

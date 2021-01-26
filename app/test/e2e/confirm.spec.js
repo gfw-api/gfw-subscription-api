@@ -1,17 +1,16 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
-const config = require('config');
 const Subscription = require('models/subscription');
 const chai = require('chai');
 const {
     createSubscription,
     ensureCorrectError,
+    mockGetUserFromToken
 } = require('./utils/helpers');
 const { createMockConfirmSUB } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 const { createRequest } = require('./utils/test-server');
 
-const should = chai.should();
+chai.should();
 
 const prefix = '/api/v1/subscriptions';
 
@@ -51,6 +50,8 @@ describe('Confirm subscription endpoint', () => {
     });
 
     it('Confirming subscription should redirect to flagship and update subscription to confirmed (happy case)', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         createMockConfirmSUB();
         const createdSubscription = await new Subscription(
             createSubscription(ROLES.USER.id, null, { confirmed: false })
@@ -58,7 +59,8 @@ describe('Confirm subscription endpoint', () => {
 
         const response = await requester
             .get(`/${createdSubscription._id}/confirm`)
-            .query({ loggedUser: JSON.stringify(ROLES.USER), application: 'test' })
+            .set('Authorization', `Bearer abcd`)
+            .query({ application: 'test' })
             .send();
 
         response.status.should.equal(200);
