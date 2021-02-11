@@ -5291,10 +5291,10 @@ run-async@^2.4.0:
   resolved "https://registry.yarnpkg.com/run-async/-/run-async-2.4.1.tgz#8440eccf99ea3e70bd409d49aab88e10c189a455"
   integrity sha512-tvVnVv01b8c1RrA6Ep7JkStj85Guv/YrMcwqYQnwjsAS2cTmmPGBBjAjpCW7RrSodNSoE2/qg9O4bceNvUuDgQ==
 
-rw-api-microservice-node@^3.2.2:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/rw-api-microservice-node/-/rw-api-microservice-node-3.2.2.tgz#5566d2d84c60b057e1ef25774acb3c94fab00ed3"
-  integrity sha512-ydrcCapbSILJs8d1eq0xYAzwszu3k64AVp6szKCXYlbBbw5/TlrMkdJ872Y9syLCYesuuVkG4/fnd4KF0Fs8ww==
+rw-api-microservice-node@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/rw-api-microservice-node/-/rw-api-microservice-node-3.3.0.tgz#826ca96249f1f08aac55b7c9fe9ca3fec0303fcd"
+  integrity sha512-ocvdMuA3WCKWk/Zx9noRQEcmSdc+BP6ClAcmBpWqB5kdIni/4S2R1LpIIKO5rSPjPZye2/LZ33oqvVMI2rSL4w==
   dependencies:
     axios "^0.21.1"
     fastly-promises tiagojsag/fastly-promises#master
