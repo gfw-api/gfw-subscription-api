@@ -353,7 +353,7 @@ const isAdmin = async (ctx, next) => {
     const loggedUser = SubscriptionsRouter.getUser(ctx);
 
     if (!loggedUser || USER_ROLES.indexOf(loggedUser.role) === -1) {
-        ctx.throw(401, 'Not authorized');
+        ctx.throw(401, 'Unauthorized');
         return;
     }
     if (loggedUser.role !== 'ADMIN') {
@@ -403,7 +403,7 @@ const hasValidLoggedUser = (ctx) => {
 
 const validateLoggedUserAuth = async (ctx, next) => {
     if (!hasLoggedUser(ctx)) {
-        ctx.throw(401, 'Not authorized');
+        ctx.throw(401, 'Unauthorized');
         return;
     }
 
@@ -417,7 +417,7 @@ const validateLoggedUserAuth = async (ctx, next) => {
 
 const validateMicroserviceAuth = async (ctx, next) => {
     if (!isMicroservice(ctx)) {
-        ctx.throw(401, 'Not authorized');
+        ctx.throw(401, 'Unauthorized');
         return;
     }
 
@@ -426,7 +426,7 @@ const validateMicroserviceAuth = async (ctx, next) => {
 
 const validateLoggedUserOrMicroserviceAuth = async (ctx, next) => {
     if (!(hasLoggedUser(ctx) || hasValidLoggedUser(ctx)) && !isMicroservice(ctx)) {
-        ctx.throw(401, 'Not authorized');
+        ctx.throw(401, 'Unauthorized');
         return;
     }
 
