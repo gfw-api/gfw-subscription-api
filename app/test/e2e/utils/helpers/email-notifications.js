@@ -2,6 +2,7 @@ const chai = require('chai');
 const moment = require('moment');
 
 const AlertUrlService = require('services/alertUrlService');
+const Layer = require('models/layer');
 
 const should = chai.should();
 
@@ -126,18 +127,10 @@ const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, en
     jsonMessage.data.should.have.property('alert_count').and.equal(3283);
     jsonMessage.data.should.have.property('value').and.equal(3283);
 
-    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
-        sub,
-        {
-            name: 'monthly-summary',
-            slug: 'monthly-summary',
-            subscription: true,
-            datasetId: 'fire-alerts-viirs',
-            layerId: 'fire-alerts-viirs'
-        },
-        beginDate,
-        endDate,
-    ));
+    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generateForManyLayers(sub, [
+        Layer.findBySlug('glad-alerts'),
+        Layer.findBySlug('viirs-active-fires'),
+    ], beginDate, endDate));
 
     jsonMessage.data.should.have.property('viirs_days_count').and.equal(endDate.diff(beginDate, 'days'));
     jsonMessage.data.should.have.property('viirs_day_start').and.equal(beginDate.format('DD/MM/YYYY'));

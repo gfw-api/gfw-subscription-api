@@ -51,7 +51,7 @@ const LAYERS = [{
 
 class Layer {
 
-    static async findBySlug(slug) {
+    static findBySlug(slug) {
         for (let i = 0, { length } = LAYERS; i < length; i++) {
             if (LAYERS[i].slug === slug) {
                 return LAYERS[i];
