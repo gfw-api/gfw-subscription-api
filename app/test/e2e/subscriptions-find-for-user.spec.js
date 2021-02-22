@@ -1,4 +1,4 @@
-s/* eslint-disable no-unused-expressions,no-unused-vars,no-undef */
+/* eslint-disable no-unused-expressions,no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
 const Subscription = require('models/subscription');
