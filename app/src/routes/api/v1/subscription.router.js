@@ -433,6 +433,16 @@ const validateLoggedUserOrMicroserviceAuth = async (ctx, next) => {
     await next();
 };
 
+const isAdminOrMicroservice = async (ctx, next) => {
+    const loggedUser = SubscriptionsRouter.getUser(ctx);
+
+    if (isMicroservice(ctx) || (loggedUser && loggedUser.role && ['ADMIN', 'SUPERADMIN', 'MICROSERVICE'].includes(loggedUser.role))) {
+        return next();
+    }
+
+    return ctx.throw(401, 'Unauthorized');
+};
+
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', validateLoggedUserAuth, SubscriptionsRouter.getSubscriptions);
 router.get('/find-all', validateMicroserviceAuth, SubscriptionsRouter.findAllSubscriptions);
@@ -449,7 +459,7 @@ router.delete('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(t
 router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.post('/test-email-alerts', isAdmin, SubscriptionsRouter.testEmailAlert);
 router.post('/check-hook', SubscriptionsRouter.checkHook);
-router.get('/user/:userId', validateMicroserviceAuth, SubscriptionsRouter.findUserSubscriptions);
+router.get('/user/:userId', isAdminOrMicroservice, SubscriptionsRouter.findUserSubscriptions);
 router.post('/find-by-ids', validateMicroserviceAuth, SubscriptionsRouter.findByIds);
 
 module.exports = router;
