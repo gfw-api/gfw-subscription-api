@@ -60,7 +60,11 @@ const decorateWithLinks = (results, subscription, layer, begin, end) => {
     results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
     results.subscriptions_url = UrlService.flagshipUrl('/my-gfw', subscription.language);
     results.dashboard_link = UrlService.flagshipUrl(`/dashboards/aoi/${subscription.id}`, subscription.language);
-    results.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
+
+    // Only set alert_link if the presenter has not set it
+    if (!results.alert_link) {
+        results.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
+    }
 
     return results;
 };

@@ -4,7 +4,6 @@
     "tags": ["gfw"],
     "urls": [{
         "url": "/v1/subscriptions",
-        "authenticated": false,
         "method": "POST",
         "endpoints": [{
             "method": "POST",
@@ -14,7 +13,6 @@
     }, {
         "url": "/v1/subscriptions",
         "method": "GET",
-        "authenticated": true,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -23,7 +21,6 @@
     },{
         "url": "/v1/subscriptions/:id/data",
         "method": "GET",
-        "authenticated": true,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -32,7 +29,6 @@
     }, {
         "url": "/v1/subscriptions/:id",
         "method": "DELETE",
-        "authenticated": true,
         "endpoints": [{
             "method": "DELETE",
             "baseUrl": "#(service.uri)",
@@ -41,7 +37,6 @@
     }, {
         "url": "/v1/subscriptions/:id",
         "method": "PATCH",
-        "authenticated": true,
         "endpoints": [{
             "method": "PATCH",
             "baseUrl": "#(service.uri)",
@@ -50,7 +45,6 @@
     }, {
         "url": "/v1/subscriptions/find-by-ids",
         "method": "POST",
-        "authenticated": true,
         "endpoints": [{
             "method": "POST",
             "baseUrl": "#(service.uri)",
@@ -59,7 +53,6 @@
     }, {
         "url": "/v1/subscriptions/find-all",
         "method": "GET",
-        "authenticated": true,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -68,7 +61,6 @@
     }, {
         "url": "/v1/subscriptions/user/:userId",
         "method": "GET",
-        "authenticated": true,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -77,7 +69,6 @@
     }, {
         "url": "/v1/subscriptions/:id",
         "method": "GET",
-        "authenticated": true,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -86,7 +77,6 @@
     }, {
         "url": "/v1/subscriptions/:id/send_confirmation",
         "method": "GET",
-        "authenticated": true,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -95,7 +85,6 @@
     }, {
         "url": "/v1/subscriptions/:id/confirm",
         "method": "GET",
-        "authenticated": false,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -104,7 +93,6 @@
     }, {
         "url": "/v1/subscriptions/:id/unsubscribe",
         "method": "GET",
-        "authenticated": false,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -113,7 +101,6 @@
     }, {
         "url": "/v1/subscriptions/notify-updates/:dataset",
         "method": "POST",
-        "authenticated": false,
         "endpoints": [{
             "method": "POST",
             "baseUrl": "#(service.uri)",
@@ -122,7 +109,6 @@
     }, {
         "url": "/v1/subscriptions/test-email-alerts",
         "method": "POST",
-        "authenticated": false,
         "endpoints": [{
             "method": "POST",
             "baseUrl": "#(service.uri)",
@@ -131,7 +117,6 @@
     }, {
         "url": "/v1/subscriptions/statistics",
         "method": "GET",
-        "authenticated": true,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -140,7 +125,6 @@
     }, {
         "url": "/v1/subscriptions/statistics-group",
         "method": "GET",
-        "authenticated": true,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -149,7 +133,6 @@
     }, {
         "url": "/v1/subscriptions/statistics-by-user",
         "method": "GET",
-        "authenticated": true,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
@@ -158,7 +141,6 @@
     }, {
         "url": "/v1/subscriptions/check-hook",
         "method": "POST",
-        "authenticated": false,
         "endpoints": [{
             "method": "POST",
             "baseUrl": "#(service.uri)",

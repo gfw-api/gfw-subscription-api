@@ -25,7 +25,7 @@ describe('Find subscriptions for user tests', () => {
         await Subscription.deleteMany({}).exec();
     });
 
-    it('Finding subscriptions for users is only allowed when the request is performed by a micro service, failing with 401 Unauthorized otherwise', async () => {
+    it('Finding subscriptions for users is only allowed when the request is performed by an admin or micro service, failing with 401 Unauthorized otherwise', async () => {
         const noTokenResponse = await requester.get(`/api/v1/subscriptions/user/1`).send();
         noTokenResponse.status.should.equal(401);
 
@@ -45,17 +45,23 @@ describe('Find subscriptions for user tests', () => {
         const adminResponse = await requester.get(`/api/v1/subscriptions/user/1`)
             .set('Authorization', `Bearer abcd`)
             .send();
-        adminResponse.status.should.equal(401);
+        adminResponse.status.should.equal(200);
 
         mockGetUserFromToken(ROLES.SUPERADMIN);
-        const superAdminResponse = await requester.get(`/api/v1/subscriptions/user/1`)
+        const superadminResponse = await requester.get(`/api/v1/subscriptions/user/1`)
             .set('Authorization', `Bearer abcd`)
             .send();
-        superAdminResponse.status.should.equal(401);
+        superadminResponse.status.should.equal(200);
+
+        mockGetUserFromToken(ROLES.MICROSERVICE);
+        const microserviceResponse = await requester.get(`/api/v1/subscriptions/user/1`)
+            .set('Authorization', `Bearer abcd`)
+            .send();
+        microserviceResponse.status.should.equal(200);
     });
 
     it('Finding subscriptions for a user that does not have associated subscriptions returns a 200 OK response with no data', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockGetUserFromToken(ROLES.ADMIN);
 
         const response = await requester
             .get(`/api/v1/subscriptions/user/1`)
@@ -66,7 +72,7 @@ describe('Find subscriptions for user tests', () => {
     });
 
     it('Finding subscriptions for users by ids providing existing ids should return a 200 OK response with the subscription data', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockGetUserFromToken(ROLES.ADMIN);
 
         await new Subscription(createSubscription(ROLES.USER.id)).save();
         await new Subscription(createSubscription(ROLES.USER.id)).save();
@@ -82,8 +88,8 @@ describe('Find subscriptions for user tests', () => {
     });
 
     it('Finding subscriptions allows filtering by application query param, returns 200 OK with the correct data', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockGetUserFromToken(ROLES.ADMIN);
+        mockGetUserFromToken(ROLES.ADMIN);
 
         const gfwSub = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'gfw' })).save();
         const rwSub = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw' })).save();
@@ -108,8 +114,8 @@ describe('Find subscriptions for user tests', () => {
     });
 
     it('Finding subscriptions allows filtering by environment query param, returns 200 OK with the correct data', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockGetUserFromToken(ROLES.ADMIN);
+        mockGetUserFromToken(ROLES.ADMIN);
 
         const prodSub = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'production' })).save();
         const stgSub = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();

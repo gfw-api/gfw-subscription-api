@@ -1,6 +1,10 @@
-## 26/01/2021
+# v.1.7.4
 
+## 23/02/2021
+
+- Remove dependency on CT's `authenticated` functionality
 - Replace CT integration library
+- [GFW-42](https://vizzuality.atlassian.net/browse/GFW-42) Update alert links to include both GLAD and VIIRS layers in monthly summary emails.
 
 # v.1.7.3
 

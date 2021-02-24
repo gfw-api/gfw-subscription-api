@@ -56,7 +56,7 @@ const Subscription = new Schema({
 // eslint-disable-next-line func-names
 Subscription.methods.publish = async function (layerConfig, begin, end, sendEmail = true) {
     logger.info('Publishing subscription with data', layerConfig, begin, end);
-    const layer = await Layer.findBySlug(layerConfig.name);
+    const layer = Layer.findBySlug(layerConfig.name);
     if (!layer) {
         return null;
     }

@@ -1,6 +1,8 @@
 const logger = require('logger');
 const moment = require('moment');
 
+const AlertUrlService = require('services/alertUrlService');
+const Layer = require('models/layer');
 const GLADAlertsService = require('services/gladAlertsService');
 const ViirsAlertsService = require('services/viirsAlertsService');
 const EmailHelpersService = require('services/emailHelpersService');
@@ -59,6 +61,11 @@ class MonthlySummaryPresenter {
             // Finding alerts for the same period last year and calculate frequency
             const viirsLastYearAlerts = await ViirsAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
             resultObject.viirs_frequency = await EmailHelpersService.calculateAlertFrequency(viirsAlerts, viirsLastYearAlerts, subscription.language);
+
+            resultObject.alert_link = AlertUrlService.generateForManyLayers(subscription, [
+                Layer.findBySlug('glad-alerts'),
+                Layer.findBySlug('viirs-active-fires'),
+            ], begin, end);
 
         } catch (err) {
             logger.error(err);
