@@ -2,8 +2,10 @@
 const logger = require('logger');
 const moment = require('moment');
 
+const AlertUrlService = require('services/alertUrlService');
 const GLADAlertsService = require('services/gladAlertsService');
 const EmailHelpersService = require('services/emailHelpersService');
+const UrlService = require('services/urlService');
 
 class GLADPresenter {
 
@@ -39,6 +41,10 @@ class GLADPresenter {
             // Finding alerts for the same period last year and calculate frequency
             const lastYearAlerts = await GLADAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
             resultObject.glad_frequency = await EmailHelpersService.calculateAlertFrequency(results.data, lastYearAlerts, subscription.language);
+
+            // Set URLs
+            resultObject.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
+            resultObject.dashboard_link = UrlService.dashboardUrl(subscription.id, subscription.language, 'forest-change');
 
         } catch (err) {
             logger.error(err);

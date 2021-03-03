@@ -2,8 +2,10 @@
 const logger = require('logger');
 const moment = require('moment');
 
+const AlertUrlService = require('services/alertUrlService');
 const ViirsAlertsService = require('services/viirsAlertsService');
 const EmailHelpersService = require('services/emailHelpersService');
+const UrlService = require('services/urlService');
 
 class ViirsPresenter {
 
@@ -39,6 +41,10 @@ class ViirsPresenter {
             // Finding alerts for the same period last year and calculate frequency
             const lastYearAlerts = await ViirsAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
             resultObject.viirs_frequency = await EmailHelpersService.calculateAlertFrequency(results.data, lastYearAlerts, subscription.language);
+
+            // Set URLs
+            resultObject.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
+            resultObject.dashboard_link = UrlService.dashboardUrl(subscription.id, subscription.language, 'fires');
 
         } catch (err) {
             logger.error(err);

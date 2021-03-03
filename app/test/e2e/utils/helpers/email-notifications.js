@@ -68,6 +68,9 @@ const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub
         beginDate,
         endDate,
     ));
+
+    jsonMessage.data.should.have.property('dashboard_link')
+        .and.equal(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}?lang=${sub.language}&category=forest-change`);
 };
 
 const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub, geostoreId) => {
@@ -111,6 +114,9 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
         beginDate,
         endDate,
     ));
+
+    jsonMessage.data.should.have.property('dashboard_link')
+        .and.equal(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}?lang=${sub.language}&category=fires`);
 };
 
 const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub) => {
@@ -136,6 +142,9 @@ const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, en
     jsonMessage.data.should.have.property('viirs_day_start').and.equal(beginDate.format('DD/MM/YYYY'));
     jsonMessage.data.should.have.property('viirs_day_end').and.equal(endDate.format('DD/MM/YYYY'));
     jsonMessage.data.should.have.property('location').and.equal(sub.name);
+
+    jsonMessage.data.should.have.property('dashboard_link')
+        .and.equal(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}?lang=${sub.language}&category=forest-change`);
 };
 
 const validateGLADSpecificParams = (jsonMessage, beginDate, endDate, sub, frequency) => {

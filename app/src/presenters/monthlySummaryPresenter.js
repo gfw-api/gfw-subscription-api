@@ -6,6 +6,7 @@ const Layer = require('models/layer');
 const GLADAlertsService = require('services/gladAlertsService');
 const ViirsAlertsService = require('services/viirsAlertsService');
 const EmailHelpersService = require('services/emailHelpersService');
+const UrlService = require('services/urlService');
 
 class MonthlySummaryPresenter {
 
@@ -62,10 +63,12 @@ class MonthlySummaryPresenter {
             const viirsLastYearAlerts = await ViirsAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
             resultObject.viirs_frequency = await EmailHelpersService.calculateAlertFrequency(viirsAlerts, viirsLastYearAlerts, subscription.language);
 
+            // Set URLs
             resultObject.alert_link = AlertUrlService.generateForManyLayers(subscription, [
                 Layer.findBySlug('glad-alerts'),
                 Layer.findBySlug('viirs-active-fires'),
             ], begin, end);
+            resultObject.dashboard_link = UrlService.dashboardUrl(subscription.id, subscription.language, 'forest-change');
 
         } catch (err) {
             logger.error(err);

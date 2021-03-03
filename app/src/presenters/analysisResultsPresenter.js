@@ -7,7 +7,6 @@ const GLADPresenter = require('presenters/gladPresenter');
 const MonthlySummaryPresenter = require('presenters/monthlySummaryPresenter');
 
 const UrlService = require('services/urlService');
-const AlertUrlService = require('services/alertUrlService');
 
 const PRESENTER_MAP = {
     'monthly-summary': MonthlySummaryPresenter,
@@ -32,10 +31,6 @@ const summaryForLayer = (layer) => {
     }
 
     return '';
-    // let updatePeriod = meta.updates.charAt(0).toUpperCase() + meta.updates.slice(1);
-    // return `${meta.description} at a ${meta.resolution} resolution.
-    // Coverage of ${meta.coverage}. Source is ${meta.source}.
-    // Available data from ${meta.timescale}, updated ${updatePeriod}`;
 };
 
 const decorateWithMetadata = (results, layer) => {
@@ -56,16 +51,9 @@ const decorateWithDates = (results, begin, end) => {
     return results;
 };
 
-const decorateWithLinks = (results, subscription, layer, begin, end) => {
+const decorateWithLinks = (results, subscription) => {
     results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
     results.subscriptions_url = UrlService.flagshipUrl('/my-gfw', subscription.language);
-    results.dashboard_link = UrlService.flagshipUrl(`/dashboards/aoi/${subscription.id}`, subscription.language);
-
-    // Only set alert_link if the presenter has not set it
-    if (!results.alert_link) {
-        results.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
-    }
-
     return results;
 };
 
@@ -111,7 +99,7 @@ class AnalysisResultsPresenter {
             // eslint-disable-next-line no-param-reassign
             results = decorateWithArea(results, subscription);
             // eslint-disable-next-line no-param-reassign
-            results = decorateWithLinks(results, subscription, layer, begin, end);
+            results = decorateWithLinks(results, subscription);
             // eslint-disable-next-line no-param-reassign
             results = decorateWithMetadata(results, layer);
             // eslint-disable-next-line no-param-reassign

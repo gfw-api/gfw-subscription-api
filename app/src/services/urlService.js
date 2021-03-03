@@ -35,6 +35,10 @@ class UrlService {
         return `${BASE_URL}/subscriptions/${subscription._id}/unsubscribe?redirect=true&lang=${subscription.language || 'en'}`;
     }
 
+    static dashboardUrl(id, lang, category) {
+        return `${config.get('gfw.flagshipUrl')}/dashboards/aoi/${id}?lang=${lang}&category=${category}`;
+    }
+
 }
 
 module.exports = UrlService;

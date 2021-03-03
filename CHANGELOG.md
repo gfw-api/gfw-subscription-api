@@ -1,3 +1,9 @@
+# v.1.7.5
+
+## 03/03/2021
+
+- [GFW-92](https://vizzuality.atlassian.net/browse/GFW-92) Fix dashboard URL to open in the correct tab.
+
 # v.1.7.4
 
 ## 23/02/2021
