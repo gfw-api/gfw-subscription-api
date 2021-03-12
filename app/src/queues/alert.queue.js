@@ -53,11 +53,10 @@ class AlertQueue {
 
             for (let i = 0, { length } = subscriptions; i < length; i++) {
                 try {
-                    const subscription = await SubscriptionService.getSubscriptionById(subscriptions[i]._id);
-                    const layer = { name: layerSlug, slug: layerSlug };
-                    await subscription.publish(layer, begin, end);
+                    await subscriptions[i].publish({ name: layerSlug, slug: layerSlug }, begin, end);
                 } catch (e) {
-                    logger.error(e);
+                    logger.error(`[SubscriptionEmailsError] Error processing subscription with ID ${subscriptions[i]._id}`);
+                    logger.error(`[SubscriptionEmailsError] ${e}`);
                 }
             }
 
