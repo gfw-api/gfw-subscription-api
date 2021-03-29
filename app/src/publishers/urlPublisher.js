@@ -4,7 +4,6 @@ const request = require('request-promise-native');
 class UrlPublisher {
 
     static async publish(subscription, results) {
-        logger.info('[SubscriptionEmails] Publishing webhook with results', results, '. Doing request POST to ', subscription.resource.content);
         try {
             await request({
                 uri: subscription.resource.content,
@@ -12,8 +11,9 @@ class UrlPublisher {
                 body: results,
                 json: true
             });
+            logger.info(`[SubscriptionWebhooks] POSTed to webhook successfully with URL ${subscription.resource.content}`);
         } catch (e) {
-            logger.error('[SubscriptionEmailsError] Error doing POST to ', subscription.resource.content);
+            logger.error(`[SubscriptionWebhooksError] Error doing POST to URL ${subscription.resource.content}`);
         }
 
     }
