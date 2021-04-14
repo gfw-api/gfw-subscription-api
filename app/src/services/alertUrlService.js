@@ -9,7 +9,7 @@ const GADM36_LAYER_2 = config.get('layers.gadm36BoundariesLayer2');
 const qs = require('qs');
 const moment = require('moment');
 
-const endocdeStateForUrl = (state) => btoa(JSON.stringify(state));
+const encodeStateForUrl = (state) => btoa(JSON.stringify(state));
 
 class AlertUrlService {
 
@@ -18,23 +18,23 @@ class AlertUrlService {
         return {
             dataset: layer.datasetId,
             layers: [layer.layerId],
+            timelineParams: {
+                startDateAbsolute: moment(begin).format('YYYY-MM-DD'),
+                endDateAbsolute: moment(end).format('YYYY-MM-DD'),
+                startDate: moment(begin).format('YYYY-MM-DD'),
+                endDate: moment(end).format('YYYY-MM-DD'),
+                trimEndDate: moment(end).format('YYYY-MM-DD'),
+            },
             ...layer.slug === 'viirs-active-fires' && {
                 params: { number_of_days: diffInDays <= 7 ? diffInDays : 7 }
             },
-            ...layer.slug !== 'viirs-active-fires' && {
-                timelineParams: {
-                    startDate: moment(begin).format('YYYY-MM-DD'),
-                    endDate: moment(end).format('YYYY-MM-DD'),
-                    trimEndDate: moment(end).format('YYYY-MM-DD')
-                }
-            }
         };
     }
 
     static generate(subscription, layer, begin, end) {
         const queryForUrl = {
             lang: subscription.language || 'en',
-            map: endocdeStateForUrl({
+            map: encodeStateForUrl({
                 canBound: true,
                 datasets: [AlertUrlService.processLayer(layer, begin, end)]
                     .concat([{
@@ -42,7 +42,7 @@ class AlertUrlService {
                         layers: [GADM36_LAYER_1, GADM36_LAYER_2]
                     }]),
             }),
-            mainMap: endocdeStateForUrl({ showAnalysis: true }),
+            mainMap: encodeStateForUrl({ showAnalysis: true }),
         };
 
         return `${BASE_URL}/map/aoi/${subscription.id}?${qs.stringify(queryForUrl)}`;
@@ -51,13 +51,13 @@ class AlertUrlService {
     static generateForManyLayers(subscription, layers, begin, end) {
         const queryForUrl = {
             lang: subscription.language || 'en',
-            map: endocdeStateForUrl({
+            map: encodeStateForUrl({
                 canBound: true,
                 datasets: layers
                     .map((layer) => AlertUrlService.processLayer(layer, begin, end))
                     .concat([{ dataset: GADM36_DATASET, layers: [GADM36_LAYER_1, GADM36_LAYER_2] }]),
             }),
-            mainMap: endocdeStateForUrl({ showAnalysis: true }),
+            mainMap: encodeStateForUrl({ showAnalysis: true }),
         };
 
         return `${BASE_URL}/map/aoi/${subscription.id}?${qs.stringify(queryForUrl)}`;
