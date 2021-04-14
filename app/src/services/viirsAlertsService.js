@@ -135,12 +135,8 @@ class ViirsAlertsService {
      * @returns {Promise<{csv: string, json: string}>}
      */
     static async getDownloadURLs(startDate, endDate, params) {
-        const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
-        const baseURL = `${config.get('apiGateway.externalUrl')}/v1/download/${config.get('datasets.viirsAllDataset')}`;
-        return {
-            csv: `${baseURL}?sql=SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}'&geostore=${geostoreId}&format=csv`,
-            json: `${baseURL}?sql=SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}'&geostore=${geostoreId}&format=json`,
-        };
+        const uri = await ViirsAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
+        return { csv: uri.replace('/query', '/download/csv'), json: uri.replace('/query', '/download/json') };
     }
 
 }

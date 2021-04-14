@@ -1,12 +1,11 @@
 {
   "datasets": {
-    "gladISODataset": "2cacc2dc-35d6-46ab-8641-384267b8ba64",
-    "gladWDPADataset": "bfb86d53-c8de-46c5-a424-94eb63fea6da",
-    "gladGeostoreDataset": "bd35ab8e-1810-4eda-981e-5f0e6fe76f74",
-    "viirsISODataset": "c1bb5e10-4da9-4776-8362-ab48a746fcb5",
-    "viirsWDPADataset": "46aa211a-f1e7-491c-af26-1dfcf1e88c91",
-    "viirsGeostoreDataset": "825edfcd-07f4-4b2b-9054-282663c60caa",
-    "viirsAllDataset": "76642243-d895-48f7-b8e8-5333851bd00f"
+    "gladISODataset": "gadm__glad__adm2_daily_alerts",
+    "gladWDPADataset": "wdpa_protected_areas__glad__daily_alerts",
+    "gladGeostoreDataset": "geostore__glad__daily_alerts",
+    "viirsISODataset": "gadm__viirs__adm2_daily_alerts",
+    "viirsWDPADataset": "wdpa_protected_areas__viirs__daily_alerts",
+    "viirsGeostoreDataset": "geostore__viirs__daily_alerts"
   },
   "layers": {
     "gladAlertLayerDataset": "bfd1d211-8106-4393-86c3-9e1ab2ee1b9b",
