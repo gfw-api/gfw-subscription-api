@@ -1,3 +1,9 @@
+# v.1.7.6
+
+## 14/04/2021
+
+- [GFW-91](https://vizzuality.atlassian.net/browse/GFW-91) Fix VIIRS "See on map" URL timeline parameters.
+
 # v.1.7.5
 
 ## 03/03/2021
