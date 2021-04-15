@@ -11,8 +11,18 @@ const EmailHelpersService = require('services/emailHelpersService');
 
 const { getTestServer } = require('../utils/test-server');
 const { createSubscription, assertNoEmailSent } = require('../utils/helpers');
-const { mockGLADAlertsQuery, createMockGeostore } = require('../utils/mock');
-const { bootstrapEmailNotificationTests, validateGLADNotificationParams } = require('../utils/helpers/email-notifications');
+const {
+    mockGLADAlertsISOQuery,
+    mockGLADAlertsWDPAQuery,
+    mockGLADAlertsGeostoreQuery,
+    createMockGeostore,
+} = require('../utils/mock');
+const {
+    bootstrapEmailNotificationTests,
+    validateCommonNotificationParams,
+    validateGLADSpecificParams,
+    validateGLADAlertsAndPriorityAreas,
+} = require('../utils/helpers/email-notifications');
 const { ROLES } = require('../utils/test.constants');
 
 nock.disableNetConnect();
@@ -49,7 +59,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockGLADAlertsQuery(2);
+        mockGLADAlertsGeostoreQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -57,7 +67,9 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -83,7 +95,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockGLADAlertsQuery(2);
+        mockGLADAlertsGeostoreQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -93,7 +105,9 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-fr':
-                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
+                    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -119,7 +133,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockGLADAlertsQuery(2);
+        mockGLADAlertsGeostoreQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -129,7 +143,9 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-zh':
-                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
+                    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -155,8 +171,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockGLADAlertsQuery(2, config.get('datasets.gladISODataset'));
-        createMockGeostore('/v2/geostore/admin/IDN');
+        mockGLADAlertsISOQuery(2, config.get('datasets.gladISODataset'));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -166,14 +181,16 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADNotificationParams(
-                        jsonMessage,
-                        beginDate,
-                        endDate,
-                        subscriptionOne,
-                        'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
-                    );
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                        intact_forest: 0,
+                        other: 20,
+                        peat: 0,
+                        plantations: 0,
+                        primary_forest: 60,
+                        protected_areas: 20,
+                    });
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -199,8 +216,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockGLADAlertsQuery(2, config.get('datasets.gladISODataset'));
-        createMockGeostore('/v2/geostore/admin/IDN/3');
+        mockGLADAlertsISOQuery(2, config.get('datasets.gladISODataset'));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -210,14 +226,16 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADNotificationParams(
-                        jsonMessage,
-                        beginDate,
-                        endDate,
-                        subscriptionOne,
-                        'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
-                    );
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                        intact_forest: 0,
+                        other: 20,
+                        peat: 0,
+                        plantations: 0,
+                        primary_forest: 60,
+                        protected_areas: 20,
+                    });
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -243,8 +261,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockGLADAlertsQuery(2, config.get('datasets.gladISODataset'));
-        createMockGeostore('/v2/geostore/admin/BRA/1/1');
+        mockGLADAlertsISOQuery(2, config.get('datasets.gladISODataset'));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -254,14 +271,16 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADNotificationParams(
-                        jsonMessage,
-                        beginDate,
-                        endDate,
-                        subscriptionOne,
-                        'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
-                    );
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                        intact_forest: 0,
+                        other: 20,
+                        peat: 0,
+                        plantations: 0,
+                        primary_forest: 60,
+                        protected_areas: 20,
+                    });
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -287,8 +306,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockGLADAlertsQuery(2, config.get('datasets.gladWDPADataset'));
-        createMockGeostore('/v2/geostore/wdpa/1');
+        mockGLADAlertsWDPAQuery(2, config.get('datasets.gladWDPADataset'));
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -298,14 +316,16 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADNotificationParams(
-                        jsonMessage,
-                        beginDate,
-                        endDate,
-                        subscriptionOne,
-                        'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
-                    );
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                        intact_forest: 0,
+                        other: 0,
+                        peat: 0,
+                        plantations: 0,
+                        primary_forest: 0,
+                        protected_areas: 100,
+                    });
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -331,7 +351,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockGLADAlertsQuery(2);
+        mockGLADAlertsGeostoreQuery(2);
         createMockGeostore('/v2/geostore/use/gfw_logging/29407', 3);
 
         redisClient.on('message', (channel, message) => {
@@ -342,14 +362,9 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADNotificationParams(
-                        jsonMessage,
-                        beginDate,
-                        endDate,
-                        subscriptionOne,
-                        'average',
-                        'f98f505878dcee72a2e92e7510a07d6f',
-                    );
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -373,7 +388,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockGLADAlertsQuery(1, undefined, { data: [] });
+        mockGLADAlertsGeostoreQuery(1, { data: [] });
 
         assertNoEmailSent(redisClient);
 
@@ -392,8 +407,8 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockGLADAlertsQuery(1);
-        mockGLADAlertsQuery(1, undefined, {}, 500);
+        mockGLADAlertsGeostoreQuery(1);
+        mockGLADAlertsGeostoreQuery(1, {}, 500);
 
         assertNoEmailSent(redisClient);
 
@@ -412,7 +427,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockGLADAlertsQuery(2, undefined, {
+        mockGLADAlertsGeostoreQuery(2, {
             data: [
                 {
                     alert__date: '2019-10-10',
@@ -603,7 +618,7 @@ describe('GLAD alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         // Despite the payload of the params object, geostore dataset should be used
-        mockGLADAlertsQuery(2);
+        mockGLADAlertsGeostoreQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -611,7 +626,9 @@ describe('GLAD alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-change-notification-glads-en':
-                    validateGLADNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);

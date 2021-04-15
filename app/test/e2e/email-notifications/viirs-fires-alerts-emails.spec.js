@@ -11,8 +11,18 @@ const EmailHelpersService = require('services/emailHelpersService');
 
 const { getTestServer } = require('../utils/test-server');
 const { createSubscription, assertNoEmailSent } = require('../utils/helpers');
-const { mockVIIRSAlertsQuery, createMockGeostore } = require('../utils/mock');
-const { bootstrapEmailNotificationTests, validateVIIRSNotificationParams } = require('../utils/helpers/email-notifications');
+const {
+    mockVIIRSAlertsISOQuery,
+    mockVIIRSAlertsWDPAQuery,
+    mockVIIRSAlertsGeostoreQuery,
+    createMockGeostore,
+} = require('../utils/mock');
+const {
+    bootstrapEmailNotificationTests,
+    validateCommonNotificationParams,
+    validateVIIRSSpecificParams,
+    validateVIIRSAlertsAndPriorityAreas,
+} = require('../utils/helpers/email-notifications');
 const { ROLES } = require('../utils/test.constants');
 
 nock.disableNetConnect();
@@ -49,7 +59,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(2);
+        mockVIIRSAlertsGeostoreQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -58,7 +68,9 @@ describe('VIIRS Fires alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
-                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -84,7 +96,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(2);
+        mockVIIRSAlertsGeostoreQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -94,7 +106,9 @@ describe('VIIRS Fires alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-fr':
-                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
+                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -120,7 +134,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(2);
+        mockVIIRSAlertsGeostoreQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -130,7 +144,9 @@ describe('VIIRS Fires alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-zh':
-                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
+                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -156,7 +172,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(2, config.get('datasets.viirsISODataset'));
+        mockVIIRSAlertsISOQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -166,13 +182,16 @@ describe('VIIRS Fires alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
-                    validateVIIRSNotificationParams(
-                        jsonMessage,
-                        beginDate,
-                        endDate,
-                        subscriptionOne,
-                        'average',
-                    );
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                        intact_forest: 0,
+                        other: 25,
+                        peat: 0,
+                        plantations: 0,
+                        primary_forest: 75,
+                        protected_areas: 0,
+                    });
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -198,7 +217,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(2, config.get('datasets.viirsISODataset'));
+        mockVIIRSAlertsISOQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -208,13 +227,16 @@ describe('VIIRS Fires alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
-                    validateVIIRSNotificationParams(
-                        jsonMessage,
-                        beginDate,
-                        endDate,
-                        subscriptionOne,
-                        'average',
-                    );
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                        intact_forest: 0,
+                        other: 25,
+                        peat: 0,
+                        plantations: 0,
+                        primary_forest: 75,
+                        protected_areas: 0,
+                    });
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -240,7 +262,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(2, config.get('datasets.viirsISODataset'));
+        mockVIIRSAlertsISOQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -250,13 +272,16 @@ describe('VIIRS Fires alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
-                    validateVIIRSNotificationParams(
-                        jsonMessage,
-                        beginDate,
-                        endDate,
-                        subscriptionOne,
-                        'average',
-                    );
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                        intact_forest: 0,
+                        other: 25,
+                        peat: 0,
+                        plantations: 0,
+                        primary_forest: 75,
+                        protected_areas: 0,
+                    });
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -282,7 +307,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(2, config.get('datasets.viirsWDPADataset'));
+        mockVIIRSAlertsWDPAQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -292,13 +317,16 @@ describe('VIIRS Fires alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
-                    validateVIIRSNotificationParams(
-                        jsonMessage,
-                        beginDate,
-                        endDate,
-                        subscriptionOne,
-                        'average',
-                    );
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                        intact_forest: 0,
+                        other: 0,
+                        peat: 0,
+                        plantations: 0,
+                        primary_forest: 25,
+                        protected_areas: 100,
+                    });
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -324,7 +352,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(2);
+        mockVIIRSAlertsGeostoreQuery(2);
         createMockGeostore('/v2/geostore/use/gfw_logging/29407', 3);
 
         redisClient.on('message', (channel, message) => {
@@ -335,13 +363,9 @@ describe('VIIRS Fires alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
-                    validateVIIRSNotificationParams(
-                        jsonMessage,
-                        beginDate,
-                        endDate,
-                        subscriptionOne,
-                        'average',
-                    );
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -365,7 +389,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(1, undefined, { data: [] });
+        mockVIIRSAlertsGeostoreQuery(1, { data: [] });
 
         assertNoEmailSent(redisClient);
 
@@ -384,8 +408,8 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(1);
-        mockVIIRSAlertsQuery(1, undefined, {}, 500);
+        mockVIIRSAlertsGeostoreQuery(1);
+        mockVIIRSAlertsGeostoreQuery(1, {}, 500);
 
         assertNoEmailSent(redisClient);
 
@@ -404,7 +428,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        mockVIIRSAlertsQuery(2, undefined, {
+        mockVIIRSAlertsGeostoreQuery(2, {
             data: [
                 {
                     alert__date: '2019-10-10',
@@ -552,12 +576,12 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-en':
                     jsonMessage.data.should.have.property('formatted_alert_count').and.equal('1M');
                     jsonMessage.data.should.have.property('formatted_priority_areas').and.deep.equal({
-                        intact_forest: '56',
-                        primary_forest: '999',
-                        peat: '8.9k',
+                        intact_forest: '0',
+                        primary_forest: '0',
+                        peat: '0',
                         protected_areas: '15k',
                         plantations: '1M',
-                        other: '0',
+                        other: '9.9k',
                     });
                     break;
                 default:
@@ -595,7 +619,7 @@ describe('VIIRS Fires alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         // Despite the payload of the params object, geostore dataset should be used
-        mockVIIRSAlertsQuery(2);
+        mockVIIRSAlertsGeostoreQuery(2);
 
         redisClient.on('message', (channel, message) => {
             const jsonMessage = JSON.parse(message);
@@ -604,7 +628,9 @@ describe('VIIRS Fires alert emails', () => {
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
-                    validateVIIRSNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);

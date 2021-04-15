@@ -6,7 +6,7 @@ const redis = require('redis');
 const Subscription = require('models/subscription');
 
 const { createSubscription, mockGetUserFromToken } = require('./utils/helpers');
-const { mockGLADAlertsQuery } = require('./utils/mock');
+const { mockGLADAlertsGeostoreQuery } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 const { getTestServer } = require('./utils/test-server');
 
@@ -113,7 +113,7 @@ describe('Test email alerts spec', () => {
 
         const sub = await new Subscription(createSubscription(ROLES.ADMIN.id, 'glad-alerts')).save();
         process.on('unhandledRejection', (args) => should.fail(...args));
-        mockGLADAlertsQuery(2);
+        mockGLADAlertsGeostoreQuery(2);
 
         const body = {
             email: 'henrique.pacheco@vizzuality.com',

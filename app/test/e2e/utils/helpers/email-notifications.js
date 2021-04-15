@@ -34,28 +34,32 @@ const validateCommonNotificationParams = (jsonMessage, beginDate, endDate, sub) 
     jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${sub.language}`);
 };
 
-const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub, geostoreId) => {
+const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub, priorityOverride = {}) => {
     jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
 
     // Validate download URLs
     jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
     jsonMessage.data.downloadUrls.should.have.property('csv')
-        .and.be.a('string').and.match(/.*\/glad-alerts.*format=csv$/).and.contain(geostoreId);
+        .and.be.a('string')
+        .and.match(/.*\/download\/csv.*$/);
 
     jsonMessage.data.downloadUrls.should.have.property('json')
-        .and.be.a('string').and.match(/.*\/glad-alerts.*$/).and.contain(geostoreId);
+        .and.be.a('string')
+        .and.match(/.*\/download\/json.*$/);
 
-    jsonMessage.data.should.have.property('priority_areas').and.deep.equal({
-        intact_forest: 6,
-        primary_forest: 7,
-        peat: 8,
-        protected_areas: 9,
-        plantations: 10,
-        other: 11
-    });
+    const priorityAreas = {
+        intact_forest: 0,
+        primary_forest: 0,
+        peat: 0,
+        protected_areas: 50,
+        plantations: 0,
+        other: 50,
+        ...priorityOverride,
+    };
 
-    jsonMessage.data.should.have.property('alert_count').and.equal(51);
-    jsonMessage.data.should.have.property('value').and.equal(51);
+    jsonMessage.data.should.have.property('priority_areas').and.deep.equal(priorityAreas);
+    jsonMessage.data.should.have.property('alert_count').and.equal(100);
+    jsonMessage.data.should.have.property('value').and.equal(100);
     jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
         sub,
         {
@@ -76,7 +80,7 @@ const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub
         .and.contain(`utm_campaign=ForestChangeAlert`);
 };
 
-const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub) => {
+const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub, priorityOverride = {}) => {
     jsonMessage.data.should.have.property('layerSlug').and.equal('viirs-active-fires');
 
     // Validate download URLs
@@ -89,18 +93,19 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
         .and.be.a('string')
         .and.match(/.*\/download\/json.*$/);
 
-    jsonMessage.data.should.have.property('priority_areas').and.deep.equal({
-        intact_forest: 41,
-        primary_forest: 41,
-        peat: 1171,
-        protected_areas: 258,
-        plantations: 81,
-        other: 1640,
-    });
+    const priorityAreas = {
+        intact_forest: 0,
+        primary_forest: 0,
+        peat: 0,
+        protected_areas: 50,
+        plantations: 0,
+        other: 50,
+        ...priorityOverride,
+    };
 
-    jsonMessage.data.should.have.property('value').and.equal(3232);
-    jsonMessage.data.should.have.property('alert_count').and.equal(3232);
-
+    jsonMessage.data.should.have.property('priority_areas').and.deep.equal(priorityAreas);
+    jsonMessage.data.should.have.property('value').and.equal(100);
+    jsonMessage.data.should.have.property('alert_count').and.equal(100);
     jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
         sub,
         {
@@ -121,19 +126,21 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
         .and.contain(`utm_campaign=FireAlert`);
 };
 
-const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub) => {
-    jsonMessage.data.should.have.property('layerSlug').and.equal('monthly-summary');
-    jsonMessage.data.should.have.property('priority_areas').and.deep.equal({
-        intact_forest: 47,
-        primary_forest: 48,
-        peat: 1179,
-        protected_areas: 267,
-        plantations: 91,
-        other: 1651,
-    });
+const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub, priorityOverride = {}) => {
+    const priorityAreas = {
+        intact_forest: 0,
+        primary_forest: 0,
+        peat: 0,
+        protected_areas: 50,
+        plantations: 0,
+        other: 50,
+        ...priorityOverride,
+    };
 
-    jsonMessage.data.should.have.property('alert_count').and.equal(3283);
-    jsonMessage.data.should.have.property('value').and.equal(3283);
+    jsonMessage.data.should.have.property('layerSlug').and.equal('monthly-summary');
+    jsonMessage.data.should.have.property('priority_areas').and.deep.equal(priorityAreas);
+    jsonMessage.data.should.have.property('alert_count').and.equal(200);
+    jsonMessage.data.should.have.property('value').and.equal(200);
 
     jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generateForManyLayers(sub, [
         Layer.findBySlug('glad-alerts'),
@@ -154,55 +161,20 @@ const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, en
 
 const validateGLADSpecificParams = (jsonMessage, beginDate, endDate, sub, frequency) => {
     jsonMessage.data.should.have.property('glad_frequency').and.equal(frequency);
-    jsonMessage.data.should.have.property('glad_count').and.equal(51);
+    jsonMessage.data.should.have.property('glad_count').and.equal(100);
 };
 
 const validateVIIRSSpecificParams = (jsonMessage, beginDate, endDate, sub, frequency) => {
     jsonMessage.data.should.have.property('viirs_frequency').and.equal(frequency);
-    jsonMessage.data.should.have.property('viirs_count').and.equal(3232);
-};
-
-const validateGLADNotificationParams = (
-    jsonMessage,
-    beginDate,
-    endDate,
-    sub,
-    frequency = 'average',
-    geostoreId = '423e5dfb0448e692f97b590c61f45f22'
-) => {
-    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
-    validateGLADSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
-    validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub, geostoreId);
-};
-
-const validateVIIRSNotificationParams = (
-    jsonMessage,
-    beginDate,
-    endDate,
-    sub,
-    frequency = 'average',
-) => {
-    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
-    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
-    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub);
-};
-
-const validateMonthlySummaryNotificationParams = (
-    jsonMessage,
-    beginDate,
-    endDate,
-    sub,
-    frequency = 'average',
-) => {
-    validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
-    validateGLADSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
-    validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, sub, frequency);
-    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, sub);
+    jsonMessage.data.should.have.property('viirs_count').and.equal(100);
 };
 
 module.exports = {
     bootstrapEmailNotificationTests,
-    validateGLADNotificationParams,
-    validateVIIRSNotificationParams,
-    validateMonthlySummaryNotificationParams,
+    validateCommonNotificationParams,
+    validateGLADSpecificParams,
+    validateGLADAlertsAndPriorityAreas,
+    validateVIIRSSpecificParams,
+    validateVIIRSAlertsAndPriorityAreas,
+    validateMonthlySummaryAlertsAndPriorityAreas,
 };
