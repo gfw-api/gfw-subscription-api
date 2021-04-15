@@ -1,7 +1,7 @@
+const axios = require('axios');
 const config = require('config');
 const logger = require('logger');
 const moment = require('moment');
-const { RWAPIMicroservice } = require('rw-api-microservice-node');
 
 const GeostoreService = require('services/geostoreService');
 
@@ -34,7 +34,7 @@ class GLADAlertsService {
 
         sql += ' ORDER BY alert__date';
 
-        return `/query/${config.get('datasets.gladISODataset')}?sql=${sql}`;
+        return `/dataset/${config.get('datasets.gladISODataset')}/latest/query?sql=${sql}`;
     }
 
     /**
@@ -51,7 +51,7 @@ class GLADAlertsService {
         let sql = `SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}' `;
         sql += `AND wdpa_protected_area__id = '${wdpaid}'`;
         sql += ' ORDER BY alert__date';
-        return `/query/${config.get('datasets.gladWDPADataset')}?sql=${sql}`;
+        return `/dataset/${config.get('datasets.gladWDPADataset')}/latest/query?sql=${sql}`;
     }
 
     /**
@@ -66,7 +66,7 @@ class GLADAlertsService {
     static getURLInPeriodForGeostore(startDate, endDate, geostoreId) {
         const sql = `SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}' `
             + `AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
-        return `/query/${config.get('datasets.gladGeostoreDataset')}?sql=${sql}`;
+        return `/dataset/${config.get('datasets.gladGeostoreDataset')}/latest/query?sql=${sql}`;
     }
 
     /**
@@ -104,8 +104,8 @@ class GLADAlertsService {
     static async getAnalysisInPeriodForSubscription(startDate, endDate, params) {
         logger.info('Entering GLAD analysis endpoint with params', startDate, endDate, params);
         const uri = await GLADAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
-        const response = await RWAPIMicroservice.requestToMicroservice({ uri, method: 'GET', json: true });
-        return response.data;
+        const response = await axios.get(`${config.get('dataApi.url')}${uri}`);
+        return response.data.data;
     }
 
     /**
@@ -135,13 +135,8 @@ class GLADAlertsService {
      * @returns {Promise<{csv: string, json: string}>}
      */
     static async getDownloadURLs(startDate, endDate, params) {
-        const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
-        return {
-            // eslint-disable-next-line max-len
-            csv: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate},${endDate}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=csv`,
-            // eslint-disable-next-line max-len
-            json: `${config.get('apiGateway.externalUrl')}/glad-alerts/download/?period=${startDate},${endDate}&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=${geostoreId}&format=json`,
-        };
+        const uri = await GLADAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
+        return { csv: uri.replace('/query', '/download/csv'), json: uri.replace('/query', '/download/json') };
     }
 
 }

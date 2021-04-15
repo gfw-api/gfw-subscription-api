@@ -1,7 +1,7 @@
+const axios = require('axios');
 const config = require('config');
 const logger = require('logger');
 const moment = require('moment');
-const { RWAPIMicroservice } = require('rw-api-microservice-node');
 
 const GeostoreService = require('services/geostoreService');
 
@@ -34,7 +34,7 @@ class ViirsAlertsService {
 
         sql += ' ORDER BY alert__date';
 
-        return `/query/${config.get('datasets.viirsISODataset')}?sql=${sql}`;
+        return `/dataset/${config.get('datasets.viirsISODataset')}/latest/query?sql=${sql}`;
     }
 
     /**
@@ -51,7 +51,7 @@ class ViirsAlertsService {
         let sql = `SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}' `;
         sql += `AND wdpa_protected_area__id = '${wdpaid}'`;
         sql += ' ORDER BY alert__date';
-        return `/query/${config.get('datasets.viirsWDPADataset')}?sql=${sql}`;
+        return `/dataset/${config.get('datasets.viirsWDPADataset')}/latest/query?sql=${sql}`;
     }
 
     /**
@@ -66,7 +66,7 @@ class ViirsAlertsService {
     static getURLInPeriodForGeostore(startDate, endDate, geostoreId) {
         const sql = `SELECT * FROM data WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}' `
             + `AND geostore__id = '${geostoreId}' ORDER BY alert__date`;
-        return `/query/${config.get('datasets.viirsGeostoreDataset')}?sql=${sql}`;
+        return `/dataset/${config.get('datasets.viirsGeostoreDataset')}/latest/query?sql=${sql}`;
     }
 
     /**
@@ -104,8 +104,8 @@ class ViirsAlertsService {
     static async getAnalysisInPeriodForSubscription(startDate, endDate, params) {
         logger.info('Entering VIIRS analysis endpoint with params', startDate, endDate, params);
         const uri = await ViirsAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
-        const response = await RWAPIMicroservice.requestToMicroservice({ uri, method: 'GET', json: true });
-        return response.data;
+        const response = await axios.get(`${config.get('dataApi.url')}${uri}`);
+        return response.data.data;
     }
 
     /**

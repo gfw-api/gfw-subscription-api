@@ -50,5 +50,8 @@
   "slack": {
     "apiKey": "SLACK_KEY",
     "channel": "SLACK_CHANNEL_ID"
+  },
+  "dataApi": {
+    "url": "DATA_API_URL"
   }
 }

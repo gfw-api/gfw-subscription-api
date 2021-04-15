@@ -77,11 +77,11 @@ class EmailHelpersService {
             if (al.is__ifl_intact_forest_landscape_2016) intactForestAlerts += al.alert__count;
             if (al.is__umd_regional_primary_forest_2001) primaryForestAlerts += al.alert__count;
             if (al.is__peatland) peatAlerts += al.alert__count;
-            if (al.wdpa_protected_area__iucn_cat !== 0 && al.wdpa_protected_area__iucn_cat !== '0') protectedAreasAlerts += al.alert__count;
-            if (al.gfw_plantation__type !== 0 && al.gfw_plantation__type !== '0') plantationAlerts += al.alert__count;
+            if (al.wdpa_protected_area__iucn_cat) protectedAreasAlerts += al.alert__count;
+            if (al.gfw_plantation__type) plantationAlerts += al.alert__count;
         });
 
-        const otherAlerts = total - intactForestAlerts - primaryForestAlerts - peatAlerts - protectedAreasAlerts - plantationAlerts;
+        const otherAlerts = Math.max(total - intactForestAlerts - primaryForestAlerts - peatAlerts - protectedAreasAlerts - plantationAlerts, 0);
 
         return {
             intact_forest: intactForestAlerts,
@@ -101,14 +101,14 @@ class EmailHelpersService {
         let plantationAlerts = 0;
 
         alerts.forEach((al) => {
-            if (al.is__intact_forest_landscapes_2016) intactForestAlerts += al.alert__count;
-            if (al.is__regional_primary_forest) primaryForestAlerts += al.alert__count;
-            if (al.is__peat_land) peatAlerts += al.alert__count;
-            if (al.wdpa_protected_area__iucn_cat !== 0 && al.wdpa_protected_area__iucn_cat !== '0') protectedAreasAlerts += al.alert__count;
-            if (al.gfw_plantation__type !== 0 && al.gfw_plantation__type !== '0') plantationAlerts += al.alert__count;
+            if (al.is__ifl_intact_forest_landscape_2016) intactForestAlerts += al.alert__count;
+            if (al.is__umd_regional_primary_forest_2001) primaryForestAlerts += al.alert__count;
+            if (al.is__peatland) peatAlerts += al.alert__count;
+            if (al.wdpa_protected_area__iucn_cat) protectedAreasAlerts += al.alert__count;
+            if (al.gfw_plantation__type) plantationAlerts += al.alert__count;
         });
 
-        const otherAlerts = total - intactForestAlerts - primaryForestAlerts - peatAlerts - protectedAreasAlerts - plantationAlerts;
+        const otherAlerts = Math.max(total - intactForestAlerts - primaryForestAlerts - peatAlerts - protectedAreasAlerts - plantationAlerts, 0);
 
         return {
             intact_forest: intactForestAlerts,
@@ -125,10 +125,10 @@ class EmailHelpersService {
         const lastYearStdDev = EmailHelpersService.standardDeviation(lastYearAlerts.map((al) => al.alert__count));
         const currentAvg = _.mean(thisYearAlerts.map((al) => al.alert__count));
 
-        const twoPlusStdDev = currentAvg >= lastYearAverage + (2 * lastYearStdDev);
+        const twoPlusStdDev = currentAvg > lastYearAverage + (2 * lastYearStdDev);
         const plusStdDev = (currentAvg > lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
         const minusStdDev = (currentAvg < lastYearAverage) && (currentAvg < lastYearAverage + lastYearStdDev);
-        const twoMinusStdDev = currentAvg <= lastYearAverage - (2 * lastYearStdDev);
+        const twoMinusStdDev = currentAvg < lastYearAverage - (2 * lastYearStdDev);
 
         // Calc normality string
         let status = 'average';
