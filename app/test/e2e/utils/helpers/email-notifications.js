@@ -70,7 +70,10 @@ const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub
     ));
 
     jsonMessage.data.should.have.property('dashboard_link')
-        .and.equal(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}?lang=${sub.language}&category=forest-change`);
+        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`lang=${sub.language}`)
+        .and.contain(`category=forest-change`)
+        .and.contain(`utm_campaign=ForestChangeAlert`);
 };
 
 const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub, geostoreId) => {
@@ -116,7 +119,10 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
     ));
 
     jsonMessage.data.should.have.property('dashboard_link')
-        .and.equal(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}?lang=${sub.language}&category=fires`);
+        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`lang=${sub.language}`)
+        .and.contain(`category=fires`)
+        .and.contain(`utm_campaign=FireAlert`);
 };
 
 const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub) => {
@@ -144,7 +150,10 @@ const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, en
     jsonMessage.data.should.have.property('location').and.equal(sub.name);
 
     jsonMessage.data.should.have.property('dashboard_link')
-        .and.equal(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}?lang=${sub.language}&category=forest-change`);
+        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`lang=${sub.language}`)
+        .and.contain(`category=forest-change`)
+        .and.contain(`utm_campaign=MonthlyAlertSummary`);
 };
 
 const validateGLADSpecificParams = (jsonMessage, beginDate, endDate, sub, frequency) => {

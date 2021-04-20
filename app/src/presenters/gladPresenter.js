@@ -44,7 +44,7 @@ class GLADPresenter {
 
             // Set URLs
             resultObject.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
-            resultObject.dashboard_link = UrlService.dashboardUrl(subscription.id, subscription.language, 'forest-change');
+            resultObject.dashboard_link = UrlService.dashboardUrl(subscription.id, subscription.language, 'glad');
 
         } catch (err) {
             logger.error(err);

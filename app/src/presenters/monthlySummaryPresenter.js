@@ -68,7 +68,7 @@ class MonthlySummaryPresenter {
                 Layer.findBySlug('glad-alerts'),
                 Layer.findBySlug('viirs-active-fires'),
             ], begin, end);
-            resultObject.dashboard_link = UrlService.dashboardUrl(subscription.id, subscription.language, 'forest-change');
+            resultObject.dashboard_link = UrlService.dashboardUrl(subscription.id, subscription.language, 'monthly');
 
         } catch (err) {
             logger.error(err);

@@ -35,8 +35,28 @@ class UrlService {
         return `${BASE_URL}/subscriptions/${subscription._id}/unsubscribe?redirect=true&lang=${subscription.language || 'en'}`;
     }
 
-    static dashboardUrl(id, lang, category) {
-        return `${config.get('gfw.flagshipUrl')}/dashboards/aoi/${id}?lang=${lang}&category=${category}`;
+    static dashboardUrl(id, lang, type) {
+        let category;
+        let campaign;
+
+        switch (type) {
+
+            case 'monthly':
+                category = 'forest-change';
+                campaign = 'MonthlyAlertSummary';
+                break;
+            case 'fires':
+                category = 'fires';
+                campaign = 'FireAlert';
+                break;
+            case 'glad':
+            default:
+                category = 'forest-change';
+                campaign = 'ForestChangeAlert';
+                break;
+
+        }
+        return `${config.get('gfw.flagshipUrl')}/dashboards/aoi/${id}?lang=${lang}&category=${category}&utm_source=hyperlink&utm_medium=email&utm_campaign=${campaign}`;
     }
 
 }
