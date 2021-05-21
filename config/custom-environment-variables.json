@@ -30,6 +30,9 @@
   "cartoDB": {
     "user": "CARTODB_USER"
   },
+  "service": {
+    "port": "PORT"
+  },
   "settings": {
     "loadCron": "LOAD_CRON"
   },

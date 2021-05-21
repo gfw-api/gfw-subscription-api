@@ -1,3 +1,7 @@
+## 21/05/2021
+
+- Add support for hosts from `referer` header when generating pagination links.
+
 # v.1.7.6
 
 ## 14/04/2021

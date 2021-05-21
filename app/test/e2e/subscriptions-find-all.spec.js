@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions,no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
+const config = require('config');
 const Subscription = require('models/subscription');
 const { createSubscription, mockGetUserFromToken } = require('./utils/helpers');
 const { ROLES } = require('./utils/test.constants');
@@ -23,6 +24,43 @@ describe('Find all subscriptions tests', () => {
         requester = await getTestServer();
 
         await Subscription.deleteMany({}).exec();
+    });
+
+    describe('Test pagination links', () => {
+        it('Get subscriptions without referer header should be successful and use the request host', async () => {
+            mockGetUserFromToken(ROLES.MICROSERVICE);
+
+            const response = await requester
+                .get(`/api/v1/subscriptions/find-all`)
+                .set('Authorization', `Bearer abcd`);
+
+            response.status.should.equal(200);
+            response.body.should.have.property('data').and.be.an('array');
+            response.body.should.have.property('links').and.be.an('object');
+            response.body.links.should.have.property('self').and.equal(`http://127.0.0.1:${config.get('service.port')}/v1/subscriptions/find-all?page[number]=1&page[size]=10`);
+            response.body.links.should.have.property('prev').and.equal(`http://127.0.0.1:${config.get('service.port')}/v1/subscriptions/find-all?page[number]=1&page[size]=10`);
+            response.body.links.should.have.property('next').and.equal(`http://127.0.0.1:${config.get('service.port')}/v1/subscriptions/find-all?page[number]=1&page[size]=10`);
+            response.body.links.should.have.property('first').and.equal(`http://127.0.0.1:${config.get('service.port')}/v1/subscriptions/find-all?page[number]=1&page[size]=10`);
+            response.body.links.should.have.property('last').and.equal(`http://127.0.0.1:${config.get('service.port')}/v1/subscriptions/find-all?page[number]=1&page[size]=10`);
+        });
+
+        it('Get all subscriptions with referer header should be successful and use that header on the links on the response', async () => {
+            mockGetUserFromToken(ROLES.MICROSERVICE);
+
+            const response = await requester
+                .get(`/api/v1/subscriptions/find-all`)
+                .set('Authorization', `Bearer abcd`)
+                .set('referer', `https://potato.com/get-me-all-the-data`);
+
+            response.status.should.equal(200);
+            response.body.should.have.property('data').and.be.an('array');
+            response.body.should.have.property('links').and.be.an('object');
+            response.body.links.should.have.property('self').and.equal('http://potato.com/v1/subscriptions/find-all?page[number]=1&page[size]=10');
+            response.body.links.should.have.property('prev').and.equal('http://potato.com/v1/subscriptions/find-all?page[number]=1&page[size]=10');
+            response.body.links.should.have.property('next').and.equal('http://potato.com/v1/subscriptions/find-all?page[number]=1&page[size]=10');
+            response.body.links.should.have.property('first').and.equal('http://potato.com/v1/subscriptions/find-all?page[number]=1&page[size]=10');
+            response.body.links.should.have.property('last').and.equal('http://potato.com/v1/subscriptions/find-all?page[number]=1&page[size]=10');
+        });
     });
 
     it('Finding all subscriptions is only allowed when the request is performed by a micro service, failing with 401 Unauthorized otherwise', async () => {
