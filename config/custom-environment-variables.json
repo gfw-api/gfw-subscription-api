@@ -49,6 +49,8 @@
     "channel": "SLACK_CHANNEL_ID"
   },
   "dataApi": {
-    "url": "DATA_API_URL"
+    "url": "DATA_API_URL",
+    "apiKey": "DATA_API_KEY",
+    "origin": "DATA_API_ORIGIN"
   }
 }
