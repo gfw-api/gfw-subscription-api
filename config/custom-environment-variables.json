@@ -27,9 +27,6 @@
     "port": "MONGO_PORT_27017_TCP_PORT",
     "useUnifiedTopology": "MONGO_USE_UNIFIED_TOPOLOGY"
   },
-  "cartoDB": {
-    "user": "CARTODB_USER"
-  },
   "service": {
     "port": "PORT"
   },

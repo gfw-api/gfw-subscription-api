@@ -84,11 +84,6 @@ spec:
               value: http://resourcewatch.org
             - name: RW_FLAGSHIP_URL_STAGING
               value: http://staging.resourcewatch.org
-            - name: CARTODB_USER
-              valueFrom:
-                secretKeyRef:
-                  key: CARTODB_USER
-                  name: mssecrets
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

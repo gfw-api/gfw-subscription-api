@@ -85,11 +85,6 @@ spec:
               value: http://production-api.globalforestwatch.org
             - name: API_URL
               value: http://production-api.globalforestwatch.org
-            - name: CARTODB_USER
-              valueFrom:
-                secretKeyRef:
-                  key: CARTODB_USER
-                  name: mssecrets
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
