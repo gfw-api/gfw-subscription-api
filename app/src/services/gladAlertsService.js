@@ -104,7 +104,15 @@ class GLADAlertsService {
     static async getAnalysisInPeriodForSubscription(startDate, endDate, params) {
         logger.info('Entering GLAD analysis endpoint with params', startDate, endDate, params);
         const uri = await GLADAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
-        const response = await axios.get(`${config.get('dataApi.url')}${uri}`);
+        const response = await axios.get(
+            `${config.get('dataApi.url')}${uri}`,
+            {
+                headers: {
+                    'x-api-key': config.get('dataApi.apiKey'),
+                    origin: config.get('dataApi.origin'),
+                }
+            }
+        );
         return response.data.data;
     }
 
