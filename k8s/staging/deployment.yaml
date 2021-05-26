@@ -84,18 +84,6 @@ spec:
               value: http://resourcewatch.org
             - name: RW_FLAGSHIP_URL_STAGING
               value: http://staging.resourcewatch.org
-            - name: AWS_ACCESS_KEY_ID
-              valueFrom:
-                secretKeyRef:
-                  key: SUBSCRIPTIONS_AWS_ACCESS_KEY_ID
-                  name: mssecrets
-            - name: AWS_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: SUBSCRIPTIONS_AWS_SECRET_ACCESS_KEY
-                  name: mssecrets
-            - name: API_GATEWAY_QUEUE_PROVIDER
-              value: redis
             - name: API_GATEWAY_QUEUE_NAME
               value: mail_staging
             - name: REDIS_URL

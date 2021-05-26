@@ -85,18 +85,6 @@ spec:
               value: http://production-api.globalforestwatch.org
             - name: API_URL
               value: http://production-api.globalforestwatch.org
-            - name: AWS_ACCESS_KEY_ID
-              valueFrom:
-                secretKeyRef:
-                  key: SUBSCRIPTIONS_AWS_ACCESS_KEY_ID
-                  name: mssecrets
-            - name: AWS_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: SUBSCRIPTIONS_AWS_SECRET_ACCESS_KEY
-                  name: mssecrets
-            - name: API_GATEWAY_QUEUE_PROVIDER
-              value: redis
             - name: API_GATEWAY_QUEUE_NAME
               value: mail_prod
             - name: REDIS_URL
