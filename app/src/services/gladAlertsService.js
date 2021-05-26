@@ -102,8 +102,9 @@ class GLADAlertsService {
      * @returns {Promise<*>}
      */
     static async getAnalysisInPeriodForSubscription(startDate, endDate, params) {
-        logger.info('Entering GLAD analysis endpoint with params', startDate, endDate, params);
+        logger.info('[GLAD] Entering analysis with params', startDate, endDate, params);
         const uri = await GLADAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
+        logger.info(`[GLAD] Preparing Data API request, with URL ${config.get('dataApi.url')}${uri}`);
         const response = await axios.get(
             `${config.get('dataApi.url')}${uri}`,
             {

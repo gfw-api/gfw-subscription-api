@@ -102,8 +102,9 @@ class ViirsAlertsService {
      * @returns {Promise<*>}
      */
     static async getAnalysisInPeriodForSubscription(startDate, endDate, params) {
-        logger.info('Entering VIIRS analysis endpoint with params', startDate, endDate, params);
+        logger.info('[VIIRS] Entering analysis with params', startDate, endDate, params);
         const uri = await ViirsAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
+        logger.info(`[VIIRS] Preparing Data API request, with URL ${config.get('dataApi.url')}${uri}`);
         const response = await axios.get(
             `${config.get('dataApi.url')}${uri}`,
             {
