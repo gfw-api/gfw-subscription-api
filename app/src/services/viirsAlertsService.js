@@ -104,7 +104,15 @@ class ViirsAlertsService {
     static async getAnalysisInPeriodForSubscription(startDate, endDate, params) {
         logger.info('Entering VIIRS analysis endpoint with params', startDate, endDate, params);
         const uri = await ViirsAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
-        const response = await axios.get(`${config.get('dataApi.url')}${uri}`);
+        const response = await axios.get(
+            `${config.get('dataApi.url')}${uri}`,
+            {
+                headers: {
+                    'x-api-key': config.get('dataApi.apiKey'),
+                    origin: config.get('dataApi.origin'),
+                }
+            }
+        );
         return response.data.data;
     }
 
