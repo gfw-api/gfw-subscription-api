@@ -26,9 +26,6 @@
     "port": 27017,
     "useUnifiedTopology": true
   },
-  "cartoDB": {
-    "user": null
-  },
   "gfw": {
     "flagshipUrl": "http://staging.globalforestwatch.org",
     "apiUrl": "http://mymachine:9000"
