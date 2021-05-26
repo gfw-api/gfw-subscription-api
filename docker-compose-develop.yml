@@ -14,7 +14,6 @@ services:
       NODE_ENV: dev
       FLAGSHIP_URL: http://staging.globalforestwatch.org
       REDIS_URL: redis://redis:6379
-      API_GATEWAY_QUEUE_PROVIDER: redis
       API_GATEWAY_QUEUE_NAME: mail
       REDIS_PORT_6379_TCP_ADDR: redis
       MONGO_PORT_27017_TCP_ADDR: mongo
