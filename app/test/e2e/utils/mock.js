@@ -44,6 +44,8 @@ const mockGLADAlertsISOQuery = (
     nock(config.get('dataApi.url'))
         .get(`/dataset/${config.get('datasets.gladISODataset')}/latest/query`)
         .query(() => true)
+        .matchHeader('x-api-key', config.get('dataApi.apiKey'))
+        .matchHeader('origin', config.get('dataApi.origin'))
         .times(times)
         .reply(overrideStatusCode, {
             data: [
@@ -206,6 +208,8 @@ const mockGLADAlertsWDPAQuery = (
     nock(config.get('dataApi.url'))
         .get(`/dataset/${config.get('datasets.gladWDPADataset')}/latest/query`)
         .query(() => true)
+        .matchHeader('x-api-key', config.get('dataApi.apiKey'))
+        .matchHeader('origin', config.get('dataApi.origin'))
         .times(times)
         .reply(overrideStatusCode, {
             data: [
@@ -373,6 +377,8 @@ const mockGLADAlertsGeostoreQuery = (
     nock(config.get('dataApi.url'))
         .get(`/dataset/${config.get('datasets.gladGeostoreDataset')}/latest/query`)
         .query(() => true)
+        .matchHeader('x-api-key', config.get('dataApi.apiKey'))
+        .matchHeader('origin', config.get('dataApi.origin'))
         .times(times)
         .reply(overrideStatusCode, {
             data: [
@@ -500,6 +506,8 @@ const mockVIIRSAlertsISOQuery = (
     nock(config.get('dataApi.url'))
         .get(`/dataset/${config.get('datasets.viirsISODataset')}/latest/query`)
         .query(() => true)
+        .matchHeader('x-api-key', config.get('dataApi.apiKey'))
+        .matchHeader('origin', config.get('dataApi.origin'))
         .times(times)
         .reply(overrideStatusCode, {
             data: [
@@ -625,6 +633,8 @@ const mockVIIRSAlertsWDPAQuery = (
     nock(config.get('dataApi.url'))
         .get(`/dataset/${config.get('datasets.viirsWDPADataset')}/latest/query`)
         .query(() => true)
+        .matchHeader('x-api-key', config.get('dataApi.apiKey'))
+        .matchHeader('origin', config.get('dataApi.origin'))
         .times(times)
         .reply(overrideStatusCode, {
             data: [
@@ -754,6 +764,8 @@ const mockVIIRSAlertsGeostoreQuery = (
     nock(config.get('dataApi.url'))
         .get(`/dataset/${config.get('datasets.viirsGeostoreDataset')}/latest/query`)
         .query(() => true)
+        .matchHeader('x-api-key', config.get('dataApi.apiKey'))
+        .matchHeader('origin', config.get('dataApi.origin'))
         .times(times)
         .reply(overrideStatusCode, {
             data: [
