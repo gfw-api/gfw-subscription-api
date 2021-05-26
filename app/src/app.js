@@ -6,7 +6,6 @@ const koaQs = require('koa-qs');
 const koaBody = require('koa-body');
 const loader = require('loader');
 const koaSimpleHealthCheck = require('koa-simple-healthcheck');
-const koaValidate = require('koa-validate');
 const ErrorSerializer = require('serializers/errorSerializer');
 const sleep = require('sleep');
 const mongoose = require('mongoose');
@@ -100,9 +99,6 @@ async function init() {
                     ctx.response.type = 'application/vnd.api+json';
                 }
             });
-
-            // load custom validator
-            koaValidate(app);
 
             app.use(RWAPIMicroservice.bootstrap({
                 name: config.get('service.name'),
