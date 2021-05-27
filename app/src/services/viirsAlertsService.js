@@ -145,7 +145,14 @@ class ViirsAlertsService {
      */
     static async getDownloadURLs(startDate, endDate, params) {
         const uri = await ViirsAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
-        return { csv: uri.replace('/query', '/download/csv'), json: uri.replace('/query', '/download/json') };
+        return {
+            csv: uri
+                .replace('/query', '/download/csv')
+                .replace('SELECT *', 'SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence'),
+            json: uri
+                .replace('/query', '/download/json')
+                .replace('SELECT *', 'SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence'),
+        };
     }
 
 }

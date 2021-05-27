@@ -41,11 +41,13 @@ const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub
     jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
     jsonMessage.data.downloadUrls.should.have.property('csv')
         .and.be.a('string')
-        .and.match(/.*\/download\/csv.*$/);
+        .and.match(/.*\/download\/csv.*$/)
+        .and.match(/.*latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence.*/);
 
     jsonMessage.data.downloadUrls.should.have.property('json')
         .and.be.a('string')
-        .and.match(/.*\/download\/json.*$/);
+        .and.match(/.*\/download\/json.*$/)
+        .and.match(/.*latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence.*/);
 
     const priorityAreas = {
         intact_forest: 0,
@@ -87,11 +89,13 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
     jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
     jsonMessage.data.downloadUrls.should.have.property('csv')
         .and.be.a('string')
-        .and.match(/.*\/download\/csv.*$/);
+        .and.match(/.*\/download\/csv.*$/)
+        .and.match(/.*latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence.*/);
 
     jsonMessage.data.downloadUrls.should.have.property('json')
         .and.be.a('string')
-        .and.match(/.*\/download\/json.*$/);
+        .and.match(/.*\/download\/json.*$/)
+        .and.match(/.*latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence.*/);
 
     const priorityAreas = {
         intact_forest: 0,
