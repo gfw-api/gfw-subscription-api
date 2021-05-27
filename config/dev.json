@@ -1,12 +1,4 @@
 {
-  "datasets": {
-    "gladISODataset": "gadm__glad__adm2_daily_alerts",
-    "gladWDPADataset": "wdpa_protected_areas__glad__daily_alerts",
-    "gladGeostoreDataset": "geostore__glad__daily_alerts",
-    "viirsISODataset": "gadm__viirs__adm2_daily_alerts",
-    "viirsWDPADataset": "wdpa_protected_areas__viirs__daily_alerts",
-    "viirsGeostoreDataset": "geostore__viirs__daily_alerts"
-  },
   "layers": {
     "gladAlertLayerDataset": "bfd1d211-8106-4393-86c3-9e1ab2ee1b9b",
     "gladAlertLayer": "8e4a527d-1bcd-4a12-82b0-5a108ffec452",

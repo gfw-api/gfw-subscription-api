@@ -135,23 +135,19 @@ class GLADAlertsService {
         );
     }
 
-    /**
-     * Returns an object with URLs for downloading GLAD alerts for the provided period and subscription.
-     *
-     * @param startDate
-     * @param endDate
-     * @param params
-     * @returns {Promise<{csv: string, json: string}>}
-     */
+    static getURLInPeriodForDownload(startDate, endDate, geostoreId) {
+        const sql = `SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence `
+            + `FROM ${config.get('datasets.gladDownloadDataset')} `
+            + `WHERE umd_glad_landsat_alerts__date > '${startDate}' AND umd_glad_landsat_alerts__date <= '${endDate}'`;
+        return `/dataset/${config.get('datasets.gladDownloadDataset')}/latest/download/{format}?sql=${sql}&geostore_id=${geostoreId}&geostore_origin=rw`;
+    }
+
     static async getDownloadURLs(startDate, endDate, params) {
-        const uri = await GLADAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
+        const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
+        const uri = GLADAlertsService.getURLInPeriodForDownload(startDate, endDate, geostoreId);
         return {
-            csv: `${config.get('dataApi.url')}${uri}`
-                .replace('/query', '/download/csv')
-                .replace('SELECT *', 'SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence'),
-            json: `${config.get('dataApi.url')}${uri}`
-                .replace('/query', '/download/json')
-                .replace('SELECT *', 'SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence'),
+            csv: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'csv'),
+            json: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'json'),
         };
     }
 

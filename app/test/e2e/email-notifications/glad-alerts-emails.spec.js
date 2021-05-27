@@ -171,6 +171,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        createMockGeostore('/v2/geostore/admin/IDN');
         mockGLADAlertsISOQuery(2, config.get('datasets.gladISODataset'));
 
         redisClient.on('message', (channel, message) => {
@@ -216,6 +217,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        createMockGeostore('/v2/geostore/admin/IDN/3');
         mockGLADAlertsISOQuery(2, config.get('datasets.gladISODataset'));
 
         redisClient.on('message', (channel, message) => {
@@ -261,6 +263,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        createMockGeostore('/v2/geostore/admin/BRA/1/1');
         mockGLADAlertsISOQuery(2, config.get('datasets.gladISODataset'));
 
         redisClient.on('message', (channel, message) => {
@@ -306,6 +309,7 @@ describe('GLAD alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        createMockGeostore('/v2/geostore/wdpa/1');
         mockGLADAlertsWDPAQuery(2, config.get('datasets.gladWDPADataset'));
 
         redisClient.on('message', (channel, message) => {

@@ -135,23 +135,19 @@ class ViirsAlertsService {
         );
     }
 
-    /**
-     * Returns an object with URLs for downloading VIIRS alerts for the provided period and subscription.
-     *
-     * @param startDate
-     * @param endDate
-     * @param params
-     * @returns {Promise<{csv: string, json: string}>}
-     */
+    static getURLInPeriodForDownload(startDate, endDate, geostoreId) {
+        const sql = `SELECT latitude, longitude, alert__date, confidence__cat `
+            + `FROM ${config.get('datasets.viirsDownloadDataset')} `
+            + `WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}'`;
+        return `/dataset/${config.get('datasets.viirsDownloadDataset')}/latest/download/{format}?sql=${sql}&geostore_id=${geostoreId}&geostore_origin=rw`;
+    }
+
     static async getDownloadURLs(startDate, endDate, params) {
-        const uri = await ViirsAlertsService.getURLInPeriodForSubscription(startDate, endDate, params);
+        const geostoreId = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
+        const uri = ViirsAlertsService.getURLInPeriodForDownload(startDate, endDate, geostoreId);
         return {
-            csv: `${config.get('dataApi.url')}${uri}`
-                .replace('/query', '/download/csv')
-                .replace('SELECT *', 'SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence'),
-            json: `${config.get('dataApi.url')}${uri}`
-                .replace('/query', '/download/json')
-                .replace('SELECT *', 'SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence'),
+            csv: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'csv'),
+            json: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'json'),
         };
     }
 

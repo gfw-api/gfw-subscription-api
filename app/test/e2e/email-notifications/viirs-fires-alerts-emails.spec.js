@@ -172,6 +172,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        createMockGeostore('/v2/geostore/admin/IDN');
         mockVIIRSAlertsISOQuery(2);
 
         redisClient.on('message', (channel, message) => {
@@ -217,6 +218,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        createMockGeostore('/v2/geostore/admin/IDN/3');
         mockVIIRSAlertsISOQuery(2);
 
         redisClient.on('message', (channel, message) => {
@@ -262,6 +264,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        createMockGeostore('/v2/geostore/admin/BRA/1/1');
         mockVIIRSAlertsISOQuery(2);
 
         redisClient.on('message', (channel, message) => {
@@ -307,6 +310,7 @@ describe('VIIRS Fires alert emails', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
+        createMockGeostore('/v2/geostore/wdpa/1');
         mockVIIRSAlertsWDPAQuery(2);
 
         redisClient.on('message', (channel, message) => {
