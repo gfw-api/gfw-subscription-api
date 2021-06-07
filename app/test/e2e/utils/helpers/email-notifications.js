@@ -103,7 +103,7 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
         .and.contain(config.get('dataApi.url'))
         .and.contain(config.get('datasets.viirsDownloadDataset'))
         .and.contain('download/csv')
-        .and.contain('SELECT latitude, longitude, alert__date, confidence__cat')
+        .and.contain('SELECT latitude, longitude, alert__date, CASE WHEN confidence__cat = \'h\' THEN \'High\' ELSE \'\' END AS confidence__cat')
         .and.contain(`FROM ${config.get('datasets.viirsDownloadDataset')}`)
         .and.contain('&geostore_id=')
         .and.contain('&geostore_origin=rw');
@@ -113,7 +113,7 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
         .and.contain(config.get('dataApi.url'))
         .and.contain(config.get('datasets.viirsDownloadDataset'))
         .and.contain('download/json')
-        .and.contain('SELECT latitude, longitude, alert__date, confidence__cat')
+        .and.contain('SELECT latitude, longitude, alert__date, CASE WHEN confidence__cat = \'h\' THEN \'High\' ELSE \'\' END AS confidence__cat')
         .and.contain(`FROM ${config.get('datasets.viirsDownloadDataset')}`)
         .and.contain('&geostore_id=')
         .and.contain('&geostore_origin=rw');

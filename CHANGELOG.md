@@ -1,5 +1,8 @@
-## 31/05/2021
+# v.1.8.1
 
+## 07/06/2021
+
+- Fix confidence category in VIIRS download URLs in subscription emails.
 - Update `rw-api-microservice-node` to add CORS support.
 
 # v.1.8.0

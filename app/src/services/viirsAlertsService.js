@@ -136,7 +136,7 @@ class ViirsAlertsService {
     }
 
     static getURLInPeriodForDownload(startDate, endDate, geostoreId) {
-        const sql = `SELECT latitude, longitude, alert__date, confidence__cat `
+        const sql = `SELECT latitude, longitude, alert__date, CASE WHEN confidence__cat = 'h' THEN 'High' ELSE '' END AS confidence__cat `
             + `FROM ${config.get('datasets.viirsDownloadDataset')} `
             + `WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}'`;
         return `/dataset/${config.get('datasets.viirsDownloadDataset')}/latest/download/{format}?sql=${sql}&geostore_id=${geostoreId}&geostore_origin=rw`;

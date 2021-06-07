@@ -1,6 +1,6 @@
 {
   "name": "gfw-subscription-api",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Subscriptions service for the RW API.",
   "main": "app/index.js",
   "scripts": {
