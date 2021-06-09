@@ -33,6 +33,9 @@ const serializeObjToQuery = (obj) => Object.keys(obj).reduce((a, k) => {
 }, []).join('&');
 
 const getHostForPaginationLink = (ctx) => {
+    if ('x-rw-domain' in ctx.request.header) {
+        return ctx.request.header['x-rw-domain'];
+    }
     if ('referer' in ctx.request.header) {
         const url = new URL(ctx.request.header.referer);
         return url.host;

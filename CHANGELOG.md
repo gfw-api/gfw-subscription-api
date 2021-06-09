@@ -1,3 +1,7 @@
+## 09/06/2021
+
+- Add support for hosts from `x-rw-domain` header when generating pagination links.
+
 # v.1.8.1
 
 ## 07/06/2021
