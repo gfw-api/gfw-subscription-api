@@ -1,5 +1,8 @@
-## 09/06/2021
+# v.1.8.2
 
+## 14/06/2021
+
+- Fix confidence category in VIIRS download URLs in subscription emails.
 - Add support for hosts from `x-rw-domain` header when generating pagination links.
 
 # v.1.8.1
