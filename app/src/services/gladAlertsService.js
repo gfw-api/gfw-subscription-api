@@ -136,7 +136,9 @@ class GLADAlertsService {
     }
 
     static getURLInPeriodForDownload(startDate, endDate, geostoreId) {
-        const sql = `SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence `
+        const sql = `SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence, `
+            + `is__ifl_intact_forest_landscapes as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest, `
+            + `is__gfw_peatlands as in_peat, is__wdpa_protected_areas as in_protected_areas `
             + `FROM ${config.get('datasets.gladDownloadDataset')} `
             + `WHERE umd_glad_landsat_alerts__date > '${startDate}' AND umd_glad_landsat_alerts__date <= '${endDate}'`;
         return `/dataset/${config.get('datasets.gladDownloadDataset')}/latest/download/{format}?sql=${sql}&geostore_id=${geostoreId}&geostore_origin=rw`;
