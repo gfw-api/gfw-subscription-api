@@ -1,3 +1,9 @@
+# v.1.8.3
+
+## 22/06/2021
+
+- Include breakdown by forest type in email download CSV URLs.
+
 # v.1.8.2
 
 ## 14/06/2021

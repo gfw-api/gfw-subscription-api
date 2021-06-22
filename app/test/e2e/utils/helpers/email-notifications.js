@@ -46,6 +46,8 @@ const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub
         .and.contain(config.get('datasets.gladDownloadDataset'))
         .and.contain('download/csv')
         .and.contain('SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence')
+        .and.contain(', is__ifl_intact_forest_landscapes as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest')
+        .and.contain(', is__gfw_peatlands as in_peat, is__wdpa_protected_areas as in_protected_areas')
         .and.contain(`FROM ${config.get('datasets.gladDownloadDataset')}`)
         .and.contain('&geostore_id=')
         .and.contain('&geostore_origin=rw');
@@ -56,6 +58,8 @@ const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub
         .and.contain(config.get('datasets.gladDownloadDataset'))
         .and.contain('download/json')
         .and.contain('SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence')
+        .and.contain(', is__ifl_intact_forest_landscapes as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest')
+        .and.contain(', is__gfw_peatlands as in_peat, is__wdpa_protected_areas as in_protected_areas')
         .and.contain(`FROM ${config.get('datasets.gladDownloadDataset')}`)
         .and.contain('&geostore_id=')
         .and.contain('&geostore_origin=rw');
@@ -104,6 +108,8 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
         .and.contain(config.get('datasets.viirsDownloadDataset'))
         .and.contain('download/csv')
         .and.contain('SELECT latitude, longitude, alert__date, confidence__cat')
+        .and.contain(', is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest')
+        .and.contain(', is__peatland as in_peat, wdpa_protected_area__iucn_cat as in_protected_areas')
         .and.contain(`FROM ${config.get('datasets.viirsDownloadDataset')}`)
         .and.contain('&geostore_id=')
         .and.contain('&geostore_origin=rw');
@@ -114,6 +120,8 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
         .and.contain(config.get('datasets.viirsDownloadDataset'))
         .and.contain('download/json')
         .and.contain('SELECT latitude, longitude, alert__date, confidence__cat')
+        .and.contain(', is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest')
+        .and.contain(', is__peatland as in_peat, wdpa_protected_area__iucn_cat as in_protected_areas')
         .and.contain(`FROM ${config.get('datasets.viirsDownloadDataset')}`)
         .and.contain('&geostore_id=')
         .and.contain('&geostore_origin=rw');
