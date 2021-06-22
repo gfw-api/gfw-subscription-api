@@ -3,6 +3,7 @@
 ## 22/06/2021
 
 - Include breakdown by forest type in email download CSV URLs.
+- Upgrade NPM dependencies.
 
 # v.1.8.2
 
