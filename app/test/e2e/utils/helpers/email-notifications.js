@@ -109,7 +109,7 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
         .and.contain('download/csv')
         .and.contain('SELECT latitude, longitude, alert__date, confidence__cat')
         .and.contain(', is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest')
-        .and.contain(', is__peatland as in_peat, wdpa_protected_area__iucn_cat as in_protected_areas')
+        .and.contain(', is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> \'\' THEN \'True\' ELSE \'False\' END as in_protected_areas')
         .and.contain(`FROM ${config.get('datasets.viirsDownloadDataset')}`)
         .and.contain('&geostore_id=')
         .and.contain('&geostore_origin=rw');
@@ -121,7 +121,7 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
         .and.contain('download/json')
         .and.contain('SELECT latitude, longitude, alert__date, confidence__cat')
         .and.contain(', is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest')
-        .and.contain(', is__peatland as in_peat, wdpa_protected_area__iucn_cat as in_protected_areas')
+        .and.contain(', is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> \'\' THEN \'True\' ELSE \'False\' END as in_protected_areas')
         .and.contain(`FROM ${config.get('datasets.viirsDownloadDataset')}`)
         .and.contain('&geostore_id=')
         .and.contain('&geostore_origin=rw');
