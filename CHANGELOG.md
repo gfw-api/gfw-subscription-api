@@ -1,3 +1,9 @@
+# v.1.8.4
+
+## 28/06/2021
+
+- Fix issue with `in_protected_area` column in VIIRS download CSV URL not returning boolean value.
+
 # v.1.8.3
 
 ## 22/06/2021

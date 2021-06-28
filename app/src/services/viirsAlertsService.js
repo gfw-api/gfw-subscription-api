@@ -138,7 +138,7 @@ class ViirsAlertsService {
     static getURLInPeriodForDownload(startDate, endDate, geostoreId) {
         const sql = `SELECT latitude, longitude, alert__date, confidence__cat, `
             + `is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest, `
-            + `is__peatland as in_peat, wdpa_protected_area__iucn_cat as in_protected_areas `
+            + `is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> '' THEN 'True' ELSE 'False' END as in_protected_areas `
             + `FROM ${config.get('datasets.viirsDownloadDataset')} `
             + `WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}'`;
         return `/dataset/${config.get('datasets.viirsDownloadDataset')}/latest/download/{format}?sql=${sql}&geostore_id=${geostoreId}&geostore_origin=rw`;
