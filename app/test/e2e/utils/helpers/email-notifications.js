@@ -31,8 +31,13 @@ const validateCommonNotificationParams = (jsonMessage, beginDate, endDate, sub) 
     jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
     jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
     jsonMessage.data.should.have.property('alert_name').and.equal(sub.name);
-    jsonMessage.data.should.have.property('subscriptions_url').and.equal(`http://staging.globalforestwatch.org/my-gfw?lang=${sub.language}`);
-    jsonMessage.data.should.have.property('unsubscribe_url').and.equal(`${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${sub.language}`);
+    jsonMessage.data.should.have.property('subscriptions_url', `${config.get('gfw.flagshipUrl')}/my-gfw?lang=${sub.language}`);
+    jsonMessage.data.should.have.property('unsubscribe_url', `${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${sub.language}`);
+
+    // New Help Center URLs, including language
+    jsonMessage.data.should.have.property('help_center_url_manage_areas', `${config.get('gfw.flagshipUrl')}/help/map/guides/manage-saved-areas?lang=${sub.language}`);
+    jsonMessage.data.should.have.property('help_center_url_save_more_areas', `${config.get('gfw.flagshipUrl')}/help/map/guides/save-area-subscribe-forest-change-notifications?lang=${sub.language}`);
+    jsonMessage.data.should.have.property('help_center_url_investigate_alerts', `${config.get('gfw.flagshipUrl')}/help/map/guides/investigate-forest-change-satellite-imagery?lang=${sub.language}`);
 };
 
 const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub, priorityOverride = {}) => {

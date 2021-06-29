@@ -1,3 +1,9 @@
+# v.1.9.0
+
+## 29/06/2021
+
+- Include new Help Center URLs in the payload sent to Sparkpost.
+
 # v.1.8.4
 
 ## 28/06/2021
