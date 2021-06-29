@@ -54,6 +54,12 @@ const decorateWithDates = (results, begin, end) => {
 const decorateWithLinks = (results, subscription) => {
     results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
     results.subscriptions_url = UrlService.flagshipUrl('/my-gfw', subscription.language);
+
+    // New Help Center links with language
+    results.help_center_url_manage_areas = UrlService.flagshipUrl('/help/map/guides/manage-saved-areas', subscription.language);
+    results.help_center_url_save_more_areas = UrlService.flagshipUrl('/help/map/guides/save-area-subscribe-forest-change-notifications', subscription.language);
+    results.help_center_url_investigate_alerts = UrlService.flagshipUrl('/help/map/guides/investigate-forest-change-satellite-imagery', subscription.language);
+
     return results;
 };
 
