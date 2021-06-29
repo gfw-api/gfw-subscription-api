@@ -22,6 +22,7 @@ const {
     validateCommonNotificationParams,
     validateGLADSpecificParams,
     validateGLADAlertsAndPriorityAreas,
+    validateCustomMapURLs,
 } = require('../utils/helpers/email-notifications');
 const { ROLES } = require('../utils/test.constants');
 
@@ -70,6 +71,7 @@ describe('GLAD alert emails', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -108,6 +110,7 @@ describe('GLAD alert emails', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
                     validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -146,6 +149,7 @@ describe('GLAD alert emails', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
                     validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -192,6 +196,7 @@ describe('GLAD alert emails', () => {
                         primary_forest: 60,
                         protected_areas: 20,
                     });
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -238,6 +243,7 @@ describe('GLAD alert emails', () => {
                         primary_forest: 60,
                         protected_areas: 20,
                     });
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -284,6 +290,7 @@ describe('GLAD alert emails', () => {
                         primary_forest: 60,
                         protected_areas: 20,
                     });
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -330,6 +337,7 @@ describe('GLAD alert emails', () => {
                         primary_forest: 0,
                         protected_areas: 100,
                     });
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -369,6 +377,7 @@ describe('GLAD alert emails', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -633,6 +642,7 @@ describe('GLAD alert emails', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateGLADAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);

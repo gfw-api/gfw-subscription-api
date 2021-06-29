@@ -22,6 +22,7 @@ const {
     validateCommonNotificationParams,
     validateVIIRSSpecificParams,
     validateVIIRSAlertsAndPriorityAreas,
+    validateCustomMapURLs,
 } = require('../utils/helpers/email-notifications');
 const { ROLES } = require('../utils/test.constants');
 
@@ -71,6 +72,7 @@ describe('VIIRS Fires alert emails', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -109,6 +111,7 @@ describe('VIIRS Fires alert emails', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
                     validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -147,6 +150,7 @@ describe('VIIRS Fires alert emails', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
                     validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -193,6 +197,7 @@ describe('VIIRS Fires alert emails', () => {
                         primary_forest: 75,
                         protected_areas: 0,
                     });
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -239,6 +244,7 @@ describe('VIIRS Fires alert emails', () => {
                         primary_forest: 75,
                         protected_areas: 0,
                     });
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -285,6 +291,7 @@ describe('VIIRS Fires alert emails', () => {
                         primary_forest: 75,
                         protected_areas: 0,
                     });
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -331,6 +338,7 @@ describe('VIIRS Fires alert emails', () => {
                         primary_forest: 25,
                         protected_areas: 100,
                     });
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -370,6 +378,7 @@ describe('VIIRS Fires alert emails', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -635,6 +644,7 @@ describe('VIIRS Fires alert emails', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateCustomMapURLs(jsonMessage);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);

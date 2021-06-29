@@ -1,6 +1,7 @@
 const chai = require('chai');
 const config = require('config');
 const moment = require('moment');
+const querystring = require('querystring');
 
 const AlertUrlService = require('services/alertUrlService');
 const Layer = require('models/layer');
@@ -207,6 +208,36 @@ const validateVIIRSSpecificParams = (jsonMessage, beginDate, endDate, sub, frequ
     jsonMessage.data.should.have.property('viirs_count').and.equal(100);
 };
 
+const validateCustomMapURLs = (jsonMessage) => {
+    // Validate custom map URLs are present
+    jsonMessage.data.should.have.property('map_url_intact_forest');
+    jsonMessage.data.should.have.property('map_url_primary_forest');
+    jsonMessage.data.should.have.property('map_url_peat');
+    jsonMessage.data.should.have.property('map_url_wdpa');
+
+    // Validate intact forest URL
+    const ifQuery = querystring.parse(jsonMessage.data.map_url_intact_forest);
+    const ifMapData = JSON.parse(Buffer.from(ifQuery.map, 'base64').toString());
+    ifMapData.datasets.find((el) => el.dataset === 'intact-forest-landscapes').should.deep.equal(AlertUrlService.getIntactForestDataset());
+
+    // Validate primary forest URL
+    const pfQuery = querystring.parse(jsonMessage.data.map_url_primary_forest);
+    const pfMapData = JSON.parse(Buffer.from(pfQuery.map, 'base64').toString());
+    pfMapData.datasets.find((el) => el.dataset === 'primary-forests').should.deep.equal(AlertUrlService.getPrimaryForestDataset());
+
+    // Validate peatlands URL
+    const peatQuery = querystring.parse(jsonMessage.data.map_url_peat);
+    const peatMapData = JSON.parse(Buffer.from(peatQuery.map, 'base64').toString());
+    peatMapData.datasets.find((el) => el.dataset === 'malaysia-peat-lands').should.deep.equal(AlertUrlService.getPeatlandsDatasets()[0]);
+    peatMapData.datasets.find((el) => el.dataset === 'indonesia-forest-moratorium').should.deep.equal(AlertUrlService.getPeatlandsDatasets()[1]);
+    peatMapData.datasets.find((el) => el.dataset === 'indonesia-peat-lands').should.deep.equal(AlertUrlService.getPeatlandsDatasets()[2]);
+
+    // Validate WDPA URL
+    const wdpaQuery = querystring.parse(jsonMessage.data.map_url_wdpa);
+    const wdpaMapData = JSON.parse(Buffer.from(wdpaQuery.map, 'base64').toString());
+    wdpaMapData.datasets.find((el) => el.dataset === 'wdpa-protected-areas').should.deep.equal(AlertUrlService.getWDPADataset());
+};
+
 module.exports = {
     bootstrapEmailNotificationTests,
     validateCommonNotificationParams,
@@ -215,4 +246,5 @@ module.exports = {
     validateVIIRSSpecificParams,
     validateVIIRSAlertsAndPriorityAreas,
     validateMonthlySummaryAlertsAndPriorityAreas,
+    validateCustomMapURLs,
 };
