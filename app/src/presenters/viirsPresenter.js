@@ -42,9 +42,13 @@ class ViirsPresenter {
             const lastYearAlerts = await ViirsAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
             resultObject.viirs_frequency = await EmailHelpersService.calculateAlertFrequency(results.data, lastYearAlerts, subscription.language);
 
-            // Set URLs
+            // Set custom map and dashboard URLs
             resultObject.alert_link = AlertUrlService.generate(subscription, layer, begin, end);
             resultObject.dashboard_link = UrlService.dashboardUrl(subscription.id, subscription.language, 'fires');
+            resultObject.map_url_intact_forest = AlertUrlService.generateIntactForestMapURL(subscription, layer, begin, end);
+            resultObject.map_url_primary_forest = AlertUrlService.generatePrimaryForestMapURL(subscription, layer, begin, end);
+            resultObject.map_url_peat = AlertUrlService.generatePeatMapURL(subscription, layer, begin, end);
+            resultObject.map_url_wdpa = AlertUrlService.generateWDPAMapURL(subscription, layer, begin, end);
 
         } catch (err) {
             logger.error(err);

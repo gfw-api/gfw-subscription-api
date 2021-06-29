@@ -3,6 +3,7 @@
 ## 29/06/2021
 
 - Include new Help Center URLs in the payload sent to Sparkpost.
+- Include custom map URLs by forest type in the payload sent to Sparkpost.
 
 # v.1.8.4
 

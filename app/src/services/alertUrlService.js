@@ -13,6 +13,67 @@ const encodeStateForUrl = (state) => btoa(JSON.stringify(state));
 
 class AlertUrlService {
 
+    static getPrimaryForestDataset() {
+        return {
+            dataset: 'primary-forests',
+            opacity: 1,
+            visibility: true,
+            layers: ['primary-forests-2001']
+        };
+    }
+
+    static getIntactForestDataset() {
+        return {
+            dataset: 'intact-forest-landscapes',
+            opacity: 1,
+            visibility: true,
+            layers: ['intact-forest-landscapes'],
+        };
+    }
+
+    static getPeatlandsDatasets() {
+        return [{
+            dataset: 'malaysia-peat-lands',
+            opacity: 1,
+            visibility: true,
+            layers: ['malaysia-peat-lands-2004'],
+            iso: 'MYS'
+        },
+        {
+            dataset: 'indonesia-forest-moratorium',
+            opacity: 1,
+            visibility: true,
+            layers: ['indonesia-forest-moratorium'],
+            iso: 'IDN'
+        },
+        {
+            dataset: 'indonesia-peat-lands',
+            opacity: 1,
+            visibility: true,
+            layers: ['indonesia-peat-lands-2012'],
+            iso: 'IDN'
+        }];
+    }
+
+    static getWDPADataset() {
+        return {
+            dataset: 'wdpa-protected-areas',
+            opacity: 1,
+            visibility: true,
+            layers: ['wdpa-protected-areas'],
+        };
+    }
+
+    static getEncodedQueryForSubscription(datasets, subscription) {
+        const queryForUrl = {
+            lang: subscription.language || 'en',
+            map: encodeStateForUrl({ canBound: true, datasets }),
+            mainMap: encodeStateForUrl({ showAnalysis: true }),
+        };
+
+        return qs.stringify(queryForUrl);
+    }
+
     static processLayer(layer, begin, end) {
         const diffInDays = moment(begin).diff(moment(end), 'days');
         return {
@@ -61,6 +122,42 @@ class AlertUrlService {
         };
 
         return `${BASE_URL}/map/aoi/${subscription.id}?${qs.stringify(queryForUrl)}`;
+    }
+
+    static generatePrimaryForestMapURL(subscription, layer, begin, end) {
+        const query = AlertUrlService.getEncodedQueryForSubscription([
+            AlertUrlService.processLayer(layer, begin, end),
+            AlertUrlService.getPrimaryForestDataset(),
+        ], subscription);
+
+        return `${BASE_URL}/map/aoi/${subscription.id}?${query}`;
+    }
+
+    static generateIntactForestMapURL(subscription, layer, begin, end) {
+        const query = AlertUrlService.getEncodedQueryForSubscription([
+            AlertUrlService.processLayer(layer, begin, end),
+            AlertUrlService.getIntactForestDataset(),
+        ], subscription);
+
+        return `${BASE_URL}/map/aoi/${subscription.id}?${query}`;
+    }
+
+    static generateWDPAMapURL(subscription, layer, begin, end) {
+        const query = AlertUrlService.getEncodedQueryForSubscription([
+            AlertUrlService.processLayer(layer, begin, end),
+            AlertUrlService.getWDPADataset(),
+        ], subscription);
+
+        return `${BASE_URL}/map/aoi/${subscription.id}?${query}`;
+    }
+
+    static generatePeatMapURL(subscription, layer, begin, end) {
+        const query = AlertUrlService.getEncodedQueryForSubscription([
+            AlertUrlService.processLayer(layer, begin, end),
+            ...AlertUrlService.getPeatlandsDatasets(),
+        ], subscription);
+
+        return `${BASE_URL}/map/aoi/${subscription.id}?${query}`;
     }
 
 }
