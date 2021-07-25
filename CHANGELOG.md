@@ -1,3 +1,7 @@
+## 25/07/2021
+
+- Add `env` multi-value filter support to GET subscriptions endpoint.
+
 # v.1.9.0
 
 ## 29/06/2021
@@ -36,7 +40,7 @@
 
 ## 26/05/2021
 
-- Use GFW Data API as the source to fetch subscription notificatio alerts [GFW-120](https://vizzuality.atlassian.net/browse/GFW-120)
+- Use GFW Data API as the source to fetch subscription notification alerts [GFW-120](https://vizzuality.atlassian.net/browse/GFW-120)
 - Add support for hosts from `referer` header when generating pagination links.
 - Fix security vulnerabilities with `koa-validate` and `redis`.
 

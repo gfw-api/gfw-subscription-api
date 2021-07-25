@@ -11,13 +11,11 @@ const {
 
 chai.should();
 
-const prefix = '/api/v1/subscriptions';
-
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
 let requester;
-const authCases = createAuthCases(`${prefix}/123`, 'patch');
+const authCases = createAuthCases(`/api/v1/subscriptions/123`, 'patch');
 
 const updateSubscription = async ({
     userID = ROLES.USER.id,
@@ -34,7 +32,7 @@ const updateSubscription = async ({
     mockGetUserFromToken(ROLES.USER);
 
     return requester
-        .patch(`${prefix}/${subID || subscription._id}`)
+        .patch(`/api/v1/subscriptions/${subID || subscription._id}`)
         .set('Authorization', `Bearer abcd`)
         .send(subToUpdate);
 };
@@ -103,8 +101,14 @@ describe('Update subscription endpoint', () => {
     });
 
     it('Updating subscription data should be updated', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
         const subscription = await createSubInDB(ROLES.USER.id, getUUID());
-        const response = await updateSubscription({ defaultSub: subscription });
+
+        const response = await requester
+            .patch(`/api/v1/subscriptions/${subscription._id}`)
+            .set('Authorization', `Bearer abcd`)
+            .send(SUBSCRIPTION_TO_UPDATE);
 
         response.status.should.equal(200);
         const { data } = response.body;

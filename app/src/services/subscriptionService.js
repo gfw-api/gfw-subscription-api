@@ -153,7 +153,14 @@ class SubscriptionService {
     ) {
         const filter = {};
         if (application) filter.application = application;
-        if (env) filter.env = env;
+
+        if (env) {
+            filter.env = {
+                $in: env.split(',')
+            };
+        } else {
+            filter.env = 'production';
+        }
 
         if (updatedAtSince || updatedAtUntil) {
             filter.updateAt = {};

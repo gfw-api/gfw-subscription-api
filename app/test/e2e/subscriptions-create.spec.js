@@ -41,7 +41,7 @@ const assertSubscriptionResponse = async (response) => {
     process.on('unhandledRejection', (err) => should.fail(err));
 };
 
-describe('Create subscriptions tests', () => {
+describe('Create subscription', () => {
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
             throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
@@ -139,7 +139,7 @@ describe('Create subscriptions tests', () => {
         sleep(1);
     });
 
-    it('Create a subscription with the basic required fields should return a 200, create a subscription and emit a redis message (happy Case)', async () => {
+    it('Create a subscription with the basic required fields should return a 200, create a subscription and emit a redis message (happy case)', async () => {
         mockGetUserFromToken(ROLES.ADMIN);
 
         this.channel.on('message', validRedisMessage({
@@ -166,7 +166,7 @@ describe('Create subscriptions tests', () => {
         await assertSubscriptionResponse(response);
     });
 
-    it('Create a subscription with the basic required fields with application = "test" should return a 200, create a subscription and emit a redis message(happy case)', async () => {
+    it('Create a subscription with the basic required fields with application = "test" should return a 200, create a subscription and emit a redis message (happy case)', async () => {
         mockGetUserFromToken(ROLES.ADMIN);
 
         this.channel.on('message', validRedisMessage({

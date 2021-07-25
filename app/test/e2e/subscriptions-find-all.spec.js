@@ -199,34 +199,75 @@ describe('Find all subscriptions tests', () => {
         response2.body.data.map((el) => el.id).should.contain(rwSub2.id);
     });
 
-    it('Finding subscriptions allows filtering by environment query param, returns 200 OK with the correct data', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+    describe('Environments', () => {
+        it('Finding subscriptions without an env filter returns 200 OK with all subscriptions with production env', async () => {
+            mockGetUserFromToken(ROLES.MICROSERVICE);
 
-        const prodSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'production' })).save();
-        const prodSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'production' })).save();
-        const stgSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
-        const stgSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'staging' })).save();
+            const prodSub1 = await new Subscription(createSubscription(ROLES.USER.id)).save();
+            const prodSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'production' })).save();
+            await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
+            await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'staging' })).save();
 
-        const response1 = await requester
-            .get(`/api/v1/subscriptions/find-all`)
-            .set('Authorization', `Bearer abcd`)
-            .query({ env: 'production' })
-            .send();
-        response1.status.should.equal(200);
-        response1.body.should.have.property('data').with.lengthOf(2);
-        response1.body.data.map((el) => el.id).should.contain(prodSub1.id);
-        response1.body.data.map((el) => el.id).should.contain(prodSub2.id);
+            const response = await requester
+                .get(`/api/v1/subscriptions/find-all`)
+                .set('Authorization', `Bearer abcd`)
+                .send();
+            response.status.should.equal(200);
+            response.body.should.have.property('data').with.lengthOf(2);
+            response.body.data.map((el) => el.id).should.contain(prodSub1.id);
+            response.body.data.map((el) => el.id).should.contain(prodSub2.id);
+        });
 
-        const response2 = await requester
-            .get(`/api/v1/subscriptions/find-all`)
-            .set('Authorization', `Bearer abcd`)
-            .query({ env: 'staging' })
-            .send();
-        response2.status.should.equal(200);
-        response2.body.should.have.property('data').with.lengthOf(2);
-        response2.body.data.map((el) => el.id).should.contain(stgSub1.id);
-        response2.body.data.map((el) => el.id).should.contain(stgSub2.id);
+        it('Finding subscriptions allows filtering by environment query param, returns 200 OK with the correct data', async () => {
+            mockGetUserFromToken(ROLES.MICROSERVICE);
+            mockGetUserFromToken(ROLES.MICROSERVICE);
+
+            const prodSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'production' })).save();
+            const prodSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'production' })).save();
+            const stgSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
+            const stgSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'staging' })).save();
+
+            const response1 = await requester
+                .get(`/api/v1/subscriptions/find-all`)
+                .set('Authorization', `Bearer abcd`)
+                .query({ env: 'production' })
+                .send();
+            response1.status.should.equal(200);
+            response1.body.should.have.property('data').with.lengthOf(2);
+            response1.body.data.map((el) => el.id).should.contain(prodSub1.id);
+            response1.body.data.map((el) => el.id).should.contain(prodSub2.id);
+
+            const response2 = await requester
+                .get(`/api/v1/subscriptions/find-all`)
+                .set('Authorization', `Bearer abcd`)
+                .query({ env: 'staging' })
+                .send();
+            response2.status.should.equal(200);
+            response2.body.should.have.property('data').with.lengthOf(2);
+            response2.body.data.map((el) => el.id).should.contain(stgSub1.id);
+            response2.body.data.map((el) => el.id).should.contain(stgSub2.id);
+        });
+
+        it('Finding subscriptions allows filtering by multiple environments as a comma separated query param, returns 200 OK with the correct data', async () => {
+            mockGetUserFromToken(ROLES.MICROSERVICE);
+
+            const prodSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'production' })).save();
+            const prodSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'production' })).save();
+            const stgSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
+            const stgSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'staging' })).save();
+
+            const response = await requester
+                .get(`/api/v1/subscriptions/find-all`)
+                .set('Authorization', `Bearer abcd`)
+                .query({ env: ['production', 'staging'].join(',') })
+                .send();
+            response.status.should.equal(200);
+            response.body.should.have.property('data').with.lengthOf(4);
+            response.body.data.map((el) => el.id).should.contain(prodSub1.id);
+            response.body.data.map((el) => el.id).should.contain(prodSub2.id);
+            response.body.data.map((el) => el.id).should.contain(stgSub1.id);
+            response.body.data.map((el) => el.id).should.contain(stgSub2.id);
+        });
     });
 
     afterEach(async () => {

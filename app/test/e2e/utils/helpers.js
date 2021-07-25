@@ -24,7 +24,6 @@ const createSubscription = (userId, datasetUuid = null, data = {}) => {
         datasets: [datasetUuid || getUUID()],
         userId,
         application: 'gfw',
-        env: 'production',
         confirmed: true,
         params: {
             geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw'
