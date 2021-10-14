@@ -9,6 +9,10 @@ const ADAPTER_MAP = {
     'glad-alerts': GladAdapter,
     'viirs-active-fires': ViirsAdapter,
     'monthly-summary': MonthlySummaryAdapter,
+    'glad-all': GladAdapter,
+    'glad-l': GladAdapter,
+    'glad-s2': GladAdapter,
+    'glad-radd': GladAdapter,
 };
 
 class AnalysisResultsAdapter {

@@ -36,10 +36,13 @@ class AlertQueue {
         const end = MessageProcessor.getEndDate(message);
 
         logger.debug('[AlertQueue] Params in message', layerSlug, begin, end);
-        const subscriptions = await SubscriptionService.getSubscriptionsByLayer(layerSlug);
+        const subscriptions = await SubscriptionService.getSubscriptionsByLayer(
+            layerSlug === 'glad-alerts' ? ['glad-alerts', 'glad-all', 'glad-l', 'glad-s2', 'glad-radd'] : [layerSlug]
+        );
         logger.debug('[AlertQueue] Subscriptions obtained', subscriptions);
         logger.info('[AlertQueue] Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
         try {
+            // Code for testing subscription emails
             const email = MessageProcessor.getEmail(message);
             const subId = MessageProcessor.getSubscriptionId(message);
             if (email && subId) {
@@ -51,9 +54,15 @@ class AlertQueue {
                 return;
             }
 
+            // The real code that handles daily emails
             for (let i = 0, { length } = subscriptions; i < length; i++) {
                 try {
-                    await subscriptions[i].publish({ name: layerSlug, slug: layerSlug }, begin, end);
+                    let name = layerSlug;
+                    if (layerSlug === 'glad-alerts') {
+                        [name] = subscriptions[i].datasets.filter((el) => el.startsWith('glad-'));
+                    }
+
+                    await subscriptions[i].publish({ name, slug: name }, begin, end);
                 } catch (e) {
                     logger.error(`[SubscriptionEmailsError] Error processing subscription with ID ${subscriptions[i]._id}`);
                     logger.error(`[SubscriptionEmailsError] ${e}`);

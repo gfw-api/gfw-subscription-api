@@ -133,11 +133,9 @@ class SubscriptionService {
         return Subscription.findById(id.toString());
     }
 
-    static async getSubscriptionsByLayer(layerSlug) {
+    static async getSubscriptionsByLayer(slugs) {
         return Subscription.find({
-            datasets: {
-                $in: [layerSlug]
-            },
+            datasets: { $in: slugs },
             confirmed: true
         }).exec();
     }

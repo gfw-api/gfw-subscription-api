@@ -15,41 +15,36 @@ const DATASET_GLAD_ALL_DOWNLOAD = '/dataset/gfw_integrated_alerts/latest/downloa
 class GladAllService {
 
     static getURLForAdmin0(startDate, endDate, country) {
-        const sql = `SELECT gfw_integrated_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso="${country}" AND gfw_integrated_alerts__date >= "${startDate}" AND gfw_integrated_alerts__date <= "${endDate}"`;
+        const sql = `SELECT * FROM data WHERE iso="${country}" AND gfw_integrated_alerts__date >= "${startDate}" AND gfw_integrated_alerts__date <= "${endDate}"`;
         return `${DATASET_GLAD_ALL_ADM_0}?sql=${sql}`;
     }
 
     static getURLForAdmin1(startDate, endDate, country, region) {
-        const sql = `SELECT gfw_integrated_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso="${country}" AND adm1="${region}" AND gfw_integrated_alerts__date >= "${startDate}" AND gfw_integrated_alerts__date <= "${endDate}"`;
+        const sql = `SELECT * FROM data WHERE iso="${country}" AND adm1="${region}" AND gfw_integrated_alerts__date >= "${startDate}" AND gfw_integrated_alerts__date <= "${endDate}"`;
         return `${DATASET_GLAD_ALL_ADM_1}?sql=${sql}`;
     }
 
     static getURLForAdmin2(startDate, endDate, country, region, subregion) {
-        const sql = `SELECT gfw_integrated_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso="${country}" AND adm1="${region}" AND adm2="${subregion}" AND gfw_integrated_alerts__date >= "${startDate}" 
-                     AND gfw_integrated_alerts__date <= "${endDate}"`;
+        const sql = `SELECT * FROM data WHERE iso="${country}" AND adm1="${region}" AND adm2="${subregion}" AND gfw_integrated_alerts__date >= "${startDate}" `
+            + `AND gfw_integrated_alerts__date <= "${endDate}"`;
         return `${DATASET_GLAD_ALL_ADM_2}?sql=${sql}`;
     }
 
     static getURLForWDPA(startDate, endDate, wdpa) {
-        const sql = `SELECT gfw_integrated_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE wdpa_protected_area__id="${wdpa}" AND gfw_integrated_alerts__date >= "${startDate}" 
-                     AND gfw_integrated_alerts__date <= "${endDate}"`;
+        const sql = `SELECT * FROM data WHERE wdpa_protected_area__id="${wdpa}" AND gfw_integrated_alerts__date >= "${startDate}" `
+            + `AND gfw_integrated_alerts__date <= "${endDate}"`;
         return `${DATASET_GLAD_ALL_WDPA}?sql=${sql}`;
     }
 
     static getURLForGeostore(startDate, endDate, geostoreId) {
-        const sql = `SELECT gfw_integrated_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE geostore__id="${geostoreId}" AND gfw_integrated_alerts__date >= "${startDate}" AND gfw_integrated_alerts__date <= "${endDate}"`;
+        const sql = `SELECT * FROM data WHERE geostore__id="${geostoreId}" AND gfw_integrated_alerts__date >= "${startDate}" AND gfw_integrated_alerts__date <= "${endDate}"`;
         return `${DATASET_GLAD_ALL_GEOSTORE}?sql=${sql}`;
     }
 
     static getURLForDownload(startDate, endDate, geostoreId) {
-        const sql = `SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, 
-                     wur_radd_alerts__confidence, gfw_integrated_alerts__confidence FROM data WHERE gfw_integrated_alerts__date >= "${startDate}" 
-                     AND gfw_integrated_alerts__date <= "${endDate}"`;
+        const sql = `SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, `
+            + `wur_radd_alerts__confidence, gfw_integrated_alerts__confidence FROM data WHERE gfw_integrated_alerts__date >= "${startDate}" `
+            + `AND gfw_integrated_alerts__date <= "${endDate}"`;
         return `${DATASET_GLAD_ALL_DOWNLOAD}/{format}?sql=${sql}&geostore_origin=rw&geostore_id=${geostoreId}`;
     }
 
