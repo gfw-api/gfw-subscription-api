@@ -73,9 +73,7 @@ Subscription.methods.publish = async function (layerConfig, begin, end, sendEmai
         return false;
     }
 
-    results = await AnalysisResultsPresenter.render(
-        results, this, layer, begin, end
-    );
+    results = await AnalysisResultsPresenter.render(results, this, layer, begin, end);
 
     if (sendEmail) {
         await alertPublishers[this.resource.type].publish(this, results, layer);
