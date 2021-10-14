@@ -5,6 +5,10 @@ const logger = require('logger');
 const VIIRSPresenter = require('presenters/viirsPresenter');
 const GLADPresenter = require('presenters/gladPresenter');
 const MonthlySummaryPresenter = require('presenters/monthlySummaryPresenter');
+const GLADAllPresenter = require('presenters/gladAllPresenter');
+const GLADLPresenter = require('presenters/gladLPresenter');
+const GLADRaddPresenter = require('presenters/gladRaddPresenter');
+const GLADS2Presenter = require('presenters/gladS2Presenter');
 
 const UrlService = require('services/urlService');
 
@@ -12,6 +16,10 @@ const PRESENTER_MAP = {
     'monthly-summary': MonthlySummaryPresenter,
     'viirs-active-fires': VIIRSPresenter,
     'glad-alerts': GLADPresenter,
+    'glad-all': GLADAllPresenter,
+    'glad-l': GLADLPresenter,
+    'glad-s2': GLADS2Presenter,
+    'glad-radd': GLADRaddPresenter,
 };
 
 const decorateWithName = (results, subscription) => {
