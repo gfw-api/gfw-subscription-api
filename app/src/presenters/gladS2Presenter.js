@@ -16,7 +16,7 @@ class GLADS2Presenter {
                 subscription.params
             );
 
-            const lastYearAlerts = await GladS2Service.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
+            const lastYearAlerts = await GladS2Service.getAlertsSamePeriodLastYearForSubscription(begin, end, subscription.params);
             resultObject.glad_frequency = await EmailHelpersService.calculateAlertFrequency(results.data, lastYearAlerts, subscription.language);
 
             logger.info('GLAD-S2 Results ', resultObject);

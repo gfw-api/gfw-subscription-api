@@ -7,6 +7,10 @@ const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 const AnalysisClassifier = require('services/analysisClassifier');
 const GLADAlertsService = require('services/gladAlertsService');
 const ViirsAlertsService = require('services/viirsAlertsService');
+const GladAllService = require('services/gfw-data-api/gladAllService');
+const GladLService = require('services/gfw-data-api/gladLService');
+const GladS2Service = require('services/gfw-data-api/gladS2Service');
+const GladRaddService = require('services/gfw-data-api/gladRaddService');
 
 const formatDate = (date) => moment(date).format('YYYY-MM-DD');
 
@@ -30,31 +34,37 @@ class AnalysisService {
         const url = `/${layerSlug}${path}`;
         logger.debug('subscription id: ', subscription._id, 'Url ', url, 'and query ', query);
         try {
-            // Override results in the case of glad-alerts
-            if (layerSlug === 'glad-alerts') {
-                return await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+            switch (layerSlug) {
+
+                case 'glad-all':
+                    return await GladAllService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                case 'glad-l':
+                    return await GladLService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                case 'glad-s2':
+                    return await GladS2Service.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                case 'glad-radd':
+                    return await GladRaddService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                case 'glad-alerts':
+                    return await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                case 'viirs-active-fires':
+                    return await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                case 'monthly-summary': {
+                    const gladAlerts = await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                    const viirsAlerts = await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                    return { gladAlerts, viirsAlerts };
+                }
+                default: {
+                    const result = await RWAPIMicroservice.requestToMicroservice({
+                        uri: url,
+                        method: 'GET',
+                        json: true,
+                        qs: query
+                    });
+
+                    return await new JSONAPIDeserializer({ keyForAttribute: 'camelCase' }).deserialize(result);
+                }
+
             }
-
-            // Override results in the case of viirs-active-fires
-            if (layerSlug === 'viirs-active-fires') {
-                return await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
-            }
-
-            // Override results in the case of monthly-summary
-            if (layerSlug === 'monthly-summary') {
-                const gladAlerts = await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                const viirsAlerts = await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                return { gladAlerts, viirsAlerts };
-            }
-
-            const result = await RWAPIMicroservice.requestToMicroservice({
-                uri: url,
-                method: 'GET',
-                json: true,
-                qs: query
-            });
-
-            return await new JSONAPIDeserializer({ keyForAttribute: 'camelCase' }).deserialize(result);
         } catch (e) {
             logger.error(e);
             return null;

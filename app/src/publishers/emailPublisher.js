@@ -6,6 +6,10 @@ const TEMPLATE_MAP = {
     'viirs-active-fires': 'forest-fires-notification-viirs',
     'glad-alerts': 'forest-change-notification-glads',
     'monthly-summary': 'monthly-summary',
+    'glad-all': 'glad-updated-notification',
+    'glad-l': 'glad-updated-notification',
+    'glad-s2': 'glad-updated-notification',
+    'glad-radd': 'glad-updated-notification',
 };
 
 class EmailPublisher {
