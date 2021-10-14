@@ -238,6 +238,61 @@ const validateCustomMapURLs = (jsonMessage) => {
     wdpaMapData.datasets.find((el) => el.dataset === 'wdpa-protected-areas').should.deep.equal(AlertUrlService.getWDPADataset());
 };
 
+const validateGladAll = (jsonMessage, sub, beginDate, endDate, value) => {
+    jsonMessage.data.should.have.property('glad_frequency', 'average');
+    jsonMessage.data.should.have.property('glad_count', value);
+    jsonMessage.data.should.have.property('layerSlug').and.equal('glad-all');
+
+    // Validate download URLs
+    jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
+    jsonMessage.data.downloadUrls.should.have.property('csv')
+        .and.be.a('string')
+        .and.contain(config.get('dataApi.url'))
+        .and.contain('/dataset/gfw_integrated_alerts/latest/download/csv')
+        .and.contain('SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, wur_radd_alerts__confidence, gfw_integrated_alerts__confidence')
+        .and.contain('&geostore_id=')
+        .and.contain('&geostore_origin=rw');
+
+    jsonMessage.data.downloadUrls.should.have.property('json')
+        .and.be.a('string')
+        .and.contain(config.get('dataApi.url'))
+        .and.contain('/dataset/gfw_integrated_alerts/latest/download/json')
+        .and.contain('SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, wur_radd_alerts__confidence, gfw_integrated_alerts__confidence')
+        .and.contain('&geostore_id=')
+        .and.contain('&geostore_origin=rw');
+
+    const priorityAreas = {
+        intact_forest: 0,
+        primary_forest: 0,
+        peat: 0,
+        protected_areas: 0,
+        plantations: 0,
+        other: value,
+    };
+
+    jsonMessage.data.should.have.property('priority_areas').and.deep.equal(priorityAreas);
+    jsonMessage.data.should.have.property('alert_count').and.equal(value);
+    jsonMessage.data.should.have.property('value').and.equal(value);
+    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+        sub,
+        {
+            name: 'umd_as_it_happens',
+            slug: 'glad-alerts',
+            subscription: true,
+            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+        },
+        beginDate,
+        endDate,
+    ));
+
+    jsonMessage.data.should.have.property('dashboard_link')
+        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`lang=en`)
+        .and.contain(`category=forest-change`)
+        .and.contain(`utm_campaign=ForestChangeAlert`);
+};
+
 module.exports = {
     bootstrapEmailNotificationTests,
     validateCommonNotificationParams,
@@ -247,4 +302,5 @@ module.exports = {
     validateVIIRSAlertsAndPriorityAreas,
     validateMonthlySummaryAlertsAndPriorityAreas,
     validateCustomMapURLs,
+    validateGladAll
 };

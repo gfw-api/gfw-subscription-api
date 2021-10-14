@@ -1,43 +1,38 @@
 const config = require('config');
 
 const LAYERS = [{
-    name: 'loss',
-    slug: 'umd-loss-gain',
-    subscription: true,
-    datasetId: config.get('layers.umdLossGainLayerDataset'),
-    layerId: config.get('layers.umdLossGainLayer')
-}, {
-    // no longer on flagship
-    name: 'guyra',
-    slug: 'guira-loss',
-    subscription: true
-}, {
-    name: 'viirs_fires_alerts',
+    name: 'viirs-fires-alerts',
     slug: 'viirs-active-fires',
     subscription: true,
     datasetId: config.get('layers.viirsLayerDataset'),
     layerId: config.get('layers.viirsLayer')
 }, {
-    name: 'umd_as_it_happens',
+    name: 'glad-alerts',
     slug: 'glad-alerts',
     subscription: true,
     datasetId: config.get('layers.gladAlertLayerDataset'),
     layerId: config.get('layers.gladAlertLayer')
 }, {
-    name: 'umd_as_it_happens_per',
-    slug: 'glad-alerts',
+    name: 'glad-all',
+    slug: 'glad-all',
     subscription: true,
     datasetId: config.get('layers.gladAlertLayerDataset'),
     layerId: config.get('layers.gladAlertLayer')
 }, {
-    name: 'umd_as_it_happens_cog',
-    slug: 'glad-alerts',
+    name: 'glad-l',
+    slug: 'glad-l',
     subscription: true,
     datasetId: config.get('layers.gladAlertLayerDataset'),
     layerId: config.get('layers.gladAlertLayer')
 }, {
-    name: 'umd_as_it_happens_idn',
-    slug: 'glad-alerts',
+    name: 'glad-s2',
+    slug: 'glad-s2',
+    subscription: true,
+    datasetId: config.get('layers.gladAlertLayerDataset'),
+    layerId: config.get('layers.gladAlertLayer')
+}, {
+    name: 'glad-radd',
+    slug: 'glad-radd',
     subscription: true,
     datasetId: config.get('layers.gladAlertLayerDataset'),
     layerId: config.get('layers.gladAlertLayer')
