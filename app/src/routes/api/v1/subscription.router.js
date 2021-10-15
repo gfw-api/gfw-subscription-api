@@ -331,7 +331,7 @@ class SubscriptionsRouter {
         logger.info(`[EmailAlertsRouter] Starting test email alerts.`);
 
         const {
-            alert, email, subId, fromDate, toDate
+            alert, email, subId, fromDate, toDate, language
         } = ctx.request.body;
 
         if (!subId) {
@@ -351,6 +351,7 @@ class SubscriptionsRouter {
                 end_date: toDate ? moment(toDate).toDate() : moment().subtract('1', 'w').toDate(),
                 email,
                 subId,
+                language
             }));
             ctx.body = { success: true };
         } catch (e) {
