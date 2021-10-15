@@ -238,10 +238,16 @@ const validateCustomMapURLs = (jsonMessage) => {
     wdpaMapData.datasets.find((el) => el.dataset === 'wdpa-protected-areas').should.deep.equal(AlertUrlService.getWDPADataset());
 };
 
-const validateGladAll = (jsonMessage, sub, beginDate, endDate, value) => {
-    jsonMessage.data.should.have.property('glad_frequency', 'average');
-    jsonMessage.data.should.have.property('glad_count', value);
-    jsonMessage.data.should.have.property('layerSlug').and.equal('glad-all');
+const validateGladAll = (
+    jsonMessage,
+    sub,
+    beginDate,
+    endDate,
+    {
+        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea
+    }
+) => {
+    jsonMessage.data.should.have.property('glad_count', total);
 
     // Validate download URLs
     jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
@@ -261,18 +267,8 @@ const validateGladAll = (jsonMessage, sub, beginDate, endDate, value) => {
         .and.contain('&geostore_id=')
         .and.contain('&geostore_origin=rw');
 
-    const priorityAreas = {
-        intact_forest: 0,
-        primary_forest: 0,
-        peat: 0,
-        protected_areas: 0,
-        plantations: 0,
-        other: value,
-    };
-
-    jsonMessage.data.should.have.property('priority_areas').and.deep.equal(priorityAreas);
-    jsonMessage.data.should.have.property('alert_count').and.equal(value);
-    jsonMessage.data.should.have.property('value').and.equal(value);
+    jsonMessage.data.should.have.property('alert_count').and.equal(total);
+    jsonMessage.data.should.have.property('value').and.equal(total);
     jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
         sub,
         {
@@ -291,6 +287,12 @@ const validateGladAll = (jsonMessage, sub, beginDate, endDate, value) => {
         .and.contain(`lang=en`)
         .and.contain(`category=forest-change`)
         .and.contain(`utm_campaign=ForestChangeAlert`);
+
+    jsonMessage.data.should.have.property('area_ha_sum', area);
+    jsonMessage.data.should.have.property('intact_forest_ha_sum', intactForestArea);
+    jsonMessage.data.should.have.property('primary_forest_hs_sum', primaryForestArea);
+    jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
+    jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
 };
 
 module.exports = {
