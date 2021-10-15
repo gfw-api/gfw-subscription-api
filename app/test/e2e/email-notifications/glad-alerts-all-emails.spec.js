@@ -56,7 +56,7 @@ describe('GLAD-ALL alert emails', () => {
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
             .get('/dataset/gadm__integrated_alerts__iso_daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('iso="BRA"'))
+            .query((data) => data.sql && data.sql.includes('iso=\'BRA\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
             .reply(200, {
