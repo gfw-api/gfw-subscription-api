@@ -173,6 +173,10 @@ class EmailHelpersService {
         return d3.format('.1s')(val);
     }
 
+    static roundXDecimals(num, x = 2) {
+        return +(`${Math.round(`${num}e+${x}`)}e-${x}`);
+    }
+
 }
 
 module.exports = EmailHelpersService;

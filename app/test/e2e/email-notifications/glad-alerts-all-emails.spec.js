@@ -59,41 +59,39 @@ describe('GLAD-ALL alert emails', () => {
             .query((data) => data.sql && data.sql.includes('iso="BRA"'))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
-            .times(2)
             .reply(200, {
                 data: [
                     {
-                        iso: 'BRA',
-                        wdpa_protected_area__iucn_cat: null,
-                        umd_glad_landsat_alerts__date: '2021-10-07',
-                        umd_glad_sentinel2_alerts__date: null,
-                        wur_radd_alerts__date: null,
-                        gfw_integrated_alerts__date: '2021-10-07',
-                        umd_glad_landsat_alerts__confidence: 'nominal',
-                        umd_glad_sentinel2_alerts__confidence: 'not_detected',
-                        wur_radd_alerts__confidence: 'not_detected',
-                        gfw_integrated_alerts__confidence: 'nominal',
+                        wdpa_protected_area__iucn_cat: 'Category 1',
                         is__umd_regional_primary_forest_2001: false,
-                        is__birdlife_alliance_for_zero_extinction_site: false,
-                        is__birdlife_key_biodiversity_area: false,
-                        is__landmark_land_right: true,
-                        gfw_plantation__type: null,
-                        is__gfw_mining: false,
-                        is__gfw_managed_forest: false,
-                        rspo_oil_palm__certification_status: null,
-                        is__gfw_wood_fiber: false,
                         is__peatland: false,
-                        is__idn_forest_moratorium: false,
-                        is__gfw_oil_palm: false,
-                        idn_forest_area__type: null,
-                        per_forest_concession__type: null,
-                        is__gfw_oil_gas: false,
-                        is__gmw_mangroves_2016: false,
                         is__ifl_intact_forest_landscape_2016: false,
-                        bra_biome__name: 'Not applicable',
-                        alert__count: 1226,
-                        alert_area__ha: 14.101432329872557,
-                        whrc_aboveground_co2_emissions__Mg: 3743.7387714008505
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: true,
+                        is__peatland: false,
+                        is__ifl_intact_forest_landscape_2016: false,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: false,
+                        is__peatland: true,
+                        is__ifl_intact_forest_landscape_2016: false,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: false,
+                        is__peatland: false,
+                        is__ifl_intact_forest_landscape_2016: true,
+                        alert__count: 100,
+                        alert_area__ha: 10,
                     }
                 ],
                 status: 'success'
@@ -107,7 +105,15 @@ describe('GLAD-ALL alert emails', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate, 1226);
+                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                        {
+                            total: 400,
+                            area: '40',
+                            intactForestArea: '10',
+                            primaryForestArea: '10',
+                            peatArea: '10',
+                            wdpaArea: '10'
+                        });
                     break;
                 }
                 default:
