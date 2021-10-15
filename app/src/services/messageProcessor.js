@@ -26,6 +26,11 @@ class MessageProcessor {
         return message.subId;
     }
 
+    static getLanguage(message) {
+        message = JSON.parse(message);
+        return message.language || 'en';
+    }
+
 }
 
 module.exports = MessageProcessor;

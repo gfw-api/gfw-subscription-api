@@ -143,6 +143,49 @@ describe('Test email alerts spec', () => {
         response.body.should.have.property('success').and.equal(true);
     });
 
+    it('Testing an email alert for GLAD alerts for a language that\'s not EN should return a 200 OK response', async () => {
+        mockGetUserFromToken(ROLES.ADMIN);
+
+        const sub = await new Subscription(createSubscription(ROLES.ADMIN.id, 'glad-alerts')).save();
+        process.on('unhandledRejection', (args) => should.fail(...args));
+        mockGLADAlertsGeostoreQuery(2);
+
+        const body = {
+            email: 'henrique.pacheco@vizzuality.com',
+            subId: sub._id,
+            alert: 'glad-alerts',
+            language: 'fr',
+        };
+
+        redisClient.on('message', (channel, message) => {
+            const jsonMessage = JSON.parse(message);
+            jsonMessage.should.have.property('template');
+            switch (jsonMessage.template) {
+
+                case 'forest-change-notification-glads-fr':
+                    jsonMessage.should.have.property('sender').and.equal('gfw');
+                    jsonMessage.should.have.property('data').and.be.a('object');
+
+                    jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
+                    jsonMessage.recipients[0].should.be.an('object')
+                        .and.have.property('address')
+                        .and.have.property('email')
+                        .and.equal(body.email);
+                    break;
+                default:
+                    should.fail('Unsupported message type: ', jsonMessage.template);
+                    break;
+
+            }
+        });
+
+        const response = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send(body);
+        response.status.should.equal(200);
+        response.body.should.have.property('success').and.equal(true);
+    });
+
     afterEach(async () => {
         redisClient.removeAllListeners();
         process.removeAllListeners('unhandledRejection');

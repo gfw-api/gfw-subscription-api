@@ -49,6 +49,7 @@ class AlertQueue {
                 const subscription = await SubscriptionService.getSubscriptionById(subId);
                 subscription.resource.type = 'EMAIL';
                 subscription.resource.content = email;
+                subscription.language = MessageProcessor.getLanguage(message);
                 const layer = { name: layerSlug, slug: layerSlug };
                 await subscription.publish(layer, begin, end, email);
                 return;
