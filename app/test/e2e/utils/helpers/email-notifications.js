@@ -290,7 +290,7 @@ const validateGladAll = (
 
     jsonMessage.data.should.have.property('area_ha_sum', area);
     jsonMessage.data.should.have.property('intact_forest_ha_sum', intactForestArea);
-    jsonMessage.data.should.have.property('primary_forest_hs_sum', primaryForestArea);
+    jsonMessage.data.should.have.property('primary_forest_ha_sum', primaryForestArea);
     jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
     jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
 };
@@ -347,7 +347,7 @@ const validateGladL = (
 
     jsonMessage.data.should.have.property('area_ha_sum', area);
     jsonMessage.data.should.have.property('intact_forest_ha_sum', intactForestArea);
-    jsonMessage.data.should.have.property('primary_forest_hs_sum', primaryForestArea);
+    jsonMessage.data.should.have.property('primary_forest_ha_sum', primaryForestArea);
     jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
     jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
 };
@@ -404,7 +404,7 @@ const validateGladS2 = (
 
     jsonMessage.data.should.have.property('area_ha_sum', area);
     jsonMessage.data.should.have.property('intact_forest_ha_sum', intactForestArea);
-    jsonMessage.data.should.have.property('primary_forest_hs_sum', primaryForestArea);
+    jsonMessage.data.should.have.property('primary_forest_ha_sum', primaryForestArea);
     jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
     jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
 };
@@ -461,7 +461,7 @@ const validateGladRadd = (
 
     jsonMessage.data.should.have.property('area_ha_sum', area);
     jsonMessage.data.should.have.property('intact_forest_ha_sum', intactForestArea);
-    jsonMessage.data.should.have.property('primary_forest_hs_sum', primaryForestArea);
+    jsonMessage.data.should.have.property('primary_forest_ha_sum', primaryForestArea);
     jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
     jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
 };

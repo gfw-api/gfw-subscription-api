@@ -25,7 +25,7 @@ class GLADAllPresenter {
 
             const primaryForestAlerts = results.data.filter((al) => !!al.is__umd_regional_primary_forest_2001);
             const primaryForestSumArea = primaryForestAlerts.reduce((acc, curr) => acc + curr.alert_area__ha, 0);
-            resultObject.primary_forest_hs_sum = EmailHelpersService.globalFormatter(EmailHelpersService.roundXDecimals(primaryForestSumArea, 2));
+            resultObject.primary_forest_ha_sum = EmailHelpersService.globalFormatter(EmailHelpersService.roundXDecimals(primaryForestSumArea, 2));
 
             const peatLandAlerts = results.data.filter((al) => !!al.is__peatland);
             const peatLandSumArea = peatLandAlerts.reduce((acc, curr) => acc + curr.alert_area__ha, 0);
