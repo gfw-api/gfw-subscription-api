@@ -13,7 +13,8 @@ const { createMockGeostore } = require('../utils/mock');
 const {
     bootstrapEmailNotificationTests,
     validateCommonNotificationParams,
-    validateCustomMapURLs, validateGladAll,
+    validateCustomMapURLs,
+    validateGladL,
 } = require('../utils/helpers/email-notifications');
 const { ROLES } = require('../utils/test.constants');
 
@@ -27,7 +28,7 @@ const CHANNEL = config.get('apiGateway.queueName');
 const redisClient = redis.createClient({ url: config.get('redis.url') });
 redisClient.subscribe(CHANNEL);
 
-describe('GLAD-ALL alerts', () => {
+describe('GLAD-L alerts', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -43,10 +44,10 @@ describe('GLAD-ALL alerts', () => {
         await Statistic.deleteMany({}).exec();
     });
 
-    it('GLAD-ALL alerts matches "glad-all" for admin0 subscriptions, using the correct email template and providing the needed data', async () => {
+    it('GLAD-L alerts matches "glad-l" for admin0 subscriptions, using the correct email template and providing the needed data', async () => {
         const sub = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'glad-all',
+            'glad-l',
             { params: { iso: { country: 'BRA' } } },
         )).save();
 
@@ -55,7 +56,7 @@ describe('GLAD-ALL alerts', () => {
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/gadm__integrated_alerts__iso_daily_alerts/latest/query')
+            .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('iso=\'BRA\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -105,7 +106,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladL(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -130,10 +131,10 @@ describe('GLAD-ALL alerts', () => {
         }));
     });
 
-    it('GLAD-ALL alerts matches "glad-all" for admin1 subscriptions, using the correct email template and providing the needed data', async () => {
+    it('GLAD-L alerts matches "glad-l" for admin1 subscriptions, using the correct email template and providing the needed data', async () => {
         const sub = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'glad-all',
+            'glad-l',
             { params: { iso: { country: 'BRA', region: '1' } } },
         )).save();
 
@@ -142,7 +143,7 @@ describe('GLAD-ALL alerts', () => {
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/gadm__integrated_alerts__adm1_daily_alerts/latest/query')
+            .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('iso=\'BRA\'') && data.sql.includes('adm1=\'1\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -192,7 +193,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladL(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -217,10 +218,10 @@ describe('GLAD-ALL alerts', () => {
         }));
     });
 
-    it('GLAD-ALL alerts matches "glad-all" for admin2 subscriptions, using the correct email template and providing the needed data', async () => {
+    it('GLAD-L alerts matches "glad-l" for admin2 subscriptions, using the correct email template and providing the needed data', async () => {
         const sub = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'glad-all',
+            'glad-l',
             { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
         )).save();
 
@@ -229,7 +230,7 @@ describe('GLAD-ALL alerts', () => {
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/gadm__integrated_alerts__adm2_daily_alerts/latest/query')
+            .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('iso=\'BRA\'') && data.sql.includes('adm1=\'1\'') && data.sql.includes('adm2=\'2\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -279,7 +280,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladL(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -304,10 +305,10 @@ describe('GLAD-ALL alerts', () => {
         }));
     });
 
-    it('GLAD-ALL alerts matches "glad-all" for WDPA subscriptions, using the correct email template and providing the needed data', async () => {
+    it('GLAD-L alerts matches "glad-l" for WDPA subscriptions, using the correct email template and providing the needed data', async () => {
         const sub = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'glad-all',
+            'glad-l',
             { params: { wdpaid: '1' } },
         )).save();
 
@@ -316,7 +317,7 @@ describe('GLAD-ALL alerts', () => {
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/wdpa_protected_areas__integrated_alerts__daily_alerts/latest/query')
+            .get('/dataset/wdpa_protected_areas__glad__daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('wdpa_protected_area__id=\'1\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -366,7 +367,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladL(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -391,10 +392,10 @@ describe('GLAD-ALL alerts', () => {
         }));
     });
 
-    it('GLAD-ALL alerts matches "glad-all" for custom geostore subscriptions, using the correct email template and providing the needed data', async () => {
+    it('GLAD-L alerts matches "glad-l" for custom geostore subscriptions, using the correct email template and providing the needed data', async () => {
         const sub = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'glad-all',
+            'glad-l',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
 
@@ -402,7 +403,7 @@ describe('GLAD-ALL alerts', () => {
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
+            .get('/dataset/geostore__glad__daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('geostore__id=\'423e5dfb0448e692f97b590c61f45f22\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -452,7 +453,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladL(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
