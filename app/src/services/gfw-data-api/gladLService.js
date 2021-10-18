@@ -15,39 +15,39 @@ const DATASET_GLAD_L_DOWNLOAD = '/dataset/umd_glad_landsat_alerts/latest/downloa
 class GladLService {
 
     static getURLForAdmin0(startDate, endDate, country) {
-        const sql = `SELECT is__confirmed_alert, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso='${country}' AND alert__date >= '${startDate}' AND alert__date <= '${endDate}'`;
+        const sql = `SELECT is__confirmed_alert, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha `
+            + `FROM data WHERE iso='${country}' AND alert__date >= '${startDate}' AND alert__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_ADM_0}?sql=${sql}`;
     }
 
     static getURLForAdmin1(startDate, endDate, country, region) {
-        const sql = `SELECT is__confirmed_alert, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso='${country}' AND adm1='${region}' AND alert__date >= '${endDate}' AND alert__date <= '${endDate}'`;
+        const sql = `SELECT is__confirmed_alert, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha `
+            + `FROM data WHERE iso='${country}' AND adm1='${region}' AND alert__date >= '${endDate}' AND alert__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_ADM_1}?sql=${sql}`;
     }
 
     static getURLForAdmin2(startDate, endDate, country, region, subregion) {
-        const sql = `SELECT is__confirmed_alert, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso='${country}' AND adm1='${region}' AND adm2='${subregion}' AND alert__date >= '${startDate}' 
-                     AND alert__date <= '${endDate}'`;
+        const sql = `SELECT is__confirmed_alert, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha `
+            + `FROM data WHERE iso='${country}' AND adm1='${region}' AND adm2='${subregion}' AND alert__date >= '${startDate}' `
+            + `AND alert__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_ADM_2}?sql=${sql}`;
     }
 
     static getURLForWDPA(startDate, endDate, wdpa) {
-        const sql = `SELECT is__confirmed_alert, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE wdpa_protected_area__id='${wdpa}' AND alert__date >= '${startDate}' AND alert__date <= '${endDate}'`;
+        const sql = `SELECT is__confirmed_alert, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha `
+            + `FROM data WHERE wdpa_protected_area__id='${wdpa}' AND alert__date >= '${startDate}' AND alert__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_WDPA}?sql=${sql}`;
     }
 
     static getURLForGeostore(startDate, endDate, geostoreId) {
-        const sql = `SELECT is__confirmed_alert, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE geostore__id='${geostoreId}' AND alert__date >= '${startDate}' AND alert__date <= '${endDate}'`;
+        const sql = `SELECT is__confirmed_alert, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha `
+            + `FROM data WHERE geostore__id='${geostoreId}' AND alert__date >= '${startDate}' AND alert__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_GEOSTORE}?sql=${sql}`;
     }
 
     static getURLForDownload(startDate, endDate, geostoreId) {
-        const sql = `SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence 
-                     FROM data WHERE umd_glad_landsat_alerts__date >= '${startDate}' AND umd_glad_landsat_alerts__date <= '${endDate}'`;
+        const sql = `SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence `
+            + `FROM data WHERE umd_glad_landsat_alerts__date >= '${startDate}' AND umd_glad_landsat_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_DOWNLOAD}/{format}?sql=${sql}&geostore_origin=rw&geostore_id=${geostoreId}`;
     }
 

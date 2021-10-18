@@ -15,42 +15,42 @@ const DATASET_GLAD_RADD_DOWNLOAD = '/dataset/gfw_integrated_alerts/latest/downlo
 class GladRaddService {
 
     static getURLForAdmin0(startDate, endDate, country) {
-        const sql = `SELECT wur_radd_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso='${country}' AND wur_radd_alerts__date >= '${startDate}' AND wur_radd_alerts__date <= '${endDate}'`;
+        const sql = `SELECT wur_radd_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha `
+            + `FROM data WHERE iso='${country}' AND wur_radd_alerts__date >= '${startDate}' AND wur_radd_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_RADD_ADM_0}?sql=${sql}`;
     }
 
     static getURLForAdmin1(startDate, endDate, country, region) {
-        const sql = `SELECT wur_radd_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso='${country}' AND adm1='${region}' AND wur_radd_alerts__date >= '${startDate}' 
-                     AND wur_radd_alerts__date <= '${endDate}'`;
+        const sql = `SELECT wur_radd_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha `
+            + `FROM data WHERE iso='${country}' AND adm1='${region}' AND wur_radd_alerts__date >= '${startDate}' `
+            + `AND wur_radd_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_RADD_ADM_1}?sql=${sql}`;
     }
 
     static getURLForAdmin2(startDate, endDate, country, region, subregion) {
-        const sql = `SELECT wur_radd_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso='${country}' AND adm1='${region}' AND adm2='${subregion}' AND wur_radd_alerts__date >= '${startDate}' 
-                     AND wur_radd_alerts__date <= '${endDate}'`;
+        const sql = `SELECT wur_radd_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha `
+            + `FROM data WHERE iso='${country}' AND adm1='${region}' AND adm2='${subregion}' AND wur_radd_alerts__date >= '${startDate}' `
+            + `AND wur_radd_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_RADD_ADM_2}?sql=${sql}`;
     }
 
     static getURLForWDPA(startDate, endDate, wdpa) {
-        const sql = `SELECT wur_radd_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE wdpa_protected_area__id='${wdpa}' AND wur_radd_alerts__date >= '${startDate}' 
-                     AND wur_radd_alerts__date <= '${endDate}'`;
+        const sql = `SELECT wur_radd_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha `
+            + `FROM data WHERE wdpa_protected_area__id='${wdpa}' AND wur_radd_alerts__date >= '${startDate}' `
+            + `AND wur_radd_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_RADD_WDPA}?sql=${sql}`;
     }
 
     static getURLForGeostore(startDate, endDate, geostoreId) {
-        const sql = `SELECT wur_radd_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE geostore__id='${geostoreId}' AND wur_radd_alerts__date >= '${startDate}' 
-                     AND wur_radd_alerts__date <= '${endDate}'`;
+        const sql = `SELECT wur_radd_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha `
+            + `FROM data WHERE geostore__id='${geostoreId}' AND wur_radd_alerts__date >= '${startDate}' `
+            + `AND wur_radd_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_RADD_GEOSTORE}?sql=${sql}`;
     }
 
     static getURLForDownload(startDate, endDate, geostoreId) {
-        const sql = `SELECT latitude, longitude, wur_radd_alerts__date, wur_radd_alerts__confidence 
-                     FROM data WHERE wur_radd_alerts__date >= '${startDate}' AND wur_radd_alerts__date <= '${endDate}'`;
+        const sql = `SELECT latitude, longitude, wur_radd_alerts__date, wur_radd_alerts__confidence `
+            + `FROM data WHERE wur_radd_alerts__date >= '${startDate}' AND wur_radd_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_RADD_DOWNLOAD}/{format}?sql=${sql}&geostore_origin=rw&geostore_id=${geostoreId}`;
     }
 
