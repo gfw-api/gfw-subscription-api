@@ -244,7 +244,7 @@ const validateGladAll = (
     beginDate,
     endDate,
     {
-        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea
+        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea, lang = 'en'
     }
 ) => {
     jsonMessage.data.should.have.property('glad_count', total);
@@ -284,7 +284,7 @@ const validateGladAll = (
 
     jsonMessage.data.should.have.property('dashboard_link')
         .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
-        .and.contain(`lang=en`)
+        .and.contain(`lang=${lang}`)
         .and.contain(`category=forest-change`)
         .and.contain(`utm_campaign=ForestChangeAlert`);
 

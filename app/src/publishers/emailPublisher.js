@@ -4,7 +4,7 @@ const mailService = require('services/mailService');
 const DEFAULT_TEMPLATE = 'forest-change-notification';
 const TEMPLATE_MAP = {
     'viirs-active-fires': 'forest-fires-notification-viirs',
-    'glad-alerts': 'forest-change-notification-glads',
+    'glad-alerts': 'glad-updated-notification',
     'monthly-summary': 'monthly-summary',
     'glad-all': 'glad-updated-notification',
     'glad-l': 'glad-updated-notification',

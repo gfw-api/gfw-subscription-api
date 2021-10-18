@@ -36,6 +36,7 @@ class AnalysisService {
         try {
             switch (layerSlug) {
 
+                case 'glad-alerts':
                 case 'glad-all':
                     return await GladAllService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
                 case 'glad-l':
@@ -44,8 +45,6 @@ class AnalysisService {
                     return await GladS2Service.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
                 case 'glad-radd':
                     return await GladRaddService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                case 'glad-alerts':
-                    return await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
                 case 'viirs-active-fires':
                     return await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
                 case 'monthly-summary': {
