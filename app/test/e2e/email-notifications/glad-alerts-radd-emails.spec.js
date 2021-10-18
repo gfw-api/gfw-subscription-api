@@ -14,7 +14,7 @@ const {
     bootstrapEmailNotificationTests,
     validateCommonNotificationParams,
     validateCustomMapURLs,
-    validateGladS2,
+    validateGladRadd,
 } = require('../utils/helpers/email-notifications');
 const { ROLES } = require('../utils/test.constants');
 
@@ -106,7 +106,7 @@ describe('GLAD-RADD alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladS2(jsonMessage, sub, beginDate, endDate,
+                    validateGladRadd(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -193,7 +193,7 @@ describe('GLAD-RADD alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladS2(jsonMessage, sub, beginDate, endDate,
+                    validateGladRadd(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -280,7 +280,7 @@ describe('GLAD-RADD alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladS2(jsonMessage, sub, beginDate, endDate,
+                    validateGladRadd(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -367,7 +367,7 @@ describe('GLAD-RADD alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladS2(jsonMessage, sub, beginDate, endDate,
+                    validateGladRadd(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -453,7 +453,7 @@ describe('GLAD-RADD alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladS2(jsonMessage, sub, beginDate, endDate,
+                    validateGladRadd(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
