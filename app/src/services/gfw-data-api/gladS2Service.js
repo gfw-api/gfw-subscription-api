@@ -16,35 +16,35 @@ class GladS2Service {
 
     static getURLForAdmin0(startDate, endDate, country) {
         const sql = `SELECT umd_glad_sentinel2_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso="${country}" AND umd_glad_sentinel2_alerts__date >= "${startDate}" AND umd_glad_sentinel2_alerts__date <= "${endDate}"`;
+                     FROM data WHERE iso='${country}' AND umd_glad_sentinel2_alerts__date >= '${startDate}' AND umd_glad_sentinel2_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_S2_ADM_0}?sql=${sql}`;
     }
 
     static getURLForAdmin1(startDate, endDate, country, region) {
         const sql = `SELECT umd_glad_sentinel2_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso="${country}" AND adm1="${region}" AND umd_glad_sentinel2_alerts__date >= "${startDate}" 
-                     AND umd_glad_sentinel2_alerts__date <= "${endDate}"`;
+                     FROM data WHERE iso='${country}' AND adm1='${region}' AND umd_glad_sentinel2_alerts__date >= '${startDate}' 
+                     AND umd_glad_sentinel2_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_S2_ADM_1}?sql=${sql}`;
     }
 
     static getURLForAdmin2(startDate, endDate, country, region, subregion) {
         const sql = `SELECT umd_glad_sentinel2_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE iso="${country}" AND adm1="${region}" AND adm2="${subregion}" AND umd_glad_sentinel2_alerts__date >= "${startDate}" 
-                     AND umd_glad_sentinel2_alerts__date <= "${endDate}"`;
+                     FROM data WHERE iso='${country}' AND adm1='${region}' AND adm2='${subregion}' AND umd_glad_sentinel2_alerts__date >= '${startDate}' 
+                     AND umd_glad_sentinel2_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_S2_ADM_2}?sql=${sql}`;
     }
 
     static getURLForWDPA(startDate, endDate, wdpa) {
         const sql = `SELECT umd_glad_sentinel2_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE wdpa_protected_area__id="${wdpa}" AND umd_glad_sentinel2_alerts__date >= "${startDate}" 
-                     AND umd_glad_sentinel2_alerts__date <= "${endDate}"`;
+                     FROM data WHERE wdpa_protected_area__id='${wdpa}' AND umd_glad_sentinel2_alerts__date >= '${startDate}' 
+                     AND umd_glad_sentinel2_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_S2_WDPA}?sql=${sql}`;
     }
 
     static getURLForGeostore(startDate, endDate, geostoreId) {
         const sql = `SELECT umd_glad_sentinel2_alerts__confidence, SUM(alert__count) AS alert__count, SUM(alert_area__ha) AS alert_area__ha 
-                     FROM data WHERE geostore__id="${geostoreId}" AND umd_glad_sentinel2_alerts__date >= "${startDate}" 
-                     AND umd_glad_sentinel2_alerts__date <= "${endDate}"`;
+                     FROM data WHERE geostore__id='${geostoreId}' AND umd_glad_sentinel2_alerts__date >= '${startDate}' 
+                     AND umd_glad_sentinel2_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_S2_GEOSTORE}?sql=${sql}`;
     }
 

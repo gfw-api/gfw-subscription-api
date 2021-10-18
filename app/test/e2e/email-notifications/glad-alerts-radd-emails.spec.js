@@ -13,7 +13,8 @@ const { createMockGeostore } = require('../utils/mock');
 const {
     bootstrapEmailNotificationTests,
     validateCommonNotificationParams,
-    validateCustomMapURLs, validateGladAll,
+    validateCustomMapURLs,
+    validateGladS2,
 } = require('../utils/helpers/email-notifications');
 const { ROLES } = require('../utils/test.constants');
 
@@ -27,7 +28,7 @@ const CHANNEL = config.get('apiGateway.queueName');
 const redisClient = redis.createClient({ url: config.get('redis.url') });
 redisClient.subscribe(CHANNEL);
 
-describe('GLAD-ALL alerts', () => {
+describe('GLAD-RADD alerts', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -43,10 +44,10 @@ describe('GLAD-ALL alerts', () => {
         await Statistic.deleteMany({}).exec();
     });
 
-    it('GLAD-ALL alerts matches "glad-all" for admin0 subscriptions, using the correct email template and providing the needed data', async () => {
+    it('GLAD-RADD alerts matches "glad-radd" for admin0 subscriptions, using the correct email template and providing the needed data', async () => {
         const sub = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'glad-all',
+            'glad-radd',
             { params: { iso: { country: 'BRA' } } },
         )).save();
 
@@ -105,7 +106,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladS2(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -130,10 +131,10 @@ describe('GLAD-ALL alerts', () => {
         }));
     });
 
-    it('GLAD-ALL alerts matches "glad-all" for admin1 subscriptions, using the correct email template and providing the needed data', async () => {
+    it('GLAD-RADD alerts matches "glad-radd" for admin1 subscriptions, using the correct email template and providing the needed data', async () => {
         const sub = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'glad-all',
+            'glad-radd',
             { params: { iso: { country: 'BRA', region: '1' } } },
         )).save();
 
@@ -192,7 +193,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladS2(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -217,10 +218,10 @@ describe('GLAD-ALL alerts', () => {
         }));
     });
 
-    it('GLAD-ALL alerts matches "glad-all" for admin2 subscriptions, using the correct email template and providing the needed data', async () => {
+    it('GLAD-RADD alerts matches "glad-radd" for admin2 subscriptions, using the correct email template and providing the needed data', async () => {
         const sub = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'glad-all',
+            'glad-radd',
             { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
         )).save();
 
@@ -279,7 +280,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladS2(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -304,10 +305,10 @@ describe('GLAD-ALL alerts', () => {
         }));
     });
 
-    it('GLAD-ALL alerts matches "glad-all" for WDPA subscriptions, using the correct email template and providing the needed data', async () => {
+    it('GLAD-RADD alerts matches "glad-radd" for WDPA subscriptions, using the correct email template and providing the needed data', async () => {
         const sub = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'glad-all',
+            'glad-radd',
             { params: { wdpaid: '1' } },
         )).save();
 
@@ -366,7 +367,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladS2(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -391,10 +392,10 @@ describe('GLAD-ALL alerts', () => {
         }));
     });
 
-    it('GLAD-ALL alerts matches "glad-all" for custom geostore subscriptions, using the correct email template and providing the needed data', async () => {
+    it('GLAD-RADD alerts matches "glad-radd" for custom geostore subscriptions, using the correct email template and providing the needed data', async () => {
         const sub = await new Subscription(createSubscription(
             ROLES.USER.id,
-            'glad-all',
+            'glad-radd',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
 
@@ -452,7 +453,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladS2(jsonMessage, sub, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',

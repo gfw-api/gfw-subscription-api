@@ -295,6 +295,177 @@ const validateGladAll = (
     jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
 };
 
+const validateGladL = (
+    jsonMessage,
+    sub,
+    beginDate,
+    endDate,
+    {
+        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea
+    }
+) => {
+    jsonMessage.data.should.have.property('glad_count', total);
+
+    // Validate download URLs
+    jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
+    jsonMessage.data.downloadUrls.should.have.property('csv')
+        .and.be.a('string')
+        .and.contain(config.get('dataApi.url'))
+        .and.contain('/dataset/umd_glad_landsat_alerts/latest/download/csv')
+        .and.contain('SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence')
+        .and.contain('&geostore_id=')
+        .and.contain('&geostore_origin=rw');
+
+    jsonMessage.data.downloadUrls.should.have.property('json')
+        .and.be.a('string')
+        .and.contain(config.get('dataApi.url'))
+        .and.contain('/dataset/umd_glad_landsat_alerts/latest/download/json')
+        .and.contain('SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence')
+        .and.contain('&geostore_id=')
+        .and.contain('&geostore_origin=rw');
+
+    jsonMessage.data.should.have.property('alert_count').and.equal(total);
+    jsonMessage.data.should.have.property('value').and.equal(total);
+    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+        sub,
+        {
+            name: 'umd_as_it_happens',
+            slug: 'glad-alerts',
+            subscription: true,
+            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+        },
+        beginDate,
+        endDate,
+    ));
+
+    jsonMessage.data.should.have.property('dashboard_link')
+        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`lang=en`)
+        .and.contain(`category=forest-change`)
+        .and.contain(`utm_campaign=ForestChangeAlert`);
+
+    jsonMessage.data.should.have.property('area_ha_sum', area);
+    jsonMessage.data.should.have.property('intact_forest_ha_sum', intactForestArea);
+    jsonMessage.data.should.have.property('primary_forest_hs_sum', primaryForestArea);
+    jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
+    jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
+};
+
+const validateGladS2 = (
+    jsonMessage,
+    sub,
+    beginDate,
+    endDate,
+    {
+        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea
+    }
+) => {
+    jsonMessage.data.should.have.property('glad_count', total);
+
+    // Validate download URLs
+    jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
+    jsonMessage.data.downloadUrls.should.have.property('csv')
+        .and.be.a('string')
+        .and.contain(config.get('dataApi.url'))
+        .and.contain('/dataset/gfw_integrated_alerts/latest/download/csv')
+        .and.contain('SELECT latitude, longitude, umd_glad_sentinel2_alerts__date, umd_glad_sentinel2_alerts__confidence')
+        .and.contain('&geostore_id=')
+        .and.contain('&geostore_origin=rw');
+
+    jsonMessage.data.downloadUrls.should.have.property('json')
+        .and.be.a('string')
+        .and.contain(config.get('dataApi.url'))
+        .and.contain('/dataset/gfw_integrated_alerts/latest/download/json')
+        .and.contain('SELECT latitude, longitude, umd_glad_sentinel2_alerts__date, umd_glad_sentinel2_alerts__confidence')
+        .and.contain('&geostore_id=')
+        .and.contain('&geostore_origin=rw');
+
+    jsonMessage.data.should.have.property('alert_count').and.equal(total);
+    jsonMessage.data.should.have.property('value').and.equal(total);
+    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+        sub,
+        {
+            name: 'umd_as_it_happens',
+            slug: 'glad-alerts',
+            subscription: true,
+            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+        },
+        beginDate,
+        endDate,
+    ));
+
+    jsonMessage.data.should.have.property('dashboard_link')
+        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`lang=en`)
+        .and.contain(`category=forest-change`)
+        .and.contain(`utm_campaign=ForestChangeAlert`);
+
+    jsonMessage.data.should.have.property('area_ha_sum', area);
+    jsonMessage.data.should.have.property('intact_forest_ha_sum', intactForestArea);
+    jsonMessage.data.should.have.property('primary_forest_hs_sum', primaryForestArea);
+    jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
+    jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
+};
+
+const validateGladRadd = (
+    jsonMessage,
+    sub,
+    beginDate,
+    endDate,
+    {
+        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea
+    }
+) => {
+    jsonMessage.data.should.have.property('glad_count', total);
+
+    // Validate download URLs
+    jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
+    jsonMessage.data.downloadUrls.should.have.property('csv')
+        .and.be.a('string')
+        .and.contain(config.get('dataApi.url'))
+        .and.contain('/dataset/gfw_integrated_alerts/latest/download/csv')
+        .and.contain('SELECT latitude, longitude, wur_radd_alerts__date, wur_radd_alerts__confidence')
+        .and.contain('&geostore_id=')
+        .and.contain('&geostore_origin=rw');
+
+    jsonMessage.data.downloadUrls.should.have.property('json')
+        .and.be.a('string')
+        .and.contain(config.get('dataApi.url'))
+        .and.contain('/dataset/gfw_integrated_alerts/latest/download/json')
+        .and.contain('SELECT latitude, longitude, wur_radd_alerts__date, wur_radd_alerts__confidence')
+        .and.contain('&geostore_id=')
+        .and.contain('&geostore_origin=rw');
+
+    jsonMessage.data.should.have.property('alert_count').and.equal(total);
+    jsonMessage.data.should.have.property('value').and.equal(total);
+    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
+        sub,
+        {
+            name: 'umd_as_it_happens',
+            slug: 'glad-alerts',
+            subscription: true,
+            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+        },
+        beginDate,
+        endDate,
+    ));
+
+    jsonMessage.data.should.have.property('dashboard_link')
+        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`lang=en`)
+        .and.contain(`category=forest-change`)
+        .and.contain(`utm_campaign=ForestChangeAlert`);
+
+    jsonMessage.data.should.have.property('area_ha_sum', area);
+    jsonMessage.data.should.have.property('intact_forest_ha_sum', intactForestArea);
+    jsonMessage.data.should.have.property('primary_forest_hs_sum', primaryForestArea);
+    jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
+    jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
+};
+
 module.exports = {
     bootstrapEmailNotificationTests,
     validateCommonNotificationParams,
@@ -304,5 +475,8 @@ module.exports = {
     validateVIIRSAlertsAndPriorityAreas,
     validateMonthlySummaryAlertsAndPriorityAreas,
     validateCustomMapURLs,
-    validateGladAll
+    validateGladAll,
+    validateGladL,
+    validateGladS2,
+    validateGladRadd
 };
