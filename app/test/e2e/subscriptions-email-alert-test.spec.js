@@ -68,36 +68,46 @@ describe('Test email alerts spec', () => {
         mockGetUserFromToken(ROLES.ADMIN);
         mockGetUserFromToken(ROLES.ADMIN);
         mockGetUserFromToken(ROLES.ADMIN);
+        mockGetUserFromToken(ROLES.ADMIN);
+        mockGetUserFromToken(ROLES.ADMIN);
+        mockGetUserFromToken(ROLES.ADMIN);
 
         const testBody = {
             email: 'henrique.pacheco@vizzuality.com',
             subId: '123',
         };
 
-        const res1 = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+        (await requester.post(`/api/v1/subscriptions/test-email-alerts`)
             .set('Authorization', `Bearer abcd`)
-            .send({ ...testBody, alert: 'glad-alerts' });
-        res1.status.should.equal(200);
+            .send({ ...testBody, alert: 'glad-alerts' })).status.should.equal(200);
 
-        const res2 = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+        (await requester.post(`/api/v1/subscriptions/test-email-alerts`)
             .set('Authorization', `Bearer abcd`)
-            .send({ ...testBody, alert: 'viirs-active-fires' });
-        res2.status.should.equal(200);
+            .send({ ...testBody, alert: 'viirs-active-fires' })).status.should.equal(200);
 
-        const res3 = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+        (await requester.post(`/api/v1/subscriptions/test-email-alerts`)
             .set('Authorization', `Bearer abcd`)
-            .send({ ...testBody, alert: 'monthly-summary' });
-        res3.status.should.equal(200);
+            .send({ ...testBody, alert: 'monthly-summary' })).status.should.equal(200);
 
-        const res4 = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+        (await requester.post(`/api/v1/subscriptions/test-email-alerts`)
             .set('Authorization', `Bearer abcd`)
-            .send({ ...testBody, alert: 'glad-all' });
-        res4.status.should.equal(200);
+            .send({ ...testBody, alert: 'glad-all' })).status.should.equal(200);
 
-        const res5 = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+        (await requester.post(`/api/v1/subscriptions/test-email-alerts`)
             .set('Authorization', `Bearer abcd`)
-            .send({ ...testBody, alert: 'other' });
-        res5.status.should.equal(400);
+            .send({ ...testBody, alert: 'glad-l' })).status.should.equal(200);
+
+        (await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send({ ...testBody, alert: 'glad-s2' })).status.should.equal(200);
+
+        (await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send({ ...testBody, alert: 'glad-radd' })).status.should.equal(200);
+
+        (await requester.post(`/api/v1/subscriptions/test-email-alerts`)
+            .set('Authorization', `Bearer abcd`)
+            .send({ ...testBody, alert: 'other' })).status.should.equal(400);
     });
 
     it('Testing an email alert for GLAD alerts should return a 200 OK response', async () => {
