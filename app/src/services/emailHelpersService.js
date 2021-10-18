@@ -177,6 +177,55 @@ class EmailHelpersService {
         return +(`${Math.round(`${num}e+${x}`)}e-${x}`);
     }
 
+    static translateAlertType(alertType, lang) {
+        const translations = {
+            en: {
+                'glad-alerts': 'new',
+                'glad-all': 'new',
+                'glad-l': 'GLAD-L',
+                'glad-s2': 'GLAD-S2',
+                'glad-radd': 'RADD',
+            },
+            pt_BR: {
+                'glad-alerts': 'novos',
+                'glad-all': 'novos',
+                'glad-l': 'GLAD-L',
+                'glad-s2': 'GLAD-S2',
+                'glad-radd': 'RADD',
+            },
+            fr: {
+                'glad-alerts': 'nouveaux',
+                'glad-all': 'nouveaux',
+                'glad-l': 'GLAD-L',
+                'glad-s2': 'GLAD-S2',
+                'glad-radd': 'RADD',
+            },
+            zh: {
+                'glad-alerts': '新的',
+                'glad-all': '新的',
+                'glad-l': 'GLAD-L',
+                'glad-s2': 'GLAD-S2',
+                'glad-radd': 'RADD',
+            },
+            es_MX: {
+                'glad-alerts': 'nuevos',
+                'glad-all': 'nuevos',
+                'glad-l': 'GLAD-L',
+                'glad-s2': 'GLAD-S2',
+                'glad-radd': 'RADD',
+            },
+            id: {
+                'glad-alerts': 'baru',
+                'glad-all': 'baru',
+                'glad-l': 'GLAD-L',
+                'glad-s2': 'GLAD-S2',
+                'glad-radd': 'RADD',
+            },
+        };
+
+        return translations[lang][alertType];
+    }
+
 }
 
 module.exports = EmailHelpersService;
