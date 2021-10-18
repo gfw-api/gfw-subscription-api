@@ -339,7 +339,15 @@ class SubscriptionsRouter {
             return;
         }
 
-        if (!['glad-alerts', 'viirs-active-fires', 'monthly-summary', 'glad-all'].includes(alert)) {
+        if (![
+            'glad-alerts',
+            'viirs-active-fires',
+            'monthly-summary',
+            'glad-all',
+            'glad-l',
+            'glad-s2',
+            'glad-radd',
+        ].includes(alert)) {
             ctx.throw(400, 'The alert provided is not supported for testing.');
             return;
         }
