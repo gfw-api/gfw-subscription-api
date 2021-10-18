@@ -6,7 +6,6 @@ const redis = require('redis');
 const Subscription = require('models/subscription');
 
 const { createSubscription, mockGetUserFromToken } = require('./utils/helpers');
-const { mockGLADAlertsGeostoreQuery } = require('./utils/mock');
 const { ROLES } = require('./utils/test.constants');
 const { getTestServer } = require('./utils/test-server');
 
@@ -106,7 +105,50 @@ describe('Test email alerts spec', () => {
 
         const sub = await new Subscription(createSubscription(ROLES.ADMIN.id, 'glad-alerts')).save();
         process.on('unhandledRejection', (args) => should.fail(...args));
-        mockGLADAlertsGeostoreQuery(2);
+
+        // Mock GFW Data API calls
+        nock(config.get('dataApi.url'))
+            .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
+            .query((data) => data.sql && data.sql.includes('geostore__id=\'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw\''))
+            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
+            .matchHeader('origin', config.get('dataApi.origin'))
+            .reply(200, {
+                data: [
+                    {
+                        wdpa_protected_area__iucn_cat: 'Category 1',
+                        is__umd_regional_primary_forest_2001: false,
+                        is__peatland: false,
+                        is__ifl_intact_forest_landscape_2016: false,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: true,
+                        is__peatland: false,
+                        is__ifl_intact_forest_landscape_2016: false,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: false,
+                        is__peatland: true,
+                        is__ifl_intact_forest_landscape_2016: false,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: false,
+                        is__peatland: false,
+                        is__ifl_intact_forest_landscape_2016: true,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    }
+                ],
+                status: 'success'
+            });
 
         const body = {
             email: 'henrique.pacheco@vizzuality.com',
@@ -119,7 +161,7 @@ describe('Test email alerts spec', () => {
             jsonMessage.should.have.property('template');
             switch (jsonMessage.template) {
 
-                case 'forest-change-notification-glads-en':
+                case 'glad-updated-notification-en':
                     jsonMessage.should.have.property('sender').and.equal('gfw');
                     jsonMessage.should.have.property('data').and.be.a('object');
 
@@ -148,7 +190,50 @@ describe('Test email alerts spec', () => {
 
         const sub = await new Subscription(createSubscription(ROLES.ADMIN.id, 'glad-alerts')).save();
         process.on('unhandledRejection', (args) => should.fail(...args));
-        mockGLADAlertsGeostoreQuery(2);
+
+        // Mock GFW Data API calls
+        nock(config.get('dataApi.url'))
+            .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
+            .query((data) => data.sql && data.sql.includes('geostore__id=\'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw\''))
+            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
+            .matchHeader('origin', config.get('dataApi.origin'))
+            .reply(200, {
+                data: [
+                    {
+                        wdpa_protected_area__iucn_cat: 'Category 1',
+                        is__umd_regional_primary_forest_2001: false,
+                        is__peatland: false,
+                        is__ifl_intact_forest_landscape_2016: false,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: true,
+                        is__peatland: false,
+                        is__ifl_intact_forest_landscape_2016: false,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: false,
+                        is__peatland: true,
+                        is__ifl_intact_forest_landscape_2016: false,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: false,
+                        is__peatland: false,
+                        is__ifl_intact_forest_landscape_2016: true,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    }
+                ],
+                status: 'success'
+            });
 
         const body = {
             email: 'henrique.pacheco@vizzuality.com',
@@ -162,7 +247,7 @@ describe('Test email alerts spec', () => {
             jsonMessage.should.have.property('template');
             switch (jsonMessage.template) {
 
-                case 'forest-change-notification-glads-fr':
+                case 'glad-updated-notification-fr':
                     jsonMessage.should.have.property('sender').and.equal('gfw');
                     jsonMessage.should.have.property('data').and.be.a('object');
 
