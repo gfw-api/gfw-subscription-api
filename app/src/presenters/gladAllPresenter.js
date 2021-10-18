@@ -35,6 +35,8 @@ class GLADAllPresenter {
             const wdpaSumArea = wdpaAlerts.reduce((acc, curr) => acc + curr.alert_area__ha, 0);
             resultObject.wdpa_ha_sum = EmailHelpersService.globalFormatter(EmailHelpersService.roundXDecimals(wdpaSumArea, 2));
 
+            resultObject.glad_alert_type = EmailHelpersService.translateAlertType('glad-all', subscription.language);
+
             logger.info('GLAD-ALL Results ', resultObject);
             return resultObject;
         } catch (err) {

@@ -4,6 +4,7 @@ const moment = require('moment');
 const querystring = require('querystring');
 
 const AlertUrlService = require('services/alertUrlService');
+const EmailHelpersService = require('services/emailHelpersService');
 const Layer = require('models/layer');
 
 const should = chai.should();
@@ -293,6 +294,7 @@ const validateGladAll = (
     jsonMessage.data.should.have.property('primary_forest_ha_sum', primaryForestArea);
     jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
     jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
+    jsonMessage.data.should.have.property('glad_alert_type', EmailHelpersService.translateAlertType('glad-all', lang));
 };
 
 const validateGladL = (
@@ -301,7 +303,7 @@ const validateGladL = (
     beginDate,
     endDate,
     {
-        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea
+        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea, lang = 'en'
     }
 ) => {
     jsonMessage.data.should.have.property('glad_count', total);
@@ -350,6 +352,7 @@ const validateGladL = (
     jsonMessage.data.should.have.property('primary_forest_ha_sum', primaryForestArea);
     jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
     jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
+    jsonMessage.data.should.have.property('glad_alert_type', EmailHelpersService.translateAlertType('glad-l', lang));
 };
 
 const validateGladS2 = (
@@ -358,7 +361,7 @@ const validateGladS2 = (
     beginDate,
     endDate,
     {
-        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea
+        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea, lang = 'en'
     }
 ) => {
     jsonMessage.data.should.have.property('glad_count', total);
@@ -407,6 +410,7 @@ const validateGladS2 = (
     jsonMessage.data.should.have.property('primary_forest_ha_sum', primaryForestArea);
     jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
     jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
+    jsonMessage.data.should.have.property('glad_alert_type', EmailHelpersService.translateAlertType('glad-s2', lang));
 };
 
 const validateGladRadd = (
@@ -415,7 +419,7 @@ const validateGladRadd = (
     beginDate,
     endDate,
     {
-        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea
+        total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea, lang = 'en'
     }
 ) => {
     jsonMessage.data.should.have.property('glad_count', total);
@@ -464,6 +468,7 @@ const validateGladRadd = (
     jsonMessage.data.should.have.property('primary_forest_ha_sum', primaryForestArea);
     jsonMessage.data.should.have.property('peat_ha_sum', peatArea);
     jsonMessage.data.should.have.property('wdpa_ha_sum', wdpaArea);
+    jsonMessage.data.should.have.property('glad_alert_type', EmailHelpersService.translateAlertType('glad-radd', lang));
 };
 
 module.exports = {
