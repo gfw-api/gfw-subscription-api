@@ -68,7 +68,7 @@ Subscription.methods.publish = async function (layerConfig, begin, end, sendEmai
     }
     logger.debug('Results obtained', results);
     results = AnalysisResultsAdapter.transform(results, layer);
-    if (AnalysisResultsAdapter.isZero(results)) {
+    if (results.value <= 0) {
         logger.info('[SubscriptionEmails] Zero value result, not sending email for subscription.');
         return false;
     }

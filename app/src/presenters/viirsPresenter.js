@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 const logger = require('logger');
 const moment = require('moment');
 
