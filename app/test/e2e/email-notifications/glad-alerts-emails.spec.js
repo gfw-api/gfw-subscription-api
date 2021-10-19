@@ -16,7 +16,7 @@ const {
     bootstrapEmailNotificationTests,
     validateCommonNotificationParams,
     validateCustomMapURLs,
-    validateGladAll,
+    validateGladL,
 } = require('../utils/helpers/email-notifications');
 const { ROLES } = require('../utils/test.constants');
 
@@ -57,7 +57,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
+            .get('/dataset/geostore__glad__daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('geostore__id=\'423e5dfb0448e692f97b590c61f45f22\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -107,7 +107,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -144,7 +144,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
+            .get('/dataset/geostore__glad__daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('geostore__id=\'423e5dfb0448e692f97b590c61f45f22\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -196,7 +196,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-fr':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -234,7 +234,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
+            .get('/dataset/geostore__glad__daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('geostore__id=\'423e5dfb0448e692f97b590c61f45f22\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -286,7 +286,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-zh':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -311,7 +311,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         }));
     });
 
-    it('GLAD alert emails for subscriptions that refer to an ISO code work as expected', async () => {
+    it('GLAD alert emails for admin 0 subscriptions work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
@@ -325,7 +325,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/gadm__integrated_alerts__iso_daily_alerts/latest/query')
+            .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('iso=\'BRA\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -377,7 +377,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -401,7 +401,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         }));
     });
 
-    it('GLAD alert emails for subscriptions that refer to an ISO region work as expected', async () => {
+    it('GLAD alert emails for admin 1 subscriptions work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
@@ -415,7 +415,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/gadm__integrated_alerts__adm1_daily_alerts/latest/query')
+            .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('iso=\'BRA\'') && data.sql.includes('adm1=\'1\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -467,7 +467,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -491,7 +491,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         }));
     });
 
-    it('GLAD alert emails for subscriptions that refer to an ISO subregion work as expected', async () => {
+    it('GLAD alert emails for admin 2 subscriptions work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
@@ -505,7 +505,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/gadm__integrated_alerts__adm2_daily_alerts/latest/query')
+            .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('iso=\'BRA\'') && data.sql.includes('adm1=\'1\'') && data.sql.includes('adm2=\'2\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -557,7 +557,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -581,7 +581,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         }));
     });
 
-    it('GLAD alert emails for subscriptions that refer to a WDPA ID work as expected', async () => {
+    it('GLAD alert emails for WDPA subscriptions work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscription(
@@ -595,7 +595,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/wdpa_protected_areas__integrated_alerts__daily_alerts/latest/query')
+            .get('/dataset/wdpa_protected_areas__glad__daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('wdpa_protected_area__id=\'1\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -647,7 +647,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -685,7 +685,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
+            .get('/dataset/geostore__glad__daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('geostore__id=\'f98f505878dcee72a2e92e7510a07d6f\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -737,7 +737,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
@@ -772,7 +772,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
+            .get('/dataset/geostore__glad__daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('geostore__id=\'423e5dfb0448e692f97b590c61f45f22\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -810,7 +810,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         // Despite the payload of the params object, geostore dataset should be used
         nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
+            .get('/dataset/geostore__glad__daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('geostore__id=\'423e5dfb0448e692f97b590c61f45f22\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -860,7 +860,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
                         {
                             total: 400,
                             area: '40',
