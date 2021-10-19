@@ -5,9 +5,8 @@ class GenericAdapter {
     }
 
     transform() {
-        return {
-            value: this.results.value
-        };
+        const value = this.results.reduce((acc, curr) => acc + curr.alert__count, 0);
+        return { value, data: this.results };
     }
 
 }
