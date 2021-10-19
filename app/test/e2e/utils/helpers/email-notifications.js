@@ -343,7 +343,7 @@ const validateGladL = (
 
     jsonMessage.data.should.have.property('dashboard_link')
         .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
-        .and.contain(`lang=en`)
+        .and.contain(`lang=${sub.language}`)
         .and.contain(`category=forest-change`)
         .and.contain(`utm_campaign=ForestChangeAlert`);
 

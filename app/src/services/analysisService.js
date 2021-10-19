@@ -36,9 +36,9 @@ class AnalysisService {
         try {
             switch (layerSlug) {
 
-                case 'glad-alerts':
                 case 'glad-all':
                     return await GladAllService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                case 'glad-alerts':
                 case 'glad-l':
                     return await GladLService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
                 case 'glad-s2':

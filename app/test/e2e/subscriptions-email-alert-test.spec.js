@@ -118,7 +118,7 @@ describe('Test email alerts spec', () => {
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
+            .get('/dataset/geostore__glad__daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('geostore__id=\'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))
@@ -203,7 +203,7 @@ describe('Test email alerts spec', () => {
 
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
+            .get('/dataset/geostore__glad__daily_alerts/latest/query')
             .query((data) => data.sql && data.sql.includes('geostore__id=\'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw\''))
             .matchHeader('x-api-key', config.get('dataApi.apiKey'))
             .matchHeader('origin', config.get('dataApi.origin'))

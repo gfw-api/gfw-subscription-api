@@ -14,7 +14,7 @@ const UrlService = require('services/urlService');
 const PRESENTER_MAP = {
     'monthly-summary': MonthlySummaryPresenter,
     'viirs-active-fires': VIIRSPresenter,
-    'glad-alerts': GLADAllPresenter,
+    'glad-alerts': GLADLPresenter,
     'glad-all': GLADAllPresenter,
     'glad-l': GLADLPresenter,
     'glad-s2': GLADS2Presenter,
