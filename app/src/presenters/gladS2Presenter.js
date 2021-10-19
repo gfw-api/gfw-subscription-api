@@ -1,14 +1,14 @@
 const logger = require('logger');
 const moment = require('moment');
 const EmailHelpersService = require('services/emailHelpersService');
-const GLADPresenter = require('presenters/gladPresenter');
+const GladAllPresenter = require('presenters/gladAllPresenter');
 const GladS2Service = require('services/gfw-data-api/gladS2Service');
 
 class GLADS2Presenter {
 
     static async transform(results, layer, subscription, begin, end) {
         try {
-            const resultObject = GLADPresenter.buildResultObject(results, layer, subscription, begin, end);
+            const resultObject = GladAllPresenter.buildResultObject(results, layer, subscription, begin, end);
 
             resultObject.downloadUrls = await GladS2Service.getDownloadURLs(
                 moment(begin).format('YYYY-MM-DD'),
