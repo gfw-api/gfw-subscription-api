@@ -1,5 +1,8 @@
-## 25/07/2021
+# v.1.10.0
 
+## 29/10/2021
+
+- Make "See on map" and priority area URLs use planet basemaps by default.
 - Add `env` multi-value filter support to GET subscriptions endpoint.
 
 # v.1.9.0
