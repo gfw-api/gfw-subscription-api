@@ -67,7 +67,16 @@ class AlertUrlService {
     static getEncodedQueryForSubscription(datasets, subscription) {
         const queryForUrl = {
             lang: subscription.language || 'en',
-            map: encodeStateForUrl({ canBound: true, datasets }),
+            map: encodeStateForUrl({
+                canBound: true,
+                datasets,
+                basemap: {
+                    value: 'planet',
+                    color: '',
+                    name: 'latest',
+                    imageType: 'analytic',
+                }
+            }),
             mainMap: encodeStateForUrl({ showAnalysis: true }),
         };
 
@@ -102,6 +111,12 @@ class AlertUrlService {
                         dataset: GADM36_DATASET,
                         layers: [GADM36_LAYER_1, GADM36_LAYER_2]
                     }]),
+                basemap: {
+                    value: 'planet',
+                    color: '',
+                    name: 'latest',
+                    imageType: 'analytic',
+                }
             }),
             mainMap: encodeStateForUrl({ showAnalysis: true }),
         };
