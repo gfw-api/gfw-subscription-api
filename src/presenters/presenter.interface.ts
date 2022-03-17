@@ -22,7 +22,14 @@ export type PriorityArea = {
 
 export type PresenterData<T extends BaseAlert> = { value: number, data: T[] }
 
-//@todo confirm if alert_date_begin and alert_date_end are actually used anywhere
+/**
+ * alert_date_begin and alert_date_end seem to not be used in any of the
+ * Sparkpost templates, and instead seem like legacy leftovers.
+ * However, there are some tests requiring them, so removing them requires
+ * additional validation. While I currently suspect that the tests were
+ * implemented based on implemented behavior, rather than desired one,
+ * validating and cleaning this up will be a task for another day
+ */
 export type PresenterResponse = {
     alert_date_begin: string
     alert_date_end: string

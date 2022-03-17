@@ -16,14 +16,13 @@ type SubscriptionQuery = Record<string, {
 
 class DatasetService {
 
-    // @todo: type return properly
     static async runSubscriptionQuery(subscription: ISubscription, queryType: string): Promise<SubscriptionQuery[] | void> {
         logger.info('Iterate over datasetsQuery of each subs');
         const queryData: SubscriptionQuery[] = [];
         for (let j: number = 0; j < subscription.datasetsQuery.length; j++) {
             try {
                 const datasetQuery: DatasetQuery = subscription.datasetsQuery[j];
-                // for each subs, each dataset query -> get dataset, get geostoreId from area and finally exec the desired query
+                // for each subscription, each dataset query -> get dataset, get geostoreId from area and finally exec the desired query
                 const dataset: Record<string, any> = await DatasetService.getDataset(datasetQuery.id);
                 if (!dataset) {
                     logger.error('Error getting dataset of subs');
@@ -294,7 +293,7 @@ class DatasetService {
         }
     }
 
-    // @todo: type return properly
+    // @todo: type return properly once testing is in place
     static async executeQuery(query: string, beginDate: Date, endDate: Date, geostoreId: string, tableName: string, threshold: number): Promise<Record<string, any> | null> {
         const julianDayBegin: number = julian.toJulianDay(beginDate);
         const yearBegin: number = beginDate.getFullYear();
@@ -322,7 +321,7 @@ class DatasetService {
         }
     }
 
-    // @Todo: this might return a Date instead of a string
+    // @Todo: validate the return type once testing is in place - it is probably a Date
     static async getLastDateFromDataset(datasetSlug: string, datasetMainDateField: string): Promise<Date> {
         const query: string = `select max(${datasetMainDateField}) as lastdate
                                from ${datasetSlug}`;
