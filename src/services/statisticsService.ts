@@ -76,7 +76,6 @@ type GroupStatistics = Record<string, {
 
 class StatisticsService {
 
-    // @todo confirm type
     static async #getUsers(startDate: Date, endDate: Date): Promise<GFWUser[]> {
         logger.info('[StatisticsService] Loading users');
         try {
@@ -286,7 +285,6 @@ class StatisticsService {
                 }
             }]));
 
-        // @todo: validate type
         const usersWithSubscriptionResult: { _id: string, count: number }[] = await SubscriptionModel.aggregate([
             { $match: { application: { $eq: application } } },
             { $group: { _id: '$userId' } },

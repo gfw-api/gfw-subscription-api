@@ -13,7 +13,9 @@ class SubscriptionService {
         return ['en', 'fr', 'es_MX', 'pt_BR', 'zh', 'id'];
     }
 
-    // @todo: add a dto type?
+    /**
+     * @todo this (and other service) method could benefit from a DTO
+     */
     static formatSubscription(subscription: Record<string, any>): Partial<ISubscription> {
         if (!subscription) {
             return {};

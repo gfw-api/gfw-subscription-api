@@ -96,7 +96,11 @@ class AnalysisResultsPresenter {
             if (Presenter) {
                 presenterResponse = await Presenter.transform(results, subscription, layer, begin, end);
             } else {
-                //@todo: this ELSE did not exist. validate it makes sense
+                /**
+                 * @todo: this "else" clause was introduced as part of the refactoring process
+                 * I strongly suspect it makes sense within the app's business logic
+                 * but it should be confirmed with proper testing nonetheless
+                 */
                 throw new Error(`No presenter found for layer ${layer.slug}`);
             }
 
