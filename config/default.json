@@ -23,8 +23,7 @@
   "mongodb": {
     "database": "gfw_subscription_db",
     "host": "localhost",
-    "port": 27017,
-    "useUnifiedTopology": true
+    "port": 27017
   },
   "gfw": {
     "flagshipUrl": "http://staging.globalforestwatch.org",
