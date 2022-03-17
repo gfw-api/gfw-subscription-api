@@ -3,7 +3,10 @@ import { RWAPIMicroservice } from 'rw-api-microservice-node';
 
 class GeostoreService {
 
-    //@todo see if params matches anything
+    /**
+     * @todo these params come from the subscription model. we should try to determine if those could be typed
+     * properly, so we have additional data integrity.
+     */
     static async getGeostoreIdFromSubscriptionParams(params: Record<string, any>): Promise<string> {
         if (params.geostore) {
             return params.geostore;

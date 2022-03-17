@@ -151,7 +151,6 @@ class EmailHelpersService {
         return EmailHelpersService.globalFormatter(alertCount);
     }
 
-    // @todo properly type this
     static formatPriorityAreas(priorityAreas: PriorityArea): FormattedPriorityArea {
         return {
             intact_forest: EmailHelpersService.globalFormatter(priorityAreas.intact_forest),

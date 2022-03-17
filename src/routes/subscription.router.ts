@@ -313,7 +313,6 @@ class SubscriptionsRouter {
             }
         }
 
-        // @todo: validate these casts to Date actually happen
         const updatedAtSince: string = ctx.query.updatedAtSince ? ctx.query.updatedAtSince as string : null;
         const updatedAtUntil: string = ctx.query.updatedAtUntil ? ctx.query.updatedAtUntil as string : null;
 
