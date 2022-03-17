@@ -1,5 +1,6 @@
 ## 01/03/2022
 
+- Migrate to typescript
 - Update nodejs to v16
 
 # v.1.10.0
