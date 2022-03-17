@@ -10,3 +10,4 @@ coverage
 
 dev.env
 .eslintcache
+dist
