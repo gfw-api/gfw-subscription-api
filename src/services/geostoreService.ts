@@ -41,7 +41,6 @@ class GeostoreService {
         const response: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
             uri,
             method: 'GET',
-            json: true,
         });
         return response.data.id;
     }
@@ -51,7 +50,6 @@ class GeostoreService {
         const response: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
             uri,
             method: 'GET',
-            json: true,
         });
         return response.data.id;
     }
@@ -61,7 +59,7 @@ class GeostoreService {
         const response: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
             uri,
             method: 'GET',
-            json: true,
+
         });
         return response.data.id;
     }
@@ -71,7 +69,6 @@ class GeostoreService {
         const response: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
             uri,
             method: 'GET',
-            json: true
         });
         return response.data.id;
     }
@@ -81,7 +78,6 @@ class GeostoreService {
         const response: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
             uri,
             method: 'GET',
-            json: true,
         });
         return response.data.id;
     }

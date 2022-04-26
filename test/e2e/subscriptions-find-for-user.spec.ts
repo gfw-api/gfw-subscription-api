@@ -2,7 +2,7 @@
 import nock from 'nock';
 import chai from 'chai';
 import Subscription from 'models/subscription';
-import { createSubscription, mockGetUserFromToken } from './utils/helpers';
+import { createSubscriptionContent, mockGetUserFromToken } from './utils/helpers';
 import { ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 
@@ -68,9 +68,9 @@ describe('Find subscriptions for user tests', () => {
     it('Finding subscriptions for users by ids providing existing ids should return a 200 OK response with the subscription data', async () => {
         mockGetUserFromToken(ROLES.ADMIN);
 
-        await new Subscription(createSubscription(ROLES.USER.id)).save();
-        await new Subscription(createSubscription(ROLES.USER.id)).save();
-        await new Subscription(createSubscription('123')).save();
+        await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        await new Subscription(createSubscriptionContent('123')).save();
 
         const response = await requester
             .get(`/api/v1/subscriptions/user/${ROLES.USER.id}`)
@@ -85,8 +85,8 @@ describe('Find subscriptions for user tests', () => {
         mockGetUserFromToken(ROLES.ADMIN);
         mockGetUserFromToken(ROLES.ADMIN);
 
-        const gfwSub = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'gfw' })).save();
-        const rwSub = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw' })).save();
+        const gfwSub = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { application: 'gfw' })).save();
+        const rwSub = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { application: 'rw' })).save();
 
         const response1 = await requester
             .get(`/api/v1/subscriptions/user/${ROLES.USER.id}`)
@@ -111,8 +111,8 @@ describe('Find subscriptions for user tests', () => {
         mockGetUserFromToken(ROLES.ADMIN);
         mockGetUserFromToken(ROLES.ADMIN);
 
-        const prodSub = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'production' })).save();
-        const stgSub = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
+        const prodSub = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { env: 'production' })).save();
+        const stgSub = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { env: 'staging' })).save();
 
         const response1 = await requester
             .get(`/api/v1/subscriptions/user/${ROLES.USER.id}`)

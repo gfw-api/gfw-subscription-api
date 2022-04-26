@@ -1,7 +1,7 @@
 import nock from 'nock';
 import chai from 'chai';
 import Subscription from 'models/subscription';
-import { createSubscription, mockGetUserFromToken } from './utils/helpers';
+import { createSubscriptionContent, mockGetUserFromToken } from './utils/helpers';
 import { ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 
@@ -81,8 +81,8 @@ describe('Find subscriptions by ids tests', () => {
     it('Finding subscriptions by ids providing existing ids should return a 200 OK response with the subscription data', async () => {
         mockGetUserFromToken(ROLES.MICROSERVICE);
 
-        const subscriptionOne = await new Subscription(createSubscription(ROLES.USER.id)).save();
-        const subscriptionTwo = await new Subscription(createSubscription(ROLES.USER.id)).save();
+        const subscriptionOne = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        const subscriptionTwo = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
 
         const response = await requester
             .post(`/api/v1/subscriptions/find-by-ids`)
@@ -96,8 +96,8 @@ describe('Find subscriptions by ids tests', () => {
     it('Finding subscriptions by ids providing a mix of valid and invalid ids should return a 200 OK response with only the subscription data for valid ids', async () => {
         mockGetUserFromToken(ROLES.MICROSERVICE);
 
-        const subscriptionOne = await new Subscription(createSubscription(ROLES.USER.id)).save();
-        const subscriptionTwo = await new Subscription(createSubscription(ROLES.USER.id)).save();
+        const subscriptionOne = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        const subscriptionTwo = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
 
         const response = await requester
             .post(`/api/v1/subscriptions/find-by-ids`)

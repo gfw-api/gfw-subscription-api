@@ -2,7 +2,7 @@ import nock from 'nock';
 import chai from 'chai';
 import config from 'config';
 import Subscription from 'models/subscription';
-import { createSubscription, mockGetUserFromToken } from './utils/helpers';
+import { createSubscriptionContent, mockGetUserFromToken } from './utils/helpers';
 import { ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 
@@ -148,10 +148,10 @@ describe('Find all subscriptions tests', () => {
     it('Finding all subscriptions should return a 200 OK response with all the subscriptions', async () => {
         mockGetUserFromToken(ROLES.MICROSERVICE);
 
-        await new Subscription(createSubscription(ROLES.USER.id)).save();
-        await new Subscription(createSubscription(ROLES.MANAGER.id)).save();
-        await new Subscription(createSubscription(ROLES.ADMIN.id)).save();
-        await new Subscription(createSubscription('123')).save();
+        await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        await new Subscription(createSubscriptionContent(ROLES.MANAGER.id)).save();
+        await new Subscription(createSubscriptionContent(ROLES.ADMIN.id)).save();
+        await new Subscription(createSubscriptionContent('123')).save();
 
         const response = await requester
             .get(`/api/v1/subscriptions/find-all`)
@@ -165,10 +165,10 @@ describe('Find all subscriptions tests', () => {
         mockGetUserFromToken(ROLES.MICROSERVICE);
         mockGetUserFromToken(ROLES.MICROSERVICE);
 
-        const gfwSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'gfw' })).save();
-        const gfwSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { application: 'gfw' })).save();
-        const rwSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw' })).save();
-        const rwSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { application: 'rw' })).save();
+        const gfwSub1 = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { application: 'gfw' })).save();
+        const gfwSub2 = await new Subscription(createSubscriptionContent(ROLES.MANAGER.id, null, { application: 'gfw' })).save();
+        const rwSub1 = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { application: 'rw' })).save();
+        const rwSub2 = await new Subscription(createSubscriptionContent(ROLES.MANAGER.id, null, { application: 'rw' })).save();
 
         const response1 = await requester
             .get(`/api/v1/subscriptions/find-all`)
@@ -195,10 +195,10 @@ describe('Find all subscriptions tests', () => {
         it('Finding subscriptions without an env filter returns 200 OK with all subscriptions with production env', async () => {
             mockGetUserFromToken(ROLES.MICROSERVICE);
 
-            const prodSub1 = await new Subscription(createSubscription(ROLES.USER.id)).save();
-            const prodSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'production' })).save();
-            await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
-            await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'staging' })).save();
+            const prodSub1 = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+            const prodSub2 = await new Subscription(createSubscriptionContent(ROLES.MANAGER.id, null, { env: 'production' })).save();
+            await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { env: 'staging' })).save();
+            await new Subscription(createSubscriptionContent(ROLES.MANAGER.id, null, { env: 'staging' })).save();
 
             const response = await requester
                 .get(`/api/v1/subscriptions/find-all`)
@@ -214,10 +214,10 @@ describe('Find all subscriptions tests', () => {
             mockGetUserFromToken(ROLES.MICROSERVICE);
             mockGetUserFromToken(ROLES.MICROSERVICE);
 
-            const prodSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'production' })).save();
-            const prodSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'production' })).save();
-            const stgSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
-            const stgSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'staging' })).save();
+            const prodSub1 = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { env: 'production' })).save();
+            const prodSub2 = await new Subscription(createSubscriptionContent(ROLES.MANAGER.id, null, { env: 'production' })).save();
+            const stgSub1 = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { env: 'staging' })).save();
+            const stgSub2 = await new Subscription(createSubscriptionContent(ROLES.MANAGER.id, null, { env: 'staging' })).save();
 
             const response1 = await requester
                 .get(`/api/v1/subscriptions/find-all`)
@@ -243,10 +243,10 @@ describe('Find all subscriptions tests', () => {
         it('Finding subscriptions allows filtering by multiple environments as a comma separated query param, returns 200 OK with the correct data', async () => {
             mockGetUserFromToken(ROLES.MICROSERVICE);
 
-            const prodSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'production' })).save();
-            const prodSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'production' })).save();
-            const stgSub1 = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
-            const stgSub2 = await new Subscription(createSubscription(ROLES.MANAGER.id, null, { env: 'staging' })).save();
+            const prodSub1 = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { env: 'production' })).save();
+            const prodSub2 = await new Subscription(createSubscriptionContent(ROLES.MANAGER.id, null, { env: 'production' })).save();
+            const stgSub1 = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { env: 'staging' })).save();
+            const stgSub2 = await new Subscription(createSubscriptionContent(ROLES.MANAGER.id, null, { env: 'staging' })).save();
 
             const response = await requester
                 .get(`/api/v1/subscriptions/find-all`)

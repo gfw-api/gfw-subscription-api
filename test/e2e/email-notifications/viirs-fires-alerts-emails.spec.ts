@@ -55,19 +55,19 @@ describe('VIIRS Fires alert emails', () => {
     });
 
     it('Updating VIIRS Fires dataset triggers a new email being queued using the correct email template and providing the needed data', async () => {
-        const subscriptionOne = await new Subscription(createSubscription(
-            ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
-        )).save();
+        const subscriptionOne = await createSubscription(ROLES.USER.id, {
+            datasets: ['viirs-active-fires'],
+            params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }
+        })
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsGeostoreQuery(2);
 
-        redisClient.subscribe(CHANNEL, (message) => {
+        let expectedQueueMessageCount = 1;
+
+        const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
             const jsonMessage = JSON.parse(message);
             jsonMessage.should.have.property('template');
-
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
@@ -81,32 +81,51 @@ describe('VIIRS Fires alert emails', () => {
                     break;
 
             }
-        });
+
+            expectedQueueMessageCount -= 1;
+
+            if (expectedQueueMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+            }
+
+            if (expectedQueueMessageCount === 0) {
+                resolve(null);
+            }
+        };
+
+        const consumerPromise = new Promise((resolve) => {
+            redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+        })
 
         await AlertQueue.processMessage(JSON.stringify({
             layer_slug: 'viirs-active-fires',
             begin_date: beginDate,
             end_date: endDate
         }));
+
+        return consumerPromise;
     });
 
     it('Updating VIIRS Fires dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (FR)', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('fr');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
-        )).save();
+            {
+                datasets: ['viirs-active-fires'],
+                params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
+                language: 'fr'
+            }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsGeostoreQuery(2);
 
-        redisClient.subscribe(CHANNEL, (message) => {
+        let expectedQueueMessageCount = 1;
+
+        const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
             const jsonMessage = JSON.parse(message);
-
             jsonMessage.should.have.property('template');
-
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-fr':
@@ -120,32 +139,51 @@ describe('VIIRS Fires alert emails', () => {
                     break;
 
             }
-        });
+
+            expectedQueueMessageCount -= 1;
+
+            if (expectedQueueMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+            }
+
+            if (expectedQueueMessageCount === 0) {
+                resolve(null);
+            }
+        };
+
+        const consumerPromise = new Promise((resolve) => {
+            redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+        })
 
         await AlertQueue.processMessage(JSON.stringify({
             layer_slug: 'viirs-active-fires',
             begin_date: beginDate,
             end_date: endDate
         }));
+
+        return consumerPromise;
     });
 
     it('Updating VIIRS Fires dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (ZH)', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('zh');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'zh' },
-        )).save();
+            {
+                datasets: ['viirs-active-fires'],
+                params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
+                language: 'zh'
+            }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsGeostoreQuery(2);
 
-        redisClient.subscribe(CHANNEL, (message) => {
+        let expectedQueueMessageCount = 1;
+
+        const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
             const jsonMessage = JSON.parse(message);
-
             jsonMessage.should.have.property('template');
-
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-zh':
@@ -159,33 +197,51 @@ describe('VIIRS Fires alert emails', () => {
                     break;
 
             }
-        });
+
+            expectedQueueMessageCount -= 1;
+
+            if (expectedQueueMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+            }
+
+            if (expectedQueueMessageCount === 0) {
+                resolve(null);
+            }
+        };
+
+        const consumerPromise = new Promise((resolve) => {
+            redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+        })
 
         await AlertQueue.processMessage(JSON.stringify({
             layer_slug: 'viirs-active-fires',
             begin_date: beginDate,
             end_date: endDate
         }));
+
+        return consumerPromise;
     });
 
     it('VIIRS Fires emails for subscriptions that refer to an ISO code work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { iso: { country: 'IDN' } } },
-        )).save();
+            {
+                datasets: ['viirs-active-fires'],
+                params: { iso: { country: 'IDN' } }
+            }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore('/v2/geostore/admin/IDN');
         mockVIIRSAlertsISOQuery(2);
 
-        redisClient.subscribe(CHANNEL, (message) => {
+        let expectedQueueMessageCount = 1;
+
+        const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
             const jsonMessage = JSON.parse(message);
-
             jsonMessage.should.have.property('template');
-
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
@@ -206,33 +262,51 @@ describe('VIIRS Fires alert emails', () => {
                     break;
 
             }
-        });
+
+            expectedQueueMessageCount -= 1;
+
+            if (expectedQueueMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+            }
+
+            if (expectedQueueMessageCount === 0) {
+                resolve(null);
+            }
+        };
+
+        const consumerPromise = new Promise((resolve) => {
+            redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+        })
 
         await AlertQueue.processMessage(JSON.stringify({
             layer_slug: 'viirs-active-fires',
             begin_date: beginDate,
             end_date: endDate
         }));
+
+        return consumerPromise;
     });
 
     it('VIIRS Fires emails for subscriptions that refer to an ISO region work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { iso: { country: 'IDN', region: '3' } } },
-        )).save();
+            {
+                datasets: ['viirs-active-fires'],
+                params: { iso: { country: 'IDN', region: '3' } }
+            }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore('/v2/geostore/admin/IDN/3');
         mockVIIRSAlertsISOQuery(2);
 
-        redisClient.subscribe(CHANNEL, (message) => {
+        let expectedQueueMessageCount = 1;
+
+        const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
             const jsonMessage = JSON.parse(message);
-
             jsonMessage.should.have.property('template');
-
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
@@ -253,33 +327,51 @@ describe('VIIRS Fires alert emails', () => {
                     break;
 
             }
-        });
+
+            expectedQueueMessageCount -= 1;
+
+            if (expectedQueueMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+            }
+
+            if (expectedQueueMessageCount === 0) {
+                resolve(null);
+            }
+        };
+
+        const consumerPromise = new Promise((resolve) => {
+            redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+        })
 
         await AlertQueue.processMessage(JSON.stringify({
             layer_slug: 'viirs-active-fires',
             begin_date: beginDate,
             end_date: endDate
         }));
+
+        return consumerPromise;
     });
 
     it('VIIRS Fires emails for subscriptions that refer to an ISO subregion work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { iso: { country: 'BRA', region: '1', subregion: '1' } } },
-        )).save();
+            {
+                datasets: ['viirs-active-fires'],
+                params: { iso: { country: 'BRA', region: '1', subregion: '1' } }
+            }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore('/v2/geostore/admin/BRA/1/1');
         mockVIIRSAlertsISOQuery(2);
 
-        redisClient.subscribe(CHANNEL, (message) => {
+        let expectedQueueMessageCount = 1;
+
+        const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
             const jsonMessage = JSON.parse(message);
-
             jsonMessage.should.have.property('template');
-
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
@@ -300,33 +392,51 @@ describe('VIIRS Fires alert emails', () => {
                     break;
 
             }
-        });
+
+            expectedQueueMessageCount -= 1;
+
+            if (expectedQueueMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+            }
+
+            if (expectedQueueMessageCount === 0) {
+                resolve(null);
+            }
+        };
+
+        const consumerPromise = new Promise((resolve) => {
+            redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+        })
 
         await AlertQueue.processMessage(JSON.stringify({
             layer_slug: 'viirs-active-fires',
             begin_date: beginDate,
             end_date: endDate
         }));
+
+        return consumerPromise;
     });
 
     it('VIIRS Fires emails for subscriptions that refer to a WDPA ID work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { wdpaid: '1' } },
-        )).save();
+            {
+                datasets: ['viirs-active-fires'],
+                params: { wdpaid: '1' }
+            }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore('/v2/geostore/wdpa/1');
         mockVIIRSAlertsWDPAQuery(2);
 
-        redisClient.subscribe(CHANNEL, (message) => {
+        let expectedQueueMessageCount = 1;
+
+        const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
             const jsonMessage = JSON.parse(message);
-
             jsonMessage.should.have.property('template');
-
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
@@ -347,33 +457,51 @@ describe('VIIRS Fires alert emails', () => {
                     break;
 
             }
-        });
+
+            expectedQueueMessageCount -= 1;
+
+            if (expectedQueueMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+            }
+
+            if (expectedQueueMessageCount === 0) {
+                resolve(null);
+            }
+        };
+
+        const consumerPromise = new Promise((resolve) => {
+            redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+        })
 
         await AlertQueue.processMessage(JSON.stringify({
             layer_slug: 'viirs-active-fires',
             begin_date: beginDate,
             end_date: endDate
         }));
+
+        return consumerPromise;
     });
 
     it('VIIRS Fires emails for subscriptions that refer to a USE ID work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { use: 'gfw_logging', useid: '29407' } },
-        )).save();
+            {
+                datasets: ['viirs-active-fires'],
+                params: { use: 'gfw_logging', useid: '29407' }
+            }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsGeostoreQuery(2);
         createMockGeostore('/v2/geostore/use/gfw_logging/29407', 3);
 
-        redisClient.subscribe(CHANNEL, (message) => {
+        let expectedQueueMessageCount = 1;
+
+        const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
             const jsonMessage = JSON.parse(message);
-
             jsonMessage.should.have.property('template');
-
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
@@ -387,21 +515,39 @@ describe('VIIRS Fires alert emails', () => {
                     break;
 
             }
-        });
+
+            expectedQueueMessageCount -= 1;
+
+            if (expectedQueueMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+            }
+
+            if (expectedQueueMessageCount === 0) {
+                resolve(null);
+            }
+        };
+
+        const consumerPromise = new Promise((resolve) => {
+            redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+        })
 
         await AlertQueue.processMessage(JSON.stringify({
             layer_slug: 'viirs-active-fires',
             begin_date: beginDate,
             end_date: endDate
         }));
+
+        return consumerPromise;
     });
 
     it('No email is sent if there no alerts are returned by the VIIRS Fires alerts query', async () => {
-        await new Subscription(createSubscription(
+        await createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
-        )).save();
+            {
+                datasets: ['viirs-active-fires'],
+                params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }
+            }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsGeostoreQuery(1, { data: [] });
@@ -416,11 +562,13 @@ describe('VIIRS Fires alert emails', () => {
     });
 
     it('Problems with intermediate calls do not result in an email being sent with incomplete data (second call failing)', async () => {
-        await new Subscription(createSubscription(
+        await createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
-        )).save();
+            {
+                datasets: ['viirs-active-fires'],
+                params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }
+            }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsGeostoreQuery(1);
@@ -436,11 +584,13 @@ describe('VIIRS Fires alert emails', () => {
     });
 
     it('VIIRS alerts are correctly formatted with k and M if values are high', async () => {
-        await new Subscription(createSubscription(
+        await createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
-            { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
-        )).save();
+            {
+                datasets: ['viirs-active-fires'],
+                params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }
+            }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsGeostoreQuery(2, {
@@ -583,7 +733,9 @@ describe('VIIRS Fires alert emails', () => {
             ]
         });
 
-        redisClient.subscribe(CHANNEL, (message) => {
+        let expectedQueueMessageCount = 1;
+
+        const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
             const jsonMessage = JSON.parse(message);
             jsonMessage.should.have.property('template');
             switch (jsonMessage.template) {
@@ -604,20 +756,36 @@ describe('VIIRS Fires alert emails', () => {
                     break;
 
             }
-        });
+
+            expectedQueueMessageCount -= 1;
+
+            if (expectedQueueMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+            }
+
+            if (expectedQueueMessageCount === 0) {
+                resolve(null);
+            }
+        };
+
+        const consumerPromise = new Promise((resolve) => {
+            redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+        })
 
         await AlertQueue.processMessage(JSON.stringify({
             layer_slug: 'viirs-active-fires',
             begin_date: beginDate,
             end_date: endDate
         }));
+
+        return consumerPromise;
     });
 
     it('Legacy subscription parameters are correctly handled, triggering a new email being queued using the correct email template with the correct data', async () => {
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await createSubscription(
             ROLES.USER.id,
-            'viirs-active-fires',
             {
+                datasets: ['viirs-active-fires'],
                 params: {
                     iso: {
                         subRegion: null,
@@ -629,17 +797,18 @@ describe('VIIRS Fires alert emails', () => {
                     useid: null,
                     geostore: '423e5dfb0448e692f97b590c61f45f22'
                 }
-            },
-        )).save();
+            }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         // Despite the payload of the params object, geostore dataset should be used
         mockVIIRSAlertsGeostoreQuery(2);
 
-        redisClient.subscribe(CHANNEL, (message) => {
+        let expectedQueueMessageCount = 1;
+
+        const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
             const jsonMessage = JSON.parse(message);
             jsonMessage.should.have.property('template');
-
             switch (jsonMessage.template) {
 
                 case 'forest-fires-notification-viirs-en':
@@ -653,18 +822,33 @@ describe('VIIRS Fires alert emails', () => {
                     break;
 
             }
-        });
+
+            expectedQueueMessageCount -= 1;
+
+            if (expectedQueueMessageCount < 0) {
+                throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+            }
+
+            if (expectedQueueMessageCount === 0) {
+                resolve(null);
+            }
+        };
+
+        const consumerPromise = new Promise((resolve) => {
+            redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+        })
 
         await AlertQueue.processMessage(JSON.stringify({
             layer_slug: 'viirs-active-fires',
             begin_date: beginDate,
             end_date: endDate
         }));
+
+        return consumerPromise;
     });
 
     afterEach(async () => {
         await redisClient.unsubscribe(CHANNEL);
-        ;
         process.removeAllListeners('unhandledRejection');
 
         if (!nock.isDone()) {

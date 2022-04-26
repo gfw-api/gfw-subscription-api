@@ -6,6 +6,7 @@ import mongoose, { PaginateResult } from 'mongoose';
 import SubscriptionSerializer, { SerializedSubscriptionResponse } from 'serializers/subscription.serializer';
 import mailService from 'services/mailService';
 import UrlService from 'services/urlService';
+import { EmailLanguageType } from 'types/email.type';
 
 class SubscriptionService {
 
@@ -64,13 +65,9 @@ class SubscriptionService {
     static sendConfirmation(subscription: ISubscription): SerializedSubscriptionResponse {
         logger.info('Sending confirmation email', subscription.toJSON());
         if (subscription.resource.type === 'EMAIL') {
-            const language: string = subscription.language.toLowerCase().replace(/_/g, '-');
+            const language: EmailLanguageType = subscription.language.toLowerCase().replace(/_/g, '-') as EmailLanguageType;
             const application: string = subscription.application || 'gfw';
-            let template: string = `subscription-confirmation-${language}`;
-            if (application !== 'gfw') {
-                template = `subscription-confirmation-${application}-${language}`;
-            }
-            mailService.sendSubscriptionConfirmationEmail(template, {
+            mailService.sendSubscriptionConfirmationEmail(language, application, {
                 confirmation_url: UrlService.confirmationUrl(subscription)
             }, [{
                 address: subscription.resource.content

@@ -2,11 +2,20 @@ import nock from 'nock';
 import config from 'config';
 import { MOCK_USERS, mockDataset } from './test.constants';
 
-export const createMockDataset = (id: string) => nock(process.env.GATEWAY_URL)
+export const createMockDataset = (id: string, data: Record<string, any>) => nock(process.env.GATEWAY_URL)
     .get(`/v1/dataset/${id}`)
     .reply(200, {
-        data: mockDataset(id)
+        data: mockDataset(id, data)
     });
+
+export const createMockDatasetQuery = (query: Record<string, any>, response: any) => nock(process.env.GATEWAY_URL)
+    .get(`/v1/query`)
+    .query(query)
+    .reply(200, response);
+
+export const createMockGetDatasetMetadata = (datasetId: string, application: string, language: string, response: any) => nock(process.env.GATEWAY_URL)
+    .get(`/v1/dataset/${datasetId}/metadata?application=${application}&language=${language}`)
+    .reply(200, response);
 
 export const createMockUsersWithRange = (startDate: Date, endDate: Date) => nock(process.env.GATEWAY_URL)
     .get(`/v1/user/obtain/all-users?start=${startDate.toISOString().substring(0, 10)}&end=${endDate.toISOString().substring(0, 10)}`)

@@ -9,13 +9,13 @@ import GLADS2Presenter from 'presenters/gladS2Presenter';
 
 import UrlService from 'services/urlService';
 import { ISubscription } from 'models/subscription';
-import { PresenterData, PresenterInterface, PresenterResponse } from 'presenters/presenter.interface';
+import { PresenterData, PresenterInterface } from 'presenters/presenter.interface';
 import { ILayer } from 'models/layer';
 import { BaseAlert } from 'types/analysis.type';
 import { isEmpty } from 'lodash';
-import moment from 'moment';
+import { AlertType, EMAIL_MAP, EmailMap, SubscriptionEmailData } from 'types/email.type';
 
-const PRESENTER_MAP: Record<string, PresenterInterface<BaseAlert>> = {
+const PRESENTER_MAP: Record<AlertType, PresenterInterface<BaseAlert>> = {
     'monthly-summary': MonthlySummaryPresenter,
     'viirs-active-fires': VIIRSPresenter,
     'glad-alerts': GLADLPresenter,
@@ -25,7 +25,7 @@ const PRESENTER_MAP: Record<string, PresenterInterface<BaseAlert>> = {
     'glad-radd': GLADRaddPresenter,
 };
 
-const decorateWithName = (results: PresenterResponse, subscription: ISubscription): PresenterResponse => {
+const decorateWithName = (results: SubscriptionEmailData, subscription: ISubscription): SubscriptionEmailData => {
     if (!isEmpty(subscription.name)) {
         results.alert_name = subscription.name;
     } else {
@@ -35,25 +35,8 @@ const decorateWithName = (results: PresenterResponse, subscription: ISubscriptio
     return results;
 };
 
-// const decorateWithMetadata = (results: PresenterResponse, layer: ILayer): PresenterResponse => {
-//     if (!layer.meta) {
-//         return results;
-//     }
-//
-//     results.alert_type = layer.meta.description;
-//     results.alert_summary = '';
-//
-//     return results;
-// };
 
-const decorateWithDates = (results: PresenterResponse, begin: Date, end: Date): PresenterResponse => {
-    results.alert_date_begin = moment(begin).format('YYYY-MM-DD');
-    results.alert_date_end = moment(end).format('YYYY-MM-DD');
-
-    return results;
-};
-
-const decorateWithLinks = (results: PresenterResponse, subscription: ISubscription): PresenterResponse => {
+const decorateWithLinks = (results: SubscriptionEmailData, subscription: ISubscription): SubscriptionEmailData => {
     results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
     results.subscriptions_url = UrlService.flagshipUrl('/my-gfw', subscription.language);
 
@@ -65,34 +48,16 @@ const decorateWithLinks = (results: PresenterResponse, subscription: ISubscripti
     return results;
 };
 
-// const decorateWithArea = (results: PresenterResponse, subscription: ISubscription): PresenterResponse => {
-//     const params: Record<string, any> = subscription.params || {};
-//
-//     if (params.iso && params.iso.country) {
-//         results.selected_area = `ISO Code: ${params.iso.country}`;
-//
-//         if (params.iso.region) {
-//             results.selected_area += `, ID1: ${params.iso.region}`;
-//
-//             if (params.iso.subregion) {
-//                 results.selected_area += `, ID2: ${params.iso.subregion}`;
-//             }
-//         }
-//     } else if (params.wdpaid) {
-//         results.selected_area = `WDPA ID: ${params.wdpaid}`;
-//     } else {
-//         results.selected_area = 'Custom Area';
-//     }
-//
-//     return results;
-// };
-
 class AnalysisResultsPresenter {
 
-    static async render(results: PresenterData<BaseAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<PresenterResponse> {
+    static async render(results: PresenterData<BaseAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<SubscriptionEmailData> {
         try {
+
+            const emailMap: EmailMap = EMAIL_MAP[layer.slug] || EMAIL_MAP['default'];
+            const emailDataType: SubscriptionEmailData = emailMap.emailDataType;
             const Presenter: PresenterInterface<BaseAlert> = PRESENTER_MAP[layer.slug];
-            let presenterResponse: PresenterResponse;
+
+            let presenterResponse: typeof emailDataType;
             if (Presenter) {
                 presenterResponse = await Presenter.transform(results, subscription, layer, begin, end);
             } else {
@@ -104,12 +69,8 @@ class AnalysisResultsPresenter {
                 throw new Error(`No presenter found for layer ${layer.slug}`);
             }
 
-            presenterResponse.layerSlug = layer.slug;
             presenterResponse = decorateWithName(presenterResponse, subscription);
-            // presenterResponse = decorateWithArea(presenterResponse, subscription);
             presenterResponse = decorateWithLinks(presenterResponse, subscription);
-            // presenterResponse = decorateWithMetadata(presenterResponse, layer);
-            presenterResponse = decorateWithDates(presenterResponse, begin, end);
 
             return presenterResponse;
         } catch (err) {

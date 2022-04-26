@@ -1,4 +1,4 @@
-export const mockDataset: (id: string) => Record<string, any> = (id: string) => ({
+export const mockDataset: (id: string, data?: Record<string, any>) => Record<string, any> = (id: string, data= {}) => ({
     id,
     type: 'dataset',
     attributes: {
@@ -37,7 +37,8 @@ export const mockDataset: (id: string) => Record<string, any> = (id: string) => 
         updatedAt: '2018-11-05T15:25:53.321Z',
         dataLastUpdated: null,
         widgetRelevantProps: [],
-        layerRelevantProps: []
+        layerRelevantProps: [],
+        ...data
     }
 });
 

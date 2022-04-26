@@ -18,7 +18,14 @@ export const ensureCorrectError = (body: Record<string, any>, errMessage: string
 export const getDateWithDecreaseYear = (years: number) => new Date(new Date().setFullYear(new Date().getFullYear() - years));
 export const getDateWithIncreaseYear = (years: number) => new Date(new Date().setFullYear(new Date().getFullYear() + years));
 
-export const createSubscription = (userId: string, datasetUuid: string = null, data = {}) => {
+/**
+ * @deprecated
+ *
+ * @param userId
+ * @param datasetUuid
+ * @param data
+ */
+export const createSubscriptionContent = (userId: string, datasetUuid: string = null, data = {}) => {
     const uuid = getUUID();
 
     return {
@@ -38,7 +45,26 @@ export const createSubscription = (userId: string, datasetUuid: string = null, d
     };
 };
 
-export const createSubInDB: (userId: string, datasetUuid?: string, data?: any) => Promise<ISubscription> = (userId: string, datasetUuid: string = null, data: any = {}) => new Subscription(createSubscription(userId, datasetUuid, data)).save();
+
+export const createSubscription = async (userId: string, data = {}) => {
+    const uuid = getUUID();
+
+    return new Subscription({
+        name: `Subscription ${uuid}`,
+        datasets: [getUUID()],
+        userId,
+        application: 'gfw',
+        confirmed: true,
+        params: {
+            geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw'
+        },
+        resource: {
+            content: 'subscription-recipient@vizzuality.com',
+            type: 'EMAIL'
+        },
+        ...data
+    }).save();
+};
 
 export const createStatistic = (createdAt = new Date(), application = 'gfw') => new Statistic({
     slug: 'viirs-active-fires',
@@ -122,7 +148,7 @@ export const validRedisMessage = (data: { application?: string, template?: strin
 };
 
 export const createDatasetWithWebHook = async (url: string, extraMock: boolean = false) => {
-    await new Subscription(createSubscription(ROLES.USER.id, 'glad-alerts', {
+    await new Subscription(createSubscriptionContent(ROLES.USER.id, 'glad-alerts', {
         datasetsQuery: [{ id: 'glad-alerts', type: 'dataset' }],
         resource: { content: url, type: 'URL' },
     })).save();

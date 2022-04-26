@@ -82,7 +82,6 @@ class StatisticsService {
             const result: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/v1/user/obtain/all-users?start=${startDate.toISOString().substring(0, 10)}&end=${endDate.toISOString().substring(0, 10)}`,
                 method: 'GET',
-                json: true
             });
 
             return await new Deserializer({
@@ -141,7 +140,6 @@ class StatisticsService {
             const result: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/v1/user/${userId}`,
                 method: 'GET',
-                json: true
             });
 
             return await new Deserializer({

@@ -5,9 +5,10 @@ import { omit } from 'lodash';
 import chai from 'chai';
 import { getTestServer } from './utils/test-server';
 import { MOCK_USER_IDS, ROLES, SUBSCRIPTION_TO_UPDATE } from './utils/test.constants';
+import { createSubscription } from './utils/helpers';
 
 const {
-    ensureCorrectError, createSubInDB, getUUID, createAuthCases, mockGetUserFromToken
+    ensureCorrectError, getUUID, createAuthCases, mockGetUserFromToken
 } = require('./utils/helpers');
 
 chai.should();
@@ -35,7 +36,7 @@ const updateSubscription = async (
     let subscription: ISubscription = defaultSub;
 
     if (!subID && !defaultSub) {
-        subscription = await createSubInDB(userID, datasetID);
+        subscription = await createSubscription(userID, { datasets: [datasetID] });
     }
     mockGetUserFromToken(ROLES.USER);
 
@@ -111,7 +112,7 @@ describe('Update subscription endpoint', () => {
     it('Updating subscription data should be updated', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        const subscription = await createSubInDB(ROLES.USER.id, getUUID());
+        const subscription = await createSubscription(ROLES.USER.id);
 
         const response = await requester
             .patch(`/api/v1/subscriptions/${subscription._id}`)
@@ -135,7 +136,7 @@ describe('Update subscription endpoint', () => {
 
         const subscriptionFromDB = await Subscription.findOne({ _id: subscription._id });
         const expectedSubscription = {
-            ...subscription._doc,
+            ...subscription.toObject(),
             ...SUBSCRIPTION_TO_UPDATE,
             __v: 1
         };
@@ -148,7 +149,7 @@ describe('Update subscription endpoint', () => {
     });
 
     it('Updating subscription data providing an invalid language should sanitize the language and update the subscription', async () => {
-        const subscription = await createSubInDB(ROLES.USER.id, getUUID());
+        const subscription = await createSubscription(ROLES.USER.id);
         const updateData = { ...subscription.toJSON(), language: 'ru' };
         delete updateData._id;
         delete updateData.__v;
@@ -162,7 +163,40 @@ describe('Update subscription endpoint', () => {
         data.id.should.equal(subscription._id.toString());
         data.should.have.property('attributes').and.instanceOf(Object);
 
-        const expectedAttributes = {
+        const expectedAttributes: Record<string, any> = {
+            ...updateData,
+            createdAt: subscription.createdAt.toISOString(),
+            datasetsQuery: [],
+            userId: ROLES.USER.id,
+            language: 'en',
+        };
+        delete expectedAttributes.application;
+        data.attributes.should.deep.equal(expectedAttributes);
+
+        const subscriptionFromDB = await Subscription.findOne({ _id: subscription._id });
+        subscriptionFromDB.toObject().should.deep.equal({
+            ...subscription.toJSON(),
+            ...updateData,
+            language: 'en',
+        });
+    });
+
+    it('Updating subscription data providing an invalid language should sanitize the language and update the subscription', async () => {
+        const subscription = await createSubscription(ROLES.USER.id);
+        const updateData = { ...subscription.toJSON(), language: 'es' };
+        delete updateData._id;
+        delete updateData.__v;
+        delete updateData.updatedAt;
+        const response = await updateSubscription({ defaultSub: subscription, subToUpdate: updateData });
+
+        response.status.should.equal(200);
+        const { data } = response.body;
+
+        data.type.should.equal('subscription');
+        data.id.should.equal(subscription._id.toString());
+        data.should.have.property('attributes').and.instanceOf(Object);
+
+        const expectedAttributes: Record<string, any> = {
             ...updateData,
             createdAt: subscription.createdAt.toISOString(),
             datasetsQuery: [],

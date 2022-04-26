@@ -1,7 +1,7 @@
 import nock from 'nock';
 import chai from 'chai';
 import Subscription from 'models/subscription';
-import { createSubscription, getUUID, mockGetUserFromToken } from './utils/helpers';
+import { createSubscriptionContent, getUUID, mockGetUserFromToken } from './utils/helpers';
 import { ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 
@@ -48,9 +48,9 @@ describe('Get subscriptions tests', () => {
     it('Get all subscriptions should be successful and return a list of subscriptions (populated db)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        const subscriptionOne = await new Subscription(createSubscription(ROLES.USER.id)).save();
-        const subscriptionTwo = await new Subscription(createSubscription(ROLES.USER.id)).save();
-        await new Subscription(createSubscription(getUUID())).save();
+        const subscriptionOne = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        const subscriptionTwo = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        await new Subscription(createSubscriptionContent(getUUID())).save();
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
@@ -91,11 +91,11 @@ describe('Get subscriptions tests', () => {
     it('Get all subscriptions without env filter should be successful and return a list of subscriptions with env=production (populated db)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        const subscriptionOne = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'production' })).save();
-        const subscriptionTwo = await new Subscription(createSubscription(ROLES.USER.id)).save();
-        await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
+        const subscriptionOne = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { env: 'production' })).save();
+        const subscriptionTwo = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { env: 'staging' })).save();
 
-        await new Subscription(createSubscription(getUUID())).save();
+        await new Subscription(createSubscriptionContent(getUUID())).save();
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
@@ -136,11 +136,11 @@ describe('Get subscriptions tests', () => {
     it('Get all subscriptions with env filter should be successful and return a list of subscriptions for that env (populated db)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        await new Subscription(createSubscription(ROLES.USER.id)).save();
-        await new Subscription(createSubscription(ROLES.USER.id)).save();
-        const subscriptionThree = await new Subscription(createSubscription(ROLES.USER.id, null, { env: 'staging' })).save();
+        await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        const subscriptionThree = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { env: 'staging' })).save();
 
-        await new Subscription(createSubscription(getUUID())).save();
+        await new Subscription(createSubscriptionContent(getUUID())).save();
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
@@ -171,11 +171,11 @@ describe('Get subscriptions tests', () => {
     it('Get all subscriptions without application filter should be successful and return a list of subscriptions with application=gfw (populated db)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        const subscriptionOne = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'gfw' })).save();
-        const subscriptionTwo = await new Subscription(createSubscription(ROLES.USER.id)).save();
-        await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw' })).save();
+        const subscriptionOne = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { application: 'gfw' })).save();
+        const subscriptionTwo = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { application: 'rw' })).save();
 
-        await new Subscription(createSubscription(getUUID())).save();
+        await new Subscription(createSubscriptionContent(getUUID())).save();
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
@@ -216,11 +216,11 @@ describe('Get subscriptions tests', () => {
     it('Get all subscriptions with application filter should be successful and return a list of subscriptions for that env (populated db)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        await new Subscription(createSubscription(ROLES.USER.id)).save();
-        await new Subscription(createSubscription(ROLES.USER.id)).save();
-        const subscriptionThree = await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw' })).save();
+        await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        const subscriptionThree = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { application: 'rw' })).save();
 
-        await new Subscription(createSubscription(getUUID())).save();
+        await new Subscription(createSubscriptionContent(getUUID())).save();
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
@@ -251,17 +251,17 @@ describe('Get subscriptions tests', () => {
     it('Get all subscriptions with application and app filter should be successful and return a list of subscriptions for that env and application (no matches, populated db)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        await new Subscription(createSubscription(ROLES.USER.id, null, {
+        await new Subscription(createSubscriptionContent(ROLES.USER.id, null, {
             application: 'rw',
             env: 'production'
         })).save();
-        await new Subscription(createSubscription(ROLES.USER.id, null, {
+        await new Subscription(createSubscriptionContent(ROLES.USER.id, null, {
             application: 'gfw',
             env: 'production'
         })).save();
-        await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw', env: 'staging' })).save();
+        await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { application: 'rw', env: 'staging' })).save();
 
-        await new Subscription(createSubscription(getUUID())).save();
+        await new Subscription(createSubscriptionContent(getUUID())).save();
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
@@ -280,17 +280,17 @@ describe('Get subscriptions tests', () => {
     it('Get all subscriptions with application and app filter should be successful and return a list of subscriptions for that env and application (populated db)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        await new Subscription(createSubscription(ROLES.USER.id, null, {
+        await new Subscription(createSubscriptionContent(ROLES.USER.id, null, {
             application: 'rw',
             env: 'production'
         })).save();
-        const subscriptionTwo = await new Subscription(createSubscription(ROLES.USER.id, null, {
+        const subscriptionTwo = await new Subscription(createSubscriptionContent(ROLES.USER.id, null, {
             application: 'gfw',
             env: 'production'
         })).save();
-        await new Subscription(createSubscription(ROLES.USER.id, null, { application: 'rw', env: 'staging' })).save();
+        await new Subscription(createSubscriptionContent(ROLES.USER.id, null, { application: 'rw', env: 'staging' })).save();
 
-        await new Subscription(createSubscription(getUUID())).save();
+        await new Subscription(createSubscriptionContent(getUUID())).save();
 
         const response = await requester
             .get(`/api/v1/subscriptions`)

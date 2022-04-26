@@ -10,7 +10,7 @@ import AlertQueue from 'queues/alert.queue';
 import EmailHelpersService from 'services/emailHelpersService';
 
 import { getTestServer } from '../utils/test-server';
-import { createSubscription, assertNoEmailSent } from '../utils/helpers';
+import { createSubscriptionContent, assertNoEmailSent } from '../utils/helpers';
 import { createMockGeostore } from '../utils/mock';
 const {
     bootstrapEmailNotificationTests,
@@ -47,7 +47,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     });
 
     it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data', async () => {
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-alerts',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
@@ -134,7 +134,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (FR)', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('fr');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-alerts',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
@@ -224,7 +224,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (ZH)', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('zh');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-alerts',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'zh' },
@@ -314,7 +314,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     it('GLAD alert emails for admin 0 subscriptions work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-alerts',
             { params: { iso: { country: 'BRA' } } },
@@ -404,7 +404,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     it('GLAD alert emails for admin 1 subscriptions work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-alerts',
             { params: { iso: { country: 'BRA', region: '1' } } },
@@ -494,7 +494,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     it('GLAD alert emails for admin 2 subscriptions work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-alerts',
             { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
@@ -584,7 +584,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     it('GLAD alert emails for WDPA subscriptions work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-alerts',
             { params: { wdpaid: '1' } },
@@ -674,7 +674,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     it('GLAD alert emails for subscriptions that refer to a USE ID work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-alerts',
             { params: { use: 'gfw_logging', useid: '29407' } },
@@ -762,7 +762,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     });
 
     it('No email is sent if there no alerts are returned by the glad alerts query', async () => {
-        await new Subscription(createSubscription(
+        await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-alerts',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
@@ -788,7 +788,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     });
 
     it('Legacy subscription parameters are correctly handled, triggering a new email being queued using the correct email template with the correct data', async () => {
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-alerts',
             {
