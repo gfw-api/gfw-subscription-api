@@ -1,8 +1,9 @@
 import config from 'config';
+import { AlertType } from 'types/email.type';
 
 export interface ILayer {
     name: string,
-    slug: string,
+    slug: AlertType,
     subscription: boolean,
     datasetId: string,
     layerId: string

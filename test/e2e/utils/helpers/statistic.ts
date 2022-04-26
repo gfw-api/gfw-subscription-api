@@ -1,15 +1,15 @@
-import { createStatistic, createSubInDB, getUUID } from '../helpers';
+import { createStatistic, createSubscription } from '../helpers';
 import { MOCK_USER_IDS, MOCK_USERS, TEST_SUBSCRIPTIONS } from '../test.constants';
 import { ISubscription } from 'models/subscription';
 
 // creating five subscriptions which are in searched range, and one which is not.
 export const createSubscriptions: (outRangeDate: Date) => Promise<Record<string, ISubscription>> = async (outRangeDate: Date) => {
-    const subWithGeostore = await createSubInDB(MOCK_USER_IDS[0], getUUID(), TEST_SUBSCRIPTIONS[0]);
-    const subWithRegion = await createSubInDB(MOCK_USER_IDS[1], getUUID(), TEST_SUBSCRIPTIONS[1]);
-    const subWithCountry = await createSubInDB(MOCK_USER_IDS[2], getUUID(), TEST_SUBSCRIPTIONS[2]);
-    const subWithUse = await createSubInDB(MOCK_USER_IDS[3], getUUID(), TEST_SUBSCRIPTIONS[3]);
-    const subWithWdpas = await createSubInDB(MOCK_USER_IDS[4], getUUID(), TEST_SUBSCRIPTIONS[4]);
-    const subOutSearchRange = await createSubInDB(MOCK_USER_IDS[5], getUUID(), {
+    const subWithGeostore = await createSubscription(MOCK_USER_IDS[0], TEST_SUBSCRIPTIONS[0]);
+    const subWithRegion = await createSubscription(MOCK_USER_IDS[1], TEST_SUBSCRIPTIONS[1]);
+    const subWithCountry = await createSubscription(MOCK_USER_IDS[2], TEST_SUBSCRIPTIONS[2]);
+    const subWithUse = await createSubscription(MOCK_USER_IDS[3], TEST_SUBSCRIPTIONS[3]);
+    const subWithWdpas = await createSubscription(MOCK_USER_IDS[4], TEST_SUBSCRIPTIONS[4]);
+    const subOutSearchRange = await createSubscription(MOCK_USER_IDS[5], {
         application: 'gfw',
         createdAt: outRangeDate
     });

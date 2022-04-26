@@ -8,7 +8,7 @@ import Statistic from 'models/statistic';
 import AlertQueue from 'queues/alert.queue';
 
 import { getTestServer } from '../utils/test-server';
-import { createSubscription } from '../utils/helpers';
+import { createSubscriptionContent } from '../utils/helpers';
 import { createMockGeostore } from '../utils/mock';
 import { ROLES } from '../utils/test.constants';
 
@@ -47,7 +47,7 @@ describe('GLAD-L alerts', () => {
     });
 
     it('GLAD-L alerts matches "glad-l" for admin0 subscriptions, using the correct email template and providing the needed data', async () => {
-        const sub = await new Subscription(createSubscription(
+        const sub = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-l',
             { params: { iso: { country: 'BRA' } } },
@@ -134,7 +134,7 @@ describe('GLAD-L alerts', () => {
     });
 
     it('GLAD-L alerts matches "glad-l" for admin1 subscriptions, using the correct email template and providing the needed data', async () => {
-        const sub = await new Subscription(createSubscription(
+        const sub = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-l',
             { params: { iso: { country: 'BRA', region: '1' } } },
@@ -221,7 +221,7 @@ describe('GLAD-L alerts', () => {
     });
 
     it('GLAD-L alerts matches "glad-l" for admin2 subscriptions, using the correct email template and providing the needed data', async () => {
-        const sub = await new Subscription(createSubscription(
+        const sub = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-l',
             { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
@@ -308,7 +308,7 @@ describe('GLAD-L alerts', () => {
     });
 
     it('GLAD-L alerts matches "glad-l" for WDPA subscriptions, using the correct email template and providing the needed data', async () => {
-        const sub = await new Subscription(createSubscription(
+        const sub = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-l',
             { params: { wdpaid: '1' } },
@@ -395,7 +395,7 @@ describe('GLAD-L alerts', () => {
     });
 
     it('GLAD-L alerts matches "glad-l" for custom geostore subscriptions, using the correct email template and providing the needed data', async () => {
-        const sub = await new Subscription(createSubscription(
+        const sub = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'glad-l',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },

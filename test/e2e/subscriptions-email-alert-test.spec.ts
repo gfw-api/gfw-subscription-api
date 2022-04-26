@@ -5,7 +5,7 @@ import { createClient, RedisClientType } from 'redis';
 
 import Subscription from 'models/subscription';
 
-import { createSubscription, mockGetUserFromToken } from './utils/helpers';
+import { createSubscriptionContent, mockGetUserFromToken } from './utils/helpers';
 import { ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 
@@ -114,7 +114,7 @@ describe('Test email alerts spec', () => {
     it('Testing an email alert for GLAD alerts should return a 200 OK response', async () => {
         mockGetUserFromToken(ROLES.ADMIN);
 
-        const sub = await new Subscription(createSubscription(ROLES.ADMIN.id, 'glad-alerts')).save();
+        const sub = await new Subscription(createSubscriptionContent(ROLES.ADMIN.id, 'glad-alerts')).save();
         process.on('unhandledRejection', (args) => should.fail(JSON.stringify(args)));
 
         // Mock GFW Data API calls
@@ -199,7 +199,7 @@ describe('Test email alerts spec', () => {
     it('Testing an email alert for GLAD alerts for a language that\'s not EN should return a 200 OK response', async () => {
         mockGetUserFromToken(ROLES.ADMIN);
 
-        const sub = await new Subscription(createSubscription(ROLES.ADMIN.id, 'glad-alerts')).save();
+        const sub = await new Subscription(createSubscriptionContent(ROLES.ADMIN.id, 'glad-alerts')).save();
         process.on('unhandledRejection', (args) => should.fail(JSON.stringify(args)));
 
         // Mock GFW Data API calls

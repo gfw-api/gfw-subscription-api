@@ -2,7 +2,7 @@ import nock from 'nock';
 import Subscription from 'models/subscription';
 import chai from 'chai';
 const {
-    createSubscription,
+    createSubscriptionContent,
     ensureCorrectError,
     mockGetUserFromToken
 } = require('./utils/helpers');
@@ -50,7 +50,7 @@ describe('Confirm subscription endpoint', () => {
 
         createMockConfirmSUB();
         const createdSubscription = await new Subscription(
-            createSubscription(ROLES.USER.id, null, { confirmed: false })
+            createSubscriptionContent(ROLES.USER.id, null, { confirmed: false })
         ).save();
 
         const response = await requester

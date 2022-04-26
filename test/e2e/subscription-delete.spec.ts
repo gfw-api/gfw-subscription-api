@@ -5,8 +5,9 @@ import { omit } from 'lodash';
 import chai from 'chai';
 import { getTestServer } from './utils/test-server';
 import { ROLES } from './utils/test.constants';
+import { createSubscription } from './utils/helpers';
 const {
-    ensureCorrectError, createSubInDB, getUUID, createAuthCases, mockGetUserFromToken
+    ensureCorrectError, getUUID, createAuthCases, mockGetUserFromToken
 } = require('./utils/helpers');
 
 chai.should();
@@ -34,7 +35,7 @@ describe('Delete subscription endpoint', () => {
     it('Deleting subscription with provided user but with not existing subscription for user should fall', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        await createSubInDB(getUUID());
+        await createSubscription(getUUID());
         const response = await requester
             .delete('/api/v1/subscriptions/41224d776a326fb40f000001')
             .set('Authorization', `Bearer abcd`);
@@ -68,7 +69,7 @@ describe('Delete subscription endpoint', () => {
     it('Deleting subscription should return subscription and delete it (happy case)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        const createdSubscription = await createSubInDB(ROLES.USER.id);
+        const createdSubscription = await createSubscription(ROLES.USER.id);
         const response = await requester
             .delete(`/api/v1/subscriptions/${createdSubscription._id}`)
             .set('Authorization', `Bearer abcd`);
@@ -84,7 +85,7 @@ describe('Delete subscription endpoint', () => {
         // omit fields which are not present to user from response body and convert the createdAt to ISO string
         const expectedSubscription = omit({
             // eslint-disable-next-line no-underscore-dangle
-            ...createdSubscription._doc,
+            ...createdSubscription.toObject(),
             createdAt: createdSubscription.createdAt.toISOString(),
         }, ['_id', 'updatedAt', 'application', '__v']);
         data.attributes.should.deep.equal(expectedSubscription);

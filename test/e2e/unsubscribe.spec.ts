@@ -6,7 +6,7 @@ import { ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 
 const {
-    createSubscription,
+    createSubscriptionContent,
     ensureCorrectError,
     mockGetUserFromToken
 } = require('./utils/helpers');
@@ -48,7 +48,7 @@ describe('Unsubscribe endpoint', () => {
     it('Unsubscribe subscription should return deleted subscription (happy case)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        const subData = createSubscription(ROLES.USER.id);
+        const subData = createSubscriptionContent(ROLES.USER.id);
 
         const createdSubscription = await new Subscription(subData).save();
         const response = await requester
@@ -79,11 +79,11 @@ describe('Unsubscribe endpoint', () => {
         mockGetUserFromToken(ROLES.USER);
 
         createMockUnsubscribeSUB();
-        const createdSubscription = await new Subscription(createSubscription(ROLES.USER.id)).save();
+        const createdSubscription = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
         const response = await requester
-            .get(`/api/v1/subscriptions/${createdSubscription._id}/unsubscribe?redirect=true`)
+            .get(`/api/v1/subscriptions/${createdSubscription._id}/unsubscribe`)
             .set('Authorization', `Bearer abcd`)
-            .query({ application: 'test' })
+            .query({ application: 'test', redirect: true })
             .send();
         response.status.should.equal(200);
         response.body.mockMessage.should.equal('Should redirect');
