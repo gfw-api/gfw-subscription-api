@@ -60,46 +60,40 @@ class AnalysisService {
         const path: string = AnalysisService.#pathFor(subscription);
         const url: string = `/v1/${layerSlug}${path}`;
         logger.debug('subscription id: ', subscription._id, 'Url ', url, 'and query ', query);
-        try {
-            switch (layerSlug) {
+        switch (layerSlug) {
 
-                case 'glad-all':
-                    return await GladAllService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                case 'glad-alerts':
-                case 'glad-l':
-                    return await GladLService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                case 'glad-s2':
-                    return await GladS2Service.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                case 'glad-radd':
-                    return await GladRaddService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                case 'viirs-active-fires':
-                    return await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                case 'monthly-summary': {
-                    const gladAlerts: GladAlert[] = await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                    const viirsAlerts: ViirsActiveFiresAlert[] = await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
-                    const flattenedResults: MonthlySummaryAlert[] = []
-                    gladAlerts.forEach((alert: GladAlert) => flattenedResults.push({ ...alert, type: 'GLAD' }));
-                    viirsAlerts.forEach((alert: ViirsActiveFiresAlert) => flattenedResults.push({
-                        ...alert,
-                        type: 'VIIRS'
-                    }));
-                    return flattenedResults;
-                }
-                default: {
-                    const result: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
-                        uri: url,
-                        method: 'GET',
-                        json: true,
-                        qs: query
-                    });
-
-                    return await new Deserializer({ keyForAttribute: 'camelCase' }).deserialize(result);
-                }
-
+            case 'glad-all':
+                return await GladAllService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
+            case 'glad-alerts':
+            case 'glad-l':
+                return await GladLService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
+            case 'glad-s2':
+                return await GladS2Service.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
+            case 'glad-radd':
+                return await GladRaddService.getAlertsForSubscription(formatDate(begin), formatDate(end), subscription.params);
+            case 'viirs-active-fires':
+                return await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+            case 'monthly-summary': {
+                const gladAlerts: GladAlert[] = await GLADAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                const viirsAlerts: ViirsActiveFiresAlert[] = await ViirsAlertsService.getAnalysisInPeriodForSubscription(formatDate(begin), formatDate(end), subscription.params);
+                const flattenedResults: MonthlySummaryAlert[] = []
+                gladAlerts.forEach((alert: GladAlert) => flattenedResults.push({ ...alert, type: 'GLAD' }));
+                viirsAlerts.forEach((alert: ViirsActiveFiresAlert) => flattenedResults.push({
+                    ...alert,
+                    type: 'VIIRS'
+                }));
+                return flattenedResults;
             }
-        } catch (e) {
-            logger.error(e);
-            return null;
+            default: {
+                const result: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
+                    uri: url,
+                    method: 'GET',
+                    params: query
+                });
+
+                return await new Deserializer({ keyForAttribute: 'camelCase' }).deserialize(result);
+            }
+
         }
     }
 

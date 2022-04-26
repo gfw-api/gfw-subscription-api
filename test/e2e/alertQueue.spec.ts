@@ -45,6 +45,17 @@ describe('AlertQueue ', () => {
 
     it('All goes well when a dataset Redis message is received for a subscription with an invalid resource type URL', async () => {
         await createDatasetWithWebHook('invalidURL');
+
+        // Mock GFW Data API calls
+        nock(config.get('dataApi.url'))
+            .get('/dataset/geostore__glad__daily_alerts/latest/query')
+            .query((data) => data.sql && data.sql.includes('geostore__id = \'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw\''))
+            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
+            .matchHeader('origin', config.get('dataApi.origin'))
+            .reply(200, {
+                data: [],
+                status: 'success'
+            });
         await assertMessageProcessing();
     });
 

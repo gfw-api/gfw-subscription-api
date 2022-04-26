@@ -29,8 +29,6 @@ export const validateCommonNotificationParams = (jsonMessage: Record<string, any
     jsonMessage.data.should.have.property('week_of').and.equal(`${beginDate.format('DD MMM')}`);
     jsonMessage.data.should.have.property('week_start').and.equal(beginDate.format('DD/MM/YYYY'));
     jsonMessage.data.should.have.property('week_end').and.equal(endDate.format('DD/MM/YYYY'));
-    jsonMessage.data.should.have.property('alert_date_begin').and.equal(moment(beginDate).format('YYYY-MM-DD'));
-    jsonMessage.data.should.have.property('alert_date_end').and.equal(moment(endDate).format('YYYY-MM-DD'));
     jsonMessage.data.should.have.property('alert_name').and.equal(sub.name);
     jsonMessage.data.should.have.property('subscriptions_url', `${config.get('gfw.flagshipUrl')}/my-gfw?lang=${sub.language}`);
     jsonMessage.data.should.have.property('unsubscribe_url', `${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${sub.language}`);

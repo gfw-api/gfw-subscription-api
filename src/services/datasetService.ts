@@ -7,6 +7,7 @@ import request from 'request';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import julian from 'julian';
+import { EmailLanguageType } from 'types/email.type';
 
 type SubscriptionQuery = Record<string, {
     type: string
@@ -74,7 +75,6 @@ class DatasetService {
                             const data: DatasetEmail = {
                                 subject: subscription.name ? subscription.name : `${datasetQuery.type} in ${areaName} above ${datasetQuery.threshold}`,
                                 datasetName,
-                                datasetId: datasetQuery.id,
                                 datasetSummary: metadata[0].attributes.info.functions,
                                 areaId: subscription.params.area ? subscription.params.area : '',
                                 areaName,
@@ -88,11 +88,7 @@ class DatasetService {
                             // Execute EMAIL notification - sending an email
                             if (subscription.resource.type === 'EMAIL') {
                                 logger.debug('Sending mail with data', data);
-                                let template: string = 'dataset-rw';
-                                if (subscription.env && subscription.env !== 'production') {
-                                    template += `-${subscription.env}`;
-                                }
-                                MailService.sendDatasetEmail(template, data, [{ address: subscription.resource.content }], 'rw'); // sender='rw'
+                                MailService.sendDatasetEmail(subscription.env, data, [{ address: subscription.resource.content }], 'rw'); // sender='rw'
                             }
 
                             // Execute URL notification - POSTing to webhook
@@ -159,8 +155,7 @@ class DatasetService {
         try {
             const result: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/v1/dataset/${datasetId}`,
-                method: 'GET',
-                json: true
+                method: 'GET'
             });
             return result.data.attributes;
         } catch (error) {
@@ -169,12 +164,11 @@ class DatasetService {
         }
     }
 
-    static async getMetadata(datasetId: string, application: string, language: string): Promise<Record<string, any> | null> {
+    static async getMetadata(datasetId: string, application: string, language: EmailLanguageType): Promise<Record<string, any> | null> {
         try {
             const result: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/v1/dataset/${datasetId}/metadata?application=${application}&language=${language}`,
-                method: 'GET',
-                json: true
+                method: 'GET'
             });
             return result.data;
         } catch (error) {
@@ -188,8 +182,7 @@ class DatasetService {
             logger.info('Obtaining area with id: ', idArea);
             const areaResult: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/v1/area/${idArea}`,
-                method: 'GET',
-                json: true
+                method: 'GET'
             });
 
             const area: Record<string, any> = await new Deserializer({
@@ -219,8 +212,7 @@ class DatasetService {
                 logger.info('Uri', uri);
                 const result: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
                     uri,
-                    method: 'GET',
-                    json: true
+                    method: 'GET'
                 });
                 const geostore: Record<string, any> = await new Deserializer({
                     keyForAttribute: 'camelCase'
@@ -241,8 +233,7 @@ class DatasetService {
             logger.info('Obtaining area with id: ', idArea);
             const result: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/v1/area/${idArea}`,
-                method: 'GET',
-                json: true
+                method: 'GET'
             });
             const area: Record<string, any> = await new Deserializer({
                 keyForAttribute: 'camelCase'
@@ -276,8 +267,7 @@ class DatasetService {
                 logger.info('Uri', uri);
                 const result: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
                     uri,
-                    method: 'GET',
-                    json: true
+                    method: 'GET'
                 });
                 const geostore: Record<string, any> = await new Deserializer({
                     keyForAttribute: 'camelCase'
@@ -307,13 +297,12 @@ class DatasetService {
         try {
             return RWAPIMicroservice.requestToMicroservice({
                 uri: '/v1/query',
-                qs: {
+                params: {
                     sql: finalQuery,
                     threshold,
                     geostore: geostoreId
                 },
-                method: 'GET',
-                json: true
+                method: 'GET'
             });
         } catch (error) {
             logger.error(error);
@@ -329,11 +318,10 @@ class DatasetService {
         try {
             const result: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
                 uri: '/v1/query',
-                qs: {
+                params: {
                     sql: query
                 },
-                method: 'GET',
-                json: true
+                method: 'GET'
             });
             return result.data[0].lastdate;
         } catch (error) {

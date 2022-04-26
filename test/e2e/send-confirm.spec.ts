@@ -9,7 +9,7 @@ import { ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 
 const {
-    createSubscription,
+    createSubscriptionContent,
     ensureCorrectError,
     createAuthCases,
     getUUID,
@@ -49,7 +49,7 @@ describe('Send confirmation endpoint', () => {
 
         await redisClient.subscribe(CHANNEL, () => should.fail('should not be called'));
 
-        createSubscription(ROLES.USER.id, getUUID());
+        createSubscriptionContent(ROLES.USER.id, getUUID());
         const response = await requester
             .get('/api/v1/subscriptions/41224d776a326fb40f000001/send_confirmation')
             .set('Authorization', `Bearer abcd`)
@@ -100,7 +100,7 @@ describe('Send confirmation endpoint', () => {
         }));
 
         createMockSendConfirmationSUB();
-        const createdSubscription = await new Subscription(createSubscription(ROLES.USER.id)).save();
+        const createdSubscription = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
         const response = await requester
             .get(`/api/v1/subscriptions/${createdSubscription._id}/send_confirmation`)
             .set('Authorization', `Bearer abcd`)
@@ -115,7 +115,7 @@ describe('Send confirmation endpoint', () => {
     it('Providing redirect=false as query param disables the redirection (happy case)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        const createdSubscription = await new Subscription(createSubscription(ROLES.USER.id)).save();
+        const createdSubscription = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
         const response = await requester
             .get(`/api/v1/subscriptions/${createdSubscription._id}/send_confirmation`)
             .set('Authorization', `Bearer abcd`)

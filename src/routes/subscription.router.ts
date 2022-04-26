@@ -412,7 +412,6 @@ const subscriptionExists = (isForUser: boolean = false) => async (ctx: Context, 
 
     if (!subscription) {
         ctx.throw(404, 'Subscription not found');
-        return;
     }
     await next();
 };
@@ -441,7 +440,6 @@ const validateLoggedUserAuth = async (ctx: Context, next: Next): Promise<any> =>
 const validateMicroserviceAuth = async (ctx: Context, next: Next): Promise<any> => {
     if (!isMicroservice(ctx)) {
         ctx.throw(401, 'Unauthorized');
-        return;
     }
 
     await next();
@@ -450,7 +448,6 @@ const validateMicroserviceAuth = async (ctx: Context, next: Next): Promise<any> 
 const validateLoggedUserOrMicroserviceAuth = async (ctx: Context, next: Next): Promise<any> => {
     if (!isLoggedUser(ctx) && !isMicroservice(ctx)) {
         ctx.throw(401, 'Unauthorized');
-        return;
     }
 
     await next();

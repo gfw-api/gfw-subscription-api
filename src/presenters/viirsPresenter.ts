@@ -6,14 +6,15 @@ import ViirsAlertsService from 'services/gfw-data-api/viirsAlertsService';
 import EmailHelpersService from 'services/emailHelpersService';
 import UrlService from 'services/urlService';
 import { ISubscription } from 'models/subscription';
-import { PresenterData, PresenterInterface, ViirsPresenterResponse } from 'presenters/presenter.interface';
+import { PresenterData, PresenterInterface } from 'presenters/presenter.interface';
 import { ILayer } from 'models/layer';
 import { BaseAlert, ViirsActiveFiresAlert } from 'types/analysis.type';
+import { ForestFiresNotification } from 'types/email.type';
 
 class ViirsPresenter implements PresenterInterface<ViirsActiveFiresAlert> {
 
-    async transform(results: PresenterData<ViirsActiveFiresAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<ViirsPresenterResponse> {
-        const resultObject: Partial<ViirsPresenterResponse> = { value: results.value };
+    async transform(results: PresenterData<ViirsActiveFiresAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<ForestFiresNotification> {
+        const resultObject: Partial<ForestFiresNotification> = { value: results.value };
         EmailHelpersService.updateMonthTranslations();
         moment.locale(subscription.language || 'en');
 
@@ -60,7 +61,7 @@ class ViirsPresenter implements PresenterInterface<ViirsActiveFiresAlert> {
         }
 
         logger.info('VIIRS Active Fires results: ', results);
-        return resultObject as ViirsPresenterResponse;
+        return resultObject as ForestFiresNotification;
     }
 
 }

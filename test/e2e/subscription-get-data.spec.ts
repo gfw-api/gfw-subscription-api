@@ -3,8 +3,10 @@ import Subscription from 'models/subscription';
 import chai from 'chai';
 import { MOCK_FILE, ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
+import { createSubscription } from './utils/helpers';
+import { createMockDatasetQuery } from './utils/mock';
+
 const {
-    createSubInDB,
     getUUID,
     createAuthCases,
     ensureCorrectError,
@@ -22,7 +24,7 @@ nock.enableNetConnect(process.env.HOST_IP);
 let requester: ChaiHttp.Agent;
 const authCases = createAuthCases(`/api/v1/subscriptions/123/data`, 'get');
 
-describe('Get subscription endpoint', () => {
+describe('GET subscription data endpoint', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -38,7 +40,7 @@ describe('Get subscription endpoint', () => {
     it('Getting subscription data with being authenticated but with not existing subscription for user should fall', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        await createSubInDB(ROLES.USER.id, getUUID());
+        await createSubscription(ROLES.USER.id);
         const response = await requester
             .get('/api/v1/subscriptions/41224d776a326fb40f000001/data')
             .set('Authorization', `Bearer abcd`)
@@ -74,23 +76,24 @@ describe('Get subscription endpoint', () => {
         mockGetUserFromToken(ROLES.USER);
 
         const datasetID = getUUID();
-        createMockDataset(datasetID);
-        nock(process.env.GATEWAY_URL)
-            .get('/v1/query')
-            .reply(200, {
-                data: { url: MOCK_FILE }
-            });
-
-        const datasetQuery = {
+        const subscription = await createSubscription(ROLES.USER.id, {
+            datasets: [datasetID],
             datasetsQuery: [{
                 id: datasetID,
                 type: 'dataset',
             }]
-        };
+        });
+        createMockDataset(datasetID);
+        createMockDatasetQuery({
+            geostore: subscription.params.geostore,
+            threshold: 0,
+            sql: (new Date()).toISOString().slice(0, 10)
+        }, {
+            data: { url: MOCK_FILE }
+        });
 
-        const createdSubscription = await createSubInDB(ROLES.USER.id, datasetID, datasetQuery);
         const response = await requester
-            .get(`/api/v1/subscriptions/${createdSubscription._id}/data`)
+            .get(`/api/v1/subscriptions/${subscription._id}/data`)
             .set('Authorization', `Bearer abcd`)
             .query({ application: 'rw' })
             .send();

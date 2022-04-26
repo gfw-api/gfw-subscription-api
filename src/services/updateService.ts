@@ -18,7 +18,6 @@ class UpdateService {
             const result: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/v1/${dataset}/latest`,
                 method: 'GET',
-                json: true
             });
 
             const latest: Record<string, any> = await new Deserializer({

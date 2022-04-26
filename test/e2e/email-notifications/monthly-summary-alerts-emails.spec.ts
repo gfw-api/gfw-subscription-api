@@ -10,7 +10,7 @@ import AlertQueue from 'queues/alert.queue';
 import EmailHelpersService from 'services/emailHelpersService';
 
 import { getTestServer } from '../utils/test-server';
-import { createSubscription, assertNoEmailSent } from '../utils/helpers';
+import { createSubscriptionContent, assertNoEmailSent } from '../utils/helpers';
 const {
     mockGLADAlertsISOQuery,
     mockGLADAlertsWDPAQuery,
@@ -56,7 +56,7 @@ describe('Monthly summary notifications', () => {
     });
 
     it('Updating monthly summary alerts dataset triggers a new email being queued using the correct email template and providing the needed data', async () => {
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
@@ -101,7 +101,7 @@ describe('Monthly summary notifications', () => {
     it('Updating monthly summary datasets triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (FR)', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('fr');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
@@ -148,7 +148,7 @@ describe('Monthly summary notifications', () => {
     it('Updating monthly summary datasets triggers a new email being queued using the correct email template and providing the needed data taking into account language differences (ZH)', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('zh');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'zh' },
@@ -195,7 +195,7 @@ describe('Monthly summary notifications', () => {
     it('Monthly summary alert emails for subscriptions that refer to an ISO code work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             { params: { iso: { country: 'IDN' } } },
@@ -242,7 +242,7 @@ describe('Monthly summary notifications', () => {
     it('Monthly summary alert emails for subscriptions that refer to an ISO region work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             { params: { iso: { country: 'IDN', region: '3' } } },
@@ -289,7 +289,7 @@ describe('Monthly summary notifications', () => {
     it('Monthly summary alert emails for subscriptions that refer to an ISO subregion work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             { params: { iso: { country: 'BRA', region: '1', subregion: '1' } } },
@@ -336,7 +336,7 @@ describe('Monthly summary notifications', () => {
     it('Monthly summary alert emails for subscriptions that refer to a WDPA ID work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             { params: { wdpaid: '1' } },
@@ -383,7 +383,7 @@ describe('Monthly summary notifications', () => {
     it('Monthly summary alert emails for subscriptions that refer to a USE ID work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             { params: { use: 'gfw_logging', useid: '29407' } },
@@ -429,7 +429,7 @@ describe('Monthly summary notifications', () => {
     });
 
     it('No email is sent if there no alerts are returned by the monthly summary query', async () => {
-        await new Subscription(createSubscription(
+        await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
@@ -449,7 +449,7 @@ describe('Monthly summary notifications', () => {
     });
 
     it('Monthly summary alerts are correctly formatted with k and M if values are high', async () => {
-        await new Subscription(createSubscription(
+        await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
@@ -537,7 +537,7 @@ describe('Monthly summary notifications', () => {
     });
 
     it('Monthly summary alerts are correctly formatted with k and M only if values are greater than 999', async () => {
-        await new Subscription(createSubscription(
+        await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
@@ -734,7 +734,7 @@ describe('Monthly summary notifications', () => {
     });
 
     it('Legacy subscription parameters are correctly handled, triggering a new email being queued using the correct email template with the correct data', async () => {
-        const subscriptionOne = await new Subscription(createSubscription(
+        const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
             {

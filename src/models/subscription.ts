@@ -10,7 +10,8 @@ import EmailPublisher from 'publishers/emailPublisher';
 import UrlPublisher from 'publishers/urlPublisher';
 import { PublisherInterface } from 'publishers/publisher.interface';
 import { BaseAlert } from 'types/analysis.type';
-import { PresenterData, PresenterResponse } from 'presenters/presenter.interface';
+import { PresenterData } from 'presenters/presenter.interface';
+import { EmailLanguageType, SubscriptionEmailData } from 'types/email.type';
 
 const ALERT_TYPES: string[] = ['EMAIL', 'URL'];
 
@@ -41,7 +42,7 @@ export interface ISubscription extends Document {
     datasetsQuery: DatasetQuery[],
     params: Record<string, any>,
     userId: string,
-    language: string,
+    language: EmailLanguageType,
     createdAt: Date,
     updatedAt: Date,
     application: string,
@@ -86,7 +87,7 @@ export const Subscription: ISchema<ISubscription> = new Schema<ISubscription>({
 
 // this can't be converted to an arrow function, as it will change the behavior of things and cause tests to rightfully fail
 // eslint-disable-next-line func-names
-Subscription.methods.publish = async function (layerConfig: { slug: string, name: string }, begin: Date, end: Date, sendEmail: boolean = true): Promise<boolean> {
+Subscription.methods.publish = async function (layerConfig: { slug: string, name: string }, begin: Date, end: Date, publish: boolean = true): Promise<boolean> {
     logger.info('[SubscriptionEmails] Publishing subscription with data', layerConfig, begin, end);
     const layer: ILayer = Layer.findBySlug(layerConfig.name);
     if (!layer) {
@@ -108,9 +109,9 @@ Subscription.methods.publish = async function (layerConfig: { slug: string, name
         return false;
     }
 
-    const renderedResults: PresenterResponse = await AnalysisResultsPresenter.render(analysisResultsWithSum, this, layer, begin, end);
+    const renderedResults: SubscriptionEmailData = await AnalysisResultsPresenter.render(analysisResultsWithSum, this, layer, begin, end);
 
-    if (sendEmail) {
+    if (publish) {
         await ALERT_TYPES_PUBLISHER[this.resource.type].publish(
             this, renderedResults, layer
         );

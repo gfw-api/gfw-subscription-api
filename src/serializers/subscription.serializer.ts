@@ -1,4 +1,5 @@
 import { Serializer } from 'jsonapi-serializer';
+import { EmailLanguageType } from 'types/email.type';
 
 
 const subscriptionSerializer: Serializer = new Serializer('subscription', {
@@ -40,7 +41,7 @@ export interface SerializedSubscription {
         geostoreDataApi: string
     },
     confirmed: string,
-    language: string,
+    language: EmailLanguageType,
     datasetsQuery: string,
     env: string
 }
