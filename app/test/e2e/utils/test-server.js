@@ -17,9 +17,11 @@ const getTestServer = async function getTestServer() {
         createdServer = null;
     }
 
-    nock(process.env.CT_URL)
-        .post(`/api/v1/microservice`)
-        .reply(200);
+    if (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') {
+        nock(process.env.CT_URL)
+            .post(`/api/v1/microservice`)
+            .reply(200);
+    }
 
     const serverPromise = require('../../../src/app');
     const { server } = await serverPromise();
@@ -31,10 +33,11 @@ const getTestServer = async function getTestServer() {
 
 const createRequest = async (prefix, method) => {
     if (!createdServer && !requester) {
-        nock(process.env.CT_URL)
-            .post(`/api/v1/microservice`)
-            .reply(200);
-
+        if (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') {
+            nock(process.env.CT_URL)
+                .post(`/api/v1/microservice`)
+                .reply(200);
+        }
         const serverPromise = require('../../../src/app');
         const { server } = await serverPromise();
         createdServer = server;

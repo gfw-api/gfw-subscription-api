@@ -174,7 +174,7 @@ const ROLES = {
         id: '1a10d7c6e0a37126611fd7a2',
         role: 'MANAGER',
         provider: 'local',
-        email: 'user@control-tower.org',
+        email: 'user@resourcewatch.org',
         extraUserData: {
             apps: [
                 'rw',
@@ -191,7 +191,7 @@ const ROLES = {
         id: '1a10d7c6e0a37126611fd7a3',
         role: 'ADMIN',
         provider: 'local',
-        email: 'user@control-tower.org',
+        email: 'user@resourcewatch.org',
         extraUserData: {
             apps: [
                 'rw',
@@ -206,7 +206,7 @@ const ROLES = {
         id: '1a10d7c6e0a37126611fd7a4',
         role: 'ADMIN',
         provider: 'local',
-        email: 'user@control-tower.org',
+        email: 'user@resourcewatch.org',
         extraUserData: {
             apps: [
                 'rw',
@@ -223,7 +223,7 @@ const ROLES = {
         id: '1a10d7c6e0a37126601fd7a5',
         role: 'SUPERADMIN',
         provider: 'local',
-        email: 'user@control-tower.org',
+        email: 'user@resourcewatch.org',
         name: 'test super admin',
         extraUserData: {
             apps: [
@@ -253,7 +253,7 @@ const SUBSCRIPTION_TO_UPDATE = {
         use: 0,
     },
     resource: {
-        content: 'subscription-recipienttest@vizzuality.com',
+        content: 'subscription-recipienttest@resourcewatch.org',
         type: 'URL'
     }
 };

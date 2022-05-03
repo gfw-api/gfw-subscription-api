@@ -51,6 +51,50 @@ describe('AlertQueue ', () => {
 
     it('All goes well when a dataset Redis message is received for a subscription with an invalid resource type URL', async () => {
         await createDatasetWithWebHook('invalidURL');
+
+        // Mock GFW Data API calls
+        nock(config.get('dataApi.url'))
+            .get('/dataset/geostore__glad__daily_alerts/latest/query')
+            .query((data) => data.sql && data.sql.includes('geostore__id=\'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw\''))
+            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
+            .matchHeader('origin', config.get('dataApi.origin'))
+            .reply(200, {
+                data: [
+                    {
+                        wdpa_protected_area__iucn_cat: 'Category 1',
+                        is__umd_regional_primary_forest_2001: false,
+                        is__peatland: false,
+                        is__ifl_intact_forest_landscape_2016: false,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: true,
+                        is__peatland: false,
+                        is__ifl_intact_forest_landscape_2016: false,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: false,
+                        is__peatland: true,
+                        is__ifl_intact_forest_landscape_2016: false,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    },
+                    {
+                        wdpa_protected_area__iucn_cat: null,
+                        is__umd_regional_primary_forest_2001: false,
+                        is__peatland: false,
+                        is__ifl_intact_forest_landscape_2016: true,
+                        alert__count: 100,
+                        alert_area__ha: 10,
+                    }
+                ],
+                status: 'success'
+            });
         await assertMessageProcessing();
     });
 

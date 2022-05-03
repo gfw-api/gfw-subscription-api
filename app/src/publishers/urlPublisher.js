@@ -13,7 +13,7 @@ class UrlPublisher {
             });
             logger.info(`[SubscriptionWebhooks] POSTed to webhook successfully with URL ${subscription.resource.content}`);
         } catch (e) {
-            logger.error(`[SubscriptionWebhooksError] Error doing POST to URL ${subscription.resource.content}`);
+            logger.error(`[SubscriptionWebhooksError] Error doing POST to URL ${subscription.resource.content}: ${JSON.stringify(e)}`);
         }
 
     }

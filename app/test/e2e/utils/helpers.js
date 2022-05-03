@@ -1,5 +1,6 @@
 const chai = require('chai');
 const nock = require('nock');
+// const atob = require('atob');
 
 const Statistic = require('models/statistic');
 const Subscription = require('models/subscription');
@@ -34,6 +35,44 @@ const createSubscription = (userId, datasetUuid = null, data = {}) => {
         },
         ...data
     };
+};
+
+const createURLSubscription = (userId, datasetUuid = null, data = {}) => {
+    const uuid = getUUID();
+
+    return {
+        name: `Subscription ${uuid}`,
+        datasets: [datasetUuid || getUUID()],
+        userId,
+        application: 'gfw',
+        env: 'production',
+        confirmed: true,
+        params: {
+            geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw'
+        },
+        resource: {
+            content: 'http://potato-url.com/notify',
+            type: 'URL'
+        },
+        ...data
+    };
+};
+
+// const createURLSubscriptionCallMock = (expectedBody) => {
+//     nock('http://potato-url.com')
+//         .post('/notify', (body) => {
+//             const foo = JSON.parse(atob((new URL(body.alert_link)).searchParams.get('map')));
+//
+//             body.should.deep.equal(expectedBody);
+//             return true;
+//         })
+//         .reply(200);
+// };
+
+const createURLSubscriptionCallMock = (expectedBody) => {
+    nock('http://potato-url.com')
+        .post('/notify', expectedBody)
+        .reply(200);
 };
 
 const createSubInDB = (userId, datasetUuid = null, data = {}) => new Subscription(createSubscription(userId, datasetUuid, data)).save();
@@ -152,6 +191,8 @@ const assertNoEmailSent = (redisClient) => {
 
 module.exports = {
     createSubscription,
+    createURLSubscription,
+    createURLSubscriptionCallMock,
     getUUID,
     createSubInDB,
     ensureCorrectError,

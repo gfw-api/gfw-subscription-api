@@ -98,7 +98,7 @@ const validateGLADAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, sub
     ));
 
     jsonMessage.data.should.have.property('dashboard_link')
-        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`${config.get('gfw.flagshipUrl')}/dashboards/aoi/${sub.id}`)
         .and.contain(`lang=${sub.language}`)
         .and.contain(`category=forest-change`)
         .and.contain(`utm_campaign=ForestChangeAlert`);
@@ -160,7 +160,7 @@ const validateVIIRSAlertsAndPriorityAreas = (jsonMessage, beginDate, endDate, su
     ));
 
     jsonMessage.data.should.have.property('dashboard_link')
-        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`${config.get('gfw.flagshipUrl')}/dashboards/aoi/${sub.id}`)
         .and.contain(`lang=${sub.language}`)
         .and.contain(`category=fires`)
         .and.contain(`utm_campaign=FireAlert`);
@@ -193,7 +193,7 @@ const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage, beginDate, en
     jsonMessage.data.should.have.property('location').and.equal(sub.name);
 
     jsonMessage.data.should.have.property('dashboard_link')
-        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`${config.get('gfw.flagshipUrl')}/dashboards/aoi/${sub.id}`)
         .and.contain(`lang=${sub.language}`)
         .and.contain(`category=forest-change`)
         .and.contain(`utm_campaign=MonthlyAlertSummary`);
@@ -296,7 +296,7 @@ const validateGladAll = (
     ));
 
     jsonMessage.data.should.have.property('dashboard_link')
-        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`${config.get('gfw.flagshipUrl')}/dashboards/aoi/${sub.id}`)
         .and.contain(`lang=${lang}`)
         .and.contain(`category=forest-change`)
         .and.contain(`utm_campaign=ForestChangeAlert`);
@@ -354,7 +354,7 @@ const validateGladL = (
     ));
 
     jsonMessage.data.should.have.property('dashboard_link')
-        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`${config.get('gfw.flagshipUrl')}/dashboards/aoi/${sub.id}`)
         .and.contain(`lang=${sub.language}`)
         .and.contain(`category=forest-change`)
         .and.contain(`utm_campaign=ForestChangeAlert`);
@@ -412,7 +412,7 @@ const validateGladS2 = (
     ));
 
     jsonMessage.data.should.have.property('dashboard_link')
-        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`${config.get('gfw.flagshipUrl')}/dashboards/aoi/${sub.id}`)
         .and.contain(`lang=en`)
         .and.contain(`category=forest-change`)
         .and.contain(`utm_campaign=ForestChangeAlert`);
@@ -470,7 +470,7 @@ const validateGladRadd = (
     ));
 
     jsonMessage.data.should.have.property('dashboard_link')
-        .and.contain(`http://staging.globalforestwatch.org/dashboards/aoi/${sub.id}`)
+        .and.contain(`${config.get('gfw.flagshipUrl')}/dashboards/aoi/${sub.id}`)
         .and.contain(`lang=en`)
         .and.contain(`category=forest-change`)
         .and.contain(`utm_campaign=ForestChangeAlert`);
