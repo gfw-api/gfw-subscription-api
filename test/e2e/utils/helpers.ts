@@ -45,8 +45,47 @@ export const createSubscriptionContent = (userId: string, datasetUuid: string = 
     };
 };
 
+export const createURLSubscription = (userId: string, datasetUuid: string = null, data: Record<string, any> = {}) => {
+    const uuid = getUUID();
 
-export const createSubscription = async (userId: string, data = {}) => {
+    return {
+        name: `Subscription ${uuid}`,
+        datasets: [datasetUuid || getUUID()],
+        userId,
+        application: 'gfw',
+        env: 'production',
+        confirmed: true,
+        params: {
+            geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw'
+        },
+        resource: {
+            content: 'http://potato-url.com/notify',
+            type: 'URL'
+        },
+        ...data
+    };
+};
+
+// const createURLSubscriptionCallMock = (expectedBody) => {
+//     nock('http://potato-url.com')
+//         .post('/notify', (body) => {
+//             const foo = JSON.parse(atob((new URL(body.alert_link)).searchParams.get('map')));
+//
+//             body.should.deep.equal(expectedBody);
+//             return true;
+//         })
+//         .reply(200);
+// };
+
+export const createURLSubscriptionCallMock = (expectedBody: Record<string, any>) => {
+    nock('http://potato-url.com')
+        .post('/notify', expectedBody)
+        .reply(200);
+};
+
+export const createSubInDB = (userId: string, datasetUuid: string = null, data: Record<string, any> = {}) => new Subscription(createSubscription(userId, data)).save();
+
+export const createSubscription = async (userId: string, data: Record<string, any> = {}) => {
     const uuid = getUUID();
 
     return new Subscription({

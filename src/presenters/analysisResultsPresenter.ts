@@ -14,6 +14,7 @@ import { ILayer } from 'models/layer';
 import { BaseAlert } from 'types/analysis.type';
 import { isEmpty } from 'lodash';
 import { AlertType, EMAIL_MAP, EmailMap, SubscriptionEmailData } from 'types/email.type';
+import moment from 'moment';
 
 const PRESENTER_MAP: Record<AlertType, PresenterInterface<BaseAlert>> = {
     'monthly-summary': MonthlySummaryPresenter,
@@ -48,6 +49,55 @@ const decorateWithLinks = (results: SubscriptionEmailData, subscription: ISubscr
     return results;
 };
 
+const decorateWithArea = (results: SubscriptionEmailData, subscription: ISubscription): SubscriptionEmailData => {
+    const params:Record<string, any> = subscription.params || {};
+
+    if (params.iso && params.iso.country) {
+        results.selected_area = `ISO Code: ${params.iso.country}`;
+
+        if (params.iso.region) {
+            results.selected_area += `, ID1: ${params.iso.region}`;
+
+            if (params.iso.subregion) {
+                results.selected_area += `, ID2: ${params.iso.subregion}`;
+            }
+        }
+    } else if (params.wdpaid) {
+        results.selected_area = `WDPA ID: ${params.wdpaid}`;
+    } else {
+        results.selected_area = 'Custom Area';
+    }
+
+    return results;
+};
+
+const decorateWithMetadata = (results: SubscriptionEmailData, layer: ILayer) => {
+    if (!layer.meta) {
+        return results;
+    }
+
+    const summaryForLayer = (layer: ILayer): string => {
+        const { meta } = layer;
+        if (meta === undefined) {
+            return '';
+        }
+
+        return '';
+    };
+
+    results.alert_type = layer.meta.description;
+    results.alert_summary = summaryForLayer(layer);
+
+    return results;
+};
+
+const decorateWithDates = (results: SubscriptionEmailData, begin: Date, end: Date) => {
+    results.alert_date_begin = moment(begin).format('YYYY-MM-DD');
+    results.alert_date_end = moment(end).format('YYYY-MM-DD');
+
+    return results;
+};
+
 class AnalysisResultsPresenter {
 
     static async render(results: PresenterData<BaseAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<SubscriptionEmailData> {
@@ -69,8 +119,21 @@ class AnalysisResultsPresenter {
                 throw new Error(`No presenter found for layer ${layer.slug}`);
             }
 
+            presenterResponse.layerSlug = layer.slug;
+            // eslint-disable-next-line no-param-reassign
             presenterResponse = decorateWithName(presenterResponse, subscription);
+            // eslint-disable-next-line no-param-reassign
+            presenterResponse = decorateWithArea(presenterResponse, subscription);
+            // eslint-disable-next-line no-param-reassign
             presenterResponse = decorateWithLinks(presenterResponse, subscription);
+            // eslint-disable-next-line no-param-reassign
+            presenterResponse = decorateWithMetadata(presenterResponse, layer);
+            // eslint-disable-next-line no-param-reassign
+            presenterResponse = decorateWithDates(presenterResponse, begin, end);
+
+            // presenterResponse.layerSlug = layer.slug;
+            // presenterResponse = decorateWithName(presenterResponse, subscription);
+            // presenterResponse = decorateWithLinks(presenterResponse, subscription);
 
             return presenterResponse;
         } catch (err) {
