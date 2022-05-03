@@ -74,8 +74,8 @@ describe('Test email alerts spec', () => {
         mockGetUserFromToken(ROLES.ADMIN);
 
         const testBody = {
-            email: 'henrique.pacheco@vizzuality.com',
-            subId: '123',
+            email: 'foo@bar.com',
+            subId: '2a10d7c6e0a37126611fd7a4',
         };
 
         (await requester.post(`/api/v1/subscriptions/test-email-alerts`)

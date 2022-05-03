@@ -175,7 +175,7 @@ export const ROLES = {
         id: '1a10d7c6e0a37126611fd7a2',
         role: 'MANAGER',
         provider: 'local',
-        email: 'user@control-tower.org',
+        email: 'user@resourcewatch.org',
         extraUserData: {
             apps: [
                 'rw',
@@ -192,7 +192,7 @@ export const ROLES = {
         id: '1a10d7c6e0a37126611fd7a3',
         role: 'ADMIN',
         provider: 'local',
-        email: 'user@control-tower.org',
+        email: 'user@resourcewatch.org',
         extraUserData: {
             apps: [
                 'rw',
@@ -207,7 +207,7 @@ export const ROLES = {
         id: '1a10d7c6e0a37126611fd7a4',
         role: 'ADMIN',
         provider: 'local',
-        email: 'user@control-tower.org',
+        email: 'user@resourcewatch.org',
         extraUserData: {
             apps: [
                 'rw',
@@ -236,7 +236,7 @@ export const SUBSCRIPTION_TO_UPDATE = {
         use: 0,
     },
     resource: {
-        content: 'subscription-recipienttest@vizzuality.com',
+        content: 'subscription-recipienttest@resourcewatch.org',
         type: 'URL'
     }
 };

@@ -162,7 +162,7 @@ describe('Generic dataset emails', () => {
             redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
         })
 
-        await AlertQueue.processMessage(JSON.stringify({
+        AlertQueue.processMessage(JSON.stringify({
             layer_slug: 'dataset',
             begin_date: beginDate,
             end_date: endDate
