@@ -45,7 +45,6 @@ describe('AlertQueue ', () => {
 
     it('All goes well when a dataset Redis message is received for a subscription with an invalid resource type URL', async () => {
         await createDatasetWithWebHook('invalidURL');
-
         // Mock GFW Data API calls
         nock(config.get('dataApi.url'))
             .get('/dataset/geostore__glad__daily_alerts/latest/query')

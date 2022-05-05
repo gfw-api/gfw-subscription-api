@@ -4,16 +4,15 @@ import EmailHelpersService from 'services/emailHelpersService';
 import GladAllPresenter from 'presenters/gladAllPresenter';
 import GladRaddService from 'services/gfw-data-api/gladRaddService';
 import { ISubscription } from 'models/subscription';
-import { PresenterData, PresenterInterface } from 'presenters/presenter.interface';
+import { GladRaddPresenterResponse, PresenterData, PresenterInterface } from 'presenters/presenter.interface';
 import { ILayer } from 'models/layer';
 import { GladRaddAlert } from 'types/analysis.type';
-import { GladUpdatedNotification } from 'types/email.type';
 
 class GLADRaddPresenter implements PresenterInterface<GladRaddAlert> {
 
-    async transform(results: PresenterData<GladRaddAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<GladUpdatedNotification> {
+    async transform(results: PresenterData<GladRaddAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<GladRaddPresenterResponse> {
         try {
-            const resultObject: GladUpdatedNotification = GladAllPresenter.buildResultObject(results, subscription, layer, begin, end);
+            const resultObject: GladRaddPresenterResponse = GladAllPresenter.buildResultObject(results, subscription, layer, begin, end);
 
             resultObject.downloadUrls = await GladRaddService.getDownloadURLs(
                 moment(begin).format('YYYY-MM-DD'),

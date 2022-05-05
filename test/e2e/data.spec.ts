@@ -75,14 +75,7 @@ describe('GET subscription data endpoint', () => {
     it('Getting subscription data should be returned (happy case)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        const datasetID = getUUID();
-        createMockDataset(datasetID);
-        nock(process.env.GATEWAY_URL)
-            .get('/v1/query')
-            .reply(200, {
-                data: { url: MOCK_FILE }
-            });
-
+        const datasetID:string = getUUID();
         const subscription = await createSubscription(ROLES.USER.id, {
             datasets: [datasetID],
             datasetsQuery: [{

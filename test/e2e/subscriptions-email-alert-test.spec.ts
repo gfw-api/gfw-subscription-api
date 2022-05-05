@@ -3,9 +3,9 @@ import config from 'config';
 import nock from 'nock';
 import { createClient, RedisClientType } from 'redis';
 
-import Subscription from 'models/subscription';
+import Subscription, { ISubscription } from 'models/subscription';
 
-import { createSubscriptionContent, mockGetUserFromToken } from './utils/helpers';
+import { createSubscription, mockGetUserFromToken } from './utils/helpers';
 import { ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 
@@ -114,7 +114,7 @@ describe('Test email alerts spec', () => {
     it('Testing an email alert for GLAD alerts should return a 200 OK response', async () => {
         mockGetUserFromToken(ROLES.ADMIN);
 
-        const sub = await new Subscription(createSubscriptionContent(ROLES.ADMIN.id, 'glad-alerts')).save();
+        const sub = await createSubscription(ROLES.ADMIN.id, { datasets: ['glad-alerts'] });
         process.on('unhandledRejection', (args) => should.fail(JSON.stringify(args)));
 
         // Mock GFW Data API calls
@@ -199,7 +199,7 @@ describe('Test email alerts spec', () => {
     it('Testing an email alert for GLAD alerts for a language that\'s not EN should return a 200 OK response', async () => {
         mockGetUserFromToken(ROLES.ADMIN);
 
-        const sub = await new Subscription(createSubscriptionContent(ROLES.ADMIN.id, 'glad-alerts')).save();
+        const subscription: ISubscription = await createSubscription(ROLES.ADMIN.id, { datasets: ['glad-alerts'] });
         process.on('unhandledRejection', (args) => should.fail(JSON.stringify(args)));
 
         // Mock GFW Data API calls
@@ -248,7 +248,7 @@ describe('Test email alerts spec', () => {
 
         const body = {
             email: 'henrique.pacheco@vizzuality.com',
-            subId: sub._id,
+            subId: subscription._id,
             alert: 'glad-alerts',
             language: 'fr',
         };
@@ -284,7 +284,6 @@ describe('Test email alerts spec', () => {
 
     afterEach(async () => {
         await redisClient.unsubscribe(CHANNEL);
-        ;
         process.removeAllListeners('unhandledRejection');
 
         if (!nock.isDone()) {

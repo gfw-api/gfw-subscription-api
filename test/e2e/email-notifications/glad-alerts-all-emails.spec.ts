@@ -7,7 +7,7 @@ import Subscription, { ISubscription } from 'models/subscription';
 import Statistic from 'models/statistic';
 import AlertQueue from 'queues/alert.queue';
 
-import { createSubscriptionContent } from '../utils/helpers';
+import { createSubscription, createSubscriptionContent } from '../utils/helpers';
 import { createMockGeostore } from '../utils/mock';
 import { ROLES } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
@@ -45,11 +45,10 @@ describe('GLAD-ALL alerts', () => {
     });
 
     it('GLAD-ALL alerts matches "glad-all" for admin0 subscriptions, using the correct email template and providing the needed data', async () => {
-        const sub: ISubscription = await new Subscription(createSubscriptionContent(
+        const sub: ISubscription = await createSubscription(
             ROLES.USER.id,
-            'glad-all',
-            { params: { iso: { country: 'BRA' } } },
-        )).save()
+            { datasets: ['glad-all'], params: { iso: { country: 'BRA' } } }
+        );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore('/v2/geostore/admin/BRA');

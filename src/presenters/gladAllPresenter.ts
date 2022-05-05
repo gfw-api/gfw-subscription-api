@@ -4,16 +4,15 @@ import EmailHelpersService from 'services/emailHelpersService';
 import GladAllService from 'services/gfw-data-api/gladAllService';
 import AlertUrlService from 'services/alertUrlService';
 import UrlService from 'services/urlService';
-import { PresenterData, PresenterInterface } from 'presenters/presenter.interface';
+import { GladAllPresenterResponse, PresenterData, PresenterInterface } from 'presenters/presenter.interface';
 import { ISubscription } from 'models/subscription';
 import { ILayer } from 'models/layer';
 import { BaseAlertWithArea, GladAllAlert } from 'types/analysis.type';
-import { GladUpdatedNotification } from 'types/email.type';
 
 class GLADAllPresenter implements PresenterInterface<GladAllAlert> {
 
-    buildResultObject(results: PresenterData<BaseAlertWithArea>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): GladUpdatedNotification {
-        const resultObject: Partial<GladUpdatedNotification> = { value: results.value };
+    buildResultObject(results: PresenterData<BaseAlertWithArea>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): GladAllPresenterResponse {
+        const resultObject: Partial<GladAllPresenterResponse> = { value: results.value };
         EmailHelpersService.updateMonthTranslations();
         moment.locale(subscription.language || 'en');
 
@@ -59,12 +58,12 @@ class GLADAllPresenter implements PresenterInterface<GladAllAlert> {
         const wdpaSumArea: number = wdpaAlerts.reduce((acc: number, curr: BaseAlertWithArea) => acc + curr.alert_area__ha, 0);
         resultObject.wdpa_ha_sum = EmailHelpersService.globalFormatter(EmailHelpersService.roundXDecimals(wdpaSumArea, 2));
 
-        return resultObject as GladUpdatedNotification;
+        return resultObject as GladAllPresenterResponse;
     }
 
-    async transform(results: PresenterData<GladAllAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<GladUpdatedNotification> {
+    async transform(results: PresenterData<GladAllAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<GladAllPresenterResponse> {
         try {
-            const resultObject: GladUpdatedNotification = this.buildResultObject(results, subscription, layer, begin, end);
+            const resultObject: GladAllPresenterResponse = this.buildResultObject(results, subscription, layer, begin, end);
 
             resultObject.downloadUrls = await GladAllService.getDownloadURLs(
                 moment(begin).format('YYYY-MM-DD'),

@@ -1,8 +1,9 @@
 import config from 'config';
 import logger from 'logger';
-import { createClient, RedisClientType } from '@node-redis/client';
+import { createClient, RedisClientType } from 'redis';
 import SparkPost from 'sparkpost';
-import { EmailLanguageType, EmailTemplates, SubscriptionEmailData } from 'types/email.type';
+import { EmailLanguageType, EmailTemplates } from 'types/email.type';
+import { PublisherData } from 'publishers/publisher.interface';
 
 const CHANNEL: string = config.get('apiGateway.queueName');
 
@@ -20,6 +21,7 @@ export type DatasetEmail = {
     areaName: string
     datasetName: string
     datasetSummary: string
+    datasetId?: string
     subject?: string
 };
 
@@ -36,7 +38,8 @@ class MailService {
         this.redisClient.connect();
     }
 
-    sendMail(template: EmailTemplates, language: EmailLanguageType, data: SubscriptionEmailData, recipients: SparkPost.Recipient[], sender: string = 'gfw'): void {
+    //TODO: replace type of "data" to SubscriptionEmailData
+    sendMail(template: EmailTemplates, language: EmailLanguageType, data: PublisherData, recipients: SparkPost.Recipient[], sender: string = 'gfw'): void {
         const fullTemplate: string = `${template}-${language}`
         this.redisClient.publish(CHANNEL, JSON.stringify({
             template: fullTemplate,

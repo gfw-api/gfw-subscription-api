@@ -9,7 +9,6 @@ import Statistic from 'models/statistic';
 import AlertQueue from 'queues/alert.queue';
 import EmailHelpersService from 'services/emailHelpersService';
 
-import { getTestServer } from '../utils/test-server';
 import { createSubscriptionContent, assertNoEmailSent } from '../utils/helpers';
 import { createMockGeostore } from '../utils/mock';
 const {
