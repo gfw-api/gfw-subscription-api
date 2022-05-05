@@ -4,6 +4,7 @@ import chai from 'chai';
 import { createMockUnsubscribeSUB } from './utils/mock';
 import { ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
+import { createSubscription } from './utils/helpers';
 
 const {
     createSubscriptionContent,
@@ -79,7 +80,7 @@ describe('Unsubscribe endpoint', () => {
         mockGetUserFromToken(ROLES.USER);
 
         createMockUnsubscribeSUB();
-        const createdSubscription = await new Subscription(createSubscriptionContent(ROLES.USER.id)).save();
+        const createdSubscription = await createSubscription(ROLES.USER.id);
         const response = await requester
             .get(`/api/v1/subscriptions/${createdSubscription._id}/unsubscribe`)
             .set('Authorization', `Bearer abcd`)

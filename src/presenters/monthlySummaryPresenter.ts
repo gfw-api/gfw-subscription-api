@@ -7,15 +7,14 @@ import GLADAlertsService from 'services/gfw-data-api/gladAlertsService';
 import ViirsAlertsService from 'services/gfw-data-api/viirsAlertsService';
 import EmailHelpersService from 'services/emailHelpersService';
 import UrlService from 'services/urlService';
-import { PresenterData, PresenterInterface, } from 'presenters/presenter.interface';
+import { MonthlySummaryPresenterResponse, PresenterData, PresenterInterface, } from 'presenters/presenter.interface';
 import { ISubscription } from 'models/subscription';
 import { GladAlert, MonthlySummaryAlert, ViirsActiveFiresAlert } from 'types/analysis.type';
-import { MonthlySummary } from 'types/email.type';
 
 class MonthlySummaryPresenter implements PresenterInterface<MonthlySummaryAlert> {
 
-    async transform(results: PresenterData<MonthlySummaryAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<MonthlySummary> {
-        const resultObject: Partial<MonthlySummary> = { value: results.value };
+    async transform(results: PresenterData<MonthlySummaryAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<MonthlySummaryPresenterResponse> {
+        const resultObject: Partial<MonthlySummaryPresenterResponse> = { value: results.value };
         EmailHelpersService.updateMonthTranslations();
         moment.locale(subscription.language || 'en');
 
@@ -80,7 +79,7 @@ class MonthlySummaryPresenter implements PresenterInterface<MonthlySummaryAlert>
         }
 
         logger.info('Glad P Results ', results);
-        return resultObject as MonthlySummary;
+        return resultObject as MonthlySummaryPresenterResponse;
     }
 
 }

@@ -59,7 +59,6 @@ class GeostoreService {
         const response: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
             uri,
             method: 'GET',
-
         });
         return response.data.id;
     }
