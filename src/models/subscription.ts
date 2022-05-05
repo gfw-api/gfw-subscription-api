@@ -10,8 +10,8 @@ import EmailPublisher from 'publishers/emailPublisher';
 import UrlPublisher from 'publishers/urlPublisher';
 import { PublisherInterface } from 'publishers/publisher.interface';
 import { BaseAlert } from 'types/analysis.type';
-import { PresenterData } from 'presenters/presenter.interface';
 import { EmailLanguageType, SubscriptionEmailData } from 'types/email.type';
+import { PresenterData, PresenterResponse } from 'presenters/presenter.interface';
 
 const ALERT_TYPES: string[] = ['EMAIL', 'URL'];
 
@@ -109,9 +109,8 @@ Subscription.methods.publish = async function (layerConfig: { slug: string, name
         return false;
     }
 
-    const renderedResults: SubscriptionEmailData = await AnalysisResultsPresenter.render(analysisResultsWithSum, this, layer, begin, end);
-
     if (publish) {
+        const renderedResults: PresenterResponse = await AnalysisResultsPresenter.render(analysisResultsWithSum, this, layer, begin, end);
         await ALERT_TYPES_PUBLISHER[this.resource.type].publish(
             this, renderedResults, layer
         );

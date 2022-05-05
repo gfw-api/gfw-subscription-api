@@ -149,44 +149,11 @@ describe('Update subscription endpoint', () => {
     });
 
     it('Updating subscription data providing an invalid language should sanitize the language and update the subscription', async () => {
-        const subscription = await createSubscription(ROLES.USER.id);
-        const updateData = { ...subscription.toJSON(), language: 'ru' };
-        delete updateData._id;
-        delete updateData.__v;
-        delete updateData.updatedAt;
-        const response = await updateSubscription({ defaultSub: subscription, subToUpdate: updateData });
-
-        response.status.should.equal(200);
-        const { data } = response.body;
-
-        data.type.should.equal('subscription');
-        data.id.should.equal(subscription._id.toString());
-        data.should.have.property('attributes').and.instanceOf(Object);
-
-        const expectedAttributes: Record<string, any> = {
-            ...updateData,
-            createdAt: subscription.createdAt.toISOString(),
-            datasetsQuery: [],
-            userId: ROLES.USER.id,
-            language: 'en',
-        };
-        delete expectedAttributes.application;
-        data.attributes.should.deep.equal(expectedAttributes);
-
-        const subscriptionFromDB = await Subscription.findOne({ _id: subscription._id });
-        subscriptionFromDB.toObject().should.deep.equal({
-            ...subscription.toJSON(),
-            ...updateData,
-            language: 'en',
-        });
-    });
-
-    it('Updating subscription data providing an invalid language should sanitize the language and update the subscription', async () => {
-        const subscription = await createSubscription(ROLES.USER.id);
-        const updateData = { ...subscription.toJSON(), language: 'es' };
-        delete updateData._id;
-        delete updateData.__v;
-        delete updateData.updatedAt;
+        const subscription: ISubscription = await createSubscription(ROLES.USER.id);
+        const updateData = { ...subscription.toObject(), language: 'ru' };
+        // delete updateData._id;
+        // delete updateData.__v;
+        // delete updateData.updatedAt;
         const response = await updateSubscription({ defaultSub: subscription, subToUpdate: updateData });
 
         response.status.should.equal(200);

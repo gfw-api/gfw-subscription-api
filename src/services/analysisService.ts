@@ -96,7 +96,6 @@ class AnalysisService {
 
         }
     }
-
 }
 
 export default AnalysisService;

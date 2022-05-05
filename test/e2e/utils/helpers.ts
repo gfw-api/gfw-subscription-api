@@ -83,8 +83,6 @@ export const createURLSubscriptionCallMock = (expectedBody: Record<string, any>)
         .reply(200);
 };
 
-export const createSubInDB = (userId: string, datasetUuid: string = null, data: Record<string, any> = {}) => new Subscription(createSubscription(userId, data)).save();
-
 export const createSubscription = async (userId: string, data: Record<string, any> = {}) => {
     const uuid = getUUID();
 
@@ -104,6 +102,8 @@ export const createSubscription = async (userId: string, data: Record<string, an
         ...data
     }).save();
 };
+
+export const createSubInDB: (userId: string, datasetUuid?: string, data?: any) => Promise<ISubscription> = (userId: string, datasetUuid: string = null, data: any = {}) => new Subscription(createSubscription(userId, data)).save();
 
 export const createStatistic = (createdAt = new Date(), application = 'gfw') => new Statistic({
     slug: 'viirs-active-fires',
