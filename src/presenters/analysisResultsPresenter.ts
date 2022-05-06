@@ -9,7 +9,6 @@ import GLADS2Presenter from 'presenters/gladS2Presenter';
 
 import UrlService from 'services/urlService';
 import { ISubscription } from 'models/subscription';
-import { AlertType, EMAIL_MAP, EmailMap, SubscriptionEmailData } from 'types/email.type';
 import { PresenterData, PresenterInterface, PresenterResponse } from 'presenters/presenter.interface';
 import { ILayer } from 'models/layer';
 import { BaseAlert } from 'types/analysis.type';
@@ -32,17 +31,6 @@ const decorateWithName = (results: PresenterResponse, subscription: ISubscriptio
     } else {
         results.alert_name = 'Unnamed Subscription';
     }
-
-    return results;
-};
-
-const decorateWithMetadata = (results: PresenterResponse, layer: ILayer): PresenterResponse => {
-    if (!layer.meta) {
-        return results;
-    }
-
-    results.alert_type = layer.meta.description;
-    results.alert_summary = '';
 
     return results;
 };
@@ -88,33 +76,6 @@ const decorateWithArea = (results: PresenterResponse, subscription: ISubscriptio
     return results;
 };
 
-// const decorateWithMetadata = (results: SubscriptionEmailData, layer: ILayer) => {
-//     if (!layer.meta) {
-//         return results;
-//     }
-//
-//     const summaryForLayer = (layer: ILayer): string => {
-//         const { meta } = layer;
-//         if (meta === undefined) {
-//             return '';
-//         }
-//
-//         return '';
-//     };
-//
-//     results.alert_type = layer.meta.description;
-//     results.alert_summary = summaryForLayer(layer);
-//
-//     return results;
-// };
-
-// const decorateWithDates = (results: SubscriptionEmailData, begin: Date, end: Date) => {
-//     results.alert_date_begin = moment(begin).format('YYYY-MM-DD');
-//     results.alert_date_end = moment(end).format('YYYY-MM-DD');
-//
-//     return results;
-// };
-
 class AnalysisResultsPresenter {
 
     static async render(results: PresenterData<BaseAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<PresenterResponse> {
@@ -135,8 +96,6 @@ class AnalysisResultsPresenter {
             presenterResponse = decorateWithArea(presenterResponse, subscription);
             // eslint-disable-next-line no-param-reassign
             presenterResponse = decorateWithLinks(presenterResponse, subscription);
-            // eslint-disable-next-line no-param-reassign
-            presenterResponse = decorateWithMetadata(presenterResponse, layer);
             // eslint-disable-next-line no-param-reassign
             presenterResponse = decorateWithDates(presenterResponse, begin, end);
 

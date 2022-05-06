@@ -151,9 +151,6 @@ describe('Update subscription endpoint', () => {
     it('Updating subscription data providing an invalid language should sanitize the language and update the subscription', async () => {
         const subscription: ISubscription = await createSubscription(ROLES.USER.id);
         const updateData = { ...subscription.toObject(), language: 'ru' };
-        // delete updateData._id;
-        // delete updateData.__v;
-        // delete updateData.updatedAt;
         const response = await updateSubscription({ defaultSub: subscription, subToUpdate: updateData });
 
         response.status.should.equal(200);
@@ -171,6 +168,9 @@ describe('Update subscription endpoint', () => {
             language: 'en',
         };
         delete expectedAttributes.application;
+        delete expectedAttributes._id;
+        delete expectedAttributes.__v;
+        delete expectedAttributes.updatedAt;
         data.attributes.should.deep.equal(expectedAttributes);
 
         const subscriptionFromDB = await Subscription.findOne({ _id: subscription._id });

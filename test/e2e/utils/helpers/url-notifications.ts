@@ -2046,15 +2046,3 @@ export const createViirsFireAlertsWDPAURLSubscriptionBody = (subscription: Recor
         ...bodyData
     };
 };
-
-module.exports = {
-    createGLADAlertsGeostoreURLSubscriptionBody,
-    createGLADAlertsISOURLSubscriptionBody,
-    createGLADAlertsWDPAURLSubscriptionBody,
-    createMonthlySummaryGeostoreURLSubscriptionBody,
-    createMonthlySummaryISOURLSubscriptionBody,
-    createMonthlySummaryWDPAURLSubscriptionBody,
-    createViirsFireAlertsGeostoreURLSubscriptionBody,
-    createViirsFireAlertsISOURLSubscriptionBody,
-    createViirsFireAlertsWDPAURLSubscriptionBody
-};

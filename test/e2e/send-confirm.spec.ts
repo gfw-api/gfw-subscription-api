@@ -7,6 +7,7 @@ import { sleep } from 'sleep';
 import { createMockSendConfirmationSUB } from './utils/mock';
 import { ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
+import { createSubscription } from './utils/helpers';
 
 const {
     createSubscriptionContent,
@@ -100,9 +101,9 @@ describe('Send confirmation endpoint', () => {
         }));
 
         createMockSendConfirmationSUB();
-        const createdSubscription = await new Subscription(createSubscription(ROLES.USER.id)).save();
+        const subscription = await createSubscription(ROLES.USER.id);
         const response = await requester
-            .get(`/api/v1/subscriptions/${createdSubscription._id}/send_confirmation`)
+            .get(`/api/v1/subscriptions/${subscription.id}/send_confirmation`)
             .set('Authorization', `Bearer abcd`)
             .query({ application: 'rw' })
             .send();
@@ -115,7 +116,7 @@ describe('Send confirmation endpoint', () => {
     it('Providing redirect=false as query param disables the redirection (happy case)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
-        const createdSubscription = await new Subscription(createSubscription(ROLES.USER.id)).save();
+        const createdSubscription = await createSubscription(ROLES.USER.id);
         const response = await requester
             .get(`/api/v1/subscriptions/${createdSubscription._id}/send_confirmation`)
             .set('Authorization', `Bearer abcd`)

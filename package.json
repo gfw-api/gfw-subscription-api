@@ -34,7 +34,7 @@
     "config": "^3.3.7",
     "cron": "^1.7.2",
     "d3": "^5.16.0",
-    "jsonapi-serializer": "^3.6.5",
+    "jsonapi-serializer": "3.6.7",
     "julian": "0.2.0",
     "koa": "^2.13.4",
     "koa-body": "^4.2.0",

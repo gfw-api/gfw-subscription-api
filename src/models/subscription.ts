@@ -10,7 +10,7 @@ import EmailPublisher from 'publishers/emailPublisher';
 import UrlPublisher from 'publishers/urlPublisher';
 import { PublisherInterface } from 'publishers/publisher.interface';
 import { BaseAlert } from 'types/analysis.type';
-import { EmailLanguageType, SubscriptionEmailData } from 'types/email.type';
+import { EmailLanguageType } from 'types/email.type';
 import { PresenterData, PresenterResponse } from 'presenters/presenter.interface';
 
 const ALERT_TYPES: string[] = ['EMAIL', 'URL'];
