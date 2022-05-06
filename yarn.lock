@@ -2890,7 +2890,7 @@ json5@^2.1.1, json5@^2.2.1:
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.1.tgz#655d50ed1e6f95ad1a3caababd2b0efda10b395c"
   integrity sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==
 
-jsonapi-serializer@^3.6.5:
+jsonapi-serializer@3.6.7:
   version "3.6.7"
   resolved "https://registry.yarnpkg.com/jsonapi-serializer/-/jsonapi-serializer-3.6.7.tgz#18299122e7624d962fadaba16c320da6a7c405c0"
   integrity sha512-usScb34T6mB0QK/AxOpXTpE9iB7JW4/CMhREitzeKv9rV5CdZhdVA8F9zIc7Xz9rjbSv98vOXkuO1HRtM0paSg==

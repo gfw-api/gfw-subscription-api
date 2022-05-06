@@ -2,8 +2,7 @@ import config from 'config';
 import logger from 'logger';
 import { createClient, RedisClientType } from 'redis';
 import SparkPost from 'sparkpost';
-import { EmailLanguageType, EmailTemplates } from 'types/email.type';
-import { PublisherData } from 'publishers/publisher.interface';
+import { EmailLanguageType, EmailTemplates, SubscriptionEmailData } from 'types/email.type';
 
 const CHANNEL: string = config.get('apiGateway.queueName');
 
@@ -38,8 +37,7 @@ class MailService {
         this.redisClient.connect();
     }
 
-    //TODO: replace type of "data" to SubscriptionEmailData
-    sendMail(template: EmailTemplates, language: EmailLanguageType, data: PublisherData, recipients: SparkPost.Recipient[], sender: string = 'gfw'): void {
+    sendMail(template: EmailTemplates, language: EmailLanguageType, data: SubscriptionEmailData, recipients: SparkPost.Recipient[], sender: string = 'gfw'): void {
         const fullTemplate: string = `${template}-${language}`
         this.redisClient.publish(CHANNEL, JSON.stringify({
             template: fullTemplate,

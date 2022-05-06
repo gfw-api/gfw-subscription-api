@@ -1,5 +1,6 @@
 import { ISubscription } from 'models/subscription';
 import { ILayer } from 'models/layer';
+import { SubscriptionEmailData } from 'types/email.type';
 
 export type PublisherData = {
     alert_link: string
@@ -22,5 +23,5 @@ export type PublisherData = {
 
 export interface PublisherInterface {
 
-    publish(subscription: ISubscription, results: PublisherData, layer: ILayer): Promise<void>
+    publish(subscription: ISubscription, results: PublisherData | SubscriptionEmailData, layer?: ILayer): Promise<void>
 }
