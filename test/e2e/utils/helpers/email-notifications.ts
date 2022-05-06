@@ -41,74 +41,12 @@ export const validateCommonNotificationParams = (jsonMessage: Record<string, any
     jsonMessage.data.should.have.property('week_end').and.equal(endDate.format('DD/MM/YYYY'));
     jsonMessage.data.should.have.property('alert_name').and.equal(sub.name);
     jsonMessage.data.should.have.property('subscriptions_url', `${config.get('gfw.flagshipUrl')}/my-gfw?lang=${sub.language}`);
-    jsonMessage.data.should.have.property('unsubscribe_url', `${process.env.API_GATEWAY_EXTERNAL_URL}/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${sub.language}`);
+    jsonMessage.data.should.have.property('unsubscribe_url', `${config.get('apiGateway.externalUrl')}/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${sub.language}`);
 
     // New Help Center URLs, including language
     jsonMessage.data.should.have.property('help_center_url_manage_areas', `${config.get('gfw.flagshipUrl')}/help/map/guides/manage-saved-areas?lang=${sub.language}`);
     jsonMessage.data.should.have.property('help_center_url_save_more_areas', `${config.get('gfw.flagshipUrl')}/help/map/guides/save-area-subscribe-forest-change-notifications?lang=${sub.language}`);
     jsonMessage.data.should.have.property('help_center_url_investigate_alerts', `${config.get('gfw.flagshipUrl')}/help/map/guides/investigate-forest-change-satellite-imagery?lang=${sub.language}`);
-};
-
-export const validateGLADAlertsAndPriorityAreas = (jsonMessage: Record<string, any>, beginDate: Moment, endDate: Moment, sub: ISubscription, priorityOverride = {}) => {
-    jsonMessage.data.should.have.property('layerSlug').and.equal('glad-alerts');
-
-    // Validate download URLs
-    jsonMessage.data.should.have.property('downloadUrls').and.be.an('object');
-    jsonMessage.data.downloadUrls.should.have.property('csv')
-        .and.be.a('string')
-        .and.contain(config.get('dataApi.url'))
-        .and.contain(config.get('datasets.gladDownloadDataset'))
-        .and.contain('download/csv')
-        .and.contain('SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence')
-        .and.contain(', is__ifl_intact_forest_landscapes as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest')
-        .and.contain(', is__gfw_peatlands as in_peat, is__wdpa_protected_areas as in_protected_areas')
-        .and.contain(`FROM ${config.get('datasets.gladDownloadDataset')}`)
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
-
-    jsonMessage.data.downloadUrls.should.have.property('json')
-        .and.be.a('string')
-        .and.contain(config.get('dataApi.url'))
-        .and.contain(config.get('datasets.gladDownloadDataset'))
-        .and.contain('download/json')
-        .and.contain('SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence')
-        .and.contain(', is__ifl_intact_forest_landscapes as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest')
-        .and.contain(', is__gfw_peatlands as in_peat, is__wdpa_protected_areas as in_protected_areas')
-        .and.contain(`FROM ${config.get('datasets.gladDownloadDataset')}`)
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
-
-    const priorityAreas = {
-        intact_forest: 0,
-        primary_forest: 0,
-        peat: 0,
-        protected_areas: 50,
-        plantations: 0,
-        other: 50,
-        ...priorityOverride,
-    };
-
-    jsonMessage.data.should.have.property('priority_areas').and.deep.equal(priorityAreas);
-    jsonMessage.data.should.have.property('alert_count').and.equal(100);
-    jsonMessage.data.should.have.property('value').and.equal(100);
-    jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generate(
-        sub,
-        {
-            name: 'umd_as_it_happens',
-            slug: 'glad-alerts',
-            subscription: true,
-            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
-            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
-        },
-        beginDate.toDate(),
-        endDate.toDate(),
-    ));
-
-    jsonMessage.data.should.have.property('dashboard_link')
-        .and.contain(`${config.get('gfw.flagshipUrl')}/dashboards/aoi/${sub.id}`)
-        .and.contain(`lang=${sub.language}`)
-        .and.contain(`category=forest-change`)
-        .and.contain(`utm_campaign=ForestChangeAlert`);
 };
 
 export const validateVIIRSAlertsAndPriorityAreas = (jsonMessage: Record<string, any>, beginDate: Moment, endDate: Moment, sub: ISubscription, priorityOverride = {}) => {

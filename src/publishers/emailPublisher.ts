@@ -4,7 +4,7 @@ import { ISubscription } from 'models/subscription';
 import { ILayer } from 'models/layer';
 import SparkPost from 'sparkpost';
 import { EMAIL_MAP, EmailLanguageType, EmailMap, EmailTemplates, SubscriptionEmailData } from 'types/email.type';
-import { PublisherData, PublisherInterface } from 'publishers/publisher.interface';
+import { PublisherInterface } from 'publishers/publisher.interface';
 
 const DEFAULT_TEMPLATE: string = 'forest-change-notification';
 
@@ -20,17 +20,7 @@ const TEMPLATE_MAP: Record<string, string> = {
 
 class EmailPublisher implements PublisherInterface {
 
-// <<<<<<< HEAD
-//
-//     async publish(subscription: ISubscription, results: SubscriptionEmailData, layer: ILayer): Promise<void> {
-//         logger.info('[SubscriptionEmails] Publishing email with results', results);
-//         const emailMap: EmailMap = EMAIL_MAP[layer.slug] || EMAIL_MAP['default'];
-//         const template: EmailTemplates = emailMap.emailTemplate;
-//         const language: EmailLanguageType = subscription.language.toLowerCase().replace(/_/g, '-') as EmailLanguageType;
-// =======
-
-    //TODO: replace PublisherData with SubscriptionEmailData
-    async publish(subscription: ISubscription, results: PublisherData, layer: ILayer): Promise<void> {
+    async publish(subscription: ISubscription, results: SubscriptionEmailData, layer: ILayer): Promise<void> {
         logger.info('[SubscriptionEmails] Publishing email with results', results);
         const emailMap: EmailMap = EMAIL_MAP[layer.slug] || EMAIL_MAP['default'];
         const template: EmailTemplates = emailMap.emailTemplate;
