@@ -27,6 +27,7 @@ export type DatasetEmail = {
 class MailService {
 
     redisClient: RedisClientType
+    #isConnected: boolean = false
 
     constructor() {
         logger.debug('[MailService] Initializing mail queue');
@@ -34,10 +35,17 @@ class MailService {
         this.redisClient = createClient({
             url: config.get('redis.url')
         });
-        this.redisClient.connect();
     }
 
-    sendMail(template: EmailTemplates, language: EmailLanguageType, data: SubscriptionEmailDataType, recipients: SparkPost.Recipient[], sender: string = 'gfw'): Promise<number> {
+    async #connect(): Promise<boolean> {
+        if (!this.#isConnected) {
+            await this.redisClient.connect();
+            this.#isConnected = true;
+        }
+        return true;
+    }
+
+    async sendMail(template: EmailTemplates, language: EmailLanguageType, data: SubscriptionEmailDataType, recipients: SparkPost.Recipient[], sender: string = 'gfw'): Promise<number> {
         const fullTemplate: string = `${template}-${language}`
         const message: string = JSON.stringify({
             template: fullTemplate,
@@ -47,10 +55,11 @@ class MailService {
         })
         logger.debug('[sendMail] - Sending mail with data', message);
 
+        await this.#connect();
         return this.redisClient.publish(CHANNEL, message);
     }
 
-    sendDatasetEmail(env: string, data: DatasetEmail, recipients: SparkPost.Recipient[], sender: string = 'gfw'): Promise<number> {
+    async sendDatasetEmail(env: string, data: DatasetEmail, recipients: SparkPost.Recipient[], sender: string = 'gfw'): Promise<number> {
         let template: string = 'dataset-rw';
         if (env && env !== 'production') {
             template += `-${env}`;
@@ -62,10 +71,12 @@ class MailService {
             sender
         })
         logger.debug('[sendDatasetEmail] - Sending mail with data', message);
+
+        await this.#connect();
         return this.redisClient.publish(CHANNEL, message);
     }
 
-    sendSubscriptionConfirmationEmail(language: EmailLanguageType, application: string, data: SubscriptionConfirmationEmail, recipients: SparkPost.Recipient[], sender: string = 'gfw'): Promise<number> {
+    async sendSubscriptionConfirmationEmail(language: EmailLanguageType, application: string, data: SubscriptionConfirmationEmail, recipients: SparkPost.Recipient[], sender: string = 'gfw'): Promise<number> {
         let template: string = `subscription-confirmation-${language}`;
         if (application !== 'gfw') {
             template = `subscription-confirmation-${application}-${language}`;
@@ -77,6 +88,8 @@ class MailService {
             sender
         })
         logger.debug('[sendSubscriptionConfirmationEmail] - Sending mail with data', message);
+
+        await this.#connect();
         return this.redisClient.publish(CHANNEL, message);
     }
 

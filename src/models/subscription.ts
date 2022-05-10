@@ -2,12 +2,11 @@ import type { Document, Model, PaginateModel, Schema as ISchema, Types } from 'm
 import { model, Schema } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate';
 import logger from 'logger';
-import moment from 'moment';
 import Layer, { ILayer } from 'models/layer';
 import Statistic from 'models/statistic';
 import { AlertResultType } from 'types/alertResult.type';
 import { EMAIL_MAP, EmailLanguageType } from 'types/email.type';
-import { AlertResultWithCount, PresenterInterface } from 'presenters/presenter.interface';
+import { PresenterInterface } from 'presenters/presenter.interface';
 import { PresenterResponseDataType } from 'types/presenterResponse.type';
 
 const ALERT_TYPES: string[] = ['EMAIL', 'URL'];
