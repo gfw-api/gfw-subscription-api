@@ -22,5 +22,8 @@
   "dataApi": {
     "apiKey": "example",
     "origin": "api.resourcewatch.org"
+  },
+  "mongodb": {
+    "database": "gfw_subscription_db_test"
   }
 }
