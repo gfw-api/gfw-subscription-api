@@ -1,11 +1,11 @@
 import { PresenterInterface } from 'presenters/presenter.interface';
-import { BaseAlert } from 'types/analysis.type';
 import MonthlySummaryPresenter from 'presenters/monthlySummaryPresenter';
-import VIIRSPresenter from 'presenters/viirsPresenter';
 import GLADLPresenter from 'presenters/gladLPresenter';
 import GLADAllPresenter from 'presenters/gladAllPresenter';
 import GLADS2Presenter from 'presenters/gladS2Presenter';
 import GLADRaddPresenter from 'presenters/gladRaddPresenter';
+import ViirsPresenter from 'presenters/viirsPresenter';
+import DatasetPresenter from 'presenters/datasetPresenter';
 
 export type EmailLanguageType = 'en' | 'es' | 'es-mx' | 'fr' | 'id' | 'pt' | 'pt-br' | 'zh'
 
@@ -15,13 +15,13 @@ export type EmailTemplates =
     | 'monthly-summary'
     | 'forest-change-notification'
 
-export type SubscriptionEmailData =
-    ForestFiresNotification
-    | ForestFiresNotificationViirs
-    | GladUpdatedNotification
-    | MonthlySummary
+export type SubscriptionEmailDataType =
+     ForestFiresNotificationEmailData
+    |  ForestFiresNotificationViirsEmailData
+    |  GladUpdatedNotificationEmailData
+    |  MonthlySummaryEmailData
 
-export class ForestFiresNotification {
+export type ForestFiresNotificationEmailData = {
     alert_link: string
     alert_name: string
     area_ha_sum: string
@@ -50,7 +50,7 @@ export class ForestFiresNotification {
 
 }
 
-export class ForestFiresNotificationViirs {
+export type ForestFiresNotificationViirsEmailData = {
     alert_link: string
     alert_name: string
     dashboard_link: string
@@ -81,7 +81,7 @@ export class ForestFiresNotificationViirs {
     week_start: string
 }
 
-export class GladUpdatedNotification {
+export type GladUpdatedNotificationEmailData = {
     alert_link: string
     alert_name: string
     area_ha_sum: string
@@ -110,7 +110,7 @@ export class GladUpdatedNotification {
     week_start: string
 }
 
-export class MonthlySummary {
+export type MonthlySummaryEmailData = {
     alert_link: string
     alert_name: string
     dashboard_link: string
@@ -153,7 +153,10 @@ export class MonthlySummary {
     year: string
 }
 
-export type EmailMap = { emailTemplate: EmailTemplates, emailDataType: any, presenter: PresenterInterface<BaseAlert> }
+export type EmailMap = {
+    emailTemplate: EmailTemplates,
+    presenter: PresenterInterface<any, any>
+}
 
 export type AlertType =
     'glad-alerts'
@@ -167,42 +170,34 @@ export type AlertType =
 export const EMAIL_MAP: Record<AlertType | 'default', EmailMap> = {
     'default': {
         emailTemplate: 'forest-change-notification',
-        emailDataType: ForestFiresNotification,
-        presenter: GLADLPresenter
+        presenter: DatasetPresenter
     },
     'glad-alerts': {
         emailTemplate: 'glad-updated-notification',
-        emailDataType: GladUpdatedNotification,
         presenter: GLADLPresenter
     },
     'glad-all': {
         emailTemplate: 'glad-updated-notification',
-        emailDataType: GladUpdatedNotification,
         presenter: GLADAllPresenter,
     },
     'glad-l': {
         emailTemplate: 'glad-updated-notification',
-        emailDataType: GladUpdatedNotification,
         presenter: GLADLPresenter,
     },
     'glad-radd': {
         emailTemplate: 'glad-updated-notification',
-        emailDataType: GladUpdatedNotification,
         presenter: GLADRaddPresenter,
     },
     'glad-s2': {
         emailTemplate: 'glad-updated-notification',
-        emailDataType: GladUpdatedNotification,
         presenter: GLADS2Presenter,
     },
     'monthly-summary': {
         emailTemplate: 'monthly-summary',
-        emailDataType: MonthlySummary,
         presenter: MonthlySummaryPresenter,
     },
     'viirs-active-fires': {
         emailTemplate: 'forest-fires-notification-viirs',
-        emailDataType: ForestFiresNotification,
-        presenter: VIIRSPresenter,
+        presenter: ViirsPresenter,
     }
 }

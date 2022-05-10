@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import * as d3 from 'd3';
 import { FormattedPriorityArea, PriorityArea } from 'presenters/presenter.interface';
-import { BaseAlert, ViirsActiveFiresAlert } from 'types/analysis.type';
+import { BaseAlert, ViirsActiveFiresAlertResultType } from 'types/alertResult.type';
 
 class EmailHelpersService {
 
@@ -123,7 +123,7 @@ class EmailHelpersService {
     }
 
     static async calculateAlertFrequency(thisYearAlerts: BaseAlert[], lastYearAlerts: BaseAlert[], lang: string): Promise<string> {
-        const lastYearAverage: number = _.mean(lastYearAlerts.map((al: ViirsActiveFiresAlert) => al.alert__count));
+        const lastYearAverage: number = _.mean(lastYearAlerts.map((al: ViirsActiveFiresAlertResultType) => al.alert__count));
         const lastYearStdDev: number = EmailHelpersService.standardDeviation(lastYearAlerts.map((al: BaseAlert) => al.alert__count));
         const currentAvg: number = _.mean(thisYearAlerts.map((al: BaseAlert) => al.alert__count));
 

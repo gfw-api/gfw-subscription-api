@@ -1,26 +1,39 @@
 import logger from 'logger';
 import moment, { Moment } from 'moment';
-
 import AlertUrlService from 'services/alertUrlService';
 import Layer, { ILayer } from 'models/layer';
 import GLADAlertsService from 'services/gfw-data-api/gladAlertsService';
-import ViirsAlertsService from 'services/gfw-data-api/viirsAlertsService';
 import EmailHelpersService from 'services/emailHelpersService';
 import UrlService from 'services/urlService';
-import { MonthlySummaryPresenterResponse, PresenterData, PresenterInterface, } from 'presenters/presenter.interface';
+import { AlertResultWithCount, PresenterInterface, } from 'presenters/presenter.interface';
 import { ISubscription } from 'models/subscription';
-import { GladAlert, MonthlySummaryAlert, ViirsActiveFiresAlert } from 'types/analysis.type';
+import { GladAlertResultType, MonthlySummaryAlert, ViirsActiveFiresAlertResultType } from 'types/alertResult.type';
+import ViirsPresenter from 'presenters/viirsPresenter';
+import { MonthlySummaryPresenterResponse } from 'types/presenterResponse.type';
 
-class MonthlySummaryPresenter implements PresenterInterface<MonthlySummaryAlert> {
+class MonthlySummaryPresenter extends PresenterInterface<MonthlySummaryAlert, MonthlySummaryPresenterResponse> {
 
-    async transform(results: PresenterData<MonthlySummaryAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<MonthlySummaryPresenterResponse> {
+    async getAlertsForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<MonthlySummaryAlert[]> {
+        const gladAlerts: GladAlertResultType[] = await GLADAlertsService.getAnalysisInPeriodForSubscription(startDate, endDate, params);
+        const viirsAlerts: ViirsActiveFiresAlertResultType[] = await ViirsPresenter.getAlertsForSubscription(startDate, endDate, params);
+        const flattenedResults: MonthlySummaryAlert[] = []
+        gladAlerts.forEach((alert: GladAlertResultType) => flattenedResults.push({ ...alert, type: 'GLAD' }));
+        viirsAlerts.forEach((alert: ViirsActiveFiresAlertResultType) => flattenedResults.push({
+            ...alert,
+            type: 'VIIRS'
+        }));
+        return flattenedResults;
+    }
+
+
+    async transform(results: AlertResultWithCount<MonthlySummaryAlert>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<MonthlySummaryPresenterResponse> {
         const resultObject: Partial<MonthlySummaryPresenterResponse> = { value: results.value };
         EmailHelpersService.updateMonthTranslations();
         moment.locale(subscription.language || 'en');
 
         try {
-            const gladAlerts: GladAlert[] = (results.data.filter((el: MonthlySummaryAlert) => el.type === 'GLAD') as GladAlert[]);
-            const viirsAlerts: ViirsActiveFiresAlert[] = (results.data.filter((el: MonthlySummaryAlert) => el.type === 'VIIRS') as ViirsActiveFiresAlert[]);
+            const gladAlerts: GladAlertResultType[] = (results.data.filter((el: MonthlySummaryAlert) => el.type === 'GLAD') as GladAlertResultType[]);
+            const viirsAlerts: ViirsActiveFiresAlertResultType[] = (results.data.filter((el: MonthlySummaryAlert) => el.type === 'VIIRS') as ViirsActiveFiresAlertResultType[]);
 
             const startDate: Moment = moment(begin);
             const endDate: Moment = moment(end);
@@ -29,8 +42,8 @@ class MonthlySummaryPresenter implements PresenterInterface<MonthlySummaryAlert>
             resultObject.week_of = `${startDate.format('DD MMM')}`;
             resultObject.week_start = startDate.format('DD/MM/YYYY');
             resultObject.week_end = endDate.format('DD/MM/YYYY');
-            resultObject.glad_count = gladAlerts.reduce((acc: number, curr: GladAlert) => acc + curr.alert__count, 0);
-            resultObject.viirs_count = viirsAlerts.reduce((acc: number, curr: ViirsActiveFiresAlert) => acc + curr.alert__count, 0);
+            resultObject.glad_count = gladAlerts.reduce((acc: number, curr: GladAlertResultType) => acc + curr.alert__count, 0);
+            resultObject.viirs_count = viirsAlerts.reduce((acc: number, curr: ViirsActiveFiresAlertResultType) => acc + curr.alert__count, 0);
             resultObject.alert_count = results.data.reduce((acc: number, curr: MonthlySummaryAlert) => acc + curr.alert__count, 0);
 
             // Find values for priority areas
@@ -59,11 +72,11 @@ class MonthlySummaryPresenter implements PresenterInterface<MonthlySummaryAlert>
             resultObject.formatted_viirs_priority_areas = EmailHelpersService.formatPriorityAreas(resultObject.viirs_alerts);
 
             // Finding alerts for the same period last year and calculate frequency
-            const gladLastYearAlerts: GladAlert[] = await GLADAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
+            const gladLastYearAlerts: GladAlertResultType[] = await GLADAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
             resultObject.glad_frequency = await EmailHelpersService.calculateAlertFrequency(gladAlerts, gladLastYearAlerts, subscription.language);
 
             // Finding alerts for the same period last year and calculate frequency
-            const viirsLastYearAlerts: ViirsActiveFiresAlert[] = await ViirsAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
+            const viirsLastYearAlerts: ViirsActiveFiresAlertResultType[] = await ViirsPresenter.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
             resultObject.viirs_frequency = await EmailHelpersService.calculateAlertFrequency(viirsAlerts, viirsLastYearAlerts, subscription.language);
 
             // Set URLs
@@ -78,7 +91,7 @@ class MonthlySummaryPresenter implements PresenterInterface<MonthlySummaryAlert>
             throw err;
         }
 
-        logger.info('Glad P Results ', results);
+        logger.info('Monthly summary Results ', results);
         return resultObject as MonthlySummaryPresenterResponse;
     }
 
