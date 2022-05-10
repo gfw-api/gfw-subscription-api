@@ -78,8 +78,6 @@ spec:
                 secretKeyRef:
                   key: REDIS_URI
                   name: dbsecrets
-            - name: REDIS_PORT_6379_TCP_ADDR
-              value: localhost
             - name: REDIS_PORT_6379_TCP_PORT
               value: "6379"
             - name: SPARKPOST_KEY

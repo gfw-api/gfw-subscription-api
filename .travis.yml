@@ -20,10 +20,10 @@ env:
     - LOAD_CRON=false
     - HOST_IP=127.0.0.1
     - PORT=8431
-    - REDIS_PORT_6379_TCP_ADDR=127.0.0.1
     - MONGO_PORT_27017_TCP_ADDR=127.0.0.1
     - GATEWAY_URL=http://127.0.0.1:9000
     - FASTLY_ENABLED=false
+    - LOGGER_LEVEL=debug
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter

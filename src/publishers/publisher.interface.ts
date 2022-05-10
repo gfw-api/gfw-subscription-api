@@ -5,5 +5,5 @@ import { PresenterResponseDataType } from 'types/presenterResponse.type';
 
 export interface PublisherInterface {
 
-    publish(subscription: ISubscription, results: PresenterResponseDataType | SubscriptionEmailDataType, layer?: ILayer): Promise<void>
+    publish(subscription: ISubscription, results: PresenterResponseDataType | SubscriptionEmailDataType, layer?: ILayer): Promise<any>
 }

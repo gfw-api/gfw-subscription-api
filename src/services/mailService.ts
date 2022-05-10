@@ -37,40 +37,47 @@ class MailService {
         this.redisClient.connect();
     }
 
-    sendMail(template: EmailTemplates, language: EmailLanguageType, data: SubscriptionEmailDataType, recipients: SparkPost.Recipient[], sender: string = 'gfw'): void {
+    sendMail(template: EmailTemplates, language: EmailLanguageType, data: SubscriptionEmailDataType, recipients: SparkPost.Recipient[], sender: string = 'gfw'): Promise<number> {
         const fullTemplate: string = `${template}-${language}`
-        this.redisClient.publish(CHANNEL, JSON.stringify({
+        const message: string = JSON.stringify({
             template: fullTemplate,
             data,
             recipients,
             sender
-        }));
+        })
+        logger.debug('[sendMail] - Sending mail with data', message);
+
+        return this.redisClient.publish(CHANNEL, message);
     }
 
-    sendDatasetEmail(env: string, data: DatasetEmail, recipients: SparkPost.Recipient[], sender: string = 'gfw'): void {
+    sendDatasetEmail(env: string, data: DatasetEmail, recipients: SparkPost.Recipient[], sender: string = 'gfw'): Promise<number> {
         let template: string = 'dataset-rw';
         if (env && env !== 'production') {
             template += `-${env}`;
         }
-        this.redisClient.publish(CHANNEL, JSON.stringify({
+        const message: string = JSON.stringify({
             template,
             data,
             recipients,
             sender
-        }));
+        })
+        logger.debug('[sendDatasetEmail] - Sending mail with data', message);
+        return this.redisClient.publish(CHANNEL, message);
     }
 
-    sendSubscriptionConfirmationEmail(language: EmailLanguageType, application: string, data: SubscriptionConfirmationEmail, recipients: SparkPost.Recipient[], sender: string = 'gfw'): void {
+    sendSubscriptionConfirmationEmail(language: EmailLanguageType, application: string, data: SubscriptionConfirmationEmail, recipients: SparkPost.Recipient[], sender: string = 'gfw'): Promise<number> {
         let template: string = `subscription-confirmation-${language}`;
         if (application !== 'gfw') {
             template = `subscription-confirmation-${application}-${language}`;
         }
-        this.redisClient.publish(CHANNEL, JSON.stringify({
+        const message: string = JSON.stringify({
             template,
             data,
             recipients,
             sender
-        }));
+        })
+        logger.debug('[sendSubscriptionConfirmationEmail] - Sending mail with data', message);
+        return this.redisClient.publish(CHANNEL, message);
     }
 
 }

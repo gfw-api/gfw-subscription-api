@@ -8,7 +8,7 @@ import { PublisherInterface } from 'publishers/publisher.interface';
 
 class EmailPublisher implements PublisherInterface {
 
-    async publish(subscription: ISubscription, results: SubscriptionEmailDataType, layer: ILayer): Promise<void> {
+    async publish(subscription: ISubscription, results: SubscriptionEmailDataType, layer: ILayer): Promise<number> {
         logger.info('[SubscriptionEmails] Publishing email with results', results);
         const emailMap: EmailMap = EMAIL_MAP[layer.slug] || EMAIL_MAP['default'];
         const template: EmailTemplates = emailMap.emailTemplate;
@@ -17,7 +17,7 @@ class EmailPublisher implements PublisherInterface {
         const recipients: SparkPost.Recipient[] = [{
             address: subscription.resource.content
         }];
-        mailService.sendMail(template, language, results, recipients);
+        return mailService.sendMail(template, language, results, recipients);
     }
 
 }

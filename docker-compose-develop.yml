@@ -13,7 +13,6 @@ services:
       FLAGSHIP_URL: http://staging.globalforestwatch.org
       REDIS_URL: redis://redis:6379
       API_GATEWAY_QUEUE_NAME: mail
-      REDIS_PORT_6379_TCP_ADDR: redis
       MONGO_PORT_27017_TCP_ADDR: mongo
       MONGO_PORT_27017_TCP_PORT: 27017
       MICROSERVICE_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
@@ -33,7 +32,7 @@ services:
     restart: always
 
   mongo:
-    image: mongo
+    image: mongo:3.6
     container_name: gfw-subscription-mongo
     ports:
       - "27021:27017"

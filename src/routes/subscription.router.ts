@@ -156,7 +156,7 @@ class SubscriptionsRouter {
         }).findOne();
 
         try {
-            SubscriptionService.sendConfirmation(subscription);
+            await SubscriptionService.sendConfirmation(subscription);
             logger.info(`Redirect to: ${config.get('gfw.flagshipUrl')}/my-gfw/subscriptions`);
 
             // Allows redirect=false flag to be provided, but defaults to applying the redirect

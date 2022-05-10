@@ -56,18 +56,18 @@ class SubscriptionService {
         }
         const subscription: ISubscription = await new Subscription(subscriptionFormatted).save();
         if (subscriptionFormatted.resource.type !== 'URL') {
-            SubscriptionService.sendConfirmation(subscription);
+            await SubscriptionService.sendConfirmation(subscription);
         }
 
         return SubscriptionSerializer.serialize(subscription);
     }
 
-    static sendConfirmation(subscription: ISubscription): SerializedSubscriptionResponse {
+    static async sendConfirmation(subscription: ISubscription): Promise<SerializedSubscriptionResponse> {
         logger.info('Sending confirmation email', subscription.toJSON());
         if (subscription.resource.type === 'EMAIL') {
             const language: EmailLanguageType = subscription.language.toLowerCase().replace(/_/g, '-') as EmailLanguageType;
             const application: string = subscription.application || 'gfw';
-            mailService.sendSubscriptionConfirmationEmail(language, application, {
+            await mailService.sendSubscriptionConfirmationEmail(language, application, {
                 confirmation_url: UrlService.confirmationUrl(subscription)
             }, [{
                 address: subscription.resource.content

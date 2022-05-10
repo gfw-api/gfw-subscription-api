@@ -88,7 +88,7 @@ class DatasetService {
                             // Execute EMAIL notification - sending an email
                             if (subscription.resource.type === 'EMAIL') {
                                 logger.debug('Sending mail with data', data);
-                                MailService.sendDatasetEmail(subscription.env, data, [{ address: subscription.resource.content }], 'rw'); // sender='rw'
+                                await MailService.sendDatasetEmail(subscription.env, data, [{ address: subscription.resource.content }], 'rw');
                             }
 
                             // Execute URL notification - POSTing to webhook
