@@ -3,8 +3,7 @@
     "level": "LOGGER_LEVEL"
   },
   "gfw": {
-    "flagshipUrl": "FLAGSHIP_URL",
-    "apiUrl": "API_URL"
+    "flagshipUrl": "FLAGSHIP_URL"
   },
   "rw": {
     "flagshipUrl": {
@@ -14,7 +13,6 @@
     }
   },
   "apiGateway": {
-    "uri": "API_GATEWAY_URI",
     "externalUrl": "API_GATEWAY_EXTERNAL_URL",
     "queueName": "API_GATEWAY_QUEUE_NAME"
   },
