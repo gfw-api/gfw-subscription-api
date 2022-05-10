@@ -23,7 +23,7 @@ import {
 } from  '../utils/helpers/email-notifications';
 
 import {
-    createGLADAlertsGeostoreURLSubscriptionBody, createGLADAlertsISOURLSubscriptionBody,
+    createGLADAlertsGeostoreURLSubscriptionBody,createGLADAlertsISOURLSubscriptionBody,
     createGLADAlertsWDPAURLSubscriptionBody,
 } from  '../utils/helpers/url-notifications';
 

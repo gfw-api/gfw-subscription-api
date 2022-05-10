@@ -2,23 +2,15 @@ import type { Document, Model, PaginateModel, Schema as ISchema, Types } from 'm
 import { model, Schema } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate';
 import logger from 'logger';
+import moment from 'moment';
 import Layer, { ILayer } from 'models/layer';
 import Statistic from 'models/statistic';
-import AnalysisService from 'services/analysisService';
-import AnalysisResultsPresenter from 'presenters/analysisResultsPresenter';
-import EmailPublisher from 'publishers/emailPublisher';
-import UrlPublisher from 'publishers/urlPublisher';
-import { PublisherInterface } from 'publishers/publisher.interface';
-import { BaseAlert } from 'types/analysis.type';
-import { EmailLanguageType } from 'types/email.type';
-import { PresenterData, PresenterResponse } from 'presenters/presenter.interface';
+import { AlertResultType } from 'types/alertResult.type';
+import { EMAIL_MAP, EmailLanguageType } from 'types/email.type';
+import { AlertResultWithCount, PresenterInterface } from 'presenters/presenter.interface';
+import { PresenterResponseDataType } from 'types/presenterResponse.type';
 
 const ALERT_TYPES: string[] = ['EMAIL', 'URL'];
-
-const ALERT_TYPES_PUBLISHER: Record<typeof ALERT_TYPES[number], PublisherInterface> = {
-    EMAIL: EmailPublisher,
-    URL: UrlPublisher,
-};
 
 export interface DatasetQuery {
     id: string,
@@ -90,30 +82,16 @@ export const Subscription: ISchema<ISubscription> = new Schema<ISubscription>({
 Subscription.methods.publish = async function (layerConfig: { slug: string, name: string }, begin: Date, end: Date, publish: boolean = true): Promise<boolean> {
     logger.info('[SubscriptionEmails] Publishing subscription with data', layerConfig, begin, end);
     const layer: ILayer = Layer.findBySlug(layerConfig.name);
+
     if (!layer) {
         return null;
     }
 
-    const analysisResults: BaseAlert[] = await AnalysisService.execute(this, layerConfig.slug, begin, end);
-    if (!analysisResults) {
-        logger.info('[SubscriptionEmails] Results are null, returning.');
-        return null;
-    }
-    logger.debug('Results obtained', analysisResults);
+    const presenter: PresenterInterface<AlertResultType, PresenterResponseDataType> = EMAIL_MAP[layer.slug] ? EMAIL_MAP[layer.slug].presenter : EMAIL_MAP['default'].presenter;
 
-    const totalAlertCount: number = analysisResults.reduce((acc: number, curr: BaseAlert) => acc + curr.alert__count, 0);
-    const analysisResultsWithSum: PresenterData<BaseAlert> = { value: totalAlertCount, data: analysisResults };
+    const published: boolean = await presenter.publish(layerConfig, begin, end, this, publish, layer);
 
-    if (totalAlertCount <= 0) {
-        logger.info('[SubscriptionEmails] Zero value result, not sending email for subscription.');
-        return false;
-    }
-
-    if (publish) {
-        const renderedResults: PresenterResponse = await AnalysisResultsPresenter.render(analysisResultsWithSum, this, layer, begin, end);
-        await ALERT_TYPES_PUBLISHER[this.resource.type].publish(
-            this, renderedResults, layer
-        );
+    if (published) {
         logger.info('[SubscriptionEmails] Saving statistic');
         await new Statistic({ slug: layerConfig.slug, application: this.application }).save();
     }

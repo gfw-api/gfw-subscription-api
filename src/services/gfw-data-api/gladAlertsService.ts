@@ -4,7 +4,7 @@ import logger from 'logger';
 import moment from 'moment';
 
 import GeostoreService from 'services/geostoreService';
-import { GladAlert } from 'types/analysis.type';
+import { GladAlertResultType } from 'types/alertResult.type';
 
 class GLADAlertsService {
 
@@ -66,7 +66,7 @@ class GLADAlertsService {
         return GLADAlertsService.#getURLInPeriodForGeostore(startDate, endDate, geostoreId);
     }
 
-    static async getAnalysisInPeriodForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<GladAlert[]> {
+    static async getAnalysisInPeriodForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<GladAlertResultType[]> {
         logger.info('[GLAD] Entering analysis with params', startDate, endDate, params);
         const uri: string = await GLADAlertsService.#getURLInPeriodForSubscription(startDate, endDate, params);
         logger.info(`[GLAD] Preparing Data API request, with URL ${config.get('dataApi.url')}${uri}`);
@@ -82,7 +82,7 @@ class GLADAlertsService {
         return response.data.data;
     }
 
-    static async getAnalysisSamePeriodLastYearForSubscription(startDate: Date, endDate: Date, params: Record<string, any>): Promise<GladAlert[]> {
+    static async getAnalysisSamePeriodLastYearForSubscription(startDate: Date, endDate: Date, params: Record<string, any>): Promise<GladAlertResultType[]> {
         const lastYearStartDate: moment.Moment = moment(startDate).subtract('1', 'y');
         const lastYearEndDate: moment.Moment = moment(endDate).subtract('1', 'y');
         return GLADAlertsService.getAnalysisInPeriodForSubscription(
