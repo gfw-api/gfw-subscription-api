@@ -4,8 +4,8 @@
   "description": "Subscriptions service for the RW API.",
   "main": "app/index.js",
   "scripts": {
-    "coverage": "nyc ts-mocha -b --project tsconfig.json -r tsconfig-paths/register --timeout 20000 'test/**/*.ts' --exit",
-    "test": "ts-mocha -b --project tsconfig.json -r tsconfig-paths/register --timeout 20000 'test/**/*.ts' --exit",
+    "coverage": "nyc ts-mocha -b --project tsconfig.json -r tsconfig-paths/register --timeout 30000 'test/**/*.ts' --exit",
+    "test": "ts-mocha -b --project tsconfig.json -r tsconfig-paths/register --timeout 30000 'test/**/*.ts' --exit",
     "start": "ts-node --files --project tsconfig.json -r tsconfig-paths/register src/index.ts",
     "watch": "ts-node-dev --respawn --transpile-only --files --project tsconfig.json -r tsconfig-paths/register src/index.ts",
     "build": "tsc --build",
