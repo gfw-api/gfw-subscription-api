@@ -1,12 +1,14 @@
 import { ISubscription } from 'models/subscription';
 import { ILayer } from 'models/layer';
-import { BaseAlert } from 'types/analysis.type';
-import {
-    ForestFiresNotification,
-    ForestFiresNotificationViirs,
-    GladUpdatedNotification,
-    MonthlySummary
-} from '../types/email.type';
+import { AlertResultType } from 'types/alertResult.type';
+import { PublisherInterface } from 'publishers/publisher.interface';
+import logger from 'logger';
+import EmailPublisher from 'publishers/emailPublisher';
+import UrlPublisher from 'publishers/urlPublisher';
+import { isEmpty } from 'lodash';
+import moment from 'moment';
+import UrlService from 'services/urlService';
+import { PresenterResponseDataType } from 'types/presenterResponse.type';
 
 export type FormattedPriorityArea = {
     intact_forest: string
@@ -26,115 +28,138 @@ export type PriorityArea = {
     other: number
 };
 
-export type PresenterData<T extends BaseAlert> = { value: number, data: T[] }
+export type AlertResultWithCount<T extends AlertResultType> = { value: number, data: T[] }
 
-export type PresenterResponse =
-    ViirsPresenterResponse
-    | MonthlySummaryPresenterResponse
-    | GladAllPresenterResponse
-    | GladS2PresenterResponse
-    | GladRaddPresenterResponse
-    | GladLPresenterResponse
+const ALERT_TYPES: string[] = ['EMAIL', 'URL'];
 
-/**
- * alert_date_begin and alert_date_end seem to not be used in any of the
- * Sparkpost templates, and instead seem like legacy leftovers.
- * However, there are some tests requiring them, so removing them requires
- * additional validation. While I currently suspect that the tests were
- * implemented based on implemented behavior, rather than desired one,
- * validating and cleaning this up will be a task for another day
- */
-type PresenterResponseBaseData = {
-    alert_date_begin: string
-    alert_date_end: string
-    alert_link: string
-    alert_name: string
-    dashboard_link: string
-    help_center_url_investigate_alerts: string
-    help_center_url_manage_areas: string
-    help_center_url_save_more_areas: string
-    layerSlug: string
-    subscriptions_url: string
-    unsubscribe_url: string
-    value: number
-    selected_area: string
-}
+const ALERT_TYPES_PUBLISHER: Record<typeof ALERT_TYPES[number], PublisherInterface> = {
+    EMAIL: EmailPublisher,
+    URL: UrlPublisher,
+};
 
-export type ViirsPresenterResponse = PresenterResponseBaseData & {
-    month: string
-    year: string
-    week_of: string
-    week_start: string
-    week_end: string
-    viirs_count: number
-    alert_count: number
-    downloadUrls: { csv: string, json: string }
-    priority_areas: PriorityArea
-    formatted_alert_count: string
-    formatted_priority_areas: FormattedPriorityArea
-    viirs_frequency: string
-    map_url_intact_forest: string
-    map_url_primary_forest: string
-    map_url_peat: string
-    map_url_wdpa: string
-}
+export abstract class PresenterInterface<T extends AlertResultType, U extends PresenterResponseDataType> {
 
-export type MonthlySummaryPresenterResponse = PresenterResponseBaseData & {
-    month: string
-    year: string
-    week_of: string
-    week_start: string
-    week_end: string
-    glad_count: number
-    viirs_count: number
-    alert_count: number
-    glad_alerts: PriorityArea
-    viirs_alerts: PriorityArea
-    priority_areas: PriorityArea
-    viirs_days_count: number
-    viirs_day_start: string
-    viirs_day_end: string
-    location: string
-    formatted_alert_count: string
-    formatted_glad_count: string
-    formatted_viirs_count: string
-    formatted_priority_areas: FormattedPriorityArea
-    formatted_glad_priority_areas: FormattedPriorityArea
-    formatted_viirs_priority_areas: FormattedPriorityArea
-    glad_frequency: string
-    viirs_frequency: string
-}
+    #decorateWithName(results: U, subscription: ISubscription): U {
+        if (!isEmpty(subscription.name)) {
+            results.alert_name = subscription.name;
+        } else {
+            results.alert_name = 'Unnamed Subscription';
+        }
 
-export type GladAllPresenterResponse = PresenterResponseBaseData & {
-    month: string
-    year: string
-    week_of: string
-    week_start: string
-    week_end: string
-    glad_count: number
-    alert_count: number
-    priority_areas: PriorityArea
-    formatted_alert_count: string
-    formatted_priority_areas: FormattedPriorityArea
-    map_url_intact_forest: string
-    map_url_primary_forest: string
-    map_url_peat: string
-    map_url_wdpa: string
-    area_ha_sum: string
-    intact_forest_ha_sum: string
-    primary_forest_ha_sum: string
-    peat_ha_sum: string
-    wdpa_ha_sum: string
-    downloadUrls: { csv: string, json: string }
-    glad_alert_type: string
-}
+        return results;
+    }
 
-export type GladS2PresenterResponse = GladAllPresenterResponse
+    #decorateWithDates(results: U, begin: Date, end: Date): U {
+        results.alert_date_begin = moment(begin).format('YYYY-MM-DD');
+        results.alert_date_end = moment(end).format('YYYY-MM-DD');
 
-export type GladRaddPresenterResponse = GladAllPresenterResponse
+        return results;
+    }
 
-export type GladLPresenterResponse = GladAllPresenterResponse
+    #decorateWithLinks(results: U, subscription: ISubscription): U {
+        results.unsubscribe_url = UrlService.unsubscribeUrl(subscription);
+        results.subscriptions_url = UrlService.flagshipUrl('/my-gfw', subscription.language);
 
-export interface PresenterInterface<T extends BaseAlert> {
-    transform(results: PresenterData<T>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<PresenterResponse>
+        // New Help Center links with language
+        results.help_center_url_manage_areas = UrlService.flagshipUrl('/help/map/guides/manage-saved-areas', subscription.language);
+        results.help_center_url_save_more_areas = UrlService.flagshipUrl('/help/map/guides/save-area-subscribe-forest-change-notifications', subscription.language);
+        results.help_center_url_investigate_alerts = UrlService.flagshipUrl('/help/map/guides/investigate-forest-change-satellite-imagery', subscription.language);
+
+        return results;
+    }
+
+    #decorateWithArea(results: U, subscription: ISubscription): U {
+        const params: Record<string, any> = subscription.params || {};
+
+        if (params.iso && params.iso.country) {
+            results.selected_area = `ISO Code: ${params.iso.country}`;
+
+            if (params.iso.region) {
+                results.selected_area += `, ID1: ${params.iso.region}`;
+
+                if (params.iso.subregion) {
+                    results.selected_area += `, ID2: ${params.iso.subregion}`;
+                }
+            }
+        } else if (params.wdpaid) {
+            results.selected_area = `WDPA ID: ${params.wdpaid}`;
+        } else {
+            results.selected_area = 'Custom Area';
+        }
+
+        return results;
+    }
+
+    #decorate(presenterResponse: U, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): U {
+        try {
+            presenterResponse.layerSlug = layer.slug;
+            // eslint-disable-next-line no-param-reassign
+            presenterResponse = this.#decorateWithName(presenterResponse, subscription);
+            // eslint-disable-next-line no-param-reassign
+            presenterResponse = this.#decorateWithArea(presenterResponse, subscription);
+            // eslint-disable-next-line no-param-reassign
+            presenterResponse = this.#decorateWithLinks(presenterResponse, subscription);
+            // eslint-disable-next-line no-param-reassign
+            presenterResponse = this.#decorateWithDates(presenterResponse, begin, end);
+
+            return presenterResponse;
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+    }
+
+    protected abstract getAlertsForSubscription(startDate: string, endDate: string, params: Record<string, any>, layerSlug: string): Promise<T[]>
+
+    protected abstract transform(results: AlertResultWithCount<T>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<U>
+
+    protected async getAlertsWithCountForSubscription(startDate: string, endDate: string, params: Record<string, any>, layerSlug: string): Promise<AlertResultWithCount<T>> {
+        const analysisResults: T[] = await this.getAlertsForSubscription(startDate, endDate, params, layerSlug);
+
+        if (!analysisResults) {
+            logger.info('[SubscriptionEmails] Results are null, returning.');
+            return null;
+        }
+        logger.debug('Results obtained', analysisResults);
+
+        const totalAlertCount: number = analysisResults.reduce((acc: number, curr: AlertResultType) => acc + curr.alert__count, 0);
+        const analysisResultsWithSum: AlertResultWithCount<T> = { value: totalAlertCount, data: analysisResults };
+
+        return analysisResultsWithSum;
+    }
+
+    protected async notify(results: AlertResultWithCount<T>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<void> {
+        try {
+
+            let presenterResponse: U;
+            presenterResponse = await this.transform(results, subscription, layer, begin, end);
+
+            presenterResponse = this.#decorate(presenterResponse, subscription, layer, begin, end);
+
+            await ALERT_TYPES_PUBLISHER[subscription.resource.type].publish(
+                subscription, presenterResponse, layer
+            );
+        } catch (err) {
+            logger.error(err);
+            throw err;
+        }
+    }
+
+    async publish(layerConfig: { slug: string, name: string }, begin: Date, end: Date, subscription: ISubscription, publish: boolean = true, layer: ILayer): Promise<boolean> {
+        const formatDate = (date: Date): string => moment(date).format('YYYY-MM-DD');
+
+        const analysisResultsWithCount: AlertResultWithCount<T> = await this.getAlertsWithCountForSubscription(formatDate(begin), formatDate(end), subscription.params, layerConfig.slug);
+
+        if (analysisResultsWithCount.value <= 0) {
+            logger.info('[SubscriptionEmails] Zero value result, not sending email for subscription.');
+            return false;
+        }
+
+        if (publish) {
+            await this.notify(analysisResultsWithCount, subscription, layer, begin, end)
+            return true;
+        } else {
+            return false
+        }
+    }
 }

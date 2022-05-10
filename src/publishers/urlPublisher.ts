@@ -1,11 +1,12 @@
 import logger from 'logger';
 import axios, { AxiosRequestConfig } from 'axios';
 import { ISubscription } from 'models/subscription';
-import { PublisherData, PublisherInterface } from 'publishers/publisher.interface';
+import { PublisherInterface } from 'publishers/publisher.interface';
+import { SubscriptionEmailDataType } from 'types/email.type';
 
 class UrlPublisher implements PublisherInterface {
 
-    async publish(subscription: ISubscription, results: PublisherData): Promise<void> {
+    async publish(subscription: ISubscription, results: SubscriptionEmailDataType): Promise<void> {
         try {
             const requestConfig: AxiosRequestConfig = {
                 method: 'POST',

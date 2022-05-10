@@ -38,7 +38,7 @@ class UpdateService {
                 };
             }
 
-            logger.debug('Saving lastupdates', dataset, latest[0].date);
+            logger.debug('Saving last updates', dataset, latest[0].date);
             await LastUpdate.update({ dataset }, { date: latest[0].date }).exec();
 
             return {
