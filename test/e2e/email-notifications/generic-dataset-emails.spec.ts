@@ -45,11 +45,6 @@ describe('Generic dataset emails', () => {
 
         redisClient = createClient({ url: config.get('redis.url') });
         await redisClient.connect();
-
-        // TODO: remove
-        await Subscription.deleteMany({}).exec();
-        await Statistic.deleteMany({}).exec();
-
     });
 
     it('Processing a dataset subscription without datasetQuery should not queue an email', async () => {
