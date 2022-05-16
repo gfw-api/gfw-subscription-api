@@ -16,7 +16,8 @@ import UpdateService, { UpdateServiceResponse } from 'services/updateService';
 import DatasetService from 'services/datasetService';
 import StatisticsService from 'services/statisticsService';
 import GenericError from 'errors/genericError';
-import AlertQueue from 'queues/alert.queue';
+import AlertQueue, { AlertQueueMessage } from 'queues/alert.queue';
+import EmailValidationService from 'services/emailValidationService';
 
 
 const router: Router = new Router({
@@ -225,11 +226,12 @@ class SubscriptionsRouter {
         logger.info(`Checking if '${dataset}' was updated`);
 
         if (result.updated) {
-            redisClient.publish(CHANNEL, JSON.stringify({
+            const message: AlertQueueMessage = {
                 layer_slug: dataset,
-                begin_date: new Date(result.beginDate),
-                end_date: new Date(result.endDate)
-            }));
+                begin_date: new Date(result.beginDate).toISOString(),
+                end_date: new Date(result.endDate).toISOString()
+            };
+            redisClient.publish(CHANNEL, JSON.stringify(message));
             ctx.body = `Dataset:${dataset} was updated`;
         } else {
             logger.info(`${dataset} was not updated`);
@@ -298,6 +300,11 @@ class SubscriptionsRouter {
         ctx.body = await SubscriptionService.getSubscriptionsForUser(ctx.params.userId, ctx.query.application as string, ctx.query.env as string);
     }
 
+    static async printEmailStatistics(): Promise<void> {
+        logger.info(`[SubscriptionsRouter] Printing email statistics`);
+        await EmailValidationService.validateSubscriptionEmailCount(moment());
+    }
+
     static async findAllSubscriptions(ctx: Context): Promise<void> {
         logger.info(`[SubscriptionsRouter] Getting ALL subscriptions`);
 
@@ -363,15 +370,18 @@ class SubscriptionsRouter {
             return;
         }
 
+        const message: AlertQueueMessage = {
+            layer_slug: alert,
+            begin_date: fromDate ? moment(fromDate).toISOString() : moment().subtract('2', 'w').toISOString(),
+            end_date: toDate ? moment(toDate).toISOString() : moment().subtract('1', 'w').toISOString(),
+            isTest: true,
+            email,
+            subId,
+            language
+        };
+
         try {
-            await AlertQueue.processMessage(JSON.stringify({
-                layer_slug: alert,
-                begin_date: fromDate ? moment(fromDate).toDate() : moment().subtract('2', 'w').toDate(),
-                end_date: toDate ? moment(toDate).toDate() : moment().subtract('1', 'w').toDate(),
-                email,
-                subId,
-                language
-            }));
+            await AlertQueue.processMessage(JSON.stringify(message));
             ctx.body = { success: true };
         } catch (e) {
             ctx.body = { success: false, message: e.message };
