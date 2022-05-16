@@ -5,8 +5,19 @@ import { createClient, RedisClientType } from 'redis';
 import SubscriptionService from 'services/subscriptionService';
 import DatasetService from 'services/datasetService';
 import { ISubscription } from 'models/subscription';
+import { EmailLanguageType } from 'types/email.type';
 
 const CHANNEL: string = config.get('apiGateway.subscriptionAlertsChannelName');
+
+export type AlertQueueMessage = {
+    layer_slug: string,
+    begin_date?: string,
+    end_date?: string,
+    email?: string,
+    subId?: string,
+    isTest?: boolean,
+    language?: EmailLanguageType
+};
 
 class AlertQueue {
 
@@ -24,7 +35,7 @@ class AlertQueue {
         logger.info('[AlertQueue] Processing alert message');
         logger.debug(`[AlertQueue] Processing alert message: ${message}`);
 
-        const parsedMessage: Record<string, any> = JSON.parse(message);
+        const parsedMessage: AlertQueueMessage = JSON.parse(message);
 
         if (parsedMessage.layer_slug === 'dataset') {
             await DatasetService.processSubscriptions();
@@ -36,26 +47,22 @@ class AlertQueue {
         const end: Date = new Date(Date.parse(parsedMessage.end_date));
 
         logger.debug('[AlertQueue] Params in message', layerSlug, begin, end);
-        const subscriptions: ISubscription[] = await SubscriptionService.getSubscriptionsByLayer(
-            layerSlug === 'glad-alerts' ? ['glad-alerts', 'glad-all', 'glad-l', 'glad-s2', 'glad-radd'] : [layerSlug]
-        );
-        logger.debug('[AlertQueue] Subscriptions obtained', subscriptions);
-        logger.info('[AlertQueue] Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
-        try {
-            // Code for testing subscription emails
-            const email: string = parsedMessage.email;
-            const subId: string = parsedMessage.subId;
-            if (email && subId) {
-                const subscription: ISubscription = await SubscriptionService.getSubscriptionById(subId);
-                subscription.resource.type = 'EMAIL';
-                subscription.resource.content = email;
-                subscription.language = parsedMessage.language || 'en';
-                const layer: { slug: string, name: string } = { name: layerSlug, slug: layerSlug };
-                await subscription.publish(layer, begin, end, !!email);
-                return;
-            }
 
-            // The real code that handles daily emails
+        if (parsedMessage.isTest === true) {
+            const subscription: ISubscription = await SubscriptionService.getSubscriptionById(parsedMessage.subId);
+            subscription.resource.type = 'EMAIL';
+            subscription.resource.content = parsedMessage.email;
+            subscription.language = parsedMessage.language || 'en';
+            const layer: { slug: string, name: string } = { name: layerSlug, slug: layerSlug };
+            await subscription.publish(layer, begin, end, !!parsedMessage.email);
+            return;
+        } else {
+            const subscriptions: ISubscription[] = await SubscriptionService.getSubscriptionsByLayer(
+                layerSlug === 'glad-alerts' ? ['glad-alerts', 'glad-all', 'glad-l', 'glad-s2', 'glad-radd'] : [layerSlug]
+            );
+            logger.debug('[AlertQueue] Subscriptions obtained', subscriptions);
+            logger.info('[AlertQueue] Sending alerts for', layerSlug, begin.toISOString(), end.toISOString());
+
             for (let i: number = 0, { length } = subscriptions; i < length; i++) {
                 try {
                     let name: string = layerSlug;
@@ -69,9 +76,6 @@ class AlertQueue {
                     logger.error(`[SubscriptionEmailsError] ${e}`);
                 }
             }
-
-        } catch (e) {
-            logger.error(e);
         }
     }
 

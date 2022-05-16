@@ -40,18 +40,6 @@ class SparkpostService {
         return filtered.reduce((prev: number, acc: SparkpostMetricsResult) => prev + acc.count_injected, 0);
     }
 
-    static async getGLADCountInjectedOnDate(date: Moment): Promise<number> {
-        return SparkpostService.requestMetricsForTemplate(date, /forest-change-notification-glads/g);
-    }
-
-    static async getVIIRSCountInjectedOnDate(date: Moment): Promise<number> {
-        return SparkpostService.requestMetricsForTemplate(date, /forest-fires-notification-viirs/g);
-    }
-
-    static async getMonthlyCountInjectedOnDate(date: Moment): Promise<number> {
-        return SparkpostService.requestMetricsForTemplate(date, /monthly-summary/g);
-    }
-
 }
 
 export default SparkpostService;

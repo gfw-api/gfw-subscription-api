@@ -1,8 +1,15 @@
 import { DurationInputArg2 } from 'moment';
 
+export type CronDataset =
+    'viirs-active-fires'
+    | 'glad-alerts'
+    | 'monthly-summary'
+    | 'dataset'
+    | 'subs-emails-validation'
+
 export interface Cron {
     name: string,
-    dataset: string
+    dataset: CronDataset
     crontab: string
     gap?: {
         value: number

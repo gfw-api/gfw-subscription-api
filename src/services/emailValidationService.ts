@@ -4,6 +4,7 @@ import Subscription, { ISubscription } from 'models/subscription';
 import SlackService from 'services/slackService';
 import SparkpostService from 'services/sparkpostService';
 import taskConfig, { Cron } from 'config/cron';
+import { AlertType, EMAIL_MAP, EmailMap } from 'types/email.type';
 
 export interface EmailValidationResult {
     success: boolean
@@ -30,10 +31,10 @@ class EmailValidationService {
         return { beginDate, endDate };
     }
 
-    static async findExpectedEmailsForSubType(date: Moment, type: string): Promise<number> {
+    static async findExpectedEmailsForSubType(date: Moment, type: AlertType): Promise<number> {
         let expectedNumberOfEmails: number = 0;
         const subscriptions: ISubscription[] = await Subscription.find({
-            datasets: new RegExp(type),
+            datasets: { $in: new RegExp(type) },
             'resource.type': 'EMAIL',
             confirmed: true,
         });
@@ -58,64 +59,44 @@ class EmailValidationService {
         return expectedNumberOfEmails;
     }
 
-    static async getGLADEmailsValidationObject(date: Moment): Promise<EmailValidationResult> {
-        const gladExpected: number = await EmailValidationService.findExpectedEmailsForSubType(date, 'glad-alerts');
-        const gladSparkpostCount: number = await SparkpostService.getGLADCountInjectedOnDate(date);
+    static async getEmailsValidationObject(date: Moment, emailType: AlertType): Promise<EmailValidationResult> {
+        const emailMap: EmailMap = EMAIL_MAP[emailType];
 
-        const expectedUpperLimit: number = gladExpected + (SUCCESS_RANGE * gladExpected);
-        const expectedLowerLimit: number = gladExpected - (SUCCESS_RANGE * gladExpected);
+        const expected: number = await EmailValidationService.findExpectedEmailsForSubType(date, emailType);
+        const sparkpostCount: number = await SparkpostService.requestMetricsForTemplate(date, new RegExp(`/${emailMap.emailTemplate}/g`));
+
+        const expectedUpperLimit: number = expected + (SUCCESS_RANGE * expected);
+        const expectedLowerLimit: number = expected - (SUCCESS_RANGE * expected);
         return {
-            success: gladSparkpostCount >= expectedLowerLimit && gladSparkpostCount <= expectedUpperLimit,
-            expectedSubscriptionEmailsSent: gladExpected,
-            sparkPostAPICalls: gladSparkpostCount,
-        };
-    }
-
-    static async getVIIRSEmailsValidationObject(date: Moment): Promise<EmailValidationResult> {
-        const viirsExpected: number = await EmailValidationService.findExpectedEmailsForSubType(date, 'viirs-active-fires');
-        const viirsSparkpostCount: number = await SparkpostService.getVIIRSCountInjectedOnDate(date);
-
-        const expectedUpperLimit: number = viirsExpected + (SUCCESS_RANGE * viirsExpected);
-        const expectedLowerLimit: number = viirsExpected - (SUCCESS_RANGE * viirsExpected);
-        return {
-            success: viirsSparkpostCount >= expectedLowerLimit && viirsSparkpostCount <= expectedUpperLimit,
-            expectedSubscriptionEmailsSent: viirsExpected,
-            sparkPostAPICalls: viirsSparkpostCount,
-        };
-    }
-
-    static async getMonthlyEmailsValidationObject(date: Moment): Promise<EmailValidationResult> {
-        if (date.date() === 1) {
-            const monthlyExpected: number = await EmailValidationService.findExpectedEmailsForSubType(date, 'monthly-summary');
-            const monthlySparkpostCount: number = await SparkpostService.getMonthlyCountInjectedOnDate(date);
-
-            const expectedUpperLimit: number = monthlyExpected + (SUCCESS_RANGE * monthlyExpected);
-            const expectedLowerLimit: number = monthlyExpected - (SUCCESS_RANGE * monthlyExpected);
-            return {
-                success: monthlySparkpostCount >= expectedLowerLimit && monthlySparkpostCount <= expectedUpperLimit,
-                expectedSubscriptionEmailsSent: monthlyExpected,
-                sparkPostAPICalls: monthlySparkpostCount,
-            };
-        }
-
-        return {
-            success: true,
-            expectedSubscriptionEmailsSent: 0,
-            sparkPostAPICalls: 0,
+            success: sparkpostCount >= expectedLowerLimit && sparkpostCount <= expectedUpperLimit,
+            expectedSubscriptionEmailsSent: expected,
+            sparkPostAPICalls: sparkpostCount,
         };
     }
 
     static async validateSubscriptionEmailCount(date: Moment = moment()): Promise<{ date: Moment, glad: EmailValidationResult, viirs: EmailValidationResult, monthly: EmailValidationResult }> {
         logger.info(`[SubscriptionValidation] Starting validation process for subscriptions for date ${date.toISOString()}`);
 
-        const glad: EmailValidationResult = await EmailValidationService.getGLADEmailsValidationObject(date);
-        const viirs: EmailValidationResult = await EmailValidationService.getVIIRSEmailsValidationObject(date);
-        const monthly: EmailValidationResult = await EmailValidationService.getMonthlyEmailsValidationObject(date);
+        // There is an issue with GLAD emails, as the same template is used for multiple subscription types
+        // @todo this should be fixed by aggregating all subscriptions sharing the common sparkpost template
+        const glad: EmailValidationResult = await EmailValidationService.getEmailsValidationObject(date, 'glad-alerts');
 
+        const viirs: EmailValidationResult = await EmailValidationService.getEmailsValidationObject(date, 'viirs-active-fires');
         logger.info(`[SubscriptionValidation] Ended validation process.`);
         logger.info(`[SubscriptionValidation] GLAD: ${JSON.stringify(glad)}`);
         logger.info(`[SubscriptionValidation] VIIRS: ${JSON.stringify(viirs)}`);
-        logger.info(`[SubscriptionValidation] Monthly: ${JSON.stringify(monthly)}`);
+
+        let monthly: EmailValidationResult
+        if (date.date() === 1) {
+            monthly = await EmailValidationService.getEmailsValidationObject(date, 'monthly-summary');
+            logger.info(`[SubscriptionValidation] Monthly: ${JSON.stringify(monthly)}`);
+        } else {
+            monthly = {
+                success: true,
+                expectedSubscriptionEmailsSent: 0,
+                sparkPostAPICalls: 0,
+            };
+        }
 
         if (process.env.NODE_ENV === 'prod') {
             if (glad.success && viirs.success && monthly.success) {
