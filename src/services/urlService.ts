@@ -24,11 +24,11 @@ class UrlService {
     }
 
     static confirmationUrl(subscription: ISubscription): string {
-        return `${BASE_URL}/subscriptions/${subscription._id}/confirm?application=${subscription.application}`;
+        return `${BASE_URL}/v1/subscriptions/${subscription._id}/confirm?application=${subscription.application}`;
     }
 
     static unsubscribeUrl(subscription: ISubscription): string {
-        return `${BASE_URL}/subscriptions/${subscription._id}/unsubscribe?redirect=true&lang=${subscription.language || 'en'}`;
+        return `${BASE_URL}/v1/subscriptions/${subscription._id}/unsubscribe?redirect=true&lang=${subscription.language || 'en'}`;
     }
 
     static dashboardUrl(id: string, lang: string, type: string): string {

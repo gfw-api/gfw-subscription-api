@@ -41,7 +41,7 @@ export const validateCommonNotificationParams = (jsonMessage: Record<string, any
     jsonMessage.data.should.have.property('week_end').and.equal(endDate.format('DD/MM/YYYY'));
     jsonMessage.data.should.have.property('alert_name').and.equal(sub.name);
     jsonMessage.data.should.have.property('subscriptions_url', `${config.get('gfw.flagshipUrl')}/my-gfw?lang=${sub.language}`);
-    jsonMessage.data.should.have.property('unsubscribe_url', `${config.get('apiGateway.externalUrl')}/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${sub.language}`);
+    jsonMessage.data.should.have.property('unsubscribe_url', `${config.get('apiGateway.externalUrl')}/v1/subscriptions/${sub.id}/unsubscribe?redirect=true&lang=${sub.language}`);
 
     // New Help Center URLs, including language
     jsonMessage.data.should.have.property('help_center_url_manage_areas', `${config.get('gfw.flagshipUrl')}/help/map/guides/manage-saved-areas?lang=${sub.language}`);

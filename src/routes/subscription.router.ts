@@ -2,7 +2,6 @@ import Router from 'koa-router';
 import logger from 'logger';
 import config from 'config';
 import { get } from 'lodash';
-import { RedisClientType, createClient } from 'redis'
 import { Context, Next } from 'koa';
 import USER_ROLES from 'app.constants';
 
@@ -12,7 +11,6 @@ import mongoose from 'mongoose';
 import Subscription, { ISubscription } from 'models/subscription';
 import SubscriptionService from 'services/subscriptionService';
 import SubscriptionSerializer, { SerializedSubscriptionResponse } from 'serializers/subscription.serializer';
-import UpdateService, { UpdateServiceResponse } from 'services/updateService';
 import DatasetService from 'services/datasetService';
 import StatisticsService from 'services/statisticsService';
 import GenericError from 'errors/genericError';
@@ -23,10 +21,6 @@ import EmailValidationService from 'services/emailValidationService';
 const router: Router = new Router({
     prefix: '/api/v1/subscriptions'
 });
-
-const CHANNEL: string = config.get('apiGateway.subscriptionAlertsChannelName');
-
-const redisClient: RedisClientType = createClient({ url: config.get('redis.url') });
 
 const serializeObjToQuery = (obj: Record<string, any>): string => Object.keys(obj).reduce((a: any[], k: string) => {
     a.push(`${k}=${encodeURIComponent(obj[k])}`);
@@ -219,26 +213,6 @@ class SubscriptionsRouter {
         ctx.body = subscription;
     }
 
-    static async notifyUpdates(ctx: Context): Promise<void> {
-        const { dataset } = ctx.params;
-        logger.info(`Notify '${dataset}' was updated`);
-        const result: UpdateServiceResponse = await UpdateService.checkUpdated(dataset);
-        logger.info(`Checking if '${dataset}' was updated`);
-
-        if (result.updated) {
-            const message: AlertQueueMessage = {
-                layer_slug: dataset,
-                begin_date: new Date(result.beginDate).toISOString(),
-                end_date: new Date(result.endDate).toISOString()
-            };
-            redisClient.publish(CHANNEL, JSON.stringify(message));
-            ctx.body = `Dataset:${dataset} was updated`;
-        } else {
-            logger.info(`${dataset} was not updated`);
-            ctx.body = `Dataset:${dataset} wasn't updated`;
-        }
-    }
-
     static async statistics(ctx: Context): Promise<void> {
         logger.info('Obtaining statistics');
         ctx.assert(ctx.query.start, 400, 'Start date required');
@@ -357,7 +331,7 @@ class SubscriptionsRouter {
             return;
         }
 
-        if (![
+        const supportedAlertTypes: string[] = [
             'glad-alerts',
             'viirs-active-fires',
             'monthly-summary',
@@ -365,8 +339,9 @@ class SubscriptionsRouter {
             'glad-l',
             'glad-s2',
             'glad-radd',
-        ].includes(alert)) {
-            ctx.throw(400, 'The alert provided is not supported for testing.');
+        ]
+        if (!supportedAlertTypes.includes(alert)) {
+            ctx.throw(400, `The alert provided is not supported for testing. Supported alerts: ${supportedAlertTypes.join(',')}`);
             return;
         }
 
@@ -486,7 +461,6 @@ router.get('/:id/send_confirmation', validateLoggedUserAuth, subscriptionExists(
 router.get('/:id/unsubscribe', subscriptionExists(), SubscriptionsRouter.unsubscribeSubscription);
 router.patch('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.updateSubscription);
 router.delete('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
-router.post('/notify-updates/:dataset', SubscriptionsRouter.notifyUpdates);
 router.post('/test-email-alerts', isAdmin, SubscriptionsRouter.testEmailAlert);
 // router.post('/check-hook', SubscriptionsRouter.checkHook);
 router.get('/user/:userId', isAdminOrMicroservice, SubscriptionsRouter.findUserSubscriptions);

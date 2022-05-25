@@ -3,7 +3,6 @@ import nock from 'nock';
 import { createClient, RedisClientType } from 'redis';
 import config from 'config';
 import moment from 'moment';
-import LastUpdateModel from 'models/lastUpdate';
 import cronLoader from '../../src/cronLoader';
 import taskConfig from '../../config/cron';
 
@@ -64,8 +63,6 @@ describe('CronLoader task queueing', () => {
     });
 
     it('Test dataset cron task queues the expected message', async () => {
-        await new LastUpdateModel({ dataset: 'dataset', date: '2010-01-01' }).save();
-
         const task = taskConfig.find((e) => e.dataset === 'dataset');
 
         let expectedMessageCount = 1;
@@ -154,8 +151,6 @@ describe('CronLoader task queueing', () => {
 
     afterEach(async () => {
         await redisClient.unsubscribe(CHANNEL);
-
-        await LastUpdateModel.deleteMany({}).exec();
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);

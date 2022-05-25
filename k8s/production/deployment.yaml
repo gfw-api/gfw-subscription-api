@@ -60,17 +60,15 @@ spec:
                   key: MICROSERVICE_TOKEN
                   name: mssecrets
             - name: FLAGSHIP_URL
-              value: http://www.globalforestwatch.org
+              value: https://www.globalforestwatch.org
             - name: RW_FLAGSHIP_URL_PREPRODUCTION
-              value: http://preproduction.resourcewatch.org
+              value: https://preproduction.resourcewatch.org
             - name: RW_FLAGSHIP_URL_PRODUCTION
-              value: http://resourcewatch.org
+              value: https://resourcewatch.org
             - name: RW_FLAGSHIP_URL_STAGING
-              value: http://staging.resourcewatch.org
+              value: https://staging.resourcewatch.org
             - name: API_GATEWAY_EXTERNAL_URL
-              value: http://production-api.globalforestwatch.org
-            - name: API_URL
-              value: http://production-api.globalforestwatch.org
+              value: https://api.resourcewatch.org
             - name: API_GATEWAY_QUEUE_NAME
               value: mail_prod
             - name: REDIS_URL
