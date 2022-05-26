@@ -114,12 +114,14 @@ class EmailValidationService {
 
         const success: boolean = typeof (Object.values(results).find((result: EmailValidationResult) => result.success === false)) === 'undefined';
 
-        if (success) {
-            logger.info(`[SubscriptionValidation] Validation process was successful for ${date.toISOString()}, triggering success action`);
-            await SlackService.subscriptionsValidationSuccessMessage(date.toDate(), results as Record<EmailTemplates, EmailValidationResult>);
-        } else {
-            logger.info(`[SubscriptionValidation] Validation process was NOT successful for ${date.toISOString()}, triggering failure action`);
-            await SlackService.subscriptionsValidationFailureMessage(date.toDate(), results as Record<EmailTemplates, EmailValidationResult>);
+        if (process.env.NODE_ENV === 'prod') {
+            if (success) {
+                logger.info(`[SubscriptionValidation] Validation process was successful for ${date.toISOString()}, triggering success action`);
+                await SlackService.subscriptionsValidationSuccessMessage(date.toDate(), results as Record<EmailTemplates, EmailValidationResult>);
+            } else {
+                logger.info(`[SubscriptionValidation] Validation process was NOT successful for ${date.toISOString()}, triggering failure action`);
+                await SlackService.subscriptionsValidationFailureMessage(date.toDate(), results as Record<EmailTemplates, EmailValidationResult>);
+            }
         }
     }
 
