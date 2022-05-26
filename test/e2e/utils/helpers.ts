@@ -35,7 +35,7 @@ export const createSubscriptionContent = (userId: string, datasetUuid: string = 
         application: 'gfw',
         confirmed: true,
         params: {
-            geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw'
+            geostore: '423e5dfb0448e692f97b590c61f45f22'
         },
         resource: {
             content: 'subscription-recipient@vizzuality.com',
@@ -56,7 +56,7 @@ export const createURLSubscription = (userId: string, datasetUuid: string = null
         env: 'production',
         confirmed: true,
         params: {
-            geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw'
+            geostore: '423e5dfb0448e692f97b590c61f45f22'
         },
         resource: {
             content: 'http://potato-url.com/notify',
@@ -65,17 +65,6 @@ export const createURLSubscription = (userId: string, datasetUuid: string = null
         ...data
     };
 };
-
-// const createURLSubscriptionCallMock = (expectedBody) => {
-//     nock('http://potato-url.com')
-//         .post('/notify', (body) => {
-//             const foo = JSON.parse(atob((new URL(body.alert_link)).searchParams.get('map')));
-//
-//             body.should.deep.equal(expectedBody);
-//             return true;
-//         })
-//         .reply(200);
-// };
 
 export const createURLSubscriptionCallMock = (expectedBody: Record<string, any>) => {
     nock('http://potato-url.com')
@@ -93,7 +82,7 @@ export const createSubscription = async (userId: string, data: Record<string, an
         application: 'gfw',
         confirmed: true,
         params: {
-            geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw'
+            geostore: '423e5dfb0448e692f97b590c61f45f22'
         },
         resource: {
             content: 'subscription-recipient@vizzuality.com',
@@ -102,8 +91,6 @@ export const createSubscription = async (userId: string, data: Record<string, an
         ...data
     }).save();
 };
-
-export const createSubInDB: (userId: string, datasetUuid?: string, data?: any) => Promise<ISubscription> = (userId: string, datasetUuid: string = null, data: any = {}) => new Subscription(createSubscription(userId, data)).save();
 
 export const createStatistic = (createdAt = new Date(), application = 'gfw') => new Statistic({
     slug: 'viirs-active-fires',

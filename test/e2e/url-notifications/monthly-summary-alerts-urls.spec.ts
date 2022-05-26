@@ -4,7 +4,7 @@ import config from 'config';
 import { createClient, RedisClientType } from 'redis';
 import moment from 'moment';
 
-import Subscription, { ISubscription } from 'models/subscription';
+import Subscription from 'models/subscription';
 import Statistic from 'models/statistic';
 import AlertQueue from 'queues/alert.queue';
 
@@ -21,11 +21,11 @@ import {
     assertSubscriptionStatsNotificationEvent,
     bootstrapEmailNotificationTests,
 } from '../utils/helpers/email-notifications';
+import EmailHelpersService from 'services/emailHelpersService';
 import {
     createMonthlySummaryGeostoreURLSubscriptionBody,
     createMonthlySummaryISOURLSubscriptionBody, createMonthlySummaryWDPAURLSubscriptionBody
-} from '../utils/helpers/url-notifications';
-import EmailHelpersService from 'services/emailHelpersService';
+} from '../utils/mocks/monthlySummary.mocks';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);

@@ -9,14 +9,19 @@ import router from 'routes/subscription.router'
 import koaSimpleHealthCheck from 'koa-simple-healthcheck';
 import ErrorSerializer from 'serializers/error.serializer';
 import sleep from 'sleep';
-import mongoose, { CallbackError } from 'mongoose';
+import mongoose, { CallbackError, ConnectOptions } from 'mongoose';
 import { RWAPIMicroservice } from 'rw-api-microservice-node';
 import koaQs from 'koa-qs';
 import { Server } from 'http';
 
 import cronLoader from 'cronLoader';
-import mongooseOptions from 'config/mongoose';
 import loadQueues from 'loader';
+
+const mongooseOptions: ConnectOptions = {
+    readPreference: 'secondaryPreferred', // Has MongoDB prefer secondary servers for read operations.
+    appName: 'subscriptions', // Displays the app name in MongoDB logs, for ease of debug
+    serverSelectionTimeoutMS: 10000, // Number of milliseconds the underlying MongoDB driver has to pick a server
+};
 
 const mongoUri: string =
     process.env.MONGO_URI ||

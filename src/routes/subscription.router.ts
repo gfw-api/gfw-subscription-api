@@ -8,14 +8,13 @@ import USER_ROLES from 'app.constants';
 import UrlService from 'services/urlService';
 import moment from 'moment';
 import mongoose from 'mongoose';
-import Subscription, { ISubscription } from 'models/subscription';
+import Subscription, { ALERT_TYPES, ISubscription } from 'models/subscription';
 import SubscriptionService from 'services/subscriptionService';
 import SubscriptionSerializer, { SerializedSubscriptionResponse } from 'serializers/subscription.serializer';
 import DatasetService from 'services/datasetService';
 import StatisticsService from 'services/statisticsService';
 import GenericError from 'errors/genericError';
 import AlertQueue, { AlertQueueMessage } from 'queues/alert.queue';
-import EmailValidationService from 'services/emailValidationService';
 
 
 const router: Router = new Router({
@@ -228,29 +227,6 @@ class SubscriptionsRouter {
         ctx.body = await StatisticsService.infoGroupSubscriptions(new Date(ctx.query.start as string), new Date(ctx.query.end as string), ctx.query.application as string);
     }
 
-    // static async checkHook(ctx: Context): Promise<void> {
-    //     logger.info('Checking hook');
-    //     const info: Record<string, any> = ctx.request.body;
-    //     const slug: string = info.slug ? info.slug : 'viirs-active-fires';
-    //     const mock: MockData = MockService.getMock(slug);
-    //     if (info.type === 'EMAIL') {
-    //         mailService.sendMail('forest-fires-notification-viirs-en', mock, [{ address: info.content }]);
-    //     } else {
-    //         try {
-    //             const requestConfig: AxiosRequestConfig = {
-    //                 method: 'POST',
-    //                 url: info.content,
-    //                 data: mock
-    //             };
-    //
-    //             axios(requestConfig);
-    //         } catch (e) {
-    //             throw new GenericError(400, `${e.message}`);
-    //         }
-    //     }
-    //     ctx.body = 'ok';
-    // }
-
     static async statisticsByUser(ctx: Context): Promise<void> {
         logger.info('Obtaining statistics by user');
         ctx.assert(ctx.query.start, 400, 'Start date required');
@@ -272,11 +248,6 @@ class SubscriptionsRouter {
     static async findUserSubscriptions(ctx: Context): Promise<void> {
         logger.info(`[SubscriptionsRouter] Getting all subscriptions for user with id`, ctx.params.userId);
         ctx.body = await SubscriptionService.getSubscriptionsForUser(ctx.params.userId, ctx.query.application as string, ctx.query.env as string);
-    }
-
-    static async printEmailStatistics(): Promise<void> {
-        logger.info(`[SubscriptionsRouter] Printing email statistics`);
-        await EmailValidationService.validateSubscriptionEmailCount(moment());
     }
 
     static async findAllSubscriptions(ctx: Context): Promise<void> {
@@ -320,18 +291,44 @@ class SubscriptionsRouter {
     }
 
     static async testEmailAlert(ctx: Context): Promise<void> {
-        logger.info(`[EmailAlertsRouter] Starting test email alerts.`);
+        const {
+            fromDate,
+            toDate,
+        } = ctx.request.body;
+
+        ctx.request.body.type = 'EMAIL';
+        ctx.request.body.fromDate = fromDate ? moment(fromDate).toISOString() : moment().subtract('2', 'w').toISOString();
+        ctx.request.body.toDate = toDate ? moment(toDate).toISOString() : moment().subtract('1', 'w').toISOString();
+
+        return SubscriptionsRouter.testAlert(ctx);
+    }
+
+    static async testWebhookAlert(ctx: Context): Promise<void> {
+        ctx.request.body.type = 'URL';
+
+        return SubscriptionsRouter.testAlert(ctx);
+    }
+
+    static async testAlert(ctx: Context): Promise<void> {
+        logger.info(`[EmailAlertsRouter] Starting test alert`);
 
         const {
-            alert, email, subId, fromDate, toDate, language
+            alert,
+            email,
+            url,
+            subId,
+            fromDate,
+            toDate,
+            language
         } = ctx.request.body;
+        const type: ALERT_TYPES | undefined = ctx.request.body.type ? ctx.request.body.type.toUpperCase() : ctx.request.body.type;
 
         if (!subId) {
             ctx.throw(400, 'Subscription id is required.');
             return;
         }
 
-        const supportedAlertTypes: string[] = [
+        const supportedAlerts: string[] = [
             'glad-alerts',
             'viirs-active-fires',
             'monthly-summary',
@@ -340,17 +337,24 @@ class SubscriptionsRouter {
             'glad-s2',
             'glad-radd',
         ]
-        if (!supportedAlertTypes.includes(alert)) {
-            ctx.throw(400, `The alert provided is not supported for testing. Supported alerts: ${supportedAlertTypes.join(',')}`);
+        if (!supportedAlerts.includes(alert)) {
+            ctx.throw(400, `The alert provided is not supported for testing. Supported alerts: ${supportedAlerts.join(',')}`);
+            return;
+        }
+
+        if (type && !ALERT_TYPES.includes(type)) {
+            ctx.throw(400, `The alert type provided is not supported. Supported alerts types: ${ALERT_TYPES.join(',')}`);
             return;
         }
 
         const message: AlertQueueMessage = {
             layer_slug: alert,
-            begin_date: fromDate ? moment(fromDate).toISOString() : moment().subtract('2', 'w').toISOString(),
-            end_date: toDate ? moment(toDate).toISOString() : moment().subtract('1', 'w').toISOString(),
+            begin_date: fromDate ? moment(fromDate).toISOString() : moment().subtract('1', 'w').toISOString(),
+            end_date: toDate ? moment(toDate).toISOString() : moment().toISOString(),
             isTest: true,
+            url,
             email,
+            type,
             subId,
             language
         };
@@ -462,7 +466,8 @@ router.get('/:id/unsubscribe', subscriptionExists(), SubscriptionsRouter.unsubsc
 router.patch('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.updateSubscription);
 router.delete('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
 router.post('/test-email-alerts', isAdmin, SubscriptionsRouter.testEmailAlert);
-// router.post('/check-hook', SubscriptionsRouter.checkHook);
+router.post('/test-webhook-alert', isAdmin, SubscriptionsRouter.testWebhookAlert);
+router.post('/test-alert', isAdmin, SubscriptionsRouter.testAlert);
 router.get('/user/:userId', isAdminOrMicroservice, SubscriptionsRouter.findUserSubscriptions);
 router.post('/find-by-ids', validateMicroserviceAuth, SubscriptionsRouter.findByIds);
 

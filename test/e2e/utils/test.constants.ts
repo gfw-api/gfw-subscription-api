@@ -44,7 +44,7 @@ export const mockDataset: (id: string, data?: Record<string, any>) => Record<str
 
 export const TEST_SUBSCRIPTIONS = [{
     params: {
-        geostore: 'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw',
+        geostore: '423e5dfb0448e692f97b590c61f45f22',
     },
     application: 'gfw'
 }, {

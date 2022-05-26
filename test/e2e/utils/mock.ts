@@ -841,7 +841,7 @@ export const createMockGeostore = (path: string, times = 1) => {
         .reply(200, {
             data: {
                 type: 'geoStore',
-                id: 'f98f505878dcee72a2e92e7510a07d6f',
+                id: '423e5dfb0448e692f97b590c61f45f22',
                 attributes: {
                     geojson: {
                         features: [{
@@ -855,7 +855,7 @@ export const createMockGeostore = (path: string, times = 1) => {
                         crs: {},
                         type: 'FeatureCollection'
                     },
-                    hash: 'f98f505878dcee72a2e92e7510a07d6f',
+                    hash: '423e5dfb0448e692f97b590c61f45f22',
                     provider: {},
                     areaHa: 190132126.08844432,
                     bbox: [95.01091766, -11.00761509, 141.01939392, 5.90682268],

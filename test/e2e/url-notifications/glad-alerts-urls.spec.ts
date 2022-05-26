@@ -25,7 +25,7 @@ import {
 import {
     createGLADAlertsGeostoreURLSubscriptionBody,createGLADAlertsISOURLSubscriptionBody,
     createGLADAlertsWDPAURLSubscriptionBody,
-} from  '../utils/helpers/url-notifications';
+} from  '../utils/mocks/glad.mocks';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -50,7 +50,6 @@ describe('GLAD alert - URL Subscriptions', () => {
         await getTestServer();
         await Subscription.deleteMany({}).exec();
         await Statistic.deleteMany({}).exec();
-        moment.locale('en');
 
         redisClient = createClient({ url: config.get('redis.url') });
         await redisClient.connect();
@@ -125,7 +124,6 @@ describe('GLAD alert - URL Subscriptions', () => {
             begin_date: beginDate,
             end_date: endDate
         }));
-        moment.locale('en');
     });
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - ISO code for country', async () => {
@@ -287,8 +285,8 @@ describe('GLAD alert - URL Subscriptions', () => {
 
         createURLSubscriptionCallMock(createGLADAlertsGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             downloadUrls: {
-                csv: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/csv?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=f98f505878dcee72a2e92e7510a07d6f`,
-                json: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/json?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=f98f505878dcee72a2e92e7510a07d6f`
+                csv: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/csv?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`,
+                json: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/json?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`
             },
         }));
 
@@ -398,6 +396,7 @@ describe('GLAD alert - URL Subscriptions', () => {
     });
 
     afterEach(async () => {
+        moment.locale('en');
         redisClient.removeAllListeners();
         process.removeAllListeners('unhandledRejection');
 

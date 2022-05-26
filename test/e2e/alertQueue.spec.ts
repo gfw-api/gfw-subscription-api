@@ -7,6 +7,7 @@ import Statistic from 'models/statistic';
 import { getTestServer } from './utils/test-server';
 import { createDatasetWithWebHook } from './utils/helpers';
 import AlertQueue from 'queues/alert.queue';
+import { mockGLADLGeostoreQuery } from './utils/mocks/gladL.mocks';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -45,65 +46,14 @@ describe('AlertQueue ', () => {
 
     it('All goes well when a dataset Redis message is received for a subscription with an invalid resource type URL', async () => {
         await createDatasetWithWebHook('invalidURL');
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('geostore__id = \'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [],
-                status: 'success'
-            });
+        mockGLADLGeostoreQuery();
         await assertMessageProcessing();
     });
 
     it('All goes well when a dataset Redis message is received for a subscription with a valid resource type URL that returns 4XX codes', async () => {
         await createDatasetWithWebHook('http://www.webhook.com');
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('geostore__id = \'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLGeostoreQuery();
 
         // If this mock is not used (i.e., the web-hook is not called), the test will fail
         nock('http://www.webhook.com').post('/').query(() => true).reply(400);
@@ -114,49 +64,7 @@ describe('AlertQueue ', () => {
     it('POST request to a web-hook URL triggered when a dataset Redis message is received for a subscription with a valid resource type URL (happy case)', async () => {
         await createDatasetWithWebHook('http://www.webhook.com');
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('geostore__id = \'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLGeostoreQuery();
 
         // If this mock is not used (i.e., the web-hook is not called), the test will fail
         nock('http://www.webhook.com').post('/').query(() => true).reply(200, { received: true });

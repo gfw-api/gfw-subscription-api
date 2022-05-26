@@ -18,6 +18,12 @@ const {
     validateGladL,
 } = require('../utils/helpers/email-notifications');
 import { ROLES } from '../utils/test.constants';
+import {
+    mockGLADLAdm1Query, mockGLADLAdm2Query,
+    mockGLADLGeostoreQuery,
+    mockGLADLISOQuery,
+    mockGLADLWDPAQuery
+} from '../utils/mocks/gladL.mocks';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -54,49 +60,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('geostore__id = \'423e5dfb0448e692f97b590c61f45f22\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLGeostoreQuery();
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -141,49 +105,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('geostore__id = \'423e5dfb0448e692f97b590c61f45f22\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLGeostoreQuery();
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -231,49 +153,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('geostore__id = \'423e5dfb0448e692f97b590c61f45f22\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLGeostoreQuery();
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -322,49 +202,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore('/v2/geostore/admin/BRA');
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('iso = \'BRA\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLISOQuery();
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -412,49 +250,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore('/v2/geostore/admin/BRA/1');
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLAdm1Query();
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -502,49 +298,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore('/v2/geostore/admin/BRA/1/2');
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\'') && data.sql.includes('adm2 = \'2\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLAdm2Query();
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -592,49 +346,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore('/v2/geostore/wdpa/1');
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/wdpa_protected_areas__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('wdpa_protected_area__id = \'1\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLWDPAQuery();
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -682,49 +394,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore('/v2/geostore/use/gfw_logging/29407', 2);
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('geostore__id = \'f98f505878dcee72a2e92e7510a07d6f\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLGeostoreQuery()
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -770,12 +440,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
 
         // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('geostore__id = \'423e5dfb0448e692f97b590c61f45f22\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, { data: [], status: 'success' });
+        mockGLADLGeostoreQuery()
 
         assertNoEmailSent(redisClient);
 
@@ -808,48 +473,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
 
         // Despite the payload of the params object, geostore dataset should be used
-        nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('geostore__id = \'423e5dfb0448e692f97b590c61f45f22\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLGeostoreQuery();
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -884,7 +508,8 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     });
 
     afterEach(async () => {
-        await redisClient.unsubscribe(CHANNEL);;
+        await redisClient.unsubscribe(CHANNEL);
+        moment.locale('en');
         process.removeAllListeners('unhandledRejection');
 
         if (!nock.isDone()) {

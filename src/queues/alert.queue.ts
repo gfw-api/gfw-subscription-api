@@ -4,7 +4,7 @@ import { createClient, RedisClientType } from 'redis';
 
 import SubscriptionService from 'services/subscriptionService';
 import DatasetService from 'services/datasetService';
-import { ISubscription } from 'models/subscription';
+import { ALERT_TYPES, ISubscription } from 'models/subscription';
 import { EmailLanguageType } from 'types/email.type';
 
 const CHANNEL: string = config.get('apiGateway.subscriptionAlertsChannelName');
@@ -14,6 +14,8 @@ export type AlertQueueMessage = {
     begin_date?: string,
     end_date?: string,
     email?: string,
+    url?: string,
+    type?: ALERT_TYPES,
     subId?: string,
     isTest?: boolean,
     language?: EmailLanguageType
@@ -50,11 +52,26 @@ class AlertQueue {
 
         if (parsedMessage.isTest === true) {
             const subscription: ISubscription = await SubscriptionService.getSubscriptionById(parsedMessage.subId);
-            subscription.resource.type = 'EMAIL';
-            subscription.resource.content = parsedMessage.email;
+            if (!subscription) {
+                logger.error(`Could not find subscription with id ${parsedMessage.subId}`);
+            }
+
+            const type: ALERT_TYPES = parsedMessage.type ? parsedMessage.type : subscription.resource.type;
+            subscription.resource.type = type;
+
+            switch (type) {
+                case 'EMAIL':
+                    subscription.resource.content = parsedMessage.email ? parsedMessage.email : subscription.resource.content;
+                    break;
+
+                case 'URL':
+                    subscription.resource.content = parsedMessage.url ? parsedMessage.url : subscription.resource.content;
+                    break;
+            }
+
             subscription.language = parsedMessage.language || 'en';
             const layer: { slug: string, name: string } = { name: layerSlug, slug: layerSlug };
-            await subscription.publish(layer, begin, end, !!parsedMessage.email);
+            await subscription.publish(layer, begin, end);
             return;
         } else {
             const subscriptions: ISubscription[] = await SubscriptionService.getSubscriptionsByLayer(

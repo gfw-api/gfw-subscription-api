@@ -790,7 +790,7 @@ describe('Monthly summary notifications', () => {
     });
 
     afterEach(async () => {
-        await redisClient.unsubscribe(CHANNEL);;
+        await redisClient.unsubscribe(CHANNEL);
         process.removeAllListeners('unhandledRejection');
 
         if (!nock.isDone()) {

@@ -8,6 +8,7 @@ import Subscription, { ISubscription } from 'models/subscription';
 import { createSubscription, mockGetUserFromToken } from './utils/helpers';
 import { ROLES } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
+import { mockGLADLGeostoreQuery } from './utils/mocks/gladL.mocks';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -58,7 +59,7 @@ describe('Test email alerts spec', () => {
         const res = await requester.post(`/api/v1/subscriptions/test-email-alerts`)
             .set('Authorization', `Bearer abcd`)
             .send({
-                email: 'henrique.pacheco@vizzuality.com',
+                email: 'test.user@wri.org',
             });
         res.status.should.equal(400);
     });
@@ -117,52 +118,10 @@ describe('Test email alerts spec', () => {
         const sub = await createSubscription(ROLES.ADMIN.id, { datasets: ['glad-alerts'] });
         process.on('unhandledRejection', (args) => should.fail(JSON.stringify(args)));
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('geostore__id = \'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLGeostoreQuery();
 
         const body = {
-            email: 'henrique.pacheco@vizzuality.com',
+            email: 'test.user@wri.org',
             subId: sub._id,
             alert: 'glad-alerts',
         };
@@ -202,52 +161,10 @@ describe('Test email alerts spec', () => {
         const subscription: ISubscription = await createSubscription(ROLES.ADMIN.id, { datasets: ['glad-alerts'] });
         process.on('unhandledRejection', (args) => should.fail(JSON.stringify(args)));
 
-        // Mock GFW Data API calls
-        nock(config.get('dataApi.url'))
-            .get('/dataset/geostore__glad__daily_alerts/latest/query')
-            .query((data) => data.sql && data.sql.includes('geostore__id = \'agpzfmdmdy1hcGlzchULEghHZW9zdG9yZRiAgIDIjJfRCAw\''))
-            .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-            .matchHeader('origin', config.get('dataApi.origin'))
-            .reply(200, {
-                data: [
-                    {
-                        wdpa_protected_area__iucn_cat: 'Category 1',
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: true,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: true,
-                        is__ifl_intact_forest_landscape_2016: false,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    },
-                    {
-                        wdpa_protected_area__iucn_cat: null,
-                        is__umd_regional_primary_forest_2001: false,
-                        is__peatland: false,
-                        is__ifl_intact_forest_landscape_2016: true,
-                        alert__count: 100,
-                        alert_area__ha: 10,
-                    }
-                ],
-                status: 'success'
-            });
+        mockGLADLGeostoreQuery();
 
         const body = {
-            email: 'henrique.pacheco@vizzuality.com',
+            email: 'test.user@wri.org',
             subId: subscription._id,
             alert: 'glad-alerts',
             language: 'fr',

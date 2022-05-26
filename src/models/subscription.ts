@@ -9,7 +9,8 @@ import { EMAIL_MAP, EmailLanguageType } from 'types/email.type';
 import { PresenterInterface } from 'presenters/presenter.interface';
 import { PresenterResponseDataType } from 'types/presenterResponse.type';
 
-const ALERT_TYPES: string[] = ['EMAIL', 'URL'];
+export type ALERT_TYPES = 'EMAIL' | 'URL';
+export const ALERT_TYPES: ALERT_TYPES[] = ['EMAIL', 'URL'];
 
 export interface DatasetQuery {
     id: string,
