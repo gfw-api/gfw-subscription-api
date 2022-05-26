@@ -4,7 +4,7 @@ import Subscription, { ISubscription } from 'models/subscription';
 import SlackService from 'services/slackService';
 import SparkpostService from 'services/sparkpostService';
 import taskConfig, { Cron } from 'config/cron';
-import { AlertType, EMAIL_MAP, EmailMap } from 'types/email.type';
+import { AlertType, EMAIL_MAP, EmailMap, EmailTemplates } from 'types/email.type';
 
 export interface EmailValidationResult {
     success: boolean
@@ -31,14 +31,14 @@ class EmailValidationService {
         return { beginDate, endDate };
     }
 
-    static async findExpectedEmailsForSubType(date: Moment, type: AlertType): Promise<number> {
+    static async findExpectedEmailsForSubType(date: Moment, type: AlertType | 'default', cron: string): Promise<number> {
         let expectedNumberOfEmails: number = 0;
         const subscriptions: ISubscription[] = await Subscription.find({
             datasets: { $in: new RegExp(type) },
             'resource.type': 'EMAIL',
             confirmed: true,
         });
-        const { beginDate, endDate } = EmailValidationService.getBeginAndEndDatesForCron(type, date);
+        const { beginDate, endDate } = EmailValidationService.getBeginAndEndDatesForCron(cron, date);
 
         for (const sub of subscriptions) {
             try {
@@ -62,8 +62,8 @@ class EmailValidationService {
     static async getEmailsValidationObject(date: Moment, emailType: AlertType): Promise<EmailValidationResult> {
         const emailMap: EmailMap = EMAIL_MAP[emailType];
 
-        const expected: number = await EmailValidationService.findExpectedEmailsForSubType(date, emailType);
-        const sparkpostCount: number = await SparkpostService.requestMetricsForTemplate(date, new RegExp(`/${emailMap.emailTemplate}/g`));
+        const expected: number = await EmailValidationService.findExpectedEmailsForSubType(date, emailType, emailType);
+        const sparkpostCount: number = await SparkpostService.requestMetricsForTemplate(date, new RegExp(emailMap.emailTemplate, 'g'));
 
         const expectedUpperLimit: number = expected + (SUCCESS_RANGE * expected);
         const expectedLowerLimit: number = expected - (SUCCESS_RANGE * expected);
@@ -74,46 +74,53 @@ class EmailValidationService {
         };
     }
 
-    static async validateSubscriptionEmailCount(date: Moment = moment()): Promise<{ date: Moment, glad: EmailValidationResult, viirs: EmailValidationResult, monthly: EmailValidationResult }> {
+    static async validateGladEmailTemplate(date: Moment, emailType: AlertType | 'default', emailTemplate: string): Promise<EmailValidationResult> {
+
+        const cron: string = ['glad-alerts', 'glad-all', 'glad-l', 'glad-s2', 'glad-radd'].includes(emailType) ? 'glad-alerts' : emailType;
+        const expected: number = await EmailValidationService.findExpectedEmailsForSubType(date, emailType, cron);
+        const sparkpostCount: number = await SparkpostService.requestMetricsForTemplate(date, new RegExp(emailTemplate, 'g'));
+
+        const expectedUpperLimit: number = expected + (SUCCESS_RANGE * expected);
+        const expectedLowerLimit: number = expected - (SUCCESS_RANGE * expected);
+        return {
+            success: sparkpostCount >= expectedLowerLimit && sparkpostCount <= expectedUpperLimit,
+            expectedSubscriptionEmailsSent: expected,
+            sparkPostAPICalls: sparkpostCount,
+        };
+    }
+
+    static async validateSubscriptionEmailCount(date: Moment = moment()): Promise<void> {
         logger.info(`[SubscriptionValidation] Starting validation process for subscriptions for date ${date.toISOString()}`);
 
-        // There is an issue with GLAD emails, as the same template is used for multiple subscription types
-        // @todo this should be fixed by aggregating all subscriptions sharing the common sparkpost template
-        const glad: EmailValidationResult = await EmailValidationService.getEmailsValidationObject(date, 'glad-alerts');
+        const results: Partial<Record<EmailTemplates, EmailValidationResult>> = {};
 
-        const viirs: EmailValidationResult = await EmailValidationService.getEmailsValidationObject(date, 'viirs-active-fires');
-        logger.info(`[SubscriptionValidation] Ended validation process.`);
-        logger.info(`[SubscriptionValidation] GLAD: ${JSON.stringify(glad)}`);
-        logger.info(`[SubscriptionValidation] VIIRS: ${JSON.stringify(viirs)}`);
-
-        let monthly: EmailValidationResult
-        if (date.date() === 1) {
-            monthly = await EmailValidationService.getEmailsValidationObject(date, 'monthly-summary');
-            logger.info(`[SubscriptionValidation] Monthly: ${JSON.stringify(monthly)}`);
-        } else {
-            monthly = {
-                success: true,
-                expectedSubscriptionEmailsSent: 0,
-                sparkPostAPICalls: 0,
-            };
-        }
-
-        if (process.env.NODE_ENV === 'prod') {
-            if (glad.success && viirs.success && monthly.success) {
-                logger.info(`[SubscriptionValidation] Validation process was successful for ${date.toISOString()}, triggering success action`);
-                await SlackService.subscriptionsValidationSuccessMessage(date.toDate(), glad, viirs, monthly);
-            } else {
-                logger.info(`[SubscriptionValidation] Validation process was NOT successful for ${date.toISOString()}, triggering failure action`);
-                await SlackService.subscriptionsValidationFailureMessage(date.toDate(), glad, viirs, monthly);
+        await Promise.all(Object.keys(EMAIL_MAP).map(async (emailType: AlertType | 'default') => {
+            if (emailType === 'default') {
+                return;
             }
-        }
 
-        return {
-            date,
-            glad,
-            viirs,
-            monthly,
-        };
+            const emailTemplate: EmailTemplates = EMAIL_MAP[emailType].emailTemplate;
+            const templateResult: EmailValidationResult = await EmailValidationService.validateGladEmailTemplate(date, emailType, emailTemplate)
+
+            if (results[emailTemplate]) {
+                results[emailTemplate].success = results[emailTemplate].success && templateResult.success
+                results[emailTemplate].expectedSubscriptionEmailsSent = results[emailTemplate].expectedSubscriptionEmailsSent + templateResult.expectedSubscriptionEmailsSent
+            } else {
+                results[emailTemplate] = templateResult;
+            }
+        }));
+
+        logger.info(`[SubscriptionValidation] Ended validation process. results: ${JSON.stringify(results)}`);
+
+        const success: boolean = typeof (Object.values(results).find((result: EmailValidationResult) => result.success === false)) === 'undefined';
+
+        if (success) {
+            logger.info(`[SubscriptionValidation] Validation process was successful for ${date.toISOString()}, triggering success action`);
+            await SlackService.subscriptionsValidationSuccessMessage(date.toDate(), results as Record<EmailTemplates, EmailValidationResult>);
+        } else {
+            logger.info(`[SubscriptionValidation] Validation process was NOT successful for ${date.toISOString()}, triggering failure action`);
+            await SlackService.subscriptionsValidationFailureMessage(date.toDate(), results as Record<EmailTemplates, EmailValidationResult>);
+        }
     }
 
 }

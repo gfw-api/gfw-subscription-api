@@ -15,6 +15,7 @@ import DatasetService from 'services/datasetService';
 import StatisticsService from 'services/statisticsService';
 import GenericError from 'errors/genericError';
 import AlertQueue, { AlertQueueMessage } from 'queues/alert.queue';
+import EmailValidationService from 'services/emailValidationService';
 
 
 const router: Router = new Router({
@@ -348,6 +349,16 @@ class SubscriptionsRouter {
         }
     }
 
+    static async issueSlackReport(ctx: Context): Promise<void> {
+        logger.info(`[issueSlackReport] Issuing Slack report`);
+
+        try {
+            await EmailValidationService.validateSubscriptionEmailCount(moment());
+            ctx.body = { success: true };
+        } catch (e) {
+            ctx.body = { success: false, message: e.message };
+        }
+    }
 }
 
 const isAdmin = async (ctx: Context, next: Next): Promise<any> => {
@@ -439,6 +450,7 @@ router.get('/find-all', validateMicroserviceAuth, SubscriptionsRouter.findAllSub
 router.get('/statistics', isAdmin, SubscriptionsRouter.statistics);
 router.get('/statistics-group', isAdmin, SubscriptionsRouter.statisticsGroup);
 router.get('/statistics-by-user', isAdmin, SubscriptionsRouter.statisticsByUser);
+router.get('/slack-report', isAdminOrMicroservice, SubscriptionsRouter.issueSlackReport);
 router.get('/:id', validateLoggedUserAuth, subscriptionExists(true), SubscriptionsRouter.getSubscription); // not done
 router.get('/:id/data', validateLoggedUserAuth, subscriptionExists(true), SubscriptionsRouter.getSubscriptionData);
 router.get('/:id/confirm', subscriptionExists(), SubscriptionsRouter.confirmSubscription);
@@ -448,6 +460,7 @@ router.patch('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(tr
 router.delete('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
 router.post('/test-alert', isAdmin, SubscriptionsRouter.testAlert);
 router.get('/user/:userId', isAdminOrMicroservice, SubscriptionsRouter.findUserSubscriptions);
+
 router.post('/find-by-ids', validateMicroserviceAuth, SubscriptionsRouter.findByIds);
 
 export default router;
