@@ -1,7 +1,7 @@
 import chai from 'chai';
 import nock from 'nock';
 
-import Subscription from 'models/subscription';
+import Subscription, { ISubscription } from 'models/subscription';
 
 import {
     createSubscription,
@@ -29,6 +29,7 @@ import { createViirsFireAlertsGeostoreURLSubscriptionBody } from './utils/mocks/
 import AlertQueue from '../../src/queues/alert.queue';
 import config from 'config';
 import { createClient, RedisClientType } from 'redis';
+import { describe } from 'mocha';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -270,6 +271,243 @@ describe('Test alerts spec', () => {
 
         return consumerPromise;
     });
+
+    describe('Email alerts', () => {
+        it('Validates the provided email alert, rejecting everything else other than "glad-alerts", "viirs-active-fires", "monthly-summary" or "glad-all', async () => {
+            const subscription = await createSubscription(
+                ROLES.USER.id,
+                {
+                    datasets: ['glad-alerts'],
+                    params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
+                    resource: {
+                        content: 'modified@wri.org',
+                        type: 'EMAIL'
+                    },
+                },
+            );
+
+
+            mockGetUserFromToken(ROLES.ADMIN);
+            mockGetUserFromToken(ROLES.ADMIN);
+            mockGetUserFromToken(ROLES.ADMIN);
+            mockGetUserFromToken(ROLES.ADMIN);
+            mockGetUserFromToken(ROLES.ADMIN);
+            mockGetUserFromToken(ROLES.ADMIN);
+            mockGetUserFromToken(ROLES.ADMIN);
+            mockGetUserFromToken(ROLES.ADMIN);
+
+            const testBody = {
+                email: 'foo@bar.com',
+                subId: subscription.id,
+            };
+
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'glad-alerts' })).status.should.equal(200);
+
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'viirs-active-fires' })).status.should.equal(200);
+
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'monthly-summary' })).status.should.equal(200);
+
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'glad-all' })).status.should.equal(200);
+
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'glad-l' })).status.should.equal(200);
+
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'glad-s2' })).status.should.equal(200);
+
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'glad-radd' })).status.should.equal(200);
+
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'other' })).status.should.equal(400);
+        });
+
+        it('Testing an email alert for GLAD email alerts for a language that\'s not EN should return a 200 OK response', async () => {
+            mockGetUserFromToken(ROLES.ADMIN);
+
+            const subscription: ISubscription = await createSubscription(ROLES.ADMIN.id, { datasets: ['glad-alerts'] });
+            process.on('unhandledRejection', (args) => should.fail(JSON.stringify(args)));
+
+            mockGLADLGeostoreQuery();
+
+            const body = {
+                email: 'test.user@wri.org',
+                subId: subscription._id,
+                alert: 'glad-alerts',
+                language: 'fr',
+            };
+
+            let expectedQueueMessageCount = 1;
+
+            const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
+                const jsonMessage = JSON.parse(message);
+                jsonMessage.should.have.property('template');
+                switch (jsonMessage.template) {
+
+                    case 'glad-updated-notification-fr':
+                        jsonMessage.should.have.property('sender').and.equal('gfw');
+                        jsonMessage.should.have.property('data').and.be.a('object');
+
+                        jsonMessage.should.have.property('recipients').and.be.a('array').and.length(1);
+                        jsonMessage.recipients[0].should.be.an('object')
+                            .and.have.property('address')
+                            .and.equal(body.email);
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+
+                expectedQueueMessageCount -= 1;
+
+                if (expectedQueueMessageCount < 0) {
+                    throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+                }
+
+                if (expectedQueueMessageCount === 0) {
+                    moment.locale('en');
+                    resolve(null);
+                }
+            };
+
+            const consumerPromise = new Promise((resolve) => {
+                redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+            })
+
+            const response = await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send(body);
+            response.status.should.equal(200);
+            response.body.should.have.property('success').and.equal(true);
+
+            return consumerPromise;
+        });
+    });
+
+    describe('Webhook alerts', () => {
+
+        it('Validates the provided alert, rejecting everything else other than "glad-alerts", "viirs-active-fires", "monthly-summary" or "glad-all', async () => {
+            for (const i of [...Array(8).keys()]) {
+                mockGetUserFromToken(ROLES.ADMIN);
+            }
+
+            const subscriptionOne = await new Subscription(createURLSubscription(
+                ROLES.USER.id,
+                'glad-alerts',
+                {
+                    params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
+                    resource: {
+                        content: 'http://tomato-url.com/notify',
+                        type: 'URL'
+                    },
+                },
+            )).save();
+
+            const testBody = {
+                url: 'http://potato-url.com/notify',
+                subId: subscriptionOne.id,
+            };
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+
+            mockGLADAlertsGeostoreQuery();
+            createURLSubscriptionCallMock(createGLADAlertsGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'glad-alerts' })).status.should.equal(200);
+
+            mockVIIRSAlertsGeostoreQuery(2);
+            createURLSubscriptionCallMock(createViirsFireAlertsGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'viirs-active-fires' })).status.should.equal(200);
+
+            mockVIIRSAlertsGeostoreQuery(2);
+            mockGLADAlertsGeostoreQuery(2);
+            createURLSubscriptionCallMock(createMonthlySummaryGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'monthly-summary' })).status.should.equal(200);
+
+            mockGLADAllGeostoreQuery();
+            createURLSubscriptionCallMock(createGLADAllGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'glad-all' })).status.should.equal(200);
+
+            mockGLADLGeostoreQuery();
+            createURLSubscriptionCallMock(createGLADLGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'glad-l' })).status.should.equal(200);
+
+            mockGLADS2GeostoreQuery();
+            createURLSubscriptionCallMock(createGLADS2GeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'glad-s2' })).status.should.equal(200);
+
+            mockGLADRADDGeostoreQuery();
+            createURLSubscriptionCallMock(createGLADRADDGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'glad-radd' })).status.should.equal(200);
+
+            (await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({ ...testBody, alert: 'other' })).status.should.equal(400);
+        });
+
+        it('Testing an webhook alert for GLAD alerts for a language that\'s not EN should return a 200 OK response', async () => {
+            mockGetUserFromToken(ROLES.ADMIN);
+
+            const subscription = await new Subscription(createURLSubscription(
+                ROLES.USER.id,
+                'glad-alerts',
+                {
+                    params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
+                    resource: {
+                        content: 'http://tomato-url.com/notify',
+                        type: 'URL'
+                    },
+                    language: 'fr'
+                },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+
+            mockGLADAlertsGeostoreQuery();
+
+            subscription.language = 'en';
+            createURLSubscriptionCallMock(createGLADAlertsGeostoreURLSubscriptionBody(subscription, beginDate, endDate));
+
+            const response = await requester.post(`/api/v1/subscriptions/test-alert`)
+                .set('Authorization', `Bearer abcd`)
+                .send({
+                    url: 'http://potato-url.com/notify',
+                    subId: subscription._id,
+                    alert: 'glad-alerts',
+                    language: 'en',
+                });
+
+            response.status.should.equal(200);
+            response.body.should.have.property('success').and.equal(true);
+        });
+    });
+
 
     afterEach(async () => {
         await redisClient.unsubscribe(CHANNEL);

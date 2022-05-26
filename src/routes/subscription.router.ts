@@ -290,25 +290,6 @@ class SubscriptionsRouter {
         ctx.body = subscriptions;
     }
 
-    static async testEmailAlert(ctx: Context): Promise<void> {
-        const {
-            fromDate,
-            toDate,
-        } = ctx.request.body;
-
-        ctx.request.body.type = 'EMAIL';
-        ctx.request.body.fromDate = fromDate ? moment(fromDate).toISOString() : moment().subtract('2', 'w').toISOString();
-        ctx.request.body.toDate = toDate ? moment(toDate).toISOString() : moment().subtract('1', 'w').toISOString();
-
-        return SubscriptionsRouter.testAlert(ctx);
-    }
-
-    static async testWebhookAlert(ctx: Context): Promise<void> {
-        ctx.request.body.type = 'URL';
-
-        return SubscriptionsRouter.testAlert(ctx);
-    }
-
     static async testAlert(ctx: Context): Promise<void> {
         logger.info(`[EmailAlertsRouter] Starting test alert`);
 
@@ -465,8 +446,6 @@ router.get('/:id/send_confirmation', validateLoggedUserAuth, subscriptionExists(
 router.get('/:id/unsubscribe', subscriptionExists(), SubscriptionsRouter.unsubscribeSubscription);
 router.patch('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.updateSubscription);
 router.delete('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
-router.post('/test-email-alerts', isAdmin, SubscriptionsRouter.testEmailAlert);
-router.post('/test-webhook-alert', isAdmin, SubscriptionsRouter.testWebhookAlert);
 router.post('/test-alert', isAdmin, SubscriptionsRouter.testAlert);
 router.get('/user/:userId', isAdminOrMicroservice, SubscriptionsRouter.findUserSubscriptions);
 router.post('/find-by-ids', validateMicroserviceAuth, SubscriptionsRouter.findByIds);
