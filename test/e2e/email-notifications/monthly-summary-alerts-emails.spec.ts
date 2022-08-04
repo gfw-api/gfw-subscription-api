@@ -3,18 +3,13 @@ import nock from 'nock';
 import config from 'config';
 import moment from 'moment';
 import { createClient, RedisClientType } from 'redis';
-
 import Subscription from 'models/subscription';
 import Statistic from 'models/statistic';
 import AlertQueue from 'queues/alert.queue';
 import EmailHelpersService from 'services/emailHelpersService';
-
 import { getTestServer } from '../utils/test-server';
 import { createSubscriptionContent, assertNoEmailSent } from '../utils/helpers';
 const {
-    mockGLADAlertsISOQuery,
-    mockGLADAlertsWDPAQuery,
-    mockGLADAlertsGeostoreQuery,
     mockVIIRSAlertsISOQuery,
     mockVIIRSAlertsWDPAQuery,
     mockVIIRSAlertsGeostoreQuery,
@@ -28,6 +23,12 @@ const {
     validateCommonNotificationParams,
 } = require('../utils/helpers/email-notifications');
 import { ROLES } from '../utils/test.constants';
+import {
+    mockGLADLAdm1Query,
+    mockGLADLAdm2Query,
+    mockGLADLGeostoreQuery,
+    mockGLADLISOQuery, mockGLADLWDPAQuery
+} from '../utils/mocks/gladL.mocks';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -63,7 +64,7 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsGeostoreQuery(2);
+        mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
 
         await redisClient.subscribe(CHANNEL, (message: string) => {
@@ -75,14 +76,7 @@ describe('Monthly summary notifications', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
-                    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
-                        intact_forest: 0,
-                        other: 100,
-                        peat: 0,
-                        plantations: 0,
-                        primary_forest: 0,
-                        protected_areas: 100,
-                    });
+                    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -108,7 +102,7 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsGeostoreQuery(2);
+        mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
 
         await redisClient.subscribe(CHANNEL, (message: string) => {
@@ -122,14 +116,7 @@ describe('Monthly summary notifications', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
-                    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
-                        intact_forest: 0,
-                        other: 100,
-                        peat: 0,
-                        plantations: 0,
-                        primary_forest: 0,
-                        protected_areas: 100,
-                    });
+                    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -155,7 +142,7 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsGeostoreQuery(2);
+        mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
 
         await redisClient.subscribe(CHANNEL, (message: string) => {
@@ -169,14 +156,7 @@ describe('Monthly summary notifications', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
-                    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
-                        intact_forest: 0,
-                        other: 100,
-                        peat: 0,
-                        plantations: 0,
-                        primary_forest: 0,
-                        protected_areas: 100,
-                    });
+                    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -198,11 +178,11 @@ describe('Monthly summary notifications', () => {
         const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'IDN' } } },
+            { params: { iso: { country: 'BRA' } } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsISOQuery(2);
+        mockGLADLISOQuery(2);
         mockVIIRSAlertsISOQuery(2);
 
         await redisClient.subscribe(CHANNEL, (message: string) => {
@@ -217,12 +197,9 @@ describe('Monthly summary notifications', () => {
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
-                        intact_forest: 0,
-                        other: 45,
-                        peat: 0,
-                        plantations: 0,
-                        primary_forest: 135,
-                        protected_areas: 20,
+                        other: 25,
+                        primary_forest: 175,
+                        protected_areas: 100
                     });
                     break;
                 default:
@@ -239,19 +216,18 @@ describe('Monthly summary notifications', () => {
         }));
     });
 
-    it('Monthly summary alert emails for subscriptions that refer to an ISO region work as expected', async () => {
+    it('Monthly summary alert emails for subscriptions that refer to an ADM 1 region work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'IDN', region: '3' } } },
+            { params: { iso: { country: 'BRA', region: '1' } } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsISOQuery(2);
+        mockGLADLAdm1Query(2);
         mockVIIRSAlertsISOQuery(2);
-
         await redisClient.subscribe(CHANNEL, (message: string) => {
             const jsonMessage = JSON.parse(message);
 
@@ -264,12 +240,9 @@ describe('Monthly summary notifications', () => {
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
-                        intact_forest: 0,
-                        other: 45,
-                        peat: 0,
-                        plantations: 0,
-                        primary_forest: 135,
-                        protected_areas: 20,
+                        other: 25,
+                        primary_forest: 175,
+                        protected_areas: 100
                     });
                     break;
                 default:
@@ -286,17 +259,17 @@ describe('Monthly summary notifications', () => {
         }));
     });
 
-    it('Monthly summary alert emails for subscriptions that refer to an ISO subregion work as expected', async () => {
+    it('Monthly summary alert emails for subscriptions that refer to an ADM 2 subregion work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
             ROLES.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'BRA', region: '1', subregion: '1' } } },
+            { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsISOQuery(2);
+        mockGLADLAdm2Query(2);
         mockVIIRSAlertsISOQuery(2);
 
         await redisClient.subscribe(CHANNEL, (message: string) => {
@@ -311,12 +284,9 @@ describe('Monthly summary notifications', () => {
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
-                        intact_forest: 0,
-                        other: 45,
-                        peat: 0,
-                        plantations: 0,
-                        primary_forest: 135,
-                        protected_areas: 20,
+                        other: 25,
+                        primary_forest: 175,
+                        protected_areas: 100
                     });
                     break;
                 default:
@@ -343,7 +313,7 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsWDPAQuery(2);
+        mockGLADLWDPAQuery(2);
         mockVIIRSAlertsWDPAQuery(2);
 
         await redisClient.subscribe(CHANNEL, (message: string) => {
@@ -358,12 +328,9 @@ describe('Monthly summary notifications', () => {
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
-                        intact_forest: 0,
                         other: 0,
-                        peat: 0,
-                        plantations: 0,
-                        primary_forest: 25,
-                        protected_areas: 200,
+                        primary_forest: 125,
+                        protected_areas: 200
                     });
                     break;
                 default:
@@ -390,7 +357,7 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsGeostoreQuery(2);
+        mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
         createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
 
@@ -405,14 +372,7 @@ describe('Monthly summary notifications', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
-                    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
-                        intact_forest: 0,
-                        other: 100,
-                        peat: 0,
-                        plantations: 0,
-                        primary_forest: 0,
-                        protected_areas: 100,
-                    });
+                    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);
@@ -436,7 +396,7 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsGeostoreQuery(1, { data: [] });
+        mockGLADLGeostoreQuery(1, { data: [] });
         mockVIIRSAlertsGeostoreQuery(1, { data: [] });
 
         assertNoEmailSent(redisClient);
@@ -456,7 +416,7 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsGeostoreQuery(2, {
+        mockGLADLGeostoreQuery(2, {
             data: [{
                 geostore__id: 'test',
                 alert__date: '2019-10-10',
@@ -471,9 +431,9 @@ describe('Monthly summary notifications', () => {
                 rspo_oil_palm__certification_status: 0,
                 is__gfw_wood_fiber: false,
                 is__peatland: false,
-                is__idn_forest_moratorium: false,
+                is__BRA_forest_moratorium: false,
                 is__gfw_oil_palm: false,
-                idn_forest_area__type: 0,
+                BRA_forest_area__type: 0,
                 per_forest_concession__type: 0,
                 is__gfw_oil_gas: false,
                 is__mangroves_2016: true,
@@ -544,7 +504,7 @@ describe('Monthly summary notifications', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsGeostoreQuery(2, {
+        mockGLADLGeostoreQuery(2, {
             data: [
                 {
                     alert__date: '2019-10-10',
@@ -559,9 +519,9 @@ describe('Monthly summary notifications', () => {
                     rspo_oil_palm__certification_status: 0,
                     is__gfw_wood_fiber: false,
                     is__peatland: false,
-                    is__idn_forest_moratorium: false,
+                    is__BRA_forest_moratorium: false,
                     is__gfw_oil_palm: false,
-                    idn_forest_area__type: 0,
+                    BRA_forest_area__type: 0,
                     per_forest_concession__type: 0,
                     is__gfw_oil_gas: false,
                     is__mangroves_2016: true,
@@ -586,9 +546,9 @@ describe('Monthly summary notifications', () => {
                     rspo_oil_palm__certification_status: 0,
                     is__gfw_wood_fiber: false,
                     is__peatland: false,
-                    is__idn_forest_moratorium: false,
+                    is__BRA_forest_moratorium: false,
                     is__gfw_oil_palm: false,
-                    idn_forest_area__type: 0,
+                    BRA_forest_area__type: 0,
                     per_forest_concession__type: 0,
                     is__gfw_oil_gas: false,
                     is__mangroves_2016: false,
@@ -613,9 +573,9 @@ describe('Monthly summary notifications', () => {
                     rspo_oil_palm__certification_status: 0,
                     is__gfw_wood_fiber: false,
                     is__peatland: true,
-                    is__idn_forest_moratorium: false,
+                    is__BRA_forest_moratorium: false,
                     is__gfw_oil_palm: false,
-                    idn_forest_area__type: 0,
+                    BRA_forest_area__type: 0,
                     per_forest_concession__type: 0,
                     is__gfw_oil_gas: false,
                     is__mangroves_2016: false,
@@ -640,9 +600,9 @@ describe('Monthly summary notifications', () => {
                     rspo_oil_palm__certification_status: 0,
                     is__gfw_wood_fiber: false,
                     is__peatland: false,
-                    is__idn_forest_moratorium: false,
+                    is__BRA_forest_moratorium: false,
                     is__gfw_oil_palm: false,
-                    idn_forest_area__type: 0,
+                    BRA_forest_area__type: 0,
                     per_forest_concession__type: 0,
                     is__gfw_oil_gas: false,
                     is__mangroves_2016: false,
@@ -667,9 +627,9 @@ describe('Monthly summary notifications', () => {
                     rspo_oil_palm__certification_status: 0,
                     is__gfw_wood_fiber: false,
                     is__peatland: false,
-                    is__idn_forest_moratorium: false,
+                    is__BRA_forest_moratorium: false,
                     is__gfw_oil_palm: false,
-                    idn_forest_area__type: 0,
+                    BRA_forest_area__type: 0,
                     per_forest_concession__type: 0,
                     is__gfw_oil_gas: false,
                     is__mangroves_2016: false,
@@ -754,7 +714,7 @@ describe('Monthly summary notifications', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         // Despite the payload of the params object, geostore dataset should be used
-        mockGLADAlertsGeostoreQuery(2);
+        mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
 
         await redisClient.subscribe(CHANNEL, (message: string) => {
@@ -766,14 +726,7 @@ describe('Monthly summary notifications', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
-                    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
-                        intact_forest: 0,
-                        other: 100,
-                        peat: 0,
-                        plantations: 0,
-                        primary_forest: 0,
-                        protected_areas: 100,
-                    });
+                    validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
                     break;
                 default:
                     should.fail('Unsupported message type: ', jsonMessage.template);

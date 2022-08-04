@@ -11,8 +11,8 @@ import AlertQueue from 'queues/alert.queue';
 import { getTestServer } from '../utils/test-server';
 import { createURLSubscription, createURLSubscriptionCallMock } from '../utils/helpers';
 import {
-    createMockGeostore, mockGLADAlertsGeostoreQuery,
-    mockVIIRSAlertsGeostoreQuery, mockGLADAlertsISOQuery, mockVIIRSAlertsISOQuery, mockGLADAlertsWDPAQuery,
+    createMockGeostore,
+    mockVIIRSAlertsGeostoreQuery, mockVIIRSAlertsISOQuery,
     mockVIIRSAlertsWDPAQuery
 } from '../utils/mock';
 import { ROLES } from '../utils/test.constants';
@@ -26,6 +26,12 @@ import {
     createMonthlySummaryGeostoreURLSubscriptionBody,
     createMonthlySummaryISOURLSubscriptionBody, createMonthlySummaryWDPAURLSubscriptionBody
 } from '../utils/mocks/monthlySummary.mocks';
+import {
+    mockGLADLAdm1Query,
+    mockGLADLAdm2Query,
+    mockGLADLGeostoreQuery,
+    mockGLADLISOQuery, mockGLADLWDPAQuery
+} from '../utils/mocks/gladL.mocks';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -64,7 +70,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsGeostoreQuery(2);
+        mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
 
         createURLSubscriptionCallMock(createMonthlySummaryGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
@@ -101,7 +107,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsGeostoreQuery(2);
+        mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
 
         createURLSubscriptionCallMock(createMonthlySummaryGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
@@ -139,15 +145,15 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
             ROLES.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'IDN' } } },
+            { params: { iso: { country: 'BRA' } } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsISOQuery(2);
+        mockGLADLISOQuery(2);
         mockVIIRSAlertsISOQuery(2);
 
         createURLSubscriptionCallMock(createMonthlySummaryISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
-            selected_area: 'ISO Code: IDN',
+            selected_area: 'ISO Code: BRA',
         }));
 
         redisClient.subscribe(CHANNEL, (message) => {
@@ -174,21 +180,21 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         }));
     });
 
-    it('Monthly summary alert for url subscriptions that refer to an ISO region work as expected', async () => {
+    it('Monthly summary alert for url subscriptions that refer to an ADM 1 region work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
             ROLES.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'IDN', region: '3' } } },
+            { params: { iso: { country: 'BRA', region: '1' } } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsISOQuery(2);
+        mockGLADLAdm1Query(2);
         mockVIIRSAlertsISOQuery(2);
 
         createURLSubscriptionCallMock(createMonthlySummaryISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
-            selected_area: 'ISO Code: IDN, ID1: 3',
+            selected_area: 'ISO Code: BRA, ID1: 1',
         }));
 
         redisClient.subscribe(CHANNEL, (message) => {
@@ -215,21 +221,21 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         }));
     });
 
-    it('Monthly summary alert for url subscriptions that refer to an ISO subregion work as expected', async () => {
+    it('Monthly summary alert for url subscriptions that refer to an ADM 2 subregion work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
             ROLES.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'BRA', region: '1', subregion: '1' } } },
+            { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsISOQuery(2);
+        mockGLADLAdm2Query(2);
         mockVIIRSAlertsISOQuery(2);
 
         createURLSubscriptionCallMock(createMonthlySummaryISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
-            selected_area: 'ISO Code: BRA, ID1: 1, ID2: 1',
+            selected_area: 'ISO Code: BRA, ID1: 1, ID2: 2',
         }));
 
         redisClient.subscribe(CHANNEL, (message) => {
@@ -266,7 +272,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsWDPAQuery(2);
+        mockGLADLWDPAQuery(2);
         mockVIIRSAlertsWDPAQuery(2);
 
         createURLSubscriptionCallMock(createMonthlySummaryWDPAURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
@@ -307,7 +313,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsGeostoreQuery(2);
+        mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
         createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
 
@@ -345,7 +351,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
-        mockGLADAlertsGeostoreQuery(1, { data: [] }, 200);
+        mockGLADLGeostoreQuery(1, { data: [] }, 200);
         mockVIIRSAlertsGeostoreQuery(1, { data: [] }, 200);
 
         redisClient.subscribe(CHANNEL, (message) => {
@@ -397,7 +403,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         // Despite the payload of the params object, geostore dataset should be used
-        mockGLADAlertsGeostoreQuery(2);
+        mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
 
         createURLSubscriptionCallMock(createMonthlySummaryGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));

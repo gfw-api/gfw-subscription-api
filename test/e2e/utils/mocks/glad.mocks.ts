@@ -219,30 +219,30 @@ export const createGLADAlertsWDPAURLSubscriptionBody = (subscription: Record<str
     };
 
     return {
-        value: 100,
+        value: 400,
         month: beginDate.format('MMMM'),
         year: beginDate.format('YYYY'),
         week_of: beginDate.format('DD MMM'),
         week_start: beginDate.format('DD/MM/YYYY'),
         week_end: endDate.format('DD/MM/YYYY'),
-        glad_count: 100,
-        alert_count: 100,
+        glad_count: 400,
+        alert_count: 400,
         priority_areas: {
-            intact_forest: 0,
-            other: 0,
-            peat: 0,
-            plantations: 0,
-            primary_forest: 0,
+            intact_forest: 100,
+            primary_forest: 100,
+            peat: 100,
             protected_areas: 100,
+            plantations: 0,
+            other: 0
         },
-        formatted_alert_count: '100',
+        formatted_alert_count: "400",
         formatted_priority_areas: {
-            intact_forest: '0',
-            other: '0',
-            peat: '0',
-            plantations: '0',
-            primary_forest: '0',
-            protected_areas: '100',
+            intact_forest: "100",
+            primary_forest: "100",
+            peat: "100",
+            protected_areas: "100",
+            plantations: "0",
+            other: "0"
         },
         alert_link: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(alertLinkQueryString)}`,
         dashboard_link: `${config.get('gfw.flagshipUrl')}/dashboards/aoi/${subscription.id}?lang=${subscription.language}&category=forest-change&utm_source=hyperlink&utm_medium=email&utm_campaign=ForestChangeAlert`,
@@ -250,11 +250,11 @@ export const createGLADAlertsWDPAURLSubscriptionBody = (subscription: Record<str
         map_url_primary_forest: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(mapURLPrimaryForestQueryString)}`,
         map_url_peat: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(mapURLPeatQueryString)}`,
         map_url_wdpa: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(mapURLWDPAQueryString)}`,
-        area_ha_sum: '3.5',
-        intact_forest_ha_sum: '0',
-        primary_forest_ha_sum: '0',
-        peat_ha_sum: '0',
-        wdpa_ha_sum: '3.5',
+        area_ha_sum: "40",
+        intact_forest_ha_sum: "10",
+        primary_forest_ha_sum: "10",
+        peat_ha_sum: "10",
+        wdpa_ha_sum: "10",
         downloadUrls: {
             csv: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/csv?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`,
             json: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/json?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`
@@ -491,30 +491,30 @@ export const createGLADAlertsISOURLSubscriptionBody = (subscription: Record<stri
     };
 
     return {
-        value: 100,
+        value: 400,
         month: beginDate.format('MMMM'),
         year: beginDate.format('YYYY'),
         week_of: beginDate.format('DD MMM'),
         week_start: beginDate.format('DD/MM/YYYY'),
         week_end: endDate.format('DD/MM/YYYY'),
-        glad_count: 100,
-        alert_count: 100,
+        glad_count: 400,
+        alert_count: 400,
         priority_areas: {
-            intact_forest: 0,
-            primary_forest: 60,
-            peat: 0,
-            protected_areas: 20,
+            intact_forest: 100,
+            primary_forest: 100,
+            peat: 100,
+            protected_areas: 100,
             plantations: 0,
-            other: 20
+            other: 0
         },
-        formatted_alert_count: '100',
+        formatted_alert_count: "400",
         formatted_priority_areas: {
-            intact_forest: '0',
-            primary_forest: '60',
-            peat: '0',
-            protected_areas: '20',
-            plantations: '0',
-            other: '20'
+            intact_forest: "100",
+            primary_forest: "100",
+            peat: "100",
+            protected_areas: "100",
+            plantations: "0",
+            other: "0"
         },
         alert_link: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(alertLinkQueryString)}`,
         dashboard_link: `${config.get('gfw.flagshipUrl')}/dashboards/aoi/${subscription.id}?lang=${subscription.language}&category=forest-change&utm_source=hyperlink&utm_medium=email&utm_campaign=ForestChangeAlert`,
@@ -522,11 +522,11 @@ export const createGLADAlertsISOURLSubscriptionBody = (subscription: Record<stri
         map_url_primary_forest: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(mapURLPrimaryForestQueryString)}`,
         map_url_peat: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(mapURLPeatQueryString)}`,
         map_url_wdpa: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(mapURLWDPAQueryString)}`,
-        area_ha_sum: '20.5',
-        intact_forest_ha_sum: '0',
-        primary_forest_ha_sum: '18.54',
-        peat_ha_sum: '0',
-        wdpa_ha_sum: '0.08',
+        area_ha_sum: "40",
+        intact_forest_ha_sum: "10",
+        primary_forest_ha_sum: "10",
+        peat_ha_sum: "10",
+        wdpa_ha_sum: "10",
         downloadUrls: {
             csv: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/csv?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`,
             json: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/json?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`
@@ -543,7 +543,7 @@ export const createGLADAlertsISOURLSubscriptionBody = (subscription: Record<stri
         alert_date_begin: beginDate.format('YYYY-MM-DD'),
         alert_date_end: endDate.format('YYYY-MM-DD'),
         ...bodyData
-    };
+    }
 };
 
 export const createGLADAlertsGeostoreURLSubscriptionBody = (subscription: Record<string, any>, beginDate: Moment, endDate: Moment, bodyData: Record<string, any> = {}) => {
@@ -762,31 +762,32 @@ export const createGLADAlertsGeostoreURLSubscriptionBody = (subscription: Record
         }))
     };
 
+    // const newReturn =
     return {
-        value: 100,
+        value: 400,
         month: beginDate.format('MMMM'),
         year: beginDate.format('YYYY'),
         week_of: beginDate.format('DD MMM'),
         week_start: beginDate.format('DD/MM/YYYY'),
         week_end: endDate.format('DD/MM/YYYY'),
-        glad_count: 100,
-        alert_count: 100,
+        glad_count: 400,
+        alert_count: 400,
         priority_areas: {
-            intact_forest: 0,
-            primary_forest: 0,
-            peat: 0,
-            protected_areas: 50,
+            intact_forest: 100,
+            primary_forest: 100,
+            peat: 100,
+            protected_areas: 100,
             plantations: 0,
-            other: 50
+            other: 0
         },
-        formatted_alert_count: '100',
+        formatted_alert_count: "400",
         formatted_priority_areas: {
-            intact_forest: '0',
-            primary_forest: '0',
-            peat: '0',
-            protected_areas: '50',
-            plantations: '0',
-            other: '50'
+            intact_forest: "100",
+            primary_forest: "100",
+            peat: "100",
+            protected_areas: "100",
+            plantations: "0",
+            other: "0"
         },
         alert_link: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(alertLinkQueryString)}`,
         dashboard_link: `${config.get('gfw.flagshipUrl')}/dashboards/aoi/${subscription.id}?lang=${subscription.language}&category=forest-change&utm_source=hyperlink&utm_medium=email&utm_campaign=ForestChangeAlert`,
@@ -794,16 +795,16 @@ export const createGLADAlertsGeostoreURLSubscriptionBody = (subscription: Record
         map_url_primary_forest: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(mapURLPrimaryForestQueryString)}`,
         map_url_peat: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(mapURLPeatQueryString)}`,
         map_url_wdpa: `${config.get('gfw.flagshipUrl')}/map/aoi/${subscription.id}?${qs.stringify(mapURLWDPAQueryString)}`,
-        area_ha_sum: '5.86',
-        intact_forest_ha_sum: '0',
-        primary_forest_ha_sum: '0',
-        peat_ha_sum: '0',
-        wdpa_ha_sum: '3.73',
+        area_ha_sum: "40",
+        intact_forest_ha_sum: "10",
+        primary_forest_ha_sum: "10",
+        peat_ha_sum: "10",
+        wdpa_ha_sum: "10",
         downloadUrls: {
             csv: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/csv?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`,
             json: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/json?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`
         },
-        glad_alert_type: 'GLAD-L deforestation alerts',
+        glad_alert_type: "GLAD-L deforestation alerts",
         layerSlug: 'glad-alerts',
         alert_name: subscription.name,
         selected_area: 'Custom Area',
@@ -815,5 +816,5 @@ export const createGLADAlertsGeostoreURLSubscriptionBody = (subscription: Record
         alert_date_begin: beginDate.format('YYYY-MM-DD'),
         alert_date_end: endDate.format('YYYY-MM-DD'),
         ...bodyData
-    };
+    }
 };

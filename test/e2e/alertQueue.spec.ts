@@ -5,9 +5,10 @@ import moment from 'moment';
 import Subscription from 'models/subscription';
 import Statistic from 'models/statistic';
 import { getTestServer } from './utils/test-server';
-import { createDatasetWithWebHook } from './utils/helpers';
+import { createSubscription } from './utils/helpers';
 import AlertQueue from 'queues/alert.queue';
 import { mockGLADLGeostoreQuery } from './utils/mocks/gladL.mocks';
+import { ROLES } from './utils/test.constants';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -45,14 +46,17 @@ describe('AlertQueue ', () => {
     });
 
     it('All goes well when a dataset Redis message is received for a subscription with an invalid resource type URL', async () => {
-        await createDatasetWithWebHook('invalidURL');
+        return createSubscription(ROLES.USER.id, {
+            resource: { content: 'invalidURL', type: 'URL' },
+        })
         mockGLADLGeostoreQuery();
         await assertMessageProcessing();
     });
 
     it('All goes well when a dataset Redis message is received for a subscription with a valid resource type URL that returns 4XX codes', async () => {
-        await createDatasetWithWebHook('http://www.webhook.com');
-
+        return createSubscription(ROLES.USER.id, {
+            resource: { content: 'http://www.webhook.com', type: 'URL' },
+        })
         mockGLADLGeostoreQuery();
 
         // If this mock is not used (i.e., the web-hook is not called), the test will fail
@@ -62,8 +66,9 @@ describe('AlertQueue ', () => {
     });
 
     it('POST request to a web-hook URL triggered when a dataset Redis message is received for a subscription with a valid resource type URL (happy case)', async () => {
-        await createDatasetWithWebHook('http://www.webhook.com');
-
+        return createSubscription(ROLES.USER.id, {
+            resource: { content: 'http://www.webhook.com', type: 'URL' },
+        })
         mockGLADLGeostoreQuery();
 
         // If this mock is not used (i.e., the web-hook is not called), the test will fail

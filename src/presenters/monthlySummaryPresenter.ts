@@ -2,19 +2,24 @@ import logger from 'logger';
 import moment, { Moment } from 'moment';
 import AlertUrlService from 'services/alertUrlService';
 import Layer, { ILayer } from 'models/layer';
-import GLADAlertsService from 'services/gfw-data-api/gladAlertsService';
 import EmailHelpersService from 'services/emailHelpersService';
 import UrlService from 'services/urlService';
 import { AlertResultWithCount, PresenterInterface, } from 'presenters/presenter.interface';
 import { ISubscription } from 'models/subscription';
-import { GladAlertResultType, MonthlySummaryAlert, ViirsActiveFiresAlertResultType } from 'types/alertResult.type';
+import {
+    GladAlertResultType,
+    GladLAlertResultType,
+    MonthlySummaryAlert,
+    ViirsActiveFiresAlertResultType
+} from 'types/alertResult.type';
 import ViirsPresenter from 'presenters/viirsPresenter';
+import GladLPresenter from 'presenters/gladLPresenter';
 import { MonthlySummaryPresenterResponse } from 'types/presenterResponse.type';
 
 class MonthlySummaryPresenter extends PresenterInterface<MonthlySummaryAlert, MonthlySummaryPresenterResponse> {
 
     async getAlertsForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<MonthlySummaryAlert[]> {
-        const gladAlerts: GladAlertResultType[] = await GLADAlertsService.getAnalysisInPeriodForSubscription(startDate, endDate, params);
+        const gladAlerts: GladLAlertResultType[] = await GladLPresenter.getAlertsForSubscription(startDate, endDate, params);
         const viirsAlerts: ViirsActiveFiresAlertResultType[] = await ViirsPresenter.getAlertsForSubscription(startDate, endDate, params);
         const flattenedResults: MonthlySummaryAlert[] = []
         gladAlerts.forEach((alert: GladAlertResultType) => flattenedResults.push({ ...alert, type: 'GLAD' }));
@@ -72,7 +77,7 @@ class MonthlySummaryPresenter extends PresenterInterface<MonthlySummaryAlert, Mo
             resultObject.formatted_viirs_priority_areas = EmailHelpersService.formatPriorityAreas(resultObject.viirs_alerts);
 
             // Finding alerts for the same period last year and calculate frequency
-            const gladLastYearAlerts: GladAlertResultType[] = await GLADAlertsService.getAnalysisSamePeriodLastYearForSubscription(begin, end, subscription.params);
+            const gladLastYearAlerts: GladLAlertResultType[] = await GladLPresenter.getAlertsSamePeriodLastYearForSubscription(begin, end, subscription.params);
             resultObject.glad_frequency = await EmailHelpersService.calculateAlertFrequency(gladAlerts, gladLastYearAlerts, subscription.language);
 
             // Finding alerts for the same period last year and calculate frequency

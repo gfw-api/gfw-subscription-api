@@ -270,11 +270,12 @@ export const createGLADLGeostoreURLSubscriptionBody = (subscription: Record<stri
     };
 };
 
-export const mockGLADLISOQuery = () => nock(config.get('dataApi.url'))
-    .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
+export const mockGLADLISOQuery = (times: number = 1) => nock(config.get('dataApi.url'))
+    .get('/dataset/gadm__glad__iso_daily_alerts/latest/query')
     .query((data) => data.sql && data.sql.includes('iso = \'BRA\''))
     .matchHeader('x-api-key', config.get('dataApi.apiKey'))
     .matchHeader('origin', config.get('dataApi.origin'))
+    .times(times)
     .reply(200, {
         data: [
             {
@@ -313,12 +314,12 @@ export const mockGLADLISOQuery = () => nock(config.get('dataApi.url'))
         status: 'success'
     });
 
-export const mockGLADLAdm1Query = () =>
-    nock(config.get('dataApi.url'))
-    .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
+export const mockGLADLAdm1Query = (times: number = 1) => nock(config.get('dataApi.url'))
+    .get('/dataset/gadm__glad__adm1_daily_alerts/latest/query')
     .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\''))
     .matchHeader('x-api-key', config.get('dataApi.apiKey'))
     .matchHeader('origin', config.get('dataApi.origin'))
+    .times(times)
     .reply(200, {
         data: [
             {
@@ -357,12 +358,12 @@ export const mockGLADLAdm1Query = () =>
         status: 'success'
     });
 
-export const mockGLADLAdm2Query = () =>
-    nock(config.get('dataApi.url'))
+export const mockGLADLAdm2Query = (times: number = 1) => nock(config.get('dataApi.url'))
     .get('/dataset/gadm__glad__adm2_daily_alerts/latest/query')
     .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\'') && data.sql.includes('adm2 = \'2\''))
     .matchHeader('x-api-key', config.get('dataApi.apiKey'))
     .matchHeader('origin', config.get('dataApi.origin'))
+    .times(times)
     .reply(200, {
         data: [
             {
@@ -401,57 +402,58 @@ export const mockGLADLAdm2Query = () =>
         status: 'success'
     });
 
-export const mockGLADLWDPAQuery = () =>
-    nock(config.get('dataApi.url'))
-        .get('/dataset/wdpa_protected_areas__glad__daily_alerts/latest/query')
-        .query((data) => data.sql && data.sql.includes('wdpa_protected_area__id = \'1\''))
-        .matchHeader('x-api-key', config.get('dataApi.apiKey'))
-        .matchHeader('origin', config.get('dataApi.origin'))
-        .reply(200, {
-            data: [
-                {
-                    wdpa_protected_area__iucn_cat: 'Category 1',
-                    is__umd_regional_primary_forest_2001: false,
-                    is__peatland: false,
-                    is__ifl_intact_forest_landscape_2016: false,
-                    alert__count: 100,
-                    alert_area__ha: 10,
-                },
-                {
-                    wdpa_protected_area__iucn_cat: null,
-                    is__umd_regional_primary_forest_2001: true,
-                    is__peatland: false,
-                    is__ifl_intact_forest_landscape_2016: false,
-                    alert__count: 100,
-                    alert_area__ha: 10,
-                },
-                {
-                    wdpa_protected_area__iucn_cat: null,
-                    is__umd_regional_primary_forest_2001: false,
-                    is__peatland: true,
-                    is__ifl_intact_forest_landscape_2016: false,
-                    alert__count: 100,
-                    alert_area__ha: 10,
-                },
-                {
-                    wdpa_protected_area__iucn_cat: null,
-                    is__umd_regional_primary_forest_2001: false,
-                    is__peatland: false,
-                    is__ifl_intact_forest_landscape_2016: true,
-                    alert__count: 100,
-                    alert_area__ha: 10,
-                }
-            ],
-            status: 'success'
-        });
+export const mockGLADLWDPAQuery = (times: number = 1) => nock(config.get('dataApi.url'))
+    .get('/dataset/wdpa_protected_areas__glad__daily_alerts/latest/query')
+    .query((data) => data.sql && data.sql.includes('wdpa_protected_area__id = \'1\''))
+    .matchHeader('x-api-key', config.get('dataApi.apiKey'))
+    .matchHeader('origin', config.get('dataApi.origin'))
+    .times(times)
+    .reply(200, {
+        data: [
+            {
+                wdpa_protected_area__iucn_cat: 'Category 1',
+                is__umd_regional_primary_forest_2001: false,
+                is__peatland: false,
+                is__ifl_intact_forest_landscape_2016: false,
+                alert__count: 100,
+                alert_area__ha: 10,
+            },
+            {
+                wdpa_protected_area__iucn_cat: null,
+                is__umd_regional_primary_forest_2001: true,
+                is__peatland: false,
+                is__ifl_intact_forest_landscape_2016: false,
+                alert__count: 100,
+                alert_area__ha: 10,
+            },
+            {
+                wdpa_protected_area__iucn_cat: null,
+                is__umd_regional_primary_forest_2001: false,
+                is__peatland: true,
+                is__ifl_intact_forest_landscape_2016: false,
+                alert__count: 100,
+                alert_area__ha: 10,
+            },
+            {
+                wdpa_protected_area__iucn_cat: null,
+                is__umd_regional_primary_forest_2001: false,
+                is__peatland: false,
+                is__ifl_intact_forest_landscape_2016: true,
+                alert__count: 100,
+                alert_area__ha: 10,
+            }
+        ],
+        status: 'success'
+    });
 
-export const mockGLADLGeostoreQuery = () =>
+export const mockGLADLGeostoreQuery = (times: number = 1, overrideData = {}, overrideStatusCode = 200) =>
     nock(config.get('dataApi.url'))
         .get('/dataset/geostore__glad__daily_alerts/latest/query')
         .query((data) => data.sql && data.sql.includes('geostore__id = \'423e5dfb0448e692f97b590c61f45f22\''))
         .matchHeader('x-api-key', config.get('dataApi.apiKey'))
         .matchHeader('origin', config.get('dataApi.origin'))
-        .reply(200, {
+        .times(times)
+        .reply(overrideStatusCode, {
             data: [
                 {
                     wdpa_protected_area__iucn_cat: 'Category 1',
@@ -486,5 +488,6 @@ export const mockGLADLGeostoreQuery = () =>
                     alert_area__ha: 10,
                 }
             ],
-            status: 'success'
+            status: 'success',
+            ...overrideData,
         });

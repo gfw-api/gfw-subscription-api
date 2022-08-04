@@ -135,15 +135,15 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
             ROLES.USER.id,
             'viirs-active-fires',
-            { params: { iso: { country: 'IDN' } } },
+            { params: { iso: { country: 'BRA' } } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsISOQuery(2, config.get('datasets.viirsISODataset'));
-        createMockGeostore('/v2/geostore/admin/IDN');
+        createMockGeostore('/v2/geostore/admin/BRA');
 
         createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
-            selected_area: 'ISO Code: IDN',
+            selected_area: 'ISO Code: BRA',
         }));
 
         redisClient.subscribe(CHANNEL, (message) => {
@@ -176,15 +176,15 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
             ROLES.USER.id,
             'viirs-active-fires',
-            { params: { iso: { country: 'IDN', region: '3' } } },
+            { params: { iso: { country: 'BRA', region: '3' } } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsISOQuery(2, config.get('datasets.viirsISODataset'));
-        createMockGeostore('/v2/geostore/admin/IDN/3');
+        createMockGeostore('/v2/geostore/admin/BRA/3');
 
         createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
-            selected_area: 'ISO Code: IDN, ID1: 3',
+            selected_area: 'ISO Code: BRA, ID1: 3',
         }));
 
         redisClient.subscribe(CHANNEL, (message) => {

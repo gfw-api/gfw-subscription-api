@@ -12,8 +12,8 @@ import { GladLPresenterResponse } from 'types/presenterResponse.type';
 import AlertUrlService from 'services/alertUrlService';
 import UrlService from 'services/urlService';
 
-const DATASET_GLAD_L_ADM_0: string = '/dataset/gadm__glad__adm2_daily_alerts/latest/query';
-const DATASET_GLAD_L_ADM_1: string = '/dataset/gadm__glad__adm2_daily_alerts/latest/query';
+const DATASET_GLAD_L_ADM_0: string = '/dataset/gadm__glad__iso_daily_alerts/latest/query';
+const DATASET_GLAD_L_ADM_1: string = '/dataset/gadm__glad__adm1_daily_alerts/latest/query';
 const DATASET_GLAD_L_ADM_2: string = '/dataset/gadm__glad__adm2_daily_alerts/latest/query';
 const DATASET_GLAD_L_WDPA: string = '/dataset/wdpa_protected_areas__glad__daily_alerts/latest/query';
 const DATASET_GLAD_L_GEOSTORE: string = '/dataset/geostore__glad__daily_alerts/latest/query';
@@ -65,8 +65,8 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
         const sql: string = `SELECT *
                              FROM data
                              WHERE geostore__id = '${geostoreId}'
-                               AND alert__date >= '${startDate}'
-                               AND alert__date <= '${endDate}'`;
+                               AND umd_glad_landsat_alerts__date >= '${startDate}'
+                               AND umd_glad_landsat_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_GEOSTORE}?sql=${sql}`;
     }
 
@@ -95,6 +95,16 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
 
         const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
         return GLADLPresenter.#getURLForGeostore(startDate, endDate, geostoreId);
+    }
+
+    async getAlertsSamePeriodLastYearForSubscription(startDate: Date, endDate: Date, params: Record<string, any>): Promise<GladLAlertResultType[]> {
+        const lastYearStartDate: moment.Moment = moment(startDate).subtract('1', 'y');
+        const lastYearEndDate: moment.Moment = moment(endDate).subtract('1', 'y');
+        return this.getAlertsForSubscription(
+            lastYearStartDate.format('YYYY-MM-DD'),
+            lastYearEndDate.format('YYYY-MM-DD'),
+            params
+        );
     }
 
     async getAlertsForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<GladLAlertResultType[]> {

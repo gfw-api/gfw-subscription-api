@@ -229,12 +229,12 @@ describe('VIIRS Fires alert emails', () => {
             ROLES.USER.id,
             {
                 datasets: ['viirs-active-fires'],
-                params: { iso: { country: 'IDN' } }
+                params: { iso: { country: 'BRA' } }
             }
         );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/IDN');
+        createMockGeostore('/v2/geostore/admin/BRA');
         mockVIIRSAlertsISOQuery(2);
 
         let expectedQueueMessageCount = 1;
@@ -287,19 +287,19 @@ describe('VIIRS Fires alert emails', () => {
         return consumerPromise;
     });
 
-    it('VIIRS Fires emails for subscriptions that refer to an ISO region work as expected', async () => {
+    it('VIIRS Fires emails for subscriptions that refer to an ADM 1 region work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await createSubscription(
             ROLES.USER.id,
             {
                 datasets: ['viirs-active-fires'],
-                params: { iso: { country: 'IDN', region: '3' } }
+                params: { iso: { country: 'BRA', region: '3' } }
             }
         );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/IDN/3');
+        createMockGeostore('/v2/geostore/admin/BRA/3');
         mockVIIRSAlertsISOQuery(2);
 
         let expectedQueueMessageCount = 1;
@@ -352,7 +352,7 @@ describe('VIIRS Fires alert emails', () => {
         return consumerPromise;
     });
 
-    it('VIIRS Fires emails for subscriptions that refer to an ISO subregion work as expected', async () => {
+    it('VIIRS Fires emails for subscriptions that refer to an ADM 2 subregion work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await createSubscription(

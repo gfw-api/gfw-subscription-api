@@ -1,11 +1,8 @@
 import chai from 'chai';
 import nock from 'nock';
-
 import Subscription, { ISubscription } from 'models/subscription';
-
 import {
     createSubscription,
-    createSubscriptionContent,
     createURLSubscription,
     createURLSubscriptionCallMock,
     mockGetUserFromToken
@@ -15,9 +12,7 @@ import { getTestServer } from './utils/test-server';
 import {
     bootstrapEmailNotificationTests,
     validateCommonNotificationParams,
-    validateCustomMapURLs, validateGladAll, validateGladRadd
 } from './utils/helpers/email-notifications';
-import { mockGLADAlertsGeostoreQuery, mockVIIRSAlertsGeostoreQuery } from './utils/mock';
 import { createGLADAllGeostoreURLSubscriptionBody, mockGLADAllGeostoreQuery } from './utils/mocks/gladAll.mocks';
 import { createMonthlySummaryGeostoreURLSubscriptionBody } from './utils/mocks/monthlySummary.mocks';
 import { createGLADLGeostoreURLSubscriptionBody, mockGLADLGeostoreQuery } from './utils/mocks/gladL.mocks';
@@ -26,10 +21,9 @@ import { createGLADRADDGeostoreURLSubscriptionBody, mockGLADRADDGeostoreQuery } 
 import moment from 'moment';
 import { createGLADAlertsGeostoreURLSubscriptionBody } from './utils/mocks/glad.mocks';
 import { createViirsFireAlertsGeostoreURLSubscriptionBody } from './utils/mocks/viirs.mocks';
-import AlertQueue from '../../src/queues/alert.queue';
 import config from 'config';
 import { createClient, RedisClientType } from 'redis';
-import { describe } from 'mocha';
+import { mockVIIRSAlertsGeostoreQuery } from './utils/mock';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -107,7 +101,7 @@ describe('Test alerts spec', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
 
-        mockGLADAlertsGeostoreQuery();
+        mockGLADLGeostoreQuery();
         createURLSubscriptionCallMock(createGLADAlertsGeostoreURLSubscriptionBody(subscription, beginDate, endDate));
         (await requester.post(`/api/v1/subscriptions/test-alert`)
             .set('Authorization', `Bearer abcd`)
@@ -138,7 +132,7 @@ describe('Test alerts spec', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
 
-        mockGLADAlertsGeostoreQuery();
+        mockGLADLGeostoreQuery();
         createURLSubscriptionCallMock(createGLADAlertsGeostoreURLSubscriptionBody(subscription, beginDate, endDate));
         (await requester.post(`/api/v1/subscriptions/test-alert`)
             .set('Authorization', `Bearer abcd`)
@@ -201,7 +195,7 @@ describe('Test alerts spec', () => {
             redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
         })
 
-        mockGLADAlertsGeostoreQuery();
+        mockGLADLGeostoreQuery();
         (await requester.post(`/api/v1/subscriptions/test-alert`)
             .set('Authorization', `Bearer abcd`)
             .send(testUrlBody)).status.should.equal(200);
@@ -264,7 +258,7 @@ describe('Test alerts spec', () => {
             redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
         })
 
-        mockGLADAlertsGeostoreQuery();
+        mockGLADLGeostoreQuery();
         (await requester.post(`/api/v1/subscriptions/test-alert`)
             .set('Authorization', `Bearer abcd`)
             .send(testUrlBody)).status.should.equal(200);
@@ -423,7 +417,7 @@ describe('Test alerts spec', () => {
 
             const { beginDate, endDate } = bootstrapEmailNotificationTests();
 
-            mockGLADAlertsGeostoreQuery();
+            mockGLADLGeostoreQuery();
             createURLSubscriptionCallMock(createGLADAlertsGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
@@ -436,7 +430,7 @@ describe('Test alerts spec', () => {
                 .send({ ...testBody, alert: 'viirs-active-fires' })).status.should.equal(200);
 
             mockVIIRSAlertsGeostoreQuery(2);
-            mockGLADAlertsGeostoreQuery(2);
+            mockGLADLGeostoreQuery(2);
             createURLSubscriptionCallMock(createMonthlySummaryGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
@@ -489,7 +483,7 @@ describe('Test alerts spec', () => {
 
             const { beginDate, endDate } = bootstrapEmailNotificationTests();
 
-            mockGLADAlertsGeostoreQuery();
+            mockGLADLGeostoreQuery();
 
             subscription.language = 'en';
             createURLSubscriptionCallMock(createGLADAlertsGeostoreURLSubscriptionBody(subscription, beginDate, endDate));

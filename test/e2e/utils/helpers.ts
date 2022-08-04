@@ -173,37 +173,6 @@ export const validRedisMessage = (data: { application?: string, template?: strin
     messageData.sender.should.equal(application);
 };
 
-export const createDatasetWithWebHook = async (url: string, extraMock: boolean = false) => {
-    await new Subscription(createSubscriptionContent(ROLES.USER.id, 'glad-alerts', {
-        datasetsQuery: [{ id: 'glad-alerts', type: 'dataset' }],
-        resource: { content: url, type: 'URL' },
-    })).save();
-
-    if (extraMock) {
-        nock(process.env.GATEWAY_URL)
-            .get('/v1/glad-alerts/')
-            .query(() => true)
-            .reply(200, {
-                data: {
-                    attributes: {
-                        areaHa: 22435351.3660182,
-                        downloadUrls: {
-                            // eslint-disable-next-line max-len
-                            csv: '/glad-alerts/download/?period=2020-02-22,2020-03-04&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=csv',
-                            // eslint-disable-next-line max-len
-                            json: '/glad-alerts/download/?period=2020-02-22,2020-03-04&gladConfirmOnly=False&aggregate_values=False&aggregate_by=False&geostore=423e5dfb0448e692f97b590c61f45f22&format=json'
-                        },
-                        value: 5
-                    },
-                    gladConfirmOnly: false,
-                    id: '20892bc2-5601-424d-8a4a-605c319418a2',
-                    period: '2020-02-22,2020-03-04',
-                    type: 'glad-alerts'
-                }
-            });
-    }
-};
-
 export const assertNoEmailSent = (redisClient: RedisClientType) => {
     redisClient.on('message', () => chai.should().fail('No message should have been sent.'));
 };

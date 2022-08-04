@@ -113,19 +113,19 @@ export const validateVIIRSAlertsAndPriorityAreas = (jsonMessage: Record<string, 
 
 export const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage: Record<string, any>, beginDate: Moment, endDate: Moment, sub: ISubscription, priorityOverride = {}) => {
     const priorityAreas = {
-        intact_forest: 0,
-        primary_forest: 0,
-        peat: 0,
-        protected_areas: 50,
-        plantations: 0,
+        intact_forest: 100,
         other: 50,
+        peat: 100,
+        plantations: 0,
+        primary_forest: 100,
+        protected_areas: 150,
         ...priorityOverride,
     };
 
     jsonMessage.data.should.have.property('layerSlug').and.equal('monthly-summary');
     jsonMessage.data.should.have.property('priority_areas').and.deep.equal(priorityAreas);
-    jsonMessage.data.should.have.property('alert_count').and.equal(200);
-    jsonMessage.data.should.have.property('value').and.equal(200);
+    jsonMessage.data.should.have.property('alert_count').and.equal(500);
+    jsonMessage.data.should.have.property('value').and.equal(500);
 
     jsonMessage.data.should.have.property('alert_link').and.equal(AlertUrlService.generateForManyLayers(sub, [
         Layer.findBySlug('glad-alerts'),
@@ -146,7 +146,7 @@ export const validateMonthlySummaryAlertsAndPriorityAreas = (jsonMessage: Record
 
 export const validateGLADSpecificParams = (jsonMessage: Record<string, any>, beginDate: Moment, endDate: Moment, sub: ISubscription, frequency: string) => {
     jsonMessage.data.should.have.property('glad_frequency').and.equal(frequency);
-    jsonMessage.data.should.have.property('glad_count').and.equal(100);
+    jsonMessage.data.should.have.property('glad_count').and.equal(400);
 };
 
 export const validateVIIRSSpecificParams = (jsonMessage: Record<string, any>, beginDate: Moment, endDate: Moment, sub: ISubscription, frequency: string) => {
