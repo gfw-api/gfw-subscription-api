@@ -6,13 +6,9 @@
     "dirLogFile": null
   },
   "service": {
-    "id": "gfw-subscription-api_1.0.0",
-    "name": "GFW SUBSCRIPTION API",
-    "uri": "http://192.168.1.109:3200",
     "port": 3600
   },
   "apiGateway": {
-    "uri": "http://192.168.1.109:8000/gateway/service",
     "externalUrl": "http://mymachine:9000",
     "queueName": "mail",
     "subscriptionAlertsChannelName": "subscription_alerts"
@@ -23,21 +19,15 @@
   "mongodb": {
     "database": "gfw_subscription_db",
     "host": "localhost",
-    "port": 27017,
-    "useUnifiedTopology": true
+    "port": 27017
   },
   "gfw": {
-    "flagshipUrl": "http://staging.globalforestwatch.org",
-    "apiUrl": "http://mymachine:9000"
+    "flagshipUrl": "http://staging.globalforestwatch.org"
   },
   "settings": {
     "loadCron": true
   },
   "datasets": {
-    "gladISODataset": "gadm__glad__adm2_daily_alerts",
-    "gladWDPADataset": "wdpa_protected_areas__glad__daily_alerts",
-    "gladGeostoreDataset": "geostore__glad__daily_alerts",
-    "gladDownloadDataset": "umd_glad_landsat_alerts",
     "viirsISODataset": "gadm__viirs__adm2_daily_alerts",
     "viirsWDPADataset": "wdpa_protected_areas__viirs__daily_alerts",
     "viirsGeostoreDataset": "geostore__viirs__daily_alerts",

@@ -3,8 +3,7 @@
     "level": "LOGGER_LEVEL"
   },
   "gfw": {
-    "flagshipUrl": "FLAGSHIP_URL",
-    "apiUrl": "API_URL"
+    "flagshipUrl": "FLAGSHIP_URL"
   },
   "rw": {
     "flagshipUrl": {
@@ -14,7 +13,6 @@
     }
   },
   "apiGateway": {
-    "uri": "API_GATEWAY_URI",
     "externalUrl": "API_GATEWAY_EXTERNAL_URL",
     "queueName": "API_GATEWAY_QUEUE_NAME"
   },
@@ -24,8 +22,7 @@
   "mongodb": {
     "host": "MONGO_PORT_27017_TCP_ADDR",
     "database": "MONGO_PORT_27017_TCP_DATABASE",
-    "port": "MONGO_PORT_27017_TCP_PORT",
-    "useUnifiedTopology": "MONGO_USE_UNIFIED_TOPOLOGY"
+    "port": "MONGO_PORT_27017_TCP_PORT"
   },
   "service": {
     "port": "PORT"
@@ -34,9 +31,6 @@
     "loadCron": "LOAD_CRON"
   },
   "datasets": {
-    "gladISODataset": "NEW_GLAD_ISO_DATASET_ID",
-    "gladWDPADataset": "NEW_GLAD_WDPA_DATASET_ID",
-    "gladGeostoreDataset": "NEW_GLAD_ALERTS_DATASET_ID",
     "viirsISODataset": "NEW_VIIRS_ISO_DATASET_ID",
     "viirsWDPADataset": "NEW_VIIRS_WDPA_DATASET_ID",
     "viirsGeostoreDataset": "NEW_VIIRS_ALERTS_DATASET_ID"
