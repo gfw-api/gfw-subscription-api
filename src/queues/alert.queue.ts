@@ -30,6 +30,7 @@ class AlertQueue {
         const redisClient: RedisClientType = createClient({ url: config.get('redis.url') });
         redisClient.subscribe(CHANNEL, AlertQueue.processMessage);
 
+        logger.debug('[AlertQueue] Subscribed to channel %s ', CHANNEL);
         logger.info('[AlertQueue] AlertQueue listener initialized');
     }
 
