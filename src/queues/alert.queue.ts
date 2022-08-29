@@ -23,12 +23,13 @@ export type AlertQueueMessage = {
 
 class AlertQueue {
 
-    constructor() {
+    async init(): Promise<void> {
         logger.info('[AlertQueue] Initializing AlertQueue listener');
         logger.debug('[AlertQueue] Initializing queue with provider %s ', config.get('redis.url'));
 
         const redisClient: RedisClientType = createClient({ url: config.get('redis.url') });
-        redisClient.subscribe(CHANNEL, AlertQueue.processMessage);
+        await redisClient.connect();
+        await redisClient.subscribe(CHANNEL, AlertQueue.processMessage);
 
         logger.debug('[AlertQueue] Subscribed to channel %s ', CHANNEL);
         logger.info('[AlertQueue] AlertQueue listener initialized');

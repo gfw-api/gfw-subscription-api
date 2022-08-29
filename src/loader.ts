@@ -3,7 +3,7 @@ import AlertQueue from 'queues/alert.queue';
 
 const loadQueues: () => void = () => {
     logger.info('Loading queues...');
-    new AlertQueue()
+    (new AlertQueue()).init()
     logger.info('Loaded queues correctly!');
 }
 
