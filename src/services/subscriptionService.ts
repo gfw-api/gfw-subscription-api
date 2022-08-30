@@ -150,12 +150,14 @@ class SubscriptionService {
         const filter: Partial<Record<keyof ISubscription, any>> = {};
         if (application) filter.application = application;
 
-        if (env) {
-            filter.env = {
-                $in: env.split(',')
-            };
+        const environment: string = env ? env : 'production';
+
+        if (env === 'all') {
+            logger.debug(`Applying all env filter`);
         } else {
-            filter.env = 'production';
+            filter.env = {
+                $in: environment.split(',')
+            };
         }
 
         if (updatedAtSince || updatedAtUntil) {
