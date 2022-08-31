@@ -213,10 +213,10 @@ describe('Find all subscriptions tests', () => {
         it('Finding subscriptions with all env filter returns 200 OK with all subscriptions from every env', async () => {
             mockGetUserFromToken(ROLES.MICROSERVICE);
 
-            const prodSub1 = await createSubscription(ROLES.USER.id);
-            const prodSub2 = await createSubscription(ROLES.MANAGER.id, { env: 'production' });
-            const prodSub3 = await createSubscription(ROLES.USER.id, { env: 'staging' });
-            const prodSub4 = await createSubscription(ROLES.MANAGER.id, { env: 'staging' });
+            await createSubscription(ROLES.USER.id);
+            await createSubscription(ROLES.MANAGER.id, { env: 'production' });
+            await createSubscription(ROLES.USER.id, { env: 'staging' });
+            await createSubscription(ROLES.MANAGER.id, { env: 'staging' });
 
             const response = await requester
                 .get(`/api/v1/subscriptions/find-all`)
@@ -225,10 +225,7 @@ describe('Find all subscriptions tests', () => {
                 .send();
             response.status.should.equal(200);
             response.body.should.have.property('data').with.lengthOf(4);
-            response.body.data.map((el: Record<string, any>) => el.id).should.contain(prodSub1.id);
-            response.body.data.map((el: Record<string, any>) => el.id).should.contain(prodSub2.id);
-            response.body.data.map((el: Record<string, any>) => el.id).should.contain(prodSub3.id);
-            response.body.data.map((el: Record<string, any>) => el.id).should.contain(prodSub4.id);
+            [...new Set(response.body.data.map((elem: Record<string, any>) => elem.attributes.env))].sort().should.eql(['production', 'staging'].sort());
         });
 
         it('Finding subscriptions allows filtering by environment query param, returns 200 OK with the correct data', async () => {
