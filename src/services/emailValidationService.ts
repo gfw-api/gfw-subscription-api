@@ -5,6 +5,7 @@ import SlackService from 'services/slackService';
 import SparkpostService from 'services/sparkpostService';
 import taskConfig, { Cron } from 'config/cron';
 import { AlertType, EMAIL_MAP, EmailMap, EmailTemplates } from 'types/email.type';
+import config from 'config';
 
 export interface EmailValidationResult {
     success: boolean
@@ -74,11 +75,18 @@ class EmailValidationService {
         };
     }
 
-    static async validateGladEmailTemplate(date: Moment, emailType: AlertType | 'default', emailTemplate: string): Promise<EmailValidationResult> {
+    static async getEmailValidationResult(date: Moment, emailType: AlertType | 'default', emailTemplate: string): Promise<EmailValidationResult> {
 
         const cron: string = ['glad-alerts', 'glad-all', 'glad-l', 'glad-s2', 'glad-radd'].includes(emailType) ? 'glad-alerts' : emailType;
-        const expected: number = await EmailValidationService.findExpectedEmailsForSubType(date, emailType, cron);
         const sparkpostCount: number = await SparkpostService.requestMetricsForTemplate(date, new RegExp(emailTemplate, 'g'));
+        let expected: number;
+
+        if (emailType === 'monthly-summary' && date.date() !== 1) {
+            // Monthly summary only runs on the first day of each month, so all other days we expect 0 emails
+            expected = 0
+        } else {
+            expected = await EmailValidationService.findExpectedEmailsForSubType(date, emailType, cron);
+        }
 
         const expectedUpperLimit: number = expected + (SUCCESS_RANGE * expected);
         const expectedLowerLimit: number = expected - (SUCCESS_RANGE * expected);
@@ -100,7 +108,7 @@ class EmailValidationService {
             }
 
             const emailTemplate: EmailTemplates = EMAIL_MAP[emailType].emailTemplate;
-            const templateResult: EmailValidationResult = await EmailValidationService.validateGladEmailTemplate(date, emailType, emailTemplate)
+            const templateResult: EmailValidationResult = await EmailValidationService.getEmailValidationResult(date, emailType, emailTemplate)
 
             if (results[emailTemplate]) {
                 results[emailTemplate].success = results[emailTemplate].success && templateResult.success
@@ -114,7 +122,7 @@ class EmailValidationService {
 
         const success: boolean = typeof (Object.values(results).find((result: EmailValidationResult) => result.success === false)) === 'undefined';
 
-        if (process.env.NODE_ENV === 'prod') {
+        if (config.get('slack.enabled') === 'true' || config.get('slack.enabled') === true) {
             if (success) {
                 logger.info(`[SubscriptionValidation] Validation process was successful for ${date.toISOString()}, triggering success action`);
                 await SlackService.subscriptionsValidationSuccessMessage(date.toDate(), results as Record<EmailTemplates, EmailValidationResult>);

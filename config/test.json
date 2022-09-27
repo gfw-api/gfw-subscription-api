@@ -25,5 +25,13 @@
   },
   "mongodb": {
     "database": "gfw_subscription_db_test"
+  },
+  "sparkpost": {
+    "apiKey": "sparkpostFakeKey"
+  },
+  "slack": {
+    "apiKey": "slackFakeKey",
+    "enabled": true,
+    "channel": "slackTestChannel"
   }
 }

@@ -15,5 +15,8 @@
     "gadm36BoundariesDataset": "0b0208b6-b424-4b57-984f-caddfa25ba22",
     "gadm36BoundariesLayer1": "b45350e3-5a76-44cd-b0a9-5038a0d8bfae",
     "gadm36BoundariesLayer2": "cc35432d-38d7-4a03-872e-3a71a2f555fc"
+  },
+  "slack": {
+    "enabled": true
   }
 }

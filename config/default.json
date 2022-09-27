@@ -46,5 +46,10 @@
   },
   "dataApi": {
     "url": "https://staging-data-api.globalforestwatch.org"
+  },
+  "slack": {
+    "apiKey": null,
+    "enabled": false,
+    "channel": null
   }
 }
