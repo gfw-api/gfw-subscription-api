@@ -89,14 +89,7 @@ Subscription.methods.publish = async function (layerConfig: { slug: string, name
 
     const presenter: PresenterInterface<AlertResultType, PresenterResponseDataType> = EMAIL_MAP[layer.slug] ? EMAIL_MAP[layer.slug].presenter : EMAIL_MAP['default'].presenter;
 
-    const published: boolean = await presenter.publish(layerConfig, begin, end, this, publish, layer);
-
-    if (published) {
-        logger.info('[SubscriptionEmails] Saving statistic');
-        await new Statistic({ slug: layerConfig.slug, application: this.application }).save();
-    }
-
-    return true;
+    return presenter.publish(layerConfig, begin, end, this, publish, layer);
 };
 
 Subscription.plugin(mongoosePaginate);

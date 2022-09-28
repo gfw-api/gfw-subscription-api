@@ -9,6 +9,7 @@ import { isEmpty } from 'lodash';
 import moment from 'moment';
 import UrlService from 'services/urlService';
 import { PresenterResponseDataType } from 'types/presenterResponse.type';
+import Statistic from 'models/statistic';
 
 export type FormattedPriorityArea = {
     intact_forest: string
@@ -128,7 +129,7 @@ export abstract class PresenterInterface<T extends AlertResultType, U extends Pr
         return analysisResultsWithSum;
     }
 
-    protected async notify(results: AlertResultWithCount<T>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<void> {
+    protected async notifyUser(results: AlertResultWithCount<T>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<void> {
         try {
 
             let presenterResponse: U;
@@ -156,10 +157,11 @@ export abstract class PresenterInterface<T extends AlertResultType, U extends Pr
         }
 
         if (publish) {
-            await this.notify(analysisResultsWithCount, subscription, layer, begin, end)
-            return true;
-        } else {
-            return false
+            logger.info('[PresenterInterface] Saving statistic and notifying user');
+            await this.notifyUser(analysisResultsWithCount, subscription, layer, begin, end)
+            await new Statistic({ slug: layerConfig.slug, application: subscription.application }).save();
         }
+
+        return true;
     }
 }
