@@ -81,7 +81,7 @@ const init: () => Promise<IInit> = async (): Promise<IInit> => {
 
                 // instance of koa
                 const app: Koa = new Koa();
-
+                app.use(koaSimpleHealthCheck());
                 app.use(koaLogger());
 
                 koaQs(app, 'extended');
@@ -93,7 +93,6 @@ const init: () => Promise<IInit> = async (): Promise<IInit> => {
                         textLimit: '50mb',
                     }),
                 );
-                app.use(koaSimpleHealthCheck());
 
                 // catch errors and send in jsonapi standard. Always return vnd.api+json
                 app.use(async (ctx: { status: number; response: { type: string; }; body: any; }, next: () => any) => {
