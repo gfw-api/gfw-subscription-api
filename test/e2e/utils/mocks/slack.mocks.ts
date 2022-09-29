@@ -23,9 +23,9 @@ export const mockSlackCalls = (expectedData: Record<string, any> = {}) => nock('
             ...expectedData
         }
 
-        const gladTextString = `GLAD alerts - expected ${data.glad.expected} emails (+-5%), got ${data.glad.actual} calls to the Sparkpost API`
-        const viirsTextString = `VIIRS alerts - expected ${data.viirs.expected} emails (+-5%), got ${data.viirs.actual} calls to the Sparkpost API`
-        const monthlySummaryTextString = `Monthly summary alerts - expected ${data.monthlySummary.expected} emails (+-5%), got ${data.monthlySummary.actual} calls to the Sparkpost API`
+        const gladTextString = `GLAD alerts - expected ${data.glad.expected} emails (+-5%), got ${data.glad.actual} calls to the Sparkpost API: :heavy_check_mark:`
+        const viirsTextString = `VIIRS alerts - expected ${data.viirs.expected} emails (+-5%), got ${data.viirs.actual} calls to the Sparkpost API: :heavy_check_mark:`
+        const monthlySummaryTextString = `Monthly summary alerts - expected ${data.monthlySummary.expected} emails (+-5%), got ${data.monthlySummary.actual} calls to the Sparkpost API: :heavy_check_mark:`
 
         if (!body.text.includes(gladTextString)) {
             throw new Error(`GLAD slack notification mismatch: Expected "${gladTextString}", got "${body.text}`)

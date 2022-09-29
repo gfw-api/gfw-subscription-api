@@ -75,7 +75,7 @@ class EmailValidationService {
         };
     }
 
-    static async getEmailValidationResult(date: Moment, emailType: AlertType | 'default', emailTemplate: string): Promise<EmailValidationResult> {
+    static async getEmailValidationResult(date: Moment, emailType: AlertType | 'default', emailTemplate: string): Promise<Partial<EmailValidationResult>> {
 
         const cron: string = ['glad-alerts', 'glad-all', 'glad-l', 'glad-s2', 'glad-radd'].includes(emailType) ? 'glad-alerts' : emailType;
         const sparkpostCount: number = await SparkpostService.requestMetricsForTemplate(date, new RegExp(emailTemplate, 'g'));
@@ -88,10 +88,7 @@ class EmailValidationService {
             expected = await EmailValidationService.findExpectedEmailsForSubType(date, emailType, cron);
         }
 
-        const expectedUpperLimit: number = expected + (SUCCESS_RANGE * expected);
-        const expectedLowerLimit: number = expected - (SUCCESS_RANGE * expected);
         return {
-            success: sparkpostCount >= expectedLowerLimit && sparkpostCount <= expectedUpperLimit,
             expectedSubscriptionEmailsSent: expected,
             sparkPostAPICalls: sparkpostCount,
         };
@@ -100,7 +97,7 @@ class EmailValidationService {
     static async validateSubscriptionEmailCount(date: Moment = moment()): Promise<void> {
         logger.info(`[SubscriptionValidation] Starting validation process for subscriptions for date ${date.toISOString()}`);
 
-        const results: Partial<Record<EmailTemplates, EmailValidationResult>> = {};
+        const results: Partial<Record<EmailTemplates, Partial<EmailValidationResult>>> = {};
 
         await Promise.all(Object.keys(EMAIL_MAP).map(async (emailType: AlertType | 'default') => {
             if (emailType === 'default') {
@@ -108,15 +105,25 @@ class EmailValidationService {
             }
 
             const emailTemplate: EmailTemplates = EMAIL_MAP[emailType].emailTemplate;
-            const templateResult: EmailValidationResult = await EmailValidationService.getEmailValidationResult(date, emailType, emailTemplate)
+            const templateResult: Partial<EmailValidationResult> = await EmailValidationService.getEmailValidationResult(date, emailType, emailTemplate)
 
             if (results[emailTemplate]) {
-                results[emailTemplate].success = results[emailTemplate].success && templateResult.success
                 results[emailTemplate].expectedSubscriptionEmailsSent = results[emailTemplate].expectedSubscriptionEmailsSent + templateResult.expectedSubscriptionEmailsSent
             } else {
                 results[emailTemplate] = templateResult;
             }
         }));
+
+        for (const emailTemplate in results) {
+            const result: Partial<EmailValidationResult> = results[emailTemplate as EmailTemplates];
+            const expectedUpperLimit: number = result.expectedSubscriptionEmailsSent + (SUCCESS_RANGE * result.expectedSubscriptionEmailsSent);
+            const expectedLowerLimit: number = result.expectedSubscriptionEmailsSent - (SUCCESS_RANGE * result.expectedSubscriptionEmailsSent);
+            results[emailTemplate as EmailTemplates] = {
+                success: result.sparkPostAPICalls >= expectedLowerLimit && result.sparkPostAPICalls <= expectedUpperLimit,
+                expectedSubscriptionEmailsSent: result.expectedSubscriptionEmailsSent,
+                sparkPostAPICalls: result.sparkPostAPICalls,
+            };
+        }
 
         logger.info(`[SubscriptionValidation] Ended validation process. results: ${JSON.stringify(results)}`);
 

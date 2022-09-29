@@ -446,12 +446,13 @@ export const mockGLADS2WDPAQuery = () =>
             status: 'success'
         });
 
-export const mockGLADS2GeostoreQuery = () =>
+export const mockGLADS2GeostoreQuery = (times: number = 1) =>
     nock(config.get('dataApi.url'))
         .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
         .query((data) => data.sql && data.sql.includes('geostore__id = \'423e5dfb0448e692f97b590c61f45f22\''))
         .matchHeader('x-api-key', config.get('dataApi.apiKey'))
         .matchHeader('origin', config.get('dataApi.origin'))
+        .times(times)
         .reply(200, {
             data: [
                 {
