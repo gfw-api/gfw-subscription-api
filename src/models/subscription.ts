@@ -3,7 +3,6 @@ import { model, Schema } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate';
 import logger from 'logger';
 import Layer, { ILayer } from 'models/layer';
-import Statistic from 'models/statistic';
 import { AlertResultType } from 'types/alertResult.type';
 import { EMAIL_MAP, EmailLanguageType } from 'types/email.type';
 import { PresenterInterface } from 'presenters/presenter.interface';

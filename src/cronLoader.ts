@@ -41,7 +41,7 @@ const getTask = async (task: Cron): Promise<void> => {
 };
 
 const load = (): CronJob[] => {
-    logger.info('Running crons');
+    logger.info('Loading cron tasks...');
     return CRON_LIST.map((task: Cron) => {
 
         logger.info(`Creating cron task for ${task.name}`);
@@ -56,7 +56,21 @@ const load = (): CronJob[] => {
     });
 };
 
+const run = async (name:string): Promise<void> => {
+    logger.info(`Running cron "${name}"`);
+    const cron: Cron = CRON_LIST.find((element: Cron) => element.name === name)
+    if (!cron) {
+        logger.info(`No cron with name "${name}" found`)
+        return;
+    }
+
+    logger.info(`Running...`);
+    await getTask(cron);
+    logger.info(`Cron "${name}" executed`);
+};
+
 export default {
     load,
+    run,
     getTask
 };
