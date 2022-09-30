@@ -1,8 +1,8 @@
 dist: focal
 language: node_js
 services:
-  - mongodb
   - redis
+  - mongodb
 node_js:
   - "16.15"
 cache:
