@@ -33,13 +33,16 @@ class EmailValidationService {
     }
 
     static async findExpectedEmailsForSubType(date: Moment, type: AlertType | 'default', cron: string): Promise<number> {
-        logger.info(`[EmailValidationService] - findExpectedEmailsForSubType for type "${type}" and cron "${cron}"`)
+        logger.debug(`[EmailValidationService] - findExpectedEmailsForSubType for type "${type}" and cron "${cron}"`)
         let expectedNumberOfEmails: number = 0;
         const subscriptions: ISubscription[] = await Subscription.find({
             datasets: { $in: new RegExp(type) },
             'resource.type': 'EMAIL',
             confirmed: true,
         });
+
+        logger.debug(`[EmailValidationService] - findExpectedEmailsForSubType: found ${subscriptions.length} subscriptions for type "${type}"`)
+
         const { beginDate, endDate } = EmailValidationService.getBeginAndEndDatesForCron(cron, date);
 
         for (const sub of subscriptions) {
@@ -57,6 +60,8 @@ class EmailValidationService {
                 logger.error(err);
             }
         }
+
+        logger.debug(`[EmailValidationService] - findExpectedEmailsForSubType: Found ${expectedNumberOfEmails} subscriptions that should have sent an email`)
 
         return expectedNumberOfEmails;
     }
