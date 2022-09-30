@@ -33,6 +33,7 @@ class EmailValidationService {
     }
 
     static async findExpectedEmailsForSubType(date: Moment, type: AlertType | 'default', cron: string): Promise<number> {
+        logger.info(`[EmailValidationService] - findExpectedEmailsForSubType for type "${type}" and cron "${cron}"`)
         let expectedNumberOfEmails: number = 0;
         const subscriptions: ISubscription[] = await Subscription.find({
             datasets: { $in: new RegExp(type) },
@@ -103,6 +104,7 @@ class EmailValidationService {
             if (emailType === 'default') {
                 return;
             }
+            logger.info(`[SubscriptionValidation] Starting validation process for emailType ${emailType}`);
 
             const emailTemplate: EmailTemplates = EMAIL_MAP[emailType].emailTemplate;
             const templateResult: Partial<EmailValidationResult> = await EmailValidationService.getEmailValidationResult(date, emailType, emailTemplate)
