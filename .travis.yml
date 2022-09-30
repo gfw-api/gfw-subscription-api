@@ -4,7 +4,7 @@ services:
   - mongodb
   - redis
 node_js:
-  - "16"
+  - "16.15"
 cache:
   directories:
   - "node_modules"
@@ -17,7 +17,6 @@ env:
     - HOST_IP=127.0.0.1
     - LOAD_CRON=false
     - MICROSERVICE_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
-    - MONGO_PORT_27017_TCP_ADDR=127.0.0.1
     - NODE_ENV=test
     - PORT=8431
     - REDIS_URL=redis://localhost:6379

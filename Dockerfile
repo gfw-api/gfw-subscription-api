@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:16.15-alpine3.15
 MAINTAINER info@vizzuality.com
 
 ENV NAME gfw-subscription-api

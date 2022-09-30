@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/Vizzuality/gfw-subscription-api#readme",
   "engines": {
-    "node": "~16"
+    "node": "~16.15"
   },
   "dependencies": {
     "axios": "^0.26.0",
