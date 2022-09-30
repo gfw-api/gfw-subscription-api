@@ -60,8 +60,7 @@ const run = async (name:string): Promise<void> => {
     logger.info(`Running cron "${name}"`);
     const cron: Cron = CRON_LIST.find((element: Cron) => element.name === name)
     if (!cron) {
-        logger.info(`No cron with name "${name}" found`)
-        return;
+        throw new Error(`No cron with name "${name}" found`)
     }
 
     logger.info(`Running...`);
