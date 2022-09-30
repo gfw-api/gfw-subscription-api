@@ -17,11 +17,15 @@ import { Server } from 'http';
 import cronLoader from 'cronLoader';
 import loadQueues from 'loader';
 
-const mongooseOptions: ConnectOptions = {
+let mongooseOptions: ConnectOptions = {
     readPreference: 'secondaryPreferred', // Has MongoDB prefer secondary servers for read operations.
     appName: 'subscriptions', // Displays the app name in MongoDB logs, for ease of debug
     serverSelectionTimeoutMS: 10000, // Number of milliseconds the underlying MongoDB driver has to pick a server
 };
+
+if (process.env.NODE_ENV === 'test') {
+    mongooseOptions = {};
+}
 
 const mongoUri: string =
     process.env.MONGO_URI ||
@@ -30,26 +34,6 @@ const mongoUri: string =
     )}/${config.get('mongodb.database')}`;
 
 let retries: number = 10;
-
-if (config.get('logger.level') === 'debug') {
-    logger.debug('Setting mongoose debug logging on');
-
-    mongoose.set('debug', true);
-    mongoose.connection.on('connecting', () => {
-        logger.debug('Mongoose attempting to connect');
-    });
-    mongoose.connection.on('connected', () => {
-        logger.debug('Mongoose connected to the initial server');
-    });
-    mongoose.connection.on('fullsetup', () => {
-        logger.debug(
-            'Mongoose connected to the primary server and at least a secondary server',
-        );
-    });
-    mongoose.connection.on('all', () => {
-        logger.debug('Mongoose connected to all servers');
-    });
-}
 
 interface IInit {
     server: Server;

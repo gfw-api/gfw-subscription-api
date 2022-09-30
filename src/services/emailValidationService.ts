@@ -66,21 +66,6 @@ class EmailValidationService {
         return expectedNumberOfEmails;
     }
 
-    static async getEmailsValidationObject(date: Moment, emailType: AlertType): Promise<EmailValidationResult> {
-        const emailMap: EmailMap = EMAIL_MAP[emailType];
-
-        const expected: number = await EmailValidationService.findExpectedEmailsForSubType(date, emailType, emailType);
-        const sparkpostCount: number = await SparkpostService.requestMetricsForTemplate(date, new RegExp(emailMap.emailTemplate, 'g'));
-
-        const expectedUpperLimit: number = expected + (SUCCESS_RANGE * expected);
-        const expectedLowerLimit: number = expected - (SUCCESS_RANGE * expected);
-        return {
-            success: sparkpostCount >= expectedLowerLimit && sparkpostCount <= expectedUpperLimit,
-            expectedSubscriptionEmailsSent: expected,
-            sparkPostAPICalls: sparkpostCount,
-        };
-    }
-
     static async getEmailValidationResult(date: Moment, emailType: AlertType | 'default', emailTemplate: string): Promise<Partial<EmailValidationResult>> {
 
         const cron: string = ['glad-alerts', 'glad-all', 'glad-l', 'glad-s2', 'glad-radd'].includes(emailType) ? 'glad-alerts' : emailType;
