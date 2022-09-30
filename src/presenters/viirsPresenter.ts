@@ -121,7 +121,8 @@ class ViirsPresenter extends PresenterInterface<ViirsActiveFiresAlertResultType,
     async getAlertsForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<ViirsActiveFiresAlertResultType[]> {
         logger.info('[VIIRS] Entering analysis with params', startDate, endDate, params);
         const uri: string = await ViirsPresenter.getURLInPeriodForSubscription(startDate, endDate, params);
-        logger.info(`[VIIRS] Preparing Data API request, with URL ${config.get('dataApi.url')}${uri}`);
+        logger.info(`[VIIRS] Preparing Data API request`);
+        logger.debug(`[VIIRS] Preparing Data API request, with URL ${config.get('dataApi.url')}${uri}`);
         const response: AxiosResponse<Record<string, any>> = await axios.get(
             `${config.get('dataApi.url')}${uri}`,
             {

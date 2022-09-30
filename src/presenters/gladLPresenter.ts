@@ -110,7 +110,8 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
     async getAlertsForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<GladLAlertResultType[]> {
         logger.info('[GLAD-L] Entering analysis with params', startDate, endDate, params);
         const url: string = await this.getURLForSubscription(startDate, endDate, params);
-        logger.info(`[GLAD-L] Preparing Data API request, with URL ${config.get('dataApi.url')}${url}`);
+        logger.info(`[GLAD-L] Preparing Data API request`);
+        logger.debug(`[GLAD-L] Preparing Data API request, with URL ${config.get('dataApi.url')}${url}`);
         const response: AxiosResponse<Record<string, any>> = await axios.get(
             `${config.get('dataApi.url')}${url}`,
             {

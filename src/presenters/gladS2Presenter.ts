@@ -98,7 +98,8 @@ class GLADS2Presenter extends PresenterInterface<GladS2AlertResultType, GladS2Pr
     async getAlertsForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<GladS2AlertResultType[]> {
         logger.info('[GLAD-S2] Entering analysis with params', startDate, endDate, params);
         const url: string = await GLADS2Presenter.getURLForSubscription(startDate, endDate, params);
-        logger.info(`[GLAD-S2] Preparing Data API request, with URL ${config.get('dataApi.url')}${url}`);
+        logger.info(`[GLAD-S2] Preparing Data API request`);
+        logger.debug(`[GLAD-S2] Preparing Data API request, with URL ${config.get('dataApi.url')}${url}`);
         const response: AxiosResponse<Record<string, any>> = await axios.get(
             `${config.get('dataApi.url')}${url}`,
             {
