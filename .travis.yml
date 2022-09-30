@@ -1,9 +1,8 @@
-dist: focal
+dist: bionic
 language: node_js
 services:
   - redis
   - mongodb
-  - mongod
 node_js:
   - "16.15"
 cache:
