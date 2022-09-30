@@ -152,12 +152,12 @@ export abstract class PresenterInterface<T extends AlertResultType, U extends Pr
         const analysisResultsWithCount: AlertResultWithCount<T> = await this.getAlertsWithCountForSubscription(formatDate(begin), formatDate(end), subscription.params, layerConfig.slug);
 
         if (analysisResultsWithCount.value <= 0) {
-            logger.info('[SubscriptionEmails] Zero value result, not sending email for subscription.');
+            logger.debug('[SubscriptionEmails] Zero value result, not sending email for subscription.');
             return false;
         }
 
         if (publish) {
-            logger.info('[PresenterInterface] Saving statistic and notifying user');
+            logger.debug('[PresenterInterface] Saving statistic and notifying user');
             await this.notifyUser(analysisResultsWithCount, subscription, layer, begin, end)
             await new Statistic({ slug: layerConfig.slug, application: subscription.application }).save();
         }

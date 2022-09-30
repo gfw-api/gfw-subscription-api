@@ -96,7 +96,7 @@ class GLADRaddPresenter extends PresenterInterface<GladRaddAlertResultType, Glad
     }
 
     async getAlertsForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<GladRaddAlertResultType[]> {
-        logger.info('[GLAD-S2] Entering analysis with params', startDate, endDate, params);
+        logger.debug('[GLAD-S2] Entering analysis with params', startDate, endDate, params);
         const url: string = await GLADRaddPresenter.getURLForSubscription(startDate, endDate, params);
         logger.info(`[GLAD-S2] Preparing Data API request`);
         logger.debug(`[GLAD-S2] Preparing Data API request, with URL ${config.get('dataApi.url')}${url}`);
