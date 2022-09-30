@@ -20,7 +20,7 @@ env:
     - MONGO_PORT_27017_TCP_ADDR=127.0.0.1
     - NODE_ENV=test
     - PORT=8431
-    - REDIS_URL=redis://127.0.0.1:6379
+    - REDIS_URL=redis://localhost:6379
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter

@@ -62,6 +62,7 @@ const init: () => Promise<IInit> = async (): Promise<IInit> => {
                         reject(new Error(mongoConnectionError.message));
                     }
                 }
+                logger.info(`Connected to MongoDB!`);
 
                 // instance of koa
                 const app: Koa = new Koa();
