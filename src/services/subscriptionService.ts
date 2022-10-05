@@ -193,6 +193,21 @@ class SubscriptionService {
         return SubscriptionSerializer.serialize(subscriptions);
     }
 
+    static async deleteSubscriptionsByUserId(userId: string): Promise<SerializedSubscriptionResponse> {
+        logger.debug(`[SubscriptionsService]: Delete subscriptions for user with id:  ${userId}`);
+
+        const userSubscriptions: ISubscription[] = await Subscription.find({ userId: { $eq: userId } });
+
+        if (userSubscriptions) {
+            for (let i: number = 0, { length } = userSubscriptions; i < length; i++) {
+                const currentSubscription: ISubscription = userSubscriptions[i];
+                logger.info(`[DBACCESS-DELETE]: subscription.id: ${currentSubscription._id}`);
+                await currentSubscription.remove();
+            }
+        }
+        return SubscriptionSerializer.serialize(userSubscriptions);
+    }
+
 }
 
 export default SubscriptionService;

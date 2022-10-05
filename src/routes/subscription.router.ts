@@ -213,6 +213,13 @@ class SubscriptionsRouter {
         ctx.body = subscription;
     }
 
+    static async deleteSubscriptionByUserId(ctx: Context): Promise<void> {
+        logger.info('Deleting subscription by userId %s', ctx.params.userId);
+        const subscriptions: SerializedSubscriptionResponse = await SubscriptionService.deleteSubscriptionsByUserId(ctx.params.userId);
+
+        ctx.body = subscriptions;
+    }
+
     static async statistics(ctx: Context): Promise<void> {
         logger.info('Obtaining statistics');
         ctx.assert(ctx.query.start, 400, 'Start date required');
@@ -444,6 +451,24 @@ const isAdminOrMicroservice = async (ctx: Context, next: Next): Promise<any> => 
     return ctx.throw(401, 'Unauthorized');
 };
 
+const deleteResourceAuthorizationMiddleware = async (ctx: Context, next: Next) : Promise<any> => {
+    logger.info(`[SubscriptionService] Checking authorization`);
+    const loggedUser: User = SubscriptionsRouter.getUser(ctx);
+    const userFromParam: string = ctx.params.userId;
+
+    if (loggedUser.id === 'microservice' || loggedUser.role === 'ADMIN') {
+        await next();
+        return;
+    }
+
+    if (userFromParam === loggedUser.id) {
+        await next();
+        return;
+    }
+    
+    ctx.throw(403, 'Forbidden');
+};
+
 router.post('/', SubscriptionsRouter.createSubscription);
 router.get('/', validateLoggedUserAuth, SubscriptionsRouter.getSubscriptions);
 router.get('/find-all', validateMicroserviceAuth, SubscriptionsRouter.findAllSubscriptions);
@@ -457,6 +482,7 @@ router.get('/:id/confirm', subscriptionExists(), SubscriptionsRouter.confirmSubs
 router.get('/:id/send_confirmation', validateLoggedUserAuth, subscriptionExists(true), SubscriptionsRouter.sendConfirmation);
 router.get('/:id/unsubscribe', subscriptionExists(), SubscriptionsRouter.unsubscribeSubscription);
 router.patch('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.updateSubscription);
+router.delete('/by-user/:userId', validateLoggedUserOrMicroserviceAuth, deleteResourceAuthorizationMiddleware, SubscriptionsRouter.deleteSubscriptionByUserId);
 router.delete('/:id', validateLoggedUserOrMicroserviceAuth, subscriptionExists(true), SubscriptionsRouter.deleteSubscription);
 router.post('/test-alert', isAdmin, SubscriptionsRouter.testAlert);
 router.get('/user/:userId', isAdminOrMicroservice, SubscriptionsRouter.findUserSubscriptions);
