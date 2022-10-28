@@ -349,7 +349,7 @@ export const createMonthlySummaryWDPAURLSubscriptionBody = (subscription: Record
             plantations: 0,
             other: 0
         },
-        viirs_days_count: 31,
+        viirs_days_count: endDate.diff(beginDate, 'days'),
         viirs_day_start: beginDate.format('DD/MM/YYYY'),
         viirs_day_end: endDate.format('DD/MM/YYYY'),
         location: subscription.name,
