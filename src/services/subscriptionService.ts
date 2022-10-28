@@ -198,13 +198,8 @@ class SubscriptionService {
 
         const userSubscriptions: ISubscription[] = await Subscription.find({ userId: { $eq: userId } });
 
-        if (userSubscriptions) {
-            for (let i: number = 0, { length } = userSubscriptions; i < length; i++) {
-                const currentSubscription: ISubscription = userSubscriptions[i];
-                logger.info(`[DBACCESS-DELETE]: subscription.id: ${currentSubscription._id}`);
-                await currentSubscription.remove();
-            }
-        }
+        await Subscription.deleteMany({ userId: { $eq: userId } });
+
         return SubscriptionSerializer.serialize(userSubscriptions);
     }
 
