@@ -60,11 +60,7 @@ describe('Delete subscription by user id endpoint', () => {
 
         response.body.should.have.property('data').and.lengthOf(2);
         const { data } = response.body;
-
-        data[0].id.should.equal(createdSubscriptionOne._id.toString());
-        data[0].should.have.property('attributes').and.instanceOf(Object);
-        data[1].id.should.equal(createdSubscriptionTwo._id.toString());
-        data[1].should.have.property('attributes').and.instanceOf(Object);
+        data.map((elem: any) => elem.id).sort().should.deep.equal([createdSubscriptionOne.id.toString(), createdSubscriptionTwo.id.toString()].sort());
 
         const userSubscriptions = await Subscription.find({ userId: { $eq: ROLES.USER.id }});
         userSubscriptions.should.have.lengthOf(0);
@@ -93,11 +89,7 @@ describe('Delete subscription by user id endpoint', () => {
 
         response.body.should.have.property('data').and.lengthOf(2);
         const { data } = response.body;
-
-        data[0].id.should.equal(createdSubscriptionOne._id.toString());
-        data[0].should.have.property('attributes').and.instanceOf(Object);
-        data[1].id.should.equal(createdSubscriptionTwo._id.toString());
-        data[1].should.have.property('attributes').and.instanceOf(Object);
+        data.map((elem: any) => elem.id).sort().should.deep.equal([createdSubscriptionOne.id.toString(), createdSubscriptionTwo.id.toString()].sort());
 
         const findAllSubscriptions = await Subscription.find({}).exec();
         findAllSubscriptions.should.be.an('array').with.lengthOf(2);
@@ -123,11 +115,7 @@ describe('Delete subscription by user id endpoint', () => {
 
         response.body.should.have.property('data').and.lengthOf(2);
         const { data } = response.body;
-
-        data[0].id.should.equal(createdSubscriptionOne._id.toString());
-        data[0].should.have.property('attributes').and.instanceOf(Object);
-        data[1].id.should.equal(createdSubscriptionTwo._id.toString());
-        data[1].should.have.property('attributes').and.instanceOf(Object);
+        data.map((elem: any) => elem.id).sort().should.deep.equal([createdSubscriptionOne.id.toString(), createdSubscriptionTwo.id.toString()].sort());
 
         const findAllSubscriptions = await Subscription.find({}).exec();
         findAllSubscriptions.should.be.an('array').with.lengthOf(2);
@@ -135,6 +123,25 @@ describe('Delete subscription by user id endpoint', () => {
         const subscriptionNames = findAllSubscriptions.map((sub) => sub.name);
         subscriptionNames.should.contain(createdSubscriptionAdmin.name);
         subscriptionNames.should.contain(createdSubscriptionManager.name);
+    });
+
+    it('Deleting subscriptions from a user should delete them completely from a database (large number of subscriptions)', async () => {
+        mockGetUserFromToken(ROLES.USER);
+
+        await Promise.all([...Array(100)].map(async () => {
+            await createSubscription(ROLES.USER.id);
+        }));
+
+        const deleteResponse = await requester
+            .delete(`/api/v1/subscriptions/by-user/${ROLES.USER.id}`)
+            .set('Authorization', `Bearer abcd`)
+            .send();
+
+        deleteResponse.status.should.equal(200);
+        deleteResponse.body.should.have.property('data').with.lengthOf(100);
+
+        const findCollectionByUser = await Subscription.find({ userId: { $eq: ROLES.USER.id }}).exec();
+        findCollectionByUser.should.be.an('array').with.lengthOf(0);
     });
 
     it('Deleting all subscriptions of an user while being authenticated as USER should return a 200 and all subscriptions deleted - no subscriptions in the db', async () => {
