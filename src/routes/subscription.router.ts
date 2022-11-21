@@ -16,6 +16,7 @@ import StatisticsService from 'services/statisticsService';
 import GenericError from 'errors/genericError';
 import AlertQueue, { AlertQueueMessage } from 'queues/alert.queue';
 import EmailValidationService from 'services/emailValidationService';
+import UserService from 'services/userService';
 
 
 const router: Router = new Router({
@@ -214,6 +215,14 @@ class SubscriptionsRouter {
     }
 
     static async deleteSubscriptionByUserId(ctx: Context): Promise<void> {
+        const userIdToDelete: string = ctx.params.userId;
+        
+        try {
+            await UserService.getUserById(userIdToDelete);
+        } catch (error) {
+            ctx.throw(404, `User ${userIdToDelete} does not exist`);
+        }
+
         logger.info('Deleting subscription by userId %s', ctx.params.userId);
         const subscriptions: SerializedSubscriptionResponse = await SubscriptionService.deleteSubscriptionsByUserId(ctx.params.userId);
 
