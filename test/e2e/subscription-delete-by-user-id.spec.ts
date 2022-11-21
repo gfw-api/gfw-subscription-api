@@ -52,6 +52,14 @@ describe('Delete subscription by user id endpoint', () => {
         const createdSubscriptionAdmin = await createSubscription(ROLES.ADMIN.id);
         const createdSubscriptionManager = await createSubscription(ROLES.MANAGER.id);
 
+        nock(process.env.GATEWAY_URL)
+            .get(`/auth/user/${ROLES.USER.id}`)
+            .reply(200, {
+                data: {
+                    ...ROLES.USER,
+                }
+            });
+
         const response = await requester
             .delete(`/api/v1/subscriptions/by-user/${ROLES.USER.id}`)
             .set('Authorization', `Bearer abcd`);
@@ -81,6 +89,14 @@ describe('Delete subscription by user id endpoint', () => {
         const createdSubscriptionAdmin = await createSubscription(ROLES.ADMIN.id);
         const createdSubscriptionManager = await createSubscription(ROLES.MANAGER.id);
 
+        nock(process.env.GATEWAY_URL)
+            .get(`/auth/user/${ROLES.USER.id}`)
+            .reply(200, {
+                data: {
+                    ...ROLES.USER,
+                }
+            });
+
         const response = await requester
             .delete(`/api/v1/subscriptions/by-user/${ROLES.USER.id}`)
             .set('Authorization', `Bearer abcd`);
@@ -107,6 +123,14 @@ describe('Delete subscription by user id endpoint', () => {
         const createdSubscriptionAdmin = await createSubscription(ROLES.ADMIN.id);
         const createdSubscriptionManager = await createSubscription(ROLES.MANAGER.id);
 
+        nock(process.env.GATEWAY_URL)
+            .get(`/auth/user/${ROLES.USER.id}`)
+            .reply(200, {
+                data: {
+                    ...ROLES.USER,
+                }
+            });
+
         const response = await requester
             .delete(`/api/v1/subscriptions/by-user/${ROLES.USER.id}`)
             .set('Authorization', `Bearer abcd`);
@@ -125,12 +149,44 @@ describe('Delete subscription by user id endpoint', () => {
         subscriptionNames.should.contain(createdSubscriptionManager.name);
     });
 
+    it('Deleting a subscription owned by a user that does not exist as a MICROSERVICE should return a 404', async () => {
+        mockGetUserFromToken(ROLES.MICROSERVICE);
+
+        nock(process.env.GATEWAY_URL)
+            .get(`/auth/user/potato`)
+            .reply(403, {
+                errors: [
+                    {
+                        status: 403,
+                        detail: 'Not authorized'
+                    }
+                ]
+            });
+
+        const response = await requester
+            .delete(`/api/v1/subscriptions/by-user/potato`)
+            .set('Authorization', `Bearer abcd`)
+            .send();
+
+        response.status.should.equal(404);
+        response.body.should.have.property('errors').and.be.an('array');
+        response.body.errors[0].should.have.property('detail').and.equal(`User potato does not exist`);
+    });
+
     it('Deleting subscriptions from a user should delete them completely from a database (large number of subscriptions)', async () => {
         mockGetUserFromToken(ROLES.USER);
 
         await Promise.all([...Array(100)].map(async () => {
             await createSubscription(ROLES.USER.id);
         }));
+
+        nock(process.env.GATEWAY_URL)
+            .get(`/auth/user/${ROLES.USER.id}`)
+            .reply(200, {
+                data: {
+                    ...ROLES.USER,
+                }
+            });
 
         const deleteResponse = await requester
             .delete(`/api/v1/subscriptions/by-user/${ROLES.USER.id}`)
@@ -146,6 +202,14 @@ describe('Delete subscription by user id endpoint', () => {
 
     it('Deleting all subscriptions of an user while being authenticated as USER should return a 200 and all subscriptions deleted - no subscriptions in the db', async () => {
         mockGetUserFromToken(ROLES.USER);
+
+        nock(process.env.GATEWAY_URL)
+            .get(`/auth/user/${ROLES.USER.id}`)
+            .reply(200, {
+                data: {
+                    ...ROLES.USER,
+                }
+            });
 
         const response = await requester
             .delete(`/api/v1/subscriptions/by-user/${ROLES.USER.id}`)
