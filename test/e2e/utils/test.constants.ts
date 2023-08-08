@@ -1,4 +1,6 @@
-export const mockDataset: (id: string, data?: Record<string, any>) => Record<string, any> = (id: string, data= {}) => ({
+import { LoggedUserValidationResponse } from "rw-api-microservice-node/dist/types";
+
+export const mockDataset: (id: string, data?: Record<string, any>) => Record<string, any> = (id: string, data = {}) => ({
     id,
     type: 'dataset',
     attributes: {
@@ -153,9 +155,10 @@ export const DEFAULT_DATASET: Record<string, any> = {
     wdpaTop: { id: null, value: 0 },
 };
 
-export const ROLES = {
+export const USERS: Record<string, LoggedUserValidationResponse> = {
     USER: {
         id: '1a10d7c6e0a37126611fd7a1',
+        name: 'test user',
         role: 'USER',
         provider: 'local',
         email: 'rootikaleks@gmail.com',
@@ -173,6 +176,7 @@ export const ROLES = {
     },
     MANAGER: {
         id: '1a10d7c6e0a37126611fd7a2',
+        name: 'test manager',
         role: 'MANAGER',
         provider: 'local',
         email: 'user@resourcewatch.org',
@@ -190,6 +194,7 @@ export const ROLES = {
     },
     WRONG_ADMIN: {
         id: '1a10d7c6e0a37126611fd7a3',
+        name: 'wrong admin',
         role: 'ADMIN',
         provider: 'local',
         email: 'user@resourcewatch.org',
@@ -205,6 +210,7 @@ export const ROLES = {
     },
     ADMIN: {
         id: '1a10d7c6e0a37126611fd7a4',
+        name: 'test admin',
         role: 'ADMIN',
         provider: 'local',
         email: 'user@resourcewatch.org',
@@ -221,7 +227,8 @@ export const ROLES = {
         }
     },
     MICROSERVICE: {
-        id: 'microservice'
+        id: 'microservice',
+        createdAt: '2018-07-05T13:50:16.000Z',
     }
 };
 

@@ -6,6 +6,7 @@
     "dirLogFile": null
   },
   "service": {
+    "name": "gfw-subscription-api",
     "port": 3600
   },
   "apiGateway": {

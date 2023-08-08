@@ -10,7 +10,7 @@ import AlertQueue from  'queues/alert.queue';
 
 import { getTestServer } from  '../utils/test-server';
 import { createURLSubscription, createURLSubscriptionCallMock } from  '../utils/helpers';
-import { ROLES } from  '../utils/test.constants';
+import { USERS } from  '../utils/test.constants';
 
 import {
     assertSubscriptionStatsNotificationEvent,
@@ -59,7 +59,7 @@ describe('GLAD alert - URL Subscriptions', () => {
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data', async () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
@@ -94,7 +94,7 @@ describe('GLAD alert - URL Subscriptions', () => {
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data taking into account different languages', async () => {
         moment.locale('fr');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
         )).save();
@@ -130,7 +130,7 @@ describe('GLAD alert - URL Subscriptions', () => {
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - ISO code for country', async () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { iso: { country: 'BRA' } } },
         )).save();
@@ -167,7 +167,7 @@ describe('GLAD alert - URL Subscriptions', () => {
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - ISO code for country and region', async () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { iso: { country: 'BRA', region: '1' } } },
         )).save();
@@ -204,7 +204,7 @@ describe('GLAD alert - URL Subscriptions', () => {
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - ISO code for country, region and subregion', async () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
         )).save();
@@ -241,7 +241,7 @@ describe('GLAD alert - URL Subscriptions', () => {
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - WDPA ID', async () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { wdpaid: '1' } },
         )).save();
@@ -276,7 +276,7 @@ describe('GLAD alert - URL Subscriptions', () => {
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - USE ID', async () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { use: 'gfw_logging', useid: '29407' } },
         )).save();
@@ -316,7 +316,7 @@ describe('GLAD alert - URL Subscriptions', () => {
 
     it('Updating GLAD alerts dataset does not trigger the configured subscription url being called if no alerts are returned by the query', async () => {
         await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
         )).save();
 
@@ -353,7 +353,7 @@ describe('GLAD alert - URL Subscriptions', () => {
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - Legacy params', async () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             {
                 params: {

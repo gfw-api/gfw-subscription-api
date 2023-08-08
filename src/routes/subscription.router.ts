@@ -216,9 +216,9 @@ class SubscriptionsRouter {
 
     static async deleteSubscriptionByUserId(ctx: Context): Promise<void> {
         const userIdToDelete: string = ctx.params.userId;
-        
+
         try {
-            await UserService.getUserById(userIdToDelete);
+            await UserService.getUserById(userIdToDelete, ctx.request.headers['x-api-key'] as string);
         } catch (error) {
             ctx.throw(404, `User ${userIdToDelete} does not exist`);
         }
@@ -474,7 +474,7 @@ const deleteResourceAuthorizationMiddleware = async (ctx: Context, next: Next) :
         await next();
         return;
     }
-    
+
     ctx.throw(403, 'Forbidden');
 };
 

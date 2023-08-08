@@ -4,11 +4,11 @@ import Subscription, { ISubscription } from 'models/subscription';
 import { omit } from 'lodash';
 import chai from 'chai';
 import { getTestServer } from './utils/test-server';
-import { MOCK_USER_IDS, ROLES, SUBSCRIPTION_TO_UPDATE } from './utils/test.constants';
-import { createSubscription } from './utils/helpers';
+import { MOCK_USER_IDS, USERS, SUBSCRIPTION_TO_UPDATE } from './utils/test.constants';
+import { createSubscription, mockValidateRequestWithApiKeyAndUserToken } from './utils/helpers';
 
 const {
-    ensureCorrectError, getUUID, createAuthCases, mockGetUserFromToken
+    ensureCorrectError, getUUID, createAuthCases
 } = require('./utils/helpers');
 
 chai.should();
@@ -21,7 +21,7 @@ const authCases = createAuthCases(`/api/v1/subscriptions/123`, 'patch');
 
 const updateSubscription = async (
     {
-        userID = ROLES.USER.id,
+        userID = USERS.USER.id,
         datasetID = getUUID(),
         subID,
         defaultSub,
@@ -38,11 +38,12 @@ const updateSubscription = async (
     if (!subID && !defaultSub) {
         subscription = await createSubscription(userID, { datasets: [datasetID] });
     }
-    mockGetUserFromToken(ROLES.USER);
+    mockValidateRequestWithApiKeyAndUserToken({});
 
     return requester
         .patch(`/api/v1/subscriptions/${subID || subscription._id}`)
         .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
         .send(subToUpdate);
 };
 
@@ -110,13 +111,14 @@ describe('Update subscription endpoint', () => {
     });
 
     it('Updating subscription data should be updated', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        const subscription = await createSubscription(ROLES.USER.id);
+        const subscription = await createSubscription(USERS.USER.id);
 
         const response = await requester
             .patch(`/api/v1/subscriptions/${subscription._id}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send(SUBSCRIPTION_TO_UPDATE);
 
         response.status.should.equal(200);
@@ -129,7 +131,7 @@ describe('Update subscription endpoint', () => {
         const expectedAttributes = Object.assign(SUBSCRIPTION_TO_UPDATE, {
             createdAt: subscription.createdAt.toISOString(),
             datasetsQuery: [],
-            userId: ROLES.USER.id,
+            userId: USERS.USER.id,
         });
         delete expectedAttributes.application;
         data.attributes.should.deep.equal(expectedAttributes);
@@ -149,7 +151,7 @@ describe('Update subscription endpoint', () => {
     });
 
     it('Updating subscription data providing an invalid language should sanitize the language and update the subscription', async () => {
-        const subscription: ISubscription = await createSubscription(ROLES.USER.id);
+        const subscription: ISubscription = await createSubscription(USERS.USER.id);
         const updateData = { ...subscription.toObject(), language: 'ru' };
         const response = await updateSubscription({ defaultSub: subscription, subToUpdate: updateData });
 
@@ -164,7 +166,7 @@ describe('Update subscription endpoint', () => {
             ...updateData,
             createdAt: subscription.createdAt.toISOString(),
             datasetsQuery: [],
-            userId: ROLES.USER.id,
+            userId: USERS.USER.id,
             language: 'en',
         };
         delete expectedAttributes.application;

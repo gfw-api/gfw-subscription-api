@@ -1,12 +1,14 @@
 import chai from 'chai';
 import nock from 'nock';
-
+import config from 'config';
 import Statistic from 'models/statistic';
-import Subscription, { ISubscription } from 'models/subscription';
+import Subscription from 'models/subscription';
 import UrlService from 'services/urlService';
-import { ROLES } from './test.constants';
+import { USERS } from './test.constants';
 import { RedisClientType } from 'redis';
 import ChaiHttp from 'chai-http';
+import { mockCloudWatchLogRequest, mockValidateRequest } from "rw-api-microservice-node/dist/test-mocks";
+import { ApplicationValidationResponse } from "rw-api-microservice-node/dist/types";
 
 export const getUUID = () => Math.random().toString(36).substring(7);
 
@@ -98,12 +100,6 @@ export const createStatistic = (createdAt = new Date(), application = 'gfw') => 
     createdAt,
 }).save();
 
-export const mockGetUserFromToken = (userProfile: Record<string, any>) => {
-    nock(process.env.GATEWAY_URL, { reqheaders: { authorization: 'Bearer abcd' } })
-        .get('/auth/user/me')
-        .reply(200, userProfile);
-};
-
 type HTTP_VERBS = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'options' | 'head'
 
 export const createAuthCases = (url: string, initMethod: HTTP_VERBS, providedRequester: ChaiHttp.Agent) => {
@@ -113,37 +109,43 @@ export const createAuthCases = (url: string, initMethod: HTTP_VERBS, providedReq
     };
 
     const isUserForbidden = (method: HTTP_VERBS = initMethod) => async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const response = await requester[method](url)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(403);
         ensureCorrectError(response.body, 'Not authorized');
     };
 
     const isManagerForbidden = (method = initMethod) => async () => {
-        mockGetUserFromToken(ROLES.MANAGER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MANAGER });
 
         const response = await requester[method](url)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(403);
         ensureCorrectError(response.body, 'Not authorized');
     };
 
     const isRightAppRequired = (method = initMethod) => async () => {
-        mockGetUserFromToken(ROLES.WRONG_ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.WRONG_ADMIN });
 
         const response = await requester[method](url)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(403);
         ensureCorrectError(response.body, 'Not authorized');
     };
 
     const isUserRequired = (method = initMethod) => async () => {
-        const response = await requester[method](url).send();
+        mockValidateRequestWithApiKey({});
+        const response = await requester[method](url)
+            .set('x-api-key', 'api-key-test')
+            .send();
         response.status.should.equal(401);
         ensureCorrectError(response.body, 'Unauthorized');
     };
@@ -157,7 +159,10 @@ export const createAuthCases = (url: string, initMethod: HTTP_VERBS, providedReq
     };
 };
 
-export const validRedisMessage = (data: { application?: string, template?: string } = {}) => async (message: string) => {
+export const validRedisMessage = (data: {
+    application?: string,
+    template?: string
+} = {}) => async (message: string) => {
     const { application, template } = data;
 
     const subscription = await Subscription.findOne({});
@@ -175,4 +180,60 @@ export const validRedisMessage = (data: { application?: string, template?: strin
 
 export const assertNoEmailSent = (redisClient: RedisClientType) => {
     redisClient.on('message', () => chai.should().fail('No message should have been sent.'));
+};
+
+const APPLICATION: ApplicationValidationResponse = {
+    data: {
+        type: "applications",
+        id: "649c4b204967792f3a4e52c9",
+        attributes: {
+            name: "grouchy-armpit",
+            organization: null,
+            user: null,
+            apiKeyValue: "a1a9e4c3-bdff-4b6b-b5ff-7a60a0454e13",
+            createdAt: "2023-06-28T15:00:48.149Z",
+            updatedAt: "2023-06-28T15:00:48.149Z"
+        }
+    }
+};
+
+export const mockValidateRequestWithApiKey = ({
+                                                  apiKey = 'api-key-test',
+                                                  application = APPLICATION
+                                              }) => {
+    mockValidateRequest({
+        gatewayUrl: process.env.GATEWAY_URL,
+        microserviceToken: process.env.MICROSERVICE_TOKEN,
+        application,
+        apiKey
+    });
+    mockCloudWatchLogRequest({
+        application,
+        awsRegion: process.env.AWS_REGION,
+        logGroupName: process.env.CLOUDWATCH_LOG_GROUP_NAME,
+        logStreamName: config.get('service.name')
+    });
+};
+
+export const mockValidateRequestWithApiKeyAndUserToken = ({
+                                                              apiKey = 'api-key-test',
+                                                              token = 'abcd',
+                                                              application = APPLICATION,
+                                                              user = USERS.USER
+                                                          }) => {
+    mockValidateRequest({
+        gatewayUrl: process.env.GATEWAY_URL,
+        microserviceToken: process.env.MICROSERVICE_TOKEN,
+        user,
+        application,
+        token,
+        apiKey
+    });
+    mockCloudWatchLogRequest({
+        user,
+        application,
+        awsRegion: process.env.AWS_REGION,
+        logGroupName: process.env.CLOUDWATCH_LOG_GROUP_NAME,
+        logStreamName: config.get('service.name')
+    });
 };

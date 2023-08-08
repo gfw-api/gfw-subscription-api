@@ -14,7 +14,7 @@ import { createURLSubscription, createURLSubscriptionCallMock } from  '../utils/
 import {
     mockVIIRSAlertsGeostoreQuery, createMockGeostore, mockVIIRSAlertsISOQuery, mockVIIRSAlertsWDPAQuery
 } from '../utils/mock';
-import { ROLES } from  '../utils/test.constants';
+import { USERS } from  '../utils/test.constants';
 
 import {
     assertSubscriptionStatsNotificationEvent,
@@ -56,7 +56,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
 
     it('Updating VIIRS Fires dataset triggers a new email being queued using the correct email template and providing the needed data', async () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'viirs-active-fires',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
@@ -93,7 +93,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('fr');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'viirs-active-fires',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
         )).save();
@@ -133,7 +133,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'viirs-active-fires',
             { params: { iso: { country: 'BRA' } } },
         )).save();
@@ -174,7 +174,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'viirs-active-fires',
             { params: { iso: { country: 'BRA', region: '3' } } },
         )).save();
@@ -215,7 +215,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'viirs-active-fires',
             { params: { iso: { country: 'BRA', region: '1', subregion: '1' } } },
         )).save();
@@ -256,7 +256,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'viirs-active-fires',
             { params: { wdpaid: '1' } },
         )).save();
@@ -296,7 +296,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'viirs-active-fires',
             { params: { use: 'gfw_logging', useid: '29407' } },
         )).save();
@@ -338,7 +338,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
 
     it('No email is sent if there no alerts are returned by the VIIRS Fires alerts query', async () => {
         await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'viirs-active-fires',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
@@ -376,7 +376,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
 
     it('Legacy subscription parameters are correctly handled, triggering a new email being queued using the correct email template with the correct data', async () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'viirs-active-fires',
             {
                 params: {

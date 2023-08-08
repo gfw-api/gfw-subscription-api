@@ -5,9 +5,9 @@ import chai from 'chai';
 import { createClient, RedisClientType } from 'redis';
 import { sleep } from 'sleep';
 import { createMockSendConfirmationSUB } from './utils/mock';
-import { ROLES } from './utils/test.constants';
+import { USERS } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
-import { createSubscription } from './utils/helpers';
+import { createSubscription, mockValidateRequestWithApiKeyAndUserToken } from './utils/helpers';
 
 const {
     createSubscriptionContent,
@@ -15,7 +15,6 @@ const {
     createAuthCases,
     getUUID,
     validRedisMessage,
-    mockGetUserFromToken
 } = require('./utils/helpers');
 
 const should = chai.should();
@@ -46,13 +45,14 @@ describe('Send confirmation endpoint', () => {
     it('Sending confirm subscription without provided user should fall', authCases.isUserRequired());
 
     it('Sending confirm subscription with being authenticated but with not existing subscription for user should fall', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({})
 
         await redisClient.subscribe(CHANNEL, () => should.fail('should not be called'));
 
-        createSubscription(ROLES.USER.id, getUUID());
+        createSubscription(USERS.USER.id, getUUID());
         const response = await requester
             .get('/api/v1/subscriptions/41224d776a326fb40f000001/send_confirmation')
+            .set('x-api-key', 'api-key-test')
             .set('Authorization', `Bearer abcd`)
             .send();
         response.status.should.equal(404);
@@ -62,13 +62,14 @@ describe('Send confirmation endpoint', () => {
     });
 
     it('Sending confirm subscription should return not found when subscription doesn\'t exist', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({})
 
         await redisClient.subscribe(CHANNEL, () => should.fail('should not be called'));
 
         const response = await requester
             .get('/api/v1/subscriptions/41224d776a326fb40f000001/send_confirmation')
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
@@ -77,13 +78,14 @@ describe('Send confirmation endpoint', () => {
     });
 
     it('Sending confirm subscription should return bad request when id is not valid', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({})
 
         await redisClient.subscribe(CHANNEL, () => should.fail('should not be called'));
 
         const response = await requester
             .get('/api/v1/subscriptions/123/send_confirmation')
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'ID is not valid');
@@ -92,7 +94,7 @@ describe('Send confirmation endpoint', () => {
     });
 
     it('Sending confirmation subscription should redirect to flagship and emit a redis message (happy case)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({})
 
         await redisClient.subscribe(CHANNEL, validRedisMessage({
             template: 'subscription-confirmation-en',
@@ -101,10 +103,11 @@ describe('Send confirmation endpoint', () => {
         }));
 
         createMockSendConfirmationSUB();
-        const subscription = await createSubscription(ROLES.USER.id);
+        const subscription = await createSubscription(USERS.USER.id);
         const response = await requester
             .get(`/api/v1/subscriptions/${subscription.id}/send_confirmation`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ application: 'rw' })
             .send();
         response.status.should.equal(200);
@@ -114,12 +117,13 @@ describe('Send confirmation endpoint', () => {
     });
 
     it('Providing redirect=false as query param disables the redirection (happy case)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({})
 
-        const createdSubscription = await createSubscription(ROLES.USER.id);
+        const createdSubscription = await createSubscription(USERS.USER.id);
         const response = await requester
             .get(`/api/v1/subscriptions/${createdSubscription._id}/send_confirmation`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({
                 application: 'rw',
                 redirect: false,
