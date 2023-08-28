@@ -9,8 +9,6 @@ RUN addgroup $USER && adduser -s /bin/bash -D -G $USER $USER
 RUN apk update && apk upgrade && \
     apk add --no-cache --update bash git openssh python3 build-base
 
-RUN yarn global add grunt-cli bunyan pm2
-
 RUN mkdir -p /opt/$NAME
 COPY package.json /opt/$NAME/package.json
 COPY yarn.lock /opt/$NAME/yarn.lock

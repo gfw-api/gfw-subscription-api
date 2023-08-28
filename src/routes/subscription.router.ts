@@ -460,7 +460,7 @@ const isAdminOrMicroservice = async (ctx: Context, next: Next): Promise<any> => 
     return ctx.throw(401, 'Unauthorized');
 };
 
-const deleteResourceAuthorizationMiddleware = async (ctx: Context, next: Next) : Promise<any> => {
+const deleteResourceAuthorizationMiddleware = async (ctx: Context, next: Next): Promise<any> => {
     logger.info(`[SubscriptionService] Checking authorization`);
     const loggedUser: User = SubscriptionsRouter.getUser(ctx);
     const userFromParam: string = ctx.params.userId;
