@@ -48,7 +48,6 @@ export type MonthlySummaryAlert = BaseAlert & {
     type: 'GLAD' | 'VIIRS'
 
     // Present in both
-    alert__date: string
     bra_biome__name: string
     geostore__id?: string
 
@@ -63,6 +62,7 @@ export type MonthlySummaryAlert = BaseAlert & {
     adm1?: string
     adm2?: string
     confidence__cat?: string
+    alert__date?: string
     iso?: string
     wdpa_protected_area__id?: string
     wdpa_protected_area__iso?: string
@@ -71,7 +71,6 @@ export type MonthlySummaryAlert = BaseAlert & {
 }
 
 export type GladAlertResultType = BaseAlertWithArea & {
-    alert__date: string
     bra_biome__name: string
     geostore__id: string
     is__confirmed_alert: boolean
@@ -98,7 +97,6 @@ export type GladAllAlertResultType = BaseAlertWithWDPAArea & {
 export type GladLAlertResultType = BaseAlertWithWDPAArea & {
     adm1?: string
     adm2?: string
-    alert__date: string
     bra_biome__name: string
     is__confirmed_alert: boolean
     iso?: string
