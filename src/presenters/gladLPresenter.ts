@@ -26,8 +26,8 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
         const sql: string = `SELECT *
                              FROM data
                              WHERE iso = '${country}'
-                               AND alert__date >= '${startDate}'
-                               AND alert__date <= '${endDate}'`;
+                               AND umd_glad_landsat_alerts__date >= '${startDate}'
+                               AND umd_glad_landsat_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_ADM_0}?sql=${sql}`;
     }
 
@@ -36,8 +36,8 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
                              FROM data
                              WHERE iso = '${country}'
                                AND adm1 = '${region}'
-                               AND alert__date >= '${startDate}'
-                               AND alert__date <= '${endDate}'`;
+                               AND umd_glad_landsat_alerts__date >= '${startDate}'
+                               AND umd_glad_landsat_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_ADM_1}?sql=${sql}`;
     }
 
@@ -47,8 +47,8 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
                              WHERE iso = '${country}'
                                AND adm1 = '${region}'
                                AND adm2 = '${subregion}'
-                               AND alert__date >= '${startDate}' `
-            + `AND alert__date <= '${endDate}'`;
+                               AND umd_glad_landsat_alerts__date >= '${startDate}' `
+            + `AND umd_glad_landsat_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_ADM_2}?sql=${sql}`;
     }
 
@@ -56,8 +56,8 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
         const sql: string = `SELECT *
                              FROM data
                              WHERE wdpa_protected_area__id = '${wdpa}'
-                               AND alert__date >= '${startDate}'
-                               AND alert__date <= '${endDate}'`;
+                               AND umd_glad_landsat_alerts__date >= '${startDate}'
+                               AND umd_glad_landsat_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_WDPA}?sql=${sql}`;
     }
 

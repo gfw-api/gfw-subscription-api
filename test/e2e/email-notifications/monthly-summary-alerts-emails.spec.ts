@@ -419,7 +419,7 @@ describe('Monthly summary notifications', () => {
         mockGLADLGeostoreQuery(2, {
             data: [{
                 geostore__id: 'test',
-                alert__date: '2019-10-10',
+                umd_glad_landsat_alerts__date: '2019-10-10',
                 is__confirmed_alert: false,
                 is__umd_regional_primary_forest_2001: false,
                 is__alliance_for_zero_extinction_site: false,
@@ -507,7 +507,7 @@ describe('Monthly summary notifications', () => {
         mockGLADLGeostoreQuery(2, {
             data: [
                 {
-                    alert__date: '2019-10-10',
+                    umd_glad_landsat_alerts__date: '2019-10-10',
                     is__confirmed_alert: false,
                     is__umd_regional_primary_forest_2001: false,
                     is__alliance_for_zero_extinction_site: false,
@@ -534,7 +534,7 @@ describe('Monthly summary notifications', () => {
                     _id: 'AW6O0fqMLu2ttL7ZDM5u'
                 },
                 {
-                    alert__date: '2019-10-10',
+                    umd_glad_landsat_alerts__date: '2019-10-10',
                     is__confirmed_alert: false,
                     is__umd_regional_primary_forest_2001: true,
                     is__alliance_for_zero_extinction_site: false,
@@ -561,7 +561,7 @@ describe('Monthly summary notifications', () => {
                     _id: 'AW6O0fqMLu2ttL7ZDM5u'
                 },
                 {
-                    alert__date: '2019-10-10',
+                    umd_glad_landsat_alerts__date: '2019-10-10',
                     is__confirmed_alert: false,
                     is__umd_regional_primary_forest_2001: false,
                     is__alliance_for_zero_extinction_site: false,
@@ -588,7 +588,7 @@ describe('Monthly summary notifications', () => {
                     _id: 'AW6O0fqMLu2ttL7ZDM5u'
                 },
                 {
-                    alert__date: '2019-10-10',
+                    umd_glad_landsat_alerts__date: '2019-10-10',
                     is__confirmed_alert: false,
                     is__umd_regional_primary_forest_2001: false,
                     is__alliance_for_zero_extinction_site: false,
@@ -615,7 +615,7 @@ describe('Monthly summary notifications', () => {
                     _id: 'AW6O0fqMLu2ttL7ZDM5u'
                 },
                 {
-                    alert__date: '2019-10-10',
+                    umd_glad_landsat_alerts__date: '2019-10-10',
                     is__confirmed_alert: false,
                     is__umd_regional_primary_forest_2001: false,
                     is__alliance_for_zero_extinction_site: false,
