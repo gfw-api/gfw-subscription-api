@@ -9,7 +9,7 @@ import { createSubscription } from '../utils/helpers';
 import { getTestServer } from '../utils/test-server';
 import { mockSparkpostMetricsCalls } from '../utils/mocks/sparkpost.mocks';
 import { mockSlackCalls } from '../utils/mocks/slack.mocks';
-import { ROLES } from '../utils/test.constants';
+import { USERS } from '../utils/test.constants';
 import { mockGLADLGeostoreQuery } from '../utils/mocks/gladL.mocks';
 import { mockVIIRSAlertsGeostoreQuery } from '../utils/mock';
 import { mockGLADS2GeostoreQuery } from '../utils/mocks/gladS2.mocks';
@@ -47,7 +47,7 @@ describe('Subscription emails validation cron', () => {
     describe("Monthly summary emails tests", () => {
         it('Slack notification with a monthly subscription and one monthly summary email sent should report emails sent to slack on the first day of the month', async () => {
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['monthly-summary']
                 }
@@ -71,7 +71,7 @@ describe('Subscription emails validation cron', () => {
 
         it('Slack notification with a monthly subscription and one monthly summary email sent should report no emails sent to slack on any day other than the first day of the month', async () => {
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['monthly-summary']
                 }
@@ -95,7 +95,7 @@ describe('Subscription emails validation cron', () => {
     describe("VIIRS emails tests", () => {
         it('Slack notification with a viirs subscription and one viirs email sent should report emails sent to slack', async () => {
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['viirs-active-fires']
                 }
@@ -118,13 +118,13 @@ describe('Subscription emails validation cron', () => {
 
         it('Slack notification with multiple viirs subscription with data should report only multiple emails sent to slack', async () => {
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['viirs-active-fires']
                 }
             );
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['viirs-active-fires']
                 }
@@ -147,13 +147,13 @@ describe('Subscription emails validation cron', () => {
 
         it('Slack notification with multiple viirs subscription but only one with data should report only one emails sent to slack', async () => {
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['viirs-active-fires']
                 }
             );
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['viirs-active-fires']
                 }
@@ -179,7 +179,7 @@ describe('Subscription emails validation cron', () => {
     describe("GLAD emails tests", () => {
         it('Slack notification with a glad subscription and one glad email sent should report emails sent to slack', async () => {
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['glad-l']
                 }
@@ -202,13 +202,13 @@ describe('Subscription emails validation cron', () => {
 
         it('Slack notification with multiple glad subscription with data should report only multiple emails sent to slack', async () => {
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['glad-l']
                 }
             );
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['glad-s2']
                 }
@@ -232,13 +232,13 @@ describe('Subscription emails validation cron', () => {
 
         it('Slack notification with multiple glad subscription but only one with data should report only one emails sent to slack', async () => {
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['glad-l']
                 }
             );
             await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['glad-s2']
                 }
@@ -263,31 +263,31 @@ describe('Subscription emails validation cron', () => {
         it('Slack notification with lost of glad subscriptions and slight difference between subs and sparkpost statistics should report success to slack', async () => {
             for (let i = 0; i < 20; i++) {
                 await createSubscription(
-                    ROLES.USER.id,
+                    USERS.USER.id,
                     {
                         datasets: ['glad-alerts']
                     }
                 );
                 await createSubscription(
-                    ROLES.USER.id,
+                    USERS.USER.id,
                     {
                         datasets: ['glad-all']
                     }
                 );
                 await createSubscription(
-                    ROLES.USER.id,
+                    USERS.USER.id,
                     {
                         datasets: ['glad-l']
                     }
                 );
                 await createSubscription(
-                    ROLES.USER.id,
+                    USERS.USER.id,
                     {
                         datasets: ['glad-s2']
                     }
                 );
                 await createSubscription(
-                    ROLES.USER.id,
+                    USERS.USER.id,
                     {
                         datasets: ['glad-radd']
                     }

@@ -1,8 +1,13 @@
 import nock from 'nock';
 import chai from 'chai';
 import Subscription from 'models/subscription';
-import { createSubscription, getUUID, mockGetUserFromToken } from './utils/helpers';
-import { ROLES } from './utils/test.constants';
+import {
+    createSubscription,
+    getUUID,
+    mockValidateRequestWithApiKey,
+    mockValidateRequestWithApiKeyAndUserToken
+} from './utils/helpers';
+import { USERS } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 
 nock.disableNetConnect();
@@ -25,7 +30,11 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions as an anonymous user should return an "unauthorized" error with matching 401 HTTP code', async () => {
-        const response = await requester.get(`/api/v1/subscriptions`).send();
+        mockValidateRequestWithApiKey({});
+        const response = await requester
+            .get(`/api/v1/subscriptions`)
+            .set('x-api-key', 'api-key-test')
+            .send();
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -34,11 +43,12 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions as an authenticated user should return an empty list', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
 
         response.status.should.equal(200);
@@ -46,15 +56,16 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions should be successful and return a list of subscriptions (populated db)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        const subscriptionOne = await createSubscription(ROLES.USER.id);
-        const subscriptionTwo = await createSubscription(ROLES.USER.id);
+        const subscriptionOne = await createSubscription(USERS.USER.id);
+        const subscriptionTwo = await createSubscription(USERS.USER.id);
         await createSubscription(getUUID());
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
 
         response.status.should.equal(200);
@@ -89,17 +100,18 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions without env filter should be successful and return a list of subscriptions with env=production (populated db)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        const subscriptionOne = await createSubscription(ROLES.USER.id, { env: 'production' });
-        const subscriptionTwo = await createSubscription(ROLES.USER.id);
-        await createSubscription(ROLES.USER.id, { env: 'staging' });
+        const subscriptionOne = await createSubscription(USERS.USER.id, { env: 'production' });
+        const subscriptionTwo = await createSubscription(USERS.USER.id);
+        await createSubscription(USERS.USER.id, { env: 'staging' });
 
         await createSubscription(getUUID());
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
 
         response.status.should.equal(200);
@@ -134,17 +146,18 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions with env filter should be successful and return a list of subscriptions for that env (populated db)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        await createSubscription(ROLES.USER.id);
-        await createSubscription(ROLES.USER.id);
-        const subscriptionThree = await createSubscription(ROLES.USER.id, { env: 'staging' });
+        await createSubscription(USERS.USER.id);
+        await createSubscription(USERS.USER.id);
+        const subscriptionThree = await createSubscription(USERS.USER.id, { env: 'staging' });
 
         await createSubscription(getUUID());
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ env: 'staging' })
             .send();
 
@@ -169,17 +182,18 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions without application filter should be successful and return a list of subscriptions with application=gfw (populated db)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        const subscriptionOne = await createSubscription(ROLES.USER.id, { application: 'gfw' });
-        const subscriptionTwo = await createSubscription(ROLES.USER.id);
-        await createSubscription(ROLES.USER.id, { application: 'rw' });
+        const subscriptionOne = await createSubscription(USERS.USER.id, { application: 'gfw' });
+        const subscriptionTwo = await createSubscription(USERS.USER.id);
+        await createSubscription(USERS.USER.id, { application: 'rw' });
 
         await createSubscription(getUUID());
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
 
         response.status.should.equal(200);
@@ -214,17 +228,18 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions with application filter should be successful and return a list of subscriptions for that env (populated db)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        await createSubscription(ROLES.USER.id);
-        await createSubscription(ROLES.USER.id);
-        const subscriptionThree = await createSubscription(ROLES.USER.id, { application: 'rw' });
+        await createSubscription(USERS.USER.id);
+        await createSubscription(USERS.USER.id);
+        const subscriptionThree = await createSubscription(USERS.USER.id, { application: 'rw' });
 
         await createSubscription(getUUID());
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ application: 'rw' })
             .send();
 
@@ -249,23 +264,24 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions with application and app filter should be successful and return a list of subscriptions for that env and application (no matches, populated db)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        await createSubscription(ROLES.USER.id, {
+        await createSubscription(USERS.USER.id, {
             application: 'rw',
             env: 'production'
         });
-        await createSubscription(ROLES.USER.id, {
+        await createSubscription(USERS.USER.id, {
             application: 'gfw',
             env: 'production'
         });
-        await createSubscription(ROLES.USER.id, { application: 'rw', env: 'staging' });
+        await createSubscription(USERS.USER.id, { application: 'rw', env: 'staging' });
 
         await createSubscription(getUUID());
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ application: 'gfw', env: 'staging' })
             .send();
 
@@ -278,23 +294,24 @@ describe('Get subscriptions tests', () => {
     });
 
     it('Get all subscriptions with application and app filter should be successful and return a list of subscriptions for that env and application (populated db)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        await createSubscription(ROLES.USER.id, {
+        await createSubscription(USERS.USER.id, {
             application: 'rw',
             env: 'production'
         });
-        const subscriptionTwo = await createSubscription(ROLES.USER.id, {
+        const subscriptionTwo = await createSubscription(USERS.USER.id, {
             application: 'gfw',
             env: 'production'
         });
-        await createSubscription(ROLES.USER.id, { application: 'rw', env: 'staging' });
+        await createSubscription(USERS.USER.id, { application: 'rw', env: 'staging' });
 
         await createSubscription(getUUID());
 
         const response = await requester
             .get(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ application: 'gfw', env: 'production' })
             .send();
 

@@ -2,11 +2,13 @@ import nock from 'nock';
 import Subscription from 'models/subscription';
 import chai from 'chai';
 import { getTestServer } from './utils/test-server';
+import { USERS } from './utils/test.constants';
+import { createExpectedGroupStatistics, createSubscriptions } from './utils/helpers/statistic';
+import { mockValidateRequestWithApiKeyAndUserToken } from "./utils/helpers";
+
 const {
-    createAuthCases, ensureCorrectError, getDateWithDecreaseYear, getDateWithIncreaseYear, mockGetUserFromToken
+    createAuthCases, ensureCorrectError, getDateWithDecreaseYear, getDateWithIncreaseYear
 } = require('./utils/helpers');
-import { ROLES } from './utils/test.constants';
-import { createSubscriptions, createExpectedGroupStatistics } from './utils/helpers/statistic';
 
 chai.should();
 
@@ -38,11 +40,12 @@ describe('Subscription group statistic endpoint', () => {
     it('Getting group statistic while being authenticated as ADMIN but with wrong apps should fall', authCases.isRightAppRequired());
 
     it('Getting group statistic without start date should fall', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const response = await requester
             .get(url)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ end: new Date(), application: 'gfw' });
 
         response.status.should.equal(400);
@@ -50,11 +53,12 @@ describe('Subscription group statistic endpoint', () => {
     });
 
     it('Getting group statistic without end date should fall', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const response = await requester
             .get(url)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ start: new Date(), application: 'gfw' });
 
         response.status.should.equal(400);
@@ -62,11 +66,12 @@ describe('Subscription group statistic endpoint', () => {
     });
 
     it('Getting group statistic without application should fall', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const response = await requester
             .get(url)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ start: new Date(), end: new Date() });
 
         response.status.should.equal(400);
@@ -74,7 +79,7 @@ describe('Subscription group statistic endpoint', () => {
     });
 
     it('Getting group statistic should return right result (happy case)', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const outRangeDate = getDateWithDecreaseYear(4);
         const startDate = getDateWithDecreaseYear(1);
@@ -85,6 +90,7 @@ describe('Subscription group statistic endpoint', () => {
         const response = await requester
             .get(url)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({
                 start: startDate, end: endDate, application: 'gfw'
             });

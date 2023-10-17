@@ -4,10 +4,10 @@ import { expect } from 'chai';
 import { omit } from 'lodash';
 import chai from 'chai';
 import { getTestServer } from './utils/test-server';
-import { ROLES } from './utils/test.constants';
-import { createSubscription } from './utils/helpers';
+import { USERS } from './utils/test.constants';
+import { createSubscription, mockValidateRequestWithApiKeyAndUserToken } from './utils/helpers';
 const {
-    ensureCorrectError, getUUID, createAuthCases, mockGetUserFromToken
+    ensureCorrectError, getUUID, createAuthCases
 } = require('./utils/helpers');
 
 chai.should();
@@ -33,46 +33,50 @@ describe('Delete subscription endpoint', () => {
     it('Deleting subscription without provided user should fall', authCases.isUserRequired());
 
     it('Deleting subscription with provided user but with not existing subscription for user should fall', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         await createSubscription(getUUID());
         const response = await requester
             .delete('/api/v1/subscriptions/41224d776a326fb40f000001')
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
     });
 
     it('Deleting subscription should return not found when subscription doesn\'t exist', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         const response = await requester
             .delete('/api/v1/subscriptions/41224d776a326fb40f000001')
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
     });
 
     it('Deleting subscription should return bad request when id is not valid', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         const response = await requester
             .delete('/api/v1/subscriptions/123')
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'ID is not valid');
     });
 
     it('Deleting subscription should return subscription and delete it (happy case)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        const createdSubscription = await createSubscription(ROLES.USER.id);
+        const createdSubscription = await createSubscription(USERS.USER.id);
         const response = await requester
             .delete(`/api/v1/subscriptions/${createdSubscription._id}`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.instanceOf(Object);

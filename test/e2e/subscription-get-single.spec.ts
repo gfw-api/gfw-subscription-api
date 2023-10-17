@@ -3,11 +3,11 @@ import Subscription from 'models/subscription';
 import { omit } from 'lodash';
 import chai from 'chai';
 import { getTestServer } from './utils/test-server';
-import { MOCK_USER_IDS, ROLES } from './utils/test.constants';
-import { createSubscription } from './utils/helpers';
+import { MOCK_USER_IDS, USERS } from './utils/test.constants';
+import { createSubscription, mockValidateRequestWithApiKeyAndUserToken } from './utils/helpers';
 
 const {
-    ensureCorrectError, createAuthCases, mockGetUserFromToken
+    ensureCorrectError, createAuthCases
 } = require('./utils/helpers');
 
 chai.should();
@@ -31,13 +31,14 @@ describe('Get subscription by id endpoint', () => {
     it('Getting subscription by id without provided user should fall', authCases.isUserRequired());
 
     it('Getting subscription by id with being authenticated but with not existing subscription for user should fall', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         const createdSubscription = await createSubscription(MOCK_USER_IDS[0]);
 
         const response = await requester
             .get(`/api/v1/subscriptions/${createdSubscription._id}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
 
         response.status.should.equal(404);
@@ -45,12 +46,13 @@ describe('Get subscription by id endpoint', () => {
     });
 
     it('Getting subscription by id should return not found when subscription doesn\'t exist', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         await createSubscription(MOCK_USER_IDS[0]);
         const response = await requester
             .get('/api/v1/subscriptions/41224d776a326fb40f000001')
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
 
         response.status.should.equal(404);
@@ -58,12 +60,13 @@ describe('Get subscription by id endpoint', () => {
     });
 
     it('Getting subscription by id should return bad request when id is not valid', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         await createSubscription(MOCK_USER_IDS[0]);
         const response = await requester
             .get('/api/v1/subscriptions/123')
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
 
         response.status.should.equal(400);
@@ -71,13 +74,14 @@ describe('Get subscription by id endpoint', () => {
     });
 
     it('Getting subscription by id should return the subscription (happy case)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        const subscription = await createSubscription(ROLES.USER.id);
+        const subscription = await createSubscription(USERS.USER.id);
 
         const response = await requester
             .get(`/api/v1/subscriptions/${subscription._id}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
 
         response.status.should.equal(200);
@@ -99,13 +103,14 @@ describe('Get subscription by id endpoint', () => {
     });
 
     it('Getting a subscription by id as an ADMIN even when not the owner of the subscription should return the subscription (ADMIN override)', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({user: USERS.ADMIN});
 
-        const sub = await createSubscription(ROLES.USER.id);
+        const sub = await createSubscription(USERS.USER.id);
 
         const response = await requester
             .get(`/api/v1/subscriptions/${sub._id}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
 
         response.status.should.equal(200);

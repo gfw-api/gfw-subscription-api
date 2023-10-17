@@ -8,7 +8,7 @@ import { getTestServer } from './utils/test-server';
 import { createSubscription } from './utils/helpers';
 import AlertQueue from 'queues/alert.queue';
 import { mockGLADLGeostoreQuery } from './utils/mocks/gladL.mocks';
-import { ROLES } from './utils/test.constants';
+import { USERS } from './utils/test.constants';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -46,7 +46,7 @@ describe('AlertQueue ', () => {
     });
 
     it('All goes well when a dataset Redis message is received for a subscription with an invalid resource type URL', async () => {
-        return createSubscription(ROLES.USER.id, {
+        return createSubscription(USERS.USER.id, {
             resource: { content: 'invalidURL', type: 'URL' },
         })
         mockGLADLGeostoreQuery();
@@ -54,7 +54,7 @@ describe('AlertQueue ', () => {
     });
 
     it('All goes well when a dataset Redis message is received for a subscription with a valid resource type URL that returns 4XX codes', async () => {
-        return createSubscription(ROLES.USER.id, {
+        return createSubscription(USERS.USER.id, {
             resource: { content: 'http://www.webhook.com', type: 'URL' },
         })
         mockGLADLGeostoreQuery();
@@ -66,7 +66,7 @@ describe('AlertQueue ', () => {
     });
 
     it('POST request to a web-hook URL triggered when a dataset Redis message is received for a subscription with a valid resource type URL (happy case)', async () => {
-        return createSubscription(ROLES.USER.id, {
+        return createSubscription(USERS.USER.id, {
             resource: { content: 'http://www.webhook.com', type: 'URL' },
         })
         mockGLADLGeostoreQuery();

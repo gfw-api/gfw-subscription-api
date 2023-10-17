@@ -2,8 +2,12 @@ import nock from 'nock';
 import chai from 'chai';
 import config from 'config';
 import Subscription from 'models/subscription';
-import { createSubscription, mockGetUserFromToken } from './utils/helpers';
-import { ROLES } from './utils/test.constants';
+import {
+    createSubscription,
+    mockValidateRequestWithApiKey,
+    mockValidateRequestWithApiKeyAndUserToken
+} from './utils/helpers';
+import { USERS } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 
 nock.disableNetConnect();
@@ -27,11 +31,12 @@ describe('Find all subscriptions tests', () => {
 
     describe('Test pagination links', () => {
         it('Get subscriptions without referer header should be successful and use the request host', async () => {
-            mockGetUserFromToken(ROLES.MICROSERVICE);
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
             const response = await requester
                 .get(`/api/v1/subscriptions/find-all`)
-                .set('Authorization', `Bearer abcd`);
+                .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test');
 
             response.status.should.equal(200);
             response.body.should.have.property('data').and.be.an('array');
@@ -44,11 +49,12 @@ describe('Find all subscriptions tests', () => {
         });
 
         it('Get all subscriptions with referer header should be successful and use that header on the links on the response', async () => {
-            mockGetUserFromToken(ROLES.MICROSERVICE);
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
             const response = await requester
                 .get(`/api/v1/subscriptions/find-all`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .set('referer', `https://potato.com/get-me-all-the-data`);
 
             response.status.should.equal(200);
@@ -62,11 +68,12 @@ describe('Find all subscriptions tests', () => {
         });
 
         it('Get all subscriptions with x-rw-domain header should be successful and use that header on the links on the response', async () => {
-            mockGetUserFromToken(ROLES.MICROSERVICE);
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
             const response = await requester
                 .get(`/api/v1/subscriptions/find-all`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .set('x-rw-domain', `potato.com`);
 
             response.status.should.equal(200);
@@ -80,11 +87,12 @@ describe('Find all subscriptions tests', () => {
         });
 
         it('Get all subscriptions with x-rw-domain and referer headers should be successful and use the x-rw-domain header on the links on the response', async () => {
-            mockGetUserFromToken(ROLES.MICROSERVICE);
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
             const response = await requester
                 .get(`/api/v1/subscriptions/find-all`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .set('x-rw-domain', `potato.com`)
                 .set('referer', `https://tomato.com/get-me-all-the-data`);
 
@@ -100,34 +108,43 @@ describe('Find all subscriptions tests', () => {
     });
 
     it('Finding all subscriptions is only allowed when the request is performed by a micro service, failing with 401 Unauthorized otherwise', async () => {
-        const noTokenResponse = await requester.get(`/api/v1/subscriptions/find-all`).send();
+        mockValidateRequestWithApiKey({});
+        const noTokenResponse = await requester
+            .get(`/api/v1/subscriptions/find-all`)
+            .set('x-api-key', 'api-key-test')
+            .send();
+
         noTokenResponse.status.should.equal(401);
 
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
         const userResponse = await requester.get(`/api/v1/subscriptions/find-all`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         userResponse.status.should.equal(401);
 
-        mockGetUserFromToken(ROLES.MANAGER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MANAGER });
         const managerResponse = await requester.get(`/api/v1/subscriptions/find-all`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         managerResponse.status.should.equal(401);
 
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
         const adminResponse = await requester.get(`/api/v1/subscriptions/find-all`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         adminResponse.status.should.equal(401);
     });
 
     it('Finding all subscriptions has a maximum page[size] of 100, returning error for higher values', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
         const response = await requester
             .get(`/api/v1/subscriptions/find-all`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ 'page[size]': 101 })
             .send();
         response.status.should.equal(400);
@@ -135,44 +152,47 @@ describe('Find all subscriptions tests', () => {
     });
 
     it('Finding all subscriptions when there are no existing subscriptions returns a 200 OK response with no data', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
         const response = await requester
             .get(`/api/v1/subscriptions/find-all`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(0);
     });
 
     it('Finding all subscriptions should return a 200 OK response with all the subscriptions', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
-        await createSubscription(ROLES.USER.id);
-        await createSubscription(ROLES.MANAGER.id);
-        await createSubscription(ROLES.ADMIN.id);
+        await createSubscription(USERS.USER.id);
+        await createSubscription(USERS.MANAGER.id);
+        await createSubscription(USERS.ADMIN.id);
         await createSubscription('123');
 
         const response = await requester
             .get(`/api/v1/subscriptions/find-all`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(4);
     });
 
     it('Finding all subscriptions allows filtering by application query param, returns 200 OK with the correct data', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
-        const gfwSub1 = await createSubscription(ROLES.USER.id, { application: 'gfw' });
-        const gfwSub2 = await createSubscription(ROLES.MANAGER.id, { application: 'gfw' });
-        const rwSub1 = await createSubscription(ROLES.USER.id, { application: 'rw' });
-        const rwSub2 = await createSubscription(ROLES.MANAGER.id, { application: 'rw' });
+        const gfwSub1 = await createSubscription(USERS.USER.id, { application: 'gfw' });
+        const gfwSub2 = await createSubscription(USERS.MANAGER.id, { application: 'gfw' });
+        const rwSub1 = await createSubscription(USERS.USER.id, { application: 'rw' });
+        const rwSub2 = await createSubscription(USERS.MANAGER.id, { application: 'rw' });
 
         const response1 = await requester
             .get(`/api/v1/subscriptions/find-all`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ application: 'gfw' })
             .send();
         response1.status.should.equal(200);
@@ -183,6 +203,7 @@ describe('Find all subscriptions tests', () => {
         const response2 = await requester
             .get(`/api/v1/subscriptions/find-all`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ application: 'rw' })
             .send();
         response2.status.should.equal(200);
@@ -193,16 +214,17 @@ describe('Find all subscriptions tests', () => {
 
     describe('Environments', () => {
         it('Finding subscriptions without an env filter returns 200 OK with all subscriptions with production env', async () => {
-            mockGetUserFromToken(ROLES.MICROSERVICE);
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
-            const prodSub1 = await createSubscription(ROLES.USER.id);
-            const prodSub2 = await createSubscription(ROLES.MANAGER.id, { env: 'production' });
-            await createSubscription(ROLES.USER.id, { env: 'staging' });
-            await createSubscription(ROLES.MANAGER.id, { env: 'staging' });
+            const prodSub1 = await createSubscription(USERS.USER.id);
+            const prodSub2 = await createSubscription(USERS.MANAGER.id, { env: 'production' });
+            await createSubscription(USERS.USER.id, { env: 'staging' });
+            await createSubscription(USERS.MANAGER.id, { env: 'staging' });
 
             const response = await requester
                 .get(`/api/v1/subscriptions/find-all`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send();
             response.status.should.equal(200);
             response.body.should.have.property('data').with.lengthOf(2);
@@ -211,16 +233,17 @@ describe('Find all subscriptions tests', () => {
         });
 
         it('Finding subscriptions with all env filter returns 200 OK with all subscriptions from every env', async () => {
-            mockGetUserFromToken(ROLES.MICROSERVICE);
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
-            await createSubscription(ROLES.USER.id);
-            await createSubscription(ROLES.MANAGER.id, { env: 'production' });
-            await createSubscription(ROLES.USER.id, { env: 'staging' });
-            await createSubscription(ROLES.MANAGER.id, { env: 'staging' });
+            await createSubscription(USERS.USER.id);
+            await createSubscription(USERS.MANAGER.id, { env: 'production' });
+            await createSubscription(USERS.USER.id, { env: 'staging' });
+            await createSubscription(USERS.MANAGER.id, { env: 'staging' });
 
             const response = await requester
                 .get(`/api/v1/subscriptions/find-all`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .query({ env: 'all' })
                 .send();
             response.status.should.equal(200);
@@ -229,17 +252,18 @@ describe('Find all subscriptions tests', () => {
         });
 
         it('Finding subscriptions allows filtering by environment query param, returns 200 OK with the correct data', async () => {
-            mockGetUserFromToken(ROLES.MICROSERVICE);
-            mockGetUserFromToken(ROLES.MICROSERVICE);
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
-            const prodSub1 = await createSubscription(ROLES.USER.id, { env: 'production' });
-            const prodSub2 = await createSubscription(ROLES.MANAGER.id, { env: 'production' });
-            const stgSub1 = await createSubscription(ROLES.USER.id, { env: 'staging' });
-            const stgSub2 = await createSubscription(ROLES.MANAGER.id, { env: 'staging' });
+            const prodSub1 = await createSubscription(USERS.USER.id, { env: 'production' });
+            const prodSub2 = await createSubscription(USERS.MANAGER.id, { env: 'production' });
+            const stgSub1 = await createSubscription(USERS.USER.id, { env: 'staging' });
+            const stgSub2 = await createSubscription(USERS.MANAGER.id, { env: 'staging' });
 
             const response1 = await requester
                 .get(`/api/v1/subscriptions/find-all`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .query({ env: 'production' })
                 .send();
             response1.status.should.equal(200);
@@ -250,6 +274,7 @@ describe('Find all subscriptions tests', () => {
             const response2 = await requester
                 .get(`/api/v1/subscriptions/find-all`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .query({ env: 'staging' })
                 .send();
             response2.status.should.equal(200);
@@ -259,16 +284,17 @@ describe('Find all subscriptions tests', () => {
         });
 
         it('Finding subscriptions allows filtering by multiple environments as a comma separated query param, returns 200 OK with the correct data', async () => {
-            mockGetUserFromToken(ROLES.MICROSERVICE);
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
-            const prodSub1 = await createSubscription(ROLES.USER.id, { env: 'production' });
-            const prodSub2 = await createSubscription(ROLES.MANAGER.id, { env: 'production' });
-            const stgSub1 = await createSubscription(ROLES.USER.id, { env: 'staging' });
-            const stgSub2 = await createSubscription(ROLES.MANAGER.id, { env: 'staging' });
+            const prodSub1 = await createSubscription(USERS.USER.id, { env: 'production' });
+            const prodSub2 = await createSubscription(USERS.MANAGER.id, { env: 'production' });
+            const stgSub1 = await createSubscription(USERS.USER.id, { env: 'staging' });
+            const stgSub2 = await createSubscription(USERS.MANAGER.id, { env: 'staging' });
 
             const response = await requester
                 .get(`/api/v1/subscriptions/find-all`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .query({ env: ['production', 'staging'].join(',') })
                 .send();
             response.status.should.equal(200);

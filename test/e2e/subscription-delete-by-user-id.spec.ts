@@ -2,10 +2,11 @@ import nock from 'nock';
 import Subscription from 'models/subscription';
 import chai from 'chai';
 import { getTestServer } from './utils/test-server';
-import { ROLES } from './utils/test.constants';
-import { createSubscription } from './utils/helpers';
+import { USERS } from './utils/test.constants';
+import { createSubscription, mockValidateRequestWithApiKeyAndUserToken } from './utils/helpers';
+
 const {
-    ensureCorrectError, getUUID, createAuthCases, mockGetUserFromToken
+    ensureCorrectError, createAuthCases
 } = require('./utils/helpers');
 
 chai.should();
@@ -30,12 +31,13 @@ describe('Delete subscription by user id endpoint', () => {
 
 
     it('Deleting subscriptions by user id of a different user from current user or not admin should return 403 Forbidden', async () => {
-        mockGetUserFromToken(ROLES.USER);
-        const createdSubscription = await createSubscription(ROLES.MANAGER.id);
+        mockValidateRequestWithApiKeyAndUserToken({});
+        const createdSubscription = await createSubscription(USERS.MANAGER.id);
 
         const response = await requester
-            .delete(`/api/v1/subscriptions/by-user/${ROLES.MANAGER.id}`)
-            .set('Authorization', `Bearer abcd`);
+            .delete(`/api/v1/subscriptions/by-user/${USERS.MANAGER.id}`)
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(403);
         ensureCorrectError(response.body, 'Forbidden');
@@ -45,24 +47,29 @@ describe('Delete subscription by user id endpoint', () => {
     });
 
     it('Deleting subscription by user id from the current user should return the subscriptions and delete them (happy case)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        const createdSubscriptionOne = await createSubscription(ROLES.USER.id);
-        const createdSubscriptionTwo = await createSubscription(ROLES.USER.id);
-        const createdSubscriptionAdmin = await createSubscription(ROLES.ADMIN.id);
-        const createdSubscriptionManager = await createSubscription(ROLES.MANAGER.id);
+        const createdSubscriptionOne = await createSubscription(USERS.USER.id);
+        const createdSubscriptionTwo = await createSubscription(USERS.USER.id);
+        const createdSubscriptionAdmin = await createSubscription(USERS.ADMIN.id);
+        const createdSubscriptionManager = await createSubscription(USERS.MANAGER.id);
 
-        nock(process.env.GATEWAY_URL)
-            .get(`/auth/user/${ROLES.USER.id}`)
+        nock(process.env.GATEWAY_URL, {
+            reqheaders: {
+                'x-api-key': 'api-key-test',
+            }
+        })
+            .get(`/auth/user/${USERS.USER.id}`)
             .reply(200, {
                 data: {
-                    ...ROLES.USER,
+                    ...USERS.USER,
                 }
             });
 
         const response = await requester
-            .delete(`/api/v1/subscriptions/by-user/${ROLES.USER.id}`)
-            .set('Authorization', `Bearer abcd`);
+            .delete(`/api/v1/subscriptions/by-user/${USERS.USER.id}`)
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
 
@@ -70,7 +77,7 @@ describe('Delete subscription by user id endpoint', () => {
         const { data } = response.body;
         data.map((elem: any) => elem.id).sort().should.deep.equal([createdSubscriptionOne.id.toString(), createdSubscriptionTwo.id.toString()].sort());
 
-        const userSubscriptions = await Subscription.find({ userId: { $eq: ROLES.USER.id }});
+        const userSubscriptions = await Subscription.find({ userId: { $eq: USERS.USER.id } });
         userSubscriptions.should.have.lengthOf(0);
 
         const findAllSubscriptions = await Subscription.find({}).exec();
@@ -82,24 +89,31 @@ describe('Delete subscription by user id endpoint', () => {
     });
 
     it('Deleting subscription by user id as an ADMIN should return the subscriptions and delete them', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
-        const createdSubscriptionOne = await createSubscription(ROLES.USER.id);
-        const createdSubscriptionTwo = await createSubscription(ROLES.USER.id);
-        const createdSubscriptionAdmin = await createSubscription(ROLES.ADMIN.id);
-        const createdSubscriptionManager = await createSubscription(ROLES.MANAGER.id);
+        const createdSubscriptionOne = await createSubscription(USERS.USER.id);
+        const createdSubscriptionTwo = await createSubscription(USERS.USER.id);
+        const createdSubscriptionAdmin = await createSubscription(USERS.ADMIN.id);
+        const createdSubscriptionManager = await createSubscription(USERS.MANAGER.id);
 
-        nock(process.env.GATEWAY_URL)
-            .get(`/auth/user/${ROLES.USER.id}`)
+        const id = USERS.USER.id;
+
+        nock(process.env.GATEWAY_URL, {
+            reqheaders: {
+                'x-api-key': 'api-key-test',
+            }
+        })
+            .get(`/auth/user/${USERS.USER.id}`)
             .reply(200, {
                 data: {
-                    ...ROLES.USER,
+                    ...USERS.USER,
                 }
             });
 
         const response = await requester
-            .delete(`/api/v1/subscriptions/by-user/${ROLES.USER.id}`)
-            .set('Authorization', `Bearer abcd`);
+            .delete(`/api/v1/subscriptions/by-user/${USERS.USER.id}`)
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
 
@@ -116,24 +130,29 @@ describe('Delete subscription by user id endpoint', () => {
     });
 
     it('Deleting subscription by user id as a microservice should return the subscriptions and delete them', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
-        const createdSubscriptionOne = await createSubscription(ROLES.USER.id);
-        const createdSubscriptionTwo = await createSubscription(ROLES.USER.id);
-        const createdSubscriptionAdmin = await createSubscription(ROLES.ADMIN.id);
-        const createdSubscriptionManager = await createSubscription(ROLES.MANAGER.id);
+        const createdSubscriptionOne = await createSubscription(USERS.USER.id);
+        const createdSubscriptionTwo = await createSubscription(USERS.USER.id);
+        const createdSubscriptionAdmin = await createSubscription(USERS.ADMIN.id);
+        const createdSubscriptionManager = await createSubscription(USERS.MANAGER.id);
 
-        nock(process.env.GATEWAY_URL)
-            .get(`/auth/user/${ROLES.USER.id}`)
+        nock(process.env.GATEWAY_URL, {
+            reqheaders: {
+                'x-api-key': 'api-key-test',
+            }
+        })
+            .get(`/auth/user/${USERS.USER.id}`)
             .reply(200, {
                 data: {
-                    ...ROLES.USER,
+                    ...USERS.USER,
                 }
             });
 
         const response = await requester
-            .delete(`/api/v1/subscriptions/by-user/${ROLES.USER.id}`)
-            .set('Authorization', `Bearer abcd`);
+            .delete(`/api/v1/subscriptions/by-user/${USERS.USER.id}`)
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
 
@@ -150,9 +169,13 @@ describe('Delete subscription by user id endpoint', () => {
     });
 
     it('Deleting a subscription owned by a user that does not exist as a MICROSERVICE should return a 404', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
-        nock(process.env.GATEWAY_URL)
+        nock(process.env.GATEWAY_URL, {
+            reqheaders: {
+                'x-api-key': 'api-key-test',
+            }
+        })
             .get(`/auth/user/potato`)
             .reply(403, {
                 errors: [
@@ -166,54 +189,66 @@ describe('Delete subscription by user id endpoint', () => {
         const response = await requester
             .delete(`/api/v1/subscriptions/by-user/potato`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
 
         response.status.should.equal(404);
         response.body.should.have.property('errors').and.be.an('array');
         response.body.errors[0].should.have.property('detail').and.equal(`User potato does not exist`);
-    });
+    })
+    ;
 
     it('Deleting subscriptions from a user should delete them completely from a database (large number of subscriptions)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         await Promise.all([...Array(100)].map(async () => {
-            await createSubscription(ROLES.USER.id);
+            await createSubscription(USERS.USER.id);
         }));
 
-        nock(process.env.GATEWAY_URL)
-            .get(`/auth/user/${ROLES.USER.id}`)
+        nock(process.env.GATEWAY_URL, {
+            reqheaders: {
+                'x-api-key': 'api-key-test',
+            }
+        })
+            .get(`/auth/user/${USERS.USER.id}`)
             .reply(200, {
                 data: {
-                    ...ROLES.USER,
+                    ...USERS.USER,
                 }
             });
 
         const deleteResponse = await requester
-            .delete(`/api/v1/subscriptions/by-user/${ROLES.USER.id}`)
+            .delete(`/api/v1/subscriptions/by-user/${USERS.USER.id}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
 
         deleteResponse.status.should.equal(200);
         deleteResponse.body.should.have.property('data').with.lengthOf(100);
 
-        const findCollectionByUser = await Subscription.find({ userId: { $eq: ROLES.USER.id }}).exec();
+        const findCollectionByUser = await Subscription.find({ userId: { $eq: USERS.USER.id } }).exec();
         findCollectionByUser.should.be.an('array').with.lengthOf(0);
     });
 
     it('Deleting all subscriptions of an user while being authenticated as USER should return a 200 and all subscriptions deleted - no subscriptions in the db', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        nock(process.env.GATEWAY_URL)
-            .get(`/auth/user/${ROLES.USER.id}`)
+        nock(process.env.GATEWAY_URL, {
+            reqheaders: {
+                'x-api-key': 'api-key-test',
+            }
+        })
+            .get(`/auth/user/${USERS.USER.id}`)
             .reply(200, {
                 data: {
-                    ...ROLES.USER,
+                    ...USERS.USER,
                 }
             });
 
         const response = await requester
-            .delete(`/api/v1/subscriptions/by-user/${ROLES.USER.id}`)
+            .delete(`/api/v1/subscriptions/by-user/${USERS.USER.id}`)
             .set('Authorization', 'Bearer abcd')
+            .set('x-api-key', 'api-key-test')
             .send();
 
         response.status.should.equal(200);

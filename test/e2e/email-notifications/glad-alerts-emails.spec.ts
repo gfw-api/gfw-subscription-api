@@ -17,7 +17,7 @@ const {
     validateCustomMapURLs,
     validateGladL,
 } = require('../utils/helpers/email-notifications');
-import { ROLES } from '../utils/test.constants';
+import { USERS } from '../utils/test.constants';
 import {
     mockGLADLAdm1Query, mockGLADLAdm2Query,
     mockGLADLGeostoreQuery,
@@ -53,7 +53,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
     it('Updating GLAD alerts dataset triggers a new email being queued using the correct email template and providing the needed data', async () => {
         const subscriptionOne = await new Subscription(createSubscriptionContent(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
@@ -98,7 +98,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         EmailHelpersService.updateMonthTranslations();
         moment.locale('fr');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
         )).save();
@@ -146,7 +146,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         EmailHelpersService.updateMonthTranslations();
         moment.locale('zh');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'zh' },
         )).save();
@@ -194,7 +194,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { iso: { country: 'BRA' } } },
         )).save();
@@ -242,7 +242,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { iso: { country: 'BRA', region: '1' } } },
         )).save();
@@ -290,7 +290,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
         )).save();
@@ -338,7 +338,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { wdpaid: '1' } },
         )).save();
@@ -386,7 +386,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { use: 'gfw_logging', useid: '29407' } },
         )).save();
@@ -432,7 +432,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
     it('No email is sent if there no alerts are returned by the glad alerts query', async () => {
         await new Subscription(createSubscriptionContent(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
@@ -453,7 +453,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
 
     it('Legacy subscription parameters are correctly handled, triggering a new email being queued using the correct email template with the correct data', async () => {
         const subscriptionOne = await new Subscription(createSubscriptionContent(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             {
                 params: {

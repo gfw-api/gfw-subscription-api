@@ -4,10 +4,9 @@ import Subscription, { ISubscription } from 'models/subscription';
 import {
     createSubscription,
     createURLSubscription,
-    createURLSubscriptionCallMock,
-    mockGetUserFromToken
+    createURLSubscriptionCallMock, mockValidateRequestWithApiKey, mockValidateRequestWithApiKeyAndUserToken,
 } from './utils/helpers';
-import { ROLES } from './utils/test.constants';
+import { USERS } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 import {
     bootstrapEmailNotificationTests,
@@ -49,29 +48,36 @@ describe('Test alerts spec', () => {
     });
 
     it('Testing alerts is only allowed for ADMIN users, failing with 401 Unauthorized otherwise', async () => {
-        const noTokenResponse = await requester.post(`/api/v1/subscriptions/test-alert`).send();
+        mockValidateRequestWithApiKey({});
+        const noTokenResponse = await requester
+            .post(`/api/v1/subscriptions/test-alert`)
+            .set('x-api-key', 'api-key-test')
+            .send();
         noTokenResponse.status.should.equal(401);
 
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         const userResponse = await requester.post(`/api/v1/subscriptions/test-alert`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({});
         userResponse.status.should.equal(403);
 
-        mockGetUserFromToken(ROLES.MANAGER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MANAGER });
 
         const managerResponse = await requester.post(`/api/v1/subscriptions/test-alert`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({});
         managerResponse.status.should.equal(403);
     });
 
     it('Validates the provided subscriptionId, rejecting if not provided', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const res = await requester.post(`/api/v1/subscriptions/test-alert`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({
                 email: 'test.user@wri.org',
             });
@@ -79,10 +85,10 @@ describe('Test alerts spec', () => {
     });
 
     it('Testing an URL alert with no type change calls the custom url', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const subscription = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             {
                 params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
@@ -105,14 +111,15 @@ describe('Test alerts spec', () => {
         createURLSubscriptionCallMock(createGLADAlertsGeostoreURLSubscriptionBody(subscription, beginDate, endDate));
         (await requester.post(`/api/v1/subscriptions/test-alert`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send(testUrlBody)).status.should.equal(200);
     });
 
     it('Testing an EMAIL alert with URL type change calls the custom url', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const subscription = await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['glad-alerts'],
                 params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
@@ -136,14 +143,15 @@ describe('Test alerts spec', () => {
         createURLSubscriptionCallMock(createGLADAlertsGeostoreURLSubscriptionBody(subscription, beginDate, endDate));
         (await requester.post(`/api/v1/subscriptions/test-alert`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send(testUrlBody)).status.should.equal(200);
     });
 
     it('Testing an URL alert with EMAIL type change emails the custom address', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const subscription = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'glad-alerts',
             {
                 params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
@@ -198,16 +206,17 @@ describe('Test alerts spec', () => {
         mockGLADLGeostoreQuery();
         (await requester.post(`/api/v1/subscriptions/test-alert`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send(testUrlBody)).status.should.equal(200);
 
         return consumerPromise;
     });
 
     it('Testing an EMAIL alert with no type change emails the custom address', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const subscription = await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['glad-alerts'],
                 params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
@@ -261,6 +270,7 @@ describe('Test alerts spec', () => {
         mockGLADLGeostoreQuery();
         (await requester.post(`/api/v1/subscriptions/test-alert`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send(testUrlBody)).status.should.equal(200);
 
         return consumerPromise;
@@ -269,7 +279,7 @@ describe('Test alerts spec', () => {
     describe('Email alerts', () => {
         it('Validates the provided email alert, rejecting everything else other than "glad-alerts", "viirs-active-fires", "monthly-summary" or "glad-all', async () => {
             const subscription = await createSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 {
                     datasets: ['glad-alerts'],
                     params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
@@ -281,14 +291,14 @@ describe('Test alerts spec', () => {
             );
 
 
-            mockGetUserFromToken(ROLES.ADMIN);
-            mockGetUserFromToken(ROLES.ADMIN);
-            mockGetUserFromToken(ROLES.ADMIN);
-            mockGetUserFromToken(ROLES.ADMIN);
-            mockGetUserFromToken(ROLES.ADMIN);
-            mockGetUserFromToken(ROLES.ADMIN);
-            mockGetUserFromToken(ROLES.ADMIN);
-            mockGetUserFromToken(ROLES.ADMIN);
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
             const testBody = {
                 email: 'foo@bar.com',
@@ -297,41 +307,49 @@ describe('Test alerts spec', () => {
 
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'glad-alerts' })).status.should.equal(200);
 
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'viirs-active-fires' })).status.should.equal(200);
 
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'monthly-summary' })).status.should.equal(200);
 
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'glad-all' })).status.should.equal(200);
 
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'glad-l' })).status.should.equal(200);
 
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'glad-s2' })).status.should.equal(200);
 
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'glad-radd' })).status.should.equal(200);
 
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'other' })).status.should.equal(400);
         });
 
         it('Testing an email alert for GLAD email alerts for a language that\'s not EN should return a 200 OK response', async () => {
-            mockGetUserFromToken(ROLES.ADMIN);
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
-            const subscription: ISubscription = await createSubscription(ROLES.ADMIN.id, { datasets: ['glad-alerts'] });
+            const subscription: ISubscription = await createSubscription(USERS.ADMIN.id, { datasets: ['glad-alerts'] });
             process.on('unhandledRejection', (args) => should.fail(JSON.stringify(args)));
 
             mockGLADLGeostoreQuery();
@@ -383,6 +401,7 @@ describe('Test alerts spec', () => {
 
             const response = await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send(body);
             response.status.should.equal(200);
             response.body.should.have.property('success').and.equal(true);
@@ -395,11 +414,11 @@ describe('Test alerts spec', () => {
 
         it('Validates the provided alert, rejecting everything else other than "glad-alerts", "viirs-active-fires", "monthly-summary" or "glad-all', async () => {
             for (const i of [...Array(8).keys()]) {
-                mockGetUserFromToken(ROLES.ADMIN);
+                mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
             }
 
             const subscriptionOne = await new Subscription(createURLSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 'glad-alerts',
                 {
                     params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
@@ -421,12 +440,14 @@ describe('Test alerts spec', () => {
             createURLSubscriptionCallMock(createGLADAlertsGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'glad-alerts' })).status.should.equal(200);
 
             mockVIIRSAlertsGeostoreQuery(2);
             createURLSubscriptionCallMock(createViirsFireAlertsGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'viirs-active-fires' })).status.should.equal(200);
 
             mockVIIRSAlertsGeostoreQuery(2);
@@ -434,42 +455,48 @@ describe('Test alerts spec', () => {
             createURLSubscriptionCallMock(createMonthlySummaryGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'monthly-summary' })).status.should.equal(200);
 
             mockGLADAllGeostoreQuery();
             createURLSubscriptionCallMock(createGLADAllGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'glad-all' })).status.should.equal(200);
 
             mockGLADLGeostoreQuery();
             createURLSubscriptionCallMock(createGLADLGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'glad-l' })).status.should.equal(200);
 
             mockGLADS2GeostoreQuery();
             createURLSubscriptionCallMock(createGLADS2GeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'glad-s2' })).status.should.equal(200);
 
             mockGLADRADDGeostoreQuery();
             createURLSubscriptionCallMock(createGLADRADDGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'glad-radd' })).status.should.equal(200);
 
             (await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({ ...testBody, alert: 'other' })).status.should.equal(400);
         });
 
         it('Testing an webhook alert for GLAD alerts for a language that\'s not EN should return a 200 OK response', async () => {
-            mockGetUserFromToken(ROLES.ADMIN);
+            mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
             const subscription = await new Subscription(createURLSubscription(
-                ROLES.USER.id,
+                USERS.USER.id,
                 'glad-alerts',
                 {
                     params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
@@ -490,6 +517,7 @@ describe('Test alerts spec', () => {
 
             const response = await requester.post(`/api/v1/subscriptions/test-alert`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({
                     url: 'http://potato-url.com/notify',
                     subId: subscription._id,

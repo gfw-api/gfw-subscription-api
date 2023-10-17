@@ -9,7 +9,7 @@ import AlertQueue from 'queues/alert.queue';
 
 import { getTestServer } from '../utils/test-server';
 import { createSubscription, getUUID } from '../utils/helpers';
-import { ROLES } from '../utils/test.constants';
+import { USERS } from '../utils/test.constants';
 import {
     createMockDataset,
     createMockDatasetQuery,
@@ -49,7 +49,7 @@ describe('Generic dataset emails', () => {
 
     it('Processing a dataset subscription without datasetQuery should not queue an email', async () => {
         await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasetUuid: 'dataset',
                 params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }
@@ -78,7 +78,7 @@ describe('Generic dataset emails', () => {
         const realizedQuery: string = query.replace('{{begin}}', (new Date()).toISOString().slice(0, 10));
 
         const subscription: ISubscription = await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasetUuid: 'dataset',
                 params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
