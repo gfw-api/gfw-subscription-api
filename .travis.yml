@@ -20,6 +20,9 @@ env:
     - NODE_ENV=test
     - PORT=8431
     - REDIS_URL=redis://localhost:6379
+    - AWS_REGION=us-east-1
+    - AWS_ACCESS_KEY_ID=test
+    - AWS_SECRET_ACCESS_KEY=test
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
