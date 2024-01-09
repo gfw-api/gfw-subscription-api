@@ -1,14 +1,15 @@
 import nock from 'nock';
 import Subscription from 'models/subscription';
 import chai from 'chai';
+import { createMockConfirmSUB } from './utils/mock';
+import { USERS } from './utils/test.constants';
+import { getTestServer } from './utils/test-server';
+import { mockValidateRequestWithApiKey, mockValidateRequestWithApiKeyAndUserToken } from "./utils/helpers";
+
 const {
     createSubscriptionContent,
     ensureCorrectError,
-    mockGetUserFromToken
 } = require('./utils/helpers');
-import { createMockConfirmSUB } from './utils/mock';
-import { ROLES } from './utils/test.constants';
-import { getTestServer } from './utils/test-server';
 
 chai.should();
 
@@ -30,32 +31,37 @@ describe('Confirm subscription endpoint', () => {
     });
 
     it('Confirming subscription should return not found when subscription doesn\'t exist', async () => {
+        mockValidateRequestWithApiKey({});
         const response = await requester
             .get('/api/v1/subscriptions/41224d776a326fb40f000001/confirm')
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
     });
 
     it('Confirming subscription should return bad request when id is not valid', async () => {
+        mockValidateRequestWithApiKey({});
         const response = await requester
             .get('/api/v1/subscriptions/123/confirm')
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'ID is not valid');
     });
 
     it('Confirming subscription should redirect to flagship and update subscription to confirmed (happy case)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         createMockConfirmSUB();
         const createdSubscription = await new Subscription(
-            createSubscriptionContent(ROLES.USER.id, null, { confirmed: false })
+            createSubscriptionContent(USERS.USER.id, null, { confirmed: false })
         ).save();
 
         const response = await requester
             .get(`/api/v1/subscriptions/${createdSubscription._id}/confirm`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ application: 'test' })
             .send();
 

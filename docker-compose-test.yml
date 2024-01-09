@@ -18,6 +18,10 @@ services:
       NODE_ENV: test
       PORT: 35726
       FASTLY_ENABLED: "false"
+      AWS_REGION: "us-east-1"
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      REQUIRE_API_KEY: true
     command: test
     depends_on:
       - mongo

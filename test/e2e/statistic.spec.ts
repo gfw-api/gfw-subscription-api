@@ -5,9 +5,10 @@ import chai from 'chai';
 import { getTestServer } from './utils/test-server';
 import { createMockUsersWithRange } from './utils/mock';
 import { createExpectedGroupStatistics, createStatistics, createSubscriptions } from './utils/helpers/statistic';
+import { mockValidateRequestWithApiKeyAndUserToken } from "./utils/helpers";
 
 const {
-    ROLES,
+    USERS,
     MOCK_USERS,
 } = require('./utils/test.constants');
 const {
@@ -15,7 +16,6 @@ const {
     ensureCorrectError,
     getDateWithDecreaseYear,
     getDateWithIncreaseYear,
-    mockGetUserFromToken
 } = require('./utils/helpers');
 
 chai.should();
@@ -56,10 +56,11 @@ describe('Subscription statistic endpoint', () => {
     it('Getting statistic while being authenticated as ADMIN but with wrong apps should fall', authCases.isRightAppRequired());
 
     it('Getting statistic without start date should fall', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const response = await requester.get(url)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ end: new Date() });
 
         response.status.should.equal(400);
@@ -67,11 +68,12 @@ describe('Subscription statistic endpoint', () => {
     });
 
     it('Getting statistic without end date should fall', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const response = await requester
             .get(url)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ start: new Date() });
 
         response.status.should.equal(400);
@@ -79,7 +81,7 @@ describe('Subscription statistic endpoint', () => {
     });
 
     it('Getting statistic should return right result (happy case)', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const outRangeDate = getDateWithDecreaseYear(4);
         const startDate = getDateWithDecreaseYear(1);
@@ -99,7 +101,8 @@ describe('Subscription statistic endpoint', () => {
 
         const response = await requester
             .get(url)
-            .set('Authorization', `Bearer abcd`).query({
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test').query({
                 start: startDate,
                 end: endDate,
             });
@@ -123,7 +126,7 @@ describe('Subscription statistic endpoint', () => {
     });
 
     it('Getting statistic filtering by application "gfw" should return the right results (happy case)', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const outRangeDate = getDateWithDecreaseYear(4);
         const startDate = getDateWithDecreaseYear(1);
@@ -144,6 +147,7 @@ describe('Subscription statistic endpoint', () => {
         // Fetch GFW statistics
         const gfwResponse = await requester.get(url)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({
                 start: startDate,
                 end: endDate,
@@ -168,7 +172,7 @@ describe('Subscription statistic endpoint', () => {
     });
 
     it('Getting statistic filtering by application "rw" should return the right results (happy case)', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const outRangeDate = getDateWithDecreaseYear(4);
         const startDate = getDateWithDecreaseYear(1);
@@ -187,6 +191,7 @@ describe('Subscription statistic endpoint', () => {
         const rwResponse = await requester
             .get(url)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({
                 start: startDate,
                 end: endDate,

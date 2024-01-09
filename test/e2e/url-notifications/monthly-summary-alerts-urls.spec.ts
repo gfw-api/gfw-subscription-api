@@ -15,7 +15,7 @@ import {
     mockVIIRSAlertsGeostoreQuery, mockVIIRSAlertsISOQuery,
     mockVIIRSAlertsWDPAQuery
 } from '../utils/mock';
-import { ROLES } from '../utils/test.constants';
+import { USERS } from '../utils/test.constants';
 
 import {
     assertSubscriptionStatsNotificationEvent,
@@ -64,7 +64,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
 
     it('Updating monthly summary alerts dataset triggers subscription url being called using the correct body data', async () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
@@ -101,7 +101,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('fr');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }, language: 'fr' },
         )).save();
@@ -143,7 +143,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'monthly-summary',
             { params: { iso: { country: 'BRA' } } },
         )).save();
@@ -184,7 +184,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'monthly-summary',
             { params: { iso: { country: 'BRA', region: '1' } } },
         )).save();
@@ -225,7 +225,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'monthly-summary',
             { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
         )).save();
@@ -266,7 +266,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'monthly-summary',
             { params: { wdpaid: '1' } },
         )).save();
@@ -307,7 +307,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'monthly-summary',
             { params: { use: 'gfw_logging', useid: '29407' } },
         )).save();
@@ -345,7 +345,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
 
     it('No url is called if there no alerts are returned by the monthly summary query', async () => {
         await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'monthly-summary',
             { params: { geostore: '423e5dfb0448e692f97b590c61f45f22' } },
         )).save();
@@ -384,7 +384,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
 
     it('Legacy subscription parameters are correctly handled, triggering subscription url being called using the correct body data', async () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             'monthly-summary',
             {
                 params: {

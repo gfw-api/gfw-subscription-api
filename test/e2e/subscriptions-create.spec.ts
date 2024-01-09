@@ -4,9 +4,9 @@ import Subscription from 'models/subscription';
 import config from 'config';
 import { createClient, RedisClientType } from 'redis';
 import { sleep } from 'sleep';
-import { ROLES } from './utils/test.constants';
+import { USERS } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
-import { mockGetUserFromToken, validRedisMessage } from './utils/helpers';
+import { mockValidateRequestWithApiKeyAndUserToken, validRedisMessage } from './utils/helpers';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -57,13 +57,14 @@ describe('Create subscription', () => {
     });
 
     it('Create a subscription with no dataset or datasetsQuery should return a 400 error', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({user: USERS.ADMIN});
 
         await redisClient.subscribe(CHANNEL, () => should.fail('should not be called'));
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({});
 
         response.status.should.equal(400);
@@ -75,13 +76,14 @@ describe('Create subscription', () => {
     });
 
     it('Create a subscription with no language should return a 400 error', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({user: USERS.ADMIN});
 
         await redisClient.subscribe(CHANNEL, () => should.fail('should not be called'));
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({
                 datasets: ['123456789'],
             });
@@ -95,13 +97,14 @@ describe('Create subscription', () => {
     });
 
     it('Create a subscription with no resource should return a 400 error', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({user: USERS.ADMIN});
 
         await redisClient.subscribe(CHANNEL, () => should.fail('should not be called'));
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({
                 datasets: ['123456789'],
                 language: 'en',
@@ -116,13 +119,14 @@ describe('Create subscription', () => {
     });
 
     it('Create a subscription with no params should return a 400 error', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({user: USERS.ADMIN});
 
         await redisClient.subscribe(CHANNEL, () => should.fail('should not be called'));
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({
                 datasets: ['123456789'],
                 language: 'en',
@@ -141,7 +145,7 @@ describe('Create subscription', () => {
     });
 
     it('Create a subscription with the basic required fields should return a 200, create a subscription and emit a redis message (happy case)', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({user: USERS.ADMIN});
 
         await redisClient.subscribe(CHANNEL, validRedisMessage({
             template: 'subscription-confirmation-en',
@@ -151,6 +155,7 @@ describe('Create subscription', () => {
         const response = await requester
             .post(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({
                 datasets: ['123456789'],
                 language: 'en',
@@ -167,7 +172,7 @@ describe('Create subscription', () => {
     });
 
     it('Create a subscription with the basic required fields with application = "test" should return a 200, create a subscription and emit a redis message (happy case)', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({user: USERS.ADMIN});
 
         await redisClient.subscribe(CHANNEL, validRedisMessage({
             template: 'subscription-confirmation-test-en',
@@ -177,6 +182,7 @@ describe('Create subscription', () => {
         const response = await requester
             .post(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({
                 datasets: ['123456789'],
                 language: 'en',
@@ -194,13 +200,14 @@ describe('Create subscription', () => {
     });
 
     it('Create a subscription with the basic required fields with resource_type = "URL" should return a 200, create a subscription, and don\'t emit a redis message (happy case)', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({user: USERS.ADMIN});
 
         await redisClient.subscribe(CHANNEL, () => should.fail('should not be called'));
 
         const response = await requester
             .post(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({
                 datasets: ['123456789'],
                 language: 'ru',
@@ -219,7 +226,7 @@ describe('Create subscription', () => {
     });
 
     it('Create a subscription with an invalid language should sanitize the language, return a 200, create a subscription and emit a redis message (happy case)', async () => {
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({user: USERS.ADMIN});
 
         await redisClient.subscribe(CHANNEL, validRedisMessage({
             template: 'subscription-confirmation-en',
@@ -229,6 +236,7 @@ describe('Create subscription', () => {
         const response = await requester
             .post(`/api/v1/subscriptions`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({
                 datasets: ['123456789'],
                 language: 'ru',

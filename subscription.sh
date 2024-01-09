@@ -13,7 +13,7 @@ case "$1" in
         docker-compose -f docker-compose-test.yml build && docker-compose -f docker-compose-test.yml up --abort-on-container-exit
         ;;
     *)
-        echo "Usage: subscription.sh {test-e2e|test-unit|start|develop|test}" >&2
+        echo "Usage: subscription.sh {start|develop|test}" >&2
         exit 1
         ;;
 esac

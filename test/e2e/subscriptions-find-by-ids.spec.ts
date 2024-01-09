@@ -1,8 +1,12 @@
 import nock from 'nock';
 import chai from 'chai';
 import Subscription from 'models/subscription';
-import { createSubscription, mockGetUserFromToken } from './utils/helpers';
-import { ROLES } from './utils/test.constants';
+import {
+    createSubscription,
+    mockValidateRequestWithApiKey,
+    mockValidateRequestWithApiKeyAndUserToken
+} from './utils/helpers';
+import { USERS } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
 
 nock.disableNetConnect();
@@ -23,44 +27,53 @@ describe('Find subscriptions by ids tests', () => {
     });
 
     it('Finding subscriptions is only allowed when the request is performed by a micro service, failing with 401 Unauthorized otherwise', async () => {
-        const noTokenResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`).send();
+        mockValidateRequestWithApiKey({});
+        const noTokenResponse = await requester
+            .post(`/api/v1/subscriptions/find-by-ids`)
+            .set('x-api-key', 'api-key-test')
+            .send();
         noTokenResponse.status.should.equal(401);
 
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
         const userResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({});
         userResponse.status.should.equal(401);
 
-        mockGetUserFromToken(ROLES.MANAGER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MANAGER });
         const managerResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({});
         managerResponse.status.should.equal(401);
 
-        mockGetUserFromToken(ROLES.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
         const adminResponse = await requester.post(`/api/v1/subscriptions/find-by-ids`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({});
         adminResponse.status.should.equal(401);
     });
 
     it('Finding subscriptions providing wrong type data (non-string ids) returns a 200 OK response with no data', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
         const response = await requester
             .post(`/api/v1/subscriptions/find-by-ids`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({ ids: [{}] });
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(0);
     });
 
     it('Finding subscriptions by ids without providing ids returns 400 Bad Request requiring the ids', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
         const response = await requester.post(`/api/v1/subscriptions/find-by-ids`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({});
         response.status.should.equal(400);
         response.body.should.have.property('errors').with.lengthOf(1);
@@ -68,25 +81,27 @@ describe('Find subscriptions by ids tests', () => {
     });
 
     it('Finding subscriptions by ids providing invalid ids should return a 200 OK response with no data', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
         const response = await requester
             .post(`/api/v1/subscriptions/find-by-ids`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({ ids: ['non-existing-id'] });
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(0);
     });
 
     it('Finding subscriptions by ids providing existing ids should return a 200 OK response with the subscription data', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
-        const subscriptionOne = await createSubscription(ROLES.USER.id);
-        const subscriptionTwo = await createSubscription(ROLES.USER.id);
+        const subscriptionOne = await createSubscription(USERS.USER.id);
+        const subscriptionTwo = await createSubscription(USERS.USER.id);
 
         const response = await requester
             .post(`/api/v1/subscriptions/find-by-ids`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({ ids: [subscriptionOne.id, subscriptionTwo.id] });
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(2);
@@ -94,14 +109,15 @@ describe('Find subscriptions by ids tests', () => {
     });
 
     it('Finding subscriptions by ids providing a mix of valid and invalid ids should return a 200 OK response with only the subscription data for valid ids', async () => {
-        mockGetUserFromToken(ROLES.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
-        const subscriptionOne = await createSubscription(ROLES.USER.id);
-        const subscriptionTwo = await createSubscription(ROLES.USER.id);
+        const subscriptionOne = await createSubscription(USERS.USER.id);
+        const subscriptionTwo = await createSubscription(USERS.USER.id);
 
         const response = await requester
             .post(`/api/v1/subscriptions/find-by-ids`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({ ids: [subscriptionOne.id, subscriptionTwo.id, 'invalid-id'] });
         response.status.should.equal(200);
         response.body.should.have.property('data').with.lengthOf(2);

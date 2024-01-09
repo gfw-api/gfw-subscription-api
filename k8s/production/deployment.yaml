@@ -125,6 +125,16 @@ spec:
                 secretKeyRef:
                   key: DATA_API_ORIGIN
                   name: mssecrets
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  key: AWS_REGION
+                  name: mssecrets
+            - name: REQUIRE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: REQUIRE_API_KEY
+                  name: mssecrets
           image: gfwdockerhub/subscriptions
           imagePullPolicy: Always
           livenessProbe:

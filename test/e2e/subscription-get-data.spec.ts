@@ -1,16 +1,15 @@
 import nock from 'nock';
 import Subscription from 'models/subscription';
 import chai from 'chai';
-import { MOCK_FILE, ROLES } from './utils/test.constants';
+import { MOCK_FILE, USERS } from './utils/test.constants';
 import { getTestServer } from './utils/test-server';
-import { createSubscription } from './utils/helpers';
+import { createSubscription, mockValidateRequestWithApiKeyAndUserToken } from './utils/helpers';
 import { createMockDatasetQuery } from './utils/mock';
 
 const {
     getUUID,
     createAuthCases,
     ensureCorrectError,
-    mockGetUserFromToken,
 } = require('./utils/helpers');
 const {
     createMockDataset
@@ -38,46 +37,50 @@ describe('GET subscription data endpoint', () => {
     it('Getting subscription data without provided user should fall', authCases.isUserRequired());
 
     it('Getting subscription data with being authenticated but with not existing subscription for user should fall', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
-        await createSubscription(ROLES.USER.id);
+        await createSubscription(USERS.USER.id);
         const response = await requester
             .get('/api/v1/subscriptions/41224d776a326fb40f000001/data')
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
     });
 
     it('Getting subscription data should return not found when subscription doesn\'t exist', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         const response = await requester
             .get('/api/v1/subscriptions/41224d776a326fb40f000001/data')
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(404);
         ensureCorrectError(response.body, 'Subscription not found');
     });
 
     it('Getting subscription data should return bad request when id is not valid', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         const response = await requester
             .get('/api/v1/subscriptions/123/data')
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send();
         response.status.should.equal(400);
         ensureCorrectError(response.body, 'ID is not valid');
     });
 
     it('Getting subscription data should be returned (happy case)', async () => {
-        mockGetUserFromToken(ROLES.USER);
+        mockValidateRequestWithApiKeyAndUserToken({});
 
         const datasetID = getUUID();
 
-        const subscription = await createSubscription(ROLES.USER.id, {
+        const subscription = await createSubscription(USERS.USER.id, {
             datasets: [datasetID],
             datasetsQuery: [{
                 id: datasetID,
@@ -96,6 +99,7 @@ describe('GET subscription data endpoint', () => {
         const response = await requester
             .get(`/api/v1/subscriptions/${subscription._id}/data`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({ application: 'rw' })
             .send();
 

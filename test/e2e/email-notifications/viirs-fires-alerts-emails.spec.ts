@@ -11,7 +11,7 @@ import EmailHelpersService from 'services/emailHelpersService';
 
 import { getTestServer } from '../utils/test-server';
 import { assertNoEmailSent, createSubscription } from '../utils/helpers';
-import { ROLES } from '../utils/test.constants';
+import { USERS } from '../utils/test.constants';
 
 const {
     mockVIIRSAlertsISOQuery,
@@ -55,7 +55,7 @@ describe('VIIRS Fires alert emails', () => {
     });
 
     it('Updating VIIRS Fires dataset triggers a new email being queued using the correct email template and providing the needed data', async () => {
-        const subscriptionOne = await createSubscription(ROLES.USER.id, {
+        const subscriptionOne = await createSubscription(USERS.USER.id, {
             datasets: ['viirs-active-fires'],
             params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }
         })
@@ -110,7 +110,7 @@ describe('VIIRS Fires alert emails', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('fr');
         const subscriptionOne = await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
                 params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
@@ -168,7 +168,7 @@ describe('VIIRS Fires alert emails', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('zh');
         const subscriptionOne = await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
                 params: { geostore: '423e5dfb0448e692f97b590c61f45f22' },
@@ -226,7 +226,7 @@ describe('VIIRS Fires alert emails', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
                 params: { iso: { country: 'BRA' } }
@@ -291,7 +291,7 @@ describe('VIIRS Fires alert emails', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
                 params: { iso: { country: 'BRA', region: '3' } }
@@ -356,7 +356,7 @@ describe('VIIRS Fires alert emails', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
                 params: { iso: { country: 'BRA', region: '1', subregion: '1' } }
@@ -421,7 +421,7 @@ describe('VIIRS Fires alert emails', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
                 params: { wdpaid: '1' }
@@ -486,7 +486,7 @@ describe('VIIRS Fires alert emails', () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
                 params: { use: 'gfw_logging', useid: '29407' }
@@ -542,7 +542,7 @@ describe('VIIRS Fires alert emails', () => {
 
     it('No email is sent if there no alerts are returned by the VIIRS Fires alerts query', async () => {
         await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
                 params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }
@@ -563,7 +563,7 @@ describe('VIIRS Fires alert emails', () => {
 
     it('Problems with intermediate calls do not result in an email being sent with incomplete data (second call failing)', async () => {
         await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
                 params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }
@@ -585,7 +585,7 @@ describe('VIIRS Fires alert emails', () => {
 
     it('VIIRS alerts are correctly formatted with k and M if values are high', async () => {
         await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
                 params: { geostore: '423e5dfb0448e692f97b590c61f45f22' }
@@ -783,7 +783,7 @@ describe('VIIRS Fires alert emails', () => {
 
     it('Legacy subscription parameters are correctly handled, triggering a new email being queued using the correct email template with the correct data', async () => {
         const subscriptionOne = await createSubscription(
-            ROLES.USER.id,
+            USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
                 params: {

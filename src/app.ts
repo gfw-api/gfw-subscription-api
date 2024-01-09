@@ -107,6 +107,10 @@ const init: () => Promise<IInit> = async (): Promise<IInit> => {
                         fastlyEnabled: process.env.FASTLY_ENABLED as | boolean | 'true' | 'false',
                         fastlyServiceId: process.env.FASTLY_SERVICEID,
                         fastlyAPIKey: process.env.FASTLY_APIKEY,
+                        requireAPIKey: process.env.REQUIRE_API_KEY as boolean | 'true' | 'false' || true,
+                        awsCloudWatchLoggingEnabled: process.env.AWS_CLOUD_WATCH_LOGGING_ENABLED as boolean | 'true' | 'false' || true,
+                        awsRegion: process.env.AWS_REGION,
+                        awsCloudWatchLogStreamName: config.get('service.name'),
                     }),
                 );
 
@@ -117,7 +121,7 @@ const init: () => Promise<IInit> = async (): Promise<IInit> => {
                 loadQueues();
 
                 // Instance of http module
-                // const server from http').Server(app.callback());
+                // const server from ('http').Server(app.callback());
 
                 // get port of environment, if not exist obtain of the config.
                 // In production environment, the port must be declared in environment variable
