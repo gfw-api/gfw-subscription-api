@@ -1,5 +1,5 @@
-FROM node:20.4-alpine3.18
-MAINTAINER info@vizzuality.com
+FROM node:20.5-alpine3.18
+LABEL MAINTAINER datalab@wri.org
 
 ENV NAME gfw-subscription-api
 ENV USER microservice
