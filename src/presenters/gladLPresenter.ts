@@ -10,6 +10,7 @@ import config from 'config';
 import axios, { AxiosResponse } from 'axios';
 import { GladLPresenterResponse } from 'types/presenterResponse.type';
 import AlertUrlService from 'services/alertUrlService';
+import AreaService from 'services/areaService';
 import UrlService from 'services/urlService';
 
 const DATASET_GLAD_L_ADM_0: string = '/dataset/gadm__glad__iso_daily_alerts/latest/query';
@@ -77,16 +78,23 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
     }
 
     async getURLForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<string> {
-        if (!!params && !!params.iso && !!params.iso.country && !!params.iso.region && !!params.iso.subregion) {
-            return GLADLPresenter.#getURLForAdmin2(startDate, endDate, params.iso.country, params.iso.region, params.iso.subregion);
+        let area: Record<string, any> = {};
+        if (!!params.area) {
+            area = await AreaService.getUserArea(params.area)
         }
 
-        if (!!params && !!params.iso && !!params.iso.country && !!params.iso.region) {
-            return GLADLPresenter.#getURLForAdmin1(startDate, endDate, params.iso.country, params.iso.region);
+        const iso = area.iso || area.admin || params.iso
+
+        if (!!iso && !!iso.country && !!iso.region && !!iso.subregion) {
+            return GLADLPresenter.#getURLForAdmin2(startDate, endDate, iso.country, iso.region, iso.subregion);
         }
 
-        if (!!params && !!params.iso && !!params.iso.country) {
-            return GLADLPresenter.#getURLForAdmin0(startDate, endDate, params.iso.country);
+        if (!!iso && !!iso.country && !!iso.region) {
+            return GLADLPresenter.#getURLForAdmin1(startDate, endDate, iso.country, iso.region);
+        }
+
+        if (!!iso && !!iso.country) {
+            return GLADLPresenter.#getURLForAdmin0(startDate, endDate, iso.country);
         }
 
         if (!!params && !!params.wdpaid) {
@@ -112,20 +120,27 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
         const url: string = await this.getURLForSubscription(startDate, endDate, params);
         logger.info(`[GLAD-L] Preparing Data API request`);
         logger.debug(`[GLAD-L] Preparing Data API request, with URL ${config.get('dataApi.url')}${url}`);
-        const response: AxiosResponse<Record<string, any>> = await axios.get(
+        
+        try {        
+            const response: AxiosResponse<Record<string, any>> = await axios.get(
             `${config.get('dataApi.url')}${url}`,
             {
                 headers: {
                     'x-api-key': config.get('dataApi.apiKey'),
-                    origin: config.get('dataApi.origin'),
+                    // origin: config.get('dataApi.origin'),
                 }
             }
         );
+        logger.debug(response)
         return response.data.data;
+        } catch(error) {
+            logger.debug(`dataapi error ${error}`)
+        }
     }
 
     async getDownloadURLs(startDate: string, endDate: string, params: Record<string, any>): Promise<{ csv: string, json: string }> {
-        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
+        // const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
+        const geostoreId = "foadfjadf";
         const uri: string = GLADLPresenter.#getURLForDownload(startDate, endDate, geostoreId);
         return {
             csv: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'csv'),
