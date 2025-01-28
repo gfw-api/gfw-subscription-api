@@ -1,4 +1,10 @@
 {
+  "logger": {
+      "name": "gfw-subscription-api-DEV",
+      "level": "debug",
+      "toFile": false,
+      "dirLogFile": null
+    },
   "layers": {
     "gladAlertLayerDataset": "bfd1d211-8106-4393-86c3-9e1ab2ee1b9b",
     "gladAlertLayer": "8e4a527d-1bcd-4a12-82b0-5a108ffec452",
