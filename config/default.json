@@ -6,8 +6,7 @@
     "dirLogFile": null
   },
   "service": {
-    "name": "gfw-subscription-api",
-    "port": 3600
+    "name": "gfw-subscription-api"
   },
   "apiGateway": {
     "externalUrl": "http://mymachine:9000",
@@ -26,7 +25,8 @@
     "flagshipUrl": "http://staging.globalforestwatch.org"
   },
   "settings": {
-    "loadCron": true
+    "loadCron": true,
+    "gadmVersion": "3.6"
   },
   "datasets": {
     "viirsISODataset": "gadm__viirs__adm2_daily_alerts",

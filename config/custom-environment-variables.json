@@ -28,7 +28,8 @@
     "port": "PORT"
   },
   "settings": {
-    "loadCron": "LOAD_CRON"
+    "loadCron": "LOAD_CRON",
+    "gadmVersion": "GADM_VERSION"
   },
   "datasets": {
     "viirsISODataset": "NEW_VIIRS_ISO_DATASET_ID",
