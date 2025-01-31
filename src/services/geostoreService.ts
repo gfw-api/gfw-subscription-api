@@ -40,44 +40,20 @@ class GeostoreService {
 
     static async getGeostoreFromISOCountryCode(countryCode: string): Promise<string> {
         const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}?adminVersion=${config.get('settings.gadmVersion')}`;
-        const response: AxiosResponse<Record<string, any>> = await axios.get(
-            `${config.get('dataApi.url')}${uri}`,
-            {
-                headers: {
-                    'x-api-key': config.get('dataApi.apiKey'),
-                    // origin: config.get('dataApi.origin'),
-                }
-            }
-        );
-        return response.data.id;
+        const response: AxiosResponse<Record<string, any>> = await axios.get(uri);
+        return response.data.data.id;
     }
 
     static async getGeostoreFromISORegionCode(countryCode: string, regionCode: string): Promise<string> {
         const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}/${regionCode}?adminVersion=${config.get('settings.gadmVersion')}`;
-        const response: AxiosResponse<Record<string, any>> = await axios.get(
-            `${config.get('dataApi.url')}${uri}`,
-            {
-                headers: {
-                    'x-api-key': config.get('dataApi.apiKey'),
-                    // origin: config.get('dataApi.origin'),
-                }
-            }
-        );
-        return response.data.id;
+        const response: AxiosResponse<Record<string, any>> = await axios.get(uri);
+        return response.data.data.id;
     }
 
     static async getGeostoreFromISOSubregionCode(countryCode: string, regionCode: string, subregionCode: string): Promise<string> {
         const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}/${regionCode}/${subregionCode}?adminVersion=${config.get('settings.gadmVersion')}`;
-        const response: AxiosResponse<Record<string, any>> = await axios.get(
-            `${config.get('dataApi.url')}${uri}`,
-            {
-                headers: {
-                    'x-api-key': config.get('dataApi.apiKey'),
-                    // origin: config.get('dataApi.origin'),
-                }
-            }
-        );
-        return response.data.id;
+        const response: AxiosResponse<Record<string, any>> = await axios.get(uri);
+        return response.data.data.id;
     }
 
     static async getGeostoreFromWDPAID(wdpaId: string): Promise<string> {

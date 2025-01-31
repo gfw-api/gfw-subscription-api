@@ -71,7 +71,7 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
         return `${DATASET_GLAD_L_GEOSTORE}?sql=${sql}`;
     }
 
-    static #getURLForDownload(startDate: string, endDate: string, geostoreId: string, geostoreSource: string = 'rw'): string {
+    static #getURLForDownload(startDate: string, endDate: string, geostoreId: string, geostoreSource: 'gfw' | 'rw' = 'rw'): string {
         const sql: string = `SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence `
             + `FROM data WHERE umd_glad_landsat_alerts__date >= '${startDate}' AND umd_glad_landsat_alerts__date <= '${endDate}'`;
         return `${DATASET_GLAD_L_DOWNLOAD}/{format}?sql=${sql}&geostore_id=${geostoreId}&geostore_origin=${geostoreSource}`;
@@ -154,7 +154,7 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
         
         const updatedParams = {...params, iso}
 
-        const geostoreSource = (iso?.source === 'gadm' && iso?.version === '4.1') ? 'gfw' : 'rw'
+        const geostoreSource = (iso?.source?.provider === 'gadm' && iso?.source?.version === '4.1') ? 'gfw' : 'rw'
         const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
         const uri: string = GLADLPresenter.#getURLForDownload(startDate, endDate, geostoreId, geostoreSource);
         return {
