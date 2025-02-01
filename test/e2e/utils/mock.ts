@@ -373,38 +373,108 @@ export const mockVIIRSAlertsGeostoreQuery = (
         });
 };
 
-export const createMockGeostore = (path: string, times = 1) => {
+export const createMockGeostore = (path: string,  apiGateway: string = config.get('dataApi.url'), times = 1) => {
+    const geostore = {
+        type: 'geoStore',
+        id: '423e5dfb0448e692f97b590c61f45f22',
+        attributes: {
+            geojson: {
+                features: [{
+                    properties: null,
+                    type: 'Feature',
+                    geometry: {
+                        type: 'MultiPolygon',
+                        coordinates: [[[[117.36772481838, -0.64399409467464]]]]
+                    }
+                }],
+                crs: {},
+                type: 'FeatureCollection'
+            },
+            hash: '423e5dfb0448e692f97b590c61f45f22',
+            provider: {},
+            areaHa: 190132126.08844432,
+            bbox: [95.01091766, -11.00761509, 141.01939392, 5.90682268],
+            lock: false,
+            info: {
+                use: {},
+                iso: 'BRA',
+                name: 'Indonesia',
+                gadm: '3.6',
+                simplifyThresh: 0.1
+            }
+        }
+    }
+    if (apiGateway === process.env.GATEWAY_URL) {
+        nock(apiGateway)
+            .get(path)
+            .times(times)
+            .reply(200, {
+                data: geostore
+            });
+    } else {
+        nock(apiGateway)
+            .get(path)
+            .times(times)
+            .query({ adminVersion: '3.6'})
+            .reply(200, {
+                data: geostore
+            });
+    }
+
+
+};
+
+export const createMockArea = (areaId: string, iso: Record<string, any>, times: Number = 1) => {
     nock(process.env.GATEWAY_URL)
-        .get(path)
+        .get(`/v2/area/${areaId}`)
         .times(times)
         .reply(200, {
             data: {
-                type: 'geoStore',
-                id: '423e5dfb0448e692f97b590c61f45f22',
-                attributes: {
-                    geojson: {
-                        features: [{
-                            properties: null,
-                            type: 'Feature',
-                            geometry: {
-                                type: 'MultiPolygon',
-                                coordinates: [[[[117.36772481838, -0.64399409467464]]]]
+                "data": {
+                    "type": "area",
+                    "id": areaId,
+                    "attributes": {
+                        name: "Kiambu, Kenya",
+                        application: "gfw",
+                        geostore: "33b01a49bf9b56a8b56ce042a24f6567",
+                        wdpaid: null,
+                        userid: "testuser",
+                        createdAt: "2025-01-29T16:28:54.271Z",
+                        updatedAt: "2025-01-29T16:28:54.271Z",
+                        image: "",
+                        datasets: [],
+                        user: {},
+                        env: "production",
+                        iso: {
+                            country: iso?.country,
+                            region: iso?.region,
+                            subregion: iso?.subregion,
+                            source: {
+                                provider: "gadm",
+                                version: "3.6"
                             }
-                        }],
-                        crs: {},
-                        type: 'FeatureCollection'
-                    },
-                    hash: '423e5dfb0448e692f97b590c61f45f22',
-                    provider: {},
-                    areaHa: 190132126.08844432,
-                    bbox: [95.01091766, -11.00761509, 141.01939392, 5.90682268],
-                    lock: false,
-                    info: {
-                        use: {},
-                        iso: 'BRA',
-                        name: 'Indonesia',
-                        gadm: '3.6',
-                        simplifyThresh: 0.1
+                        },
+                        admin: {
+                            adm0: iso?.country,
+                            adm1: iso?.region,
+                            adm2: iso?.subregion,
+                            source: {
+                                provider: "gadm",
+                                version: "3.6"
+                            }
+                        },
+                        tags: [],
+                        status: "saved",
+                        public: true,
+                        fireAerts: true,
+                        deforestationAlerts: true,
+                        deforestationAlertsType: "glad-all",
+                        webhookUrl: "",
+                        monthlySummary: false,
+                        subscriptionId: "testsub",
+                        email: "test.user@wri.org",
+                        language: "en",
+                        confirmed: false
                     }
                 }
             }

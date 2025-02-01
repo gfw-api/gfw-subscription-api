@@ -234,7 +234,7 @@ describe('VIIRS Fires alert emails', () => {
         );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA');
+        createMockGeostore('/geostore/admin/BRA');
         mockVIIRSAlertsISOQuery(2);
 
         let expectedQueueMessageCount = 1;
@@ -299,7 +299,7 @@ describe('VIIRS Fires alert emails', () => {
         );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/3');
+        createMockGeostore('/geostore/admin/BRA/3');
         mockVIIRSAlertsISOQuery(2);
 
         let expectedQueueMessageCount = 1;
@@ -364,7 +364,7 @@ describe('VIIRS Fires alert emails', () => {
         );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/1/1');
+        createMockGeostore('/geostore/admin/BRA/1/1');
         mockVIIRSAlertsISOQuery(2);
 
         let expectedQueueMessageCount = 1;
@@ -429,7 +429,7 @@ describe('VIIRS Fires alert emails', () => {
         );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/wdpa/1');
+        createMockGeostore('/v2/geostore/wdpa/1', process.env.GATEWAY_URL);
         mockVIIRSAlertsWDPAQuery(2);
 
         let expectedQueueMessageCount = 1;
@@ -495,7 +495,7 @@ describe('VIIRS Fires alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsGeostoreQuery(2);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 3);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', process.env.GATEWAY_URL, 3);
 
         let expectedQueueMessageCount = 1;
 

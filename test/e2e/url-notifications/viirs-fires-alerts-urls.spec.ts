@@ -263,7 +263,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsWDPAQuery(2, config.get('datasets.viirsWDPADataset'));
-        createMockGeostore('/v2/geostore/wdpa/1');
+        createMockGeostore('/v2/geostore/wdpa/1', process.env.GATEWAY_URL);
 
         createURLSubscriptionCallMock(createViirsFireAlertsWDPAURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'WDPA ID: 1',
@@ -303,7 +303,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsGeostoreQuery(2);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 3);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', process.env.GATEWAY_URL, 3);
 
         createURLSubscriptionCallMock(createViirsFireAlertsGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             downloadUrls: {

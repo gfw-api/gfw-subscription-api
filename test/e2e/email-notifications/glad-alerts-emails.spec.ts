@@ -200,7 +200,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA');
+        createMockGeostore('/geostore/admin/BRA');
 
         mockGLADLISOQuery();
 
@@ -248,7 +248,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/1');
+        createMockGeostore('/geostore/admin/BRA/1');
 
         mockGLADLAdm1Query();
 
@@ -296,7 +296,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/1/2');
+        createMockGeostore('/geostore/admin/BRA/1/2');
 
         mockGLADLAdm2Query();
 
@@ -344,7 +344,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/wdpa/1');
+        createMockGeostore('/v2/geostore/wdpa/1', process.env.GATEWAY_URL);
 
         mockGLADLWDPAQuery();
 
@@ -392,7 +392,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 2);
+        createMockGeostore('/geostore/use/gfw_logging/29407', process.env.GATEWAY_URL);
 
         mockGLADLGeostoreQuery()
 

@@ -359,7 +359,7 @@ describe('Monthly summary notifications', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', process.env.GATEWAY_URL, 4);
 
         await redisClient.subscribe(CHANNEL, (message: string) => {
             const jsonMessage = JSON.parse(message);

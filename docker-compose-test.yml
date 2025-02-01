@@ -22,6 +22,7 @@ services:
       AWS_ACCESS_KEY_ID: "test"
       AWS_SECRET_ACCESS_KEY: "test"
       REQUIRE_API_KEY: true
+      DATA_API_URL: "https://data-api.globalforestwatch.org"
     command: test
     depends_on:
       - mongo

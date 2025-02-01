@@ -132,7 +132,7 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
             {
                 headers: {
                     'x-api-key': config.get('dataApi.apiKey'),
-                    // origin: config.get('dataApi.origin'),
+                    origin: config.get('dataApi.origin'),
                 }
             }
         );

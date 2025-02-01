@@ -60,7 +60,7 @@ describe('GLAD-RADD alerts', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA');
+        createMockGeostore('/geostore/admin/BRA');
 
         mockGLADRADDISOQuery();
 
@@ -105,7 +105,7 @@ describe('GLAD-RADD alerts', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/1');
+        createMockGeostore('/geostore/admin/BRA/1');
 
         mockGLADRADDAdm1Query();
 
@@ -150,7 +150,7 @@ describe('GLAD-RADD alerts', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/1/2');
+        createMockGeostore('/geostore/admin/BRA/1/2');
 
         mockGLADRADDAdm2Query();
 
@@ -195,7 +195,7 @@ describe('GLAD-RADD alerts', () => {
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/wdpa/1');
+        createMockGeostore('/v2/geostore/wdpa/1', process.env.GATEWAY_URL);
 
         mockGLADRADDWDPAQuery();
 
