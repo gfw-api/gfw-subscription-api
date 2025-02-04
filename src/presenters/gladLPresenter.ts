@@ -9,6 +9,7 @@ import GeostoreService from 'services/geostoreService';
 import config from 'config';
 import axios, { AxiosResponse } from 'axios';
 import { GladLPresenterResponse } from 'types/presenterResponse.type';
+import AreaService from 'services/areaService';
 import AlertUrlService from 'services/alertUrlService';
 import UrlService from 'services/urlService';
 
@@ -70,23 +71,34 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
         return `${DATASET_GLAD_L_GEOSTORE}?sql=${sql}`;
     }
 
-    static #getURLForDownload(startDate: string, endDate: string, geostoreId: string): string {
+    static #getURLForDownload(startDate: string, endDate: string, geostoreId: string, geostoreSource: 'gfw' | 'rw' = 'rw'): string {
         const sql: string = `SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence `
             + `FROM data WHERE umd_glad_landsat_alerts__date >= '${startDate}' AND umd_glad_landsat_alerts__date <= '${endDate}'`;
-        return `${DATASET_GLAD_L_DOWNLOAD}/{format}?sql=${sql}&geostore_origin=rw&geostore_id=${geostoreId}`;
+        return `${DATASET_GLAD_L_DOWNLOAD}/{format}?sql=${sql}&geostore_origin=${geostoreSource}&geostore_id=${geostoreId}`;
     }
 
     async getURLForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<string> {
+        const area = params.area ? await AreaService.getUserArea(params.area) : {};
+        const iso = area.admin && Object.keys(area.admin).length 
+        ? area.admin 
+        : area.iso && Object.keys(area.iso).length 
+        ? area.iso 
+        : params.iso;
+
+        const country = iso?.country;
+        const region = iso?.region;
+        const subregion = iso?.subregion;
+
         if (!!params && !!params.iso && !!params.iso.country && !!params.iso.region && !!params.iso.subregion) {
-            return GLADLPresenter.#getURLForAdmin2(startDate, endDate, params.iso.country, params.iso.region, params.iso.subregion);
+            return GLADLPresenter.#getURLForAdmin2(startDate, endDate, country, region, subregion);
         }
 
         if (!!params && !!params.iso && !!params.iso.country && !!params.iso.region) {
-            return GLADLPresenter.#getURLForAdmin1(startDate, endDate, params.iso.country, params.iso.region);
+            return GLADLPresenter.#getURLForAdmin1(startDate, endDate, country, region);
         }
 
         if (!!params && !!params.iso && !!params.iso.country) {
-            return GLADLPresenter.#getURLForAdmin0(startDate, endDate, params.iso.country);
+            return GLADLPresenter.#getURLForAdmin0(startDate, endDate, country);
         }
 
         if (!!params && !!params.wdpaid) {
@@ -125,8 +137,19 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
     }
 
     async getDownloadURLs(startDate: string, endDate: string, params: Record<string, any>): Promise<{ csv: string, json: string }> {
-        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
-        const uri: string = GLADLPresenter.#getURLForDownload(startDate, endDate, geostoreId);
+        const area = params.area ? await AreaService.getUserArea(params.area) : {};
+        const iso = area?.admin && Object.keys(area.admin).length 
+            ? area.admin 
+            : area?.iso && Object.keys(area.iso).length 
+            ? area.iso 
+            : params.iso;
+        
+        
+        const updatedParams = {...params, iso}
+
+        const geostoreSource = (iso?.source?.provider === 'gadm' && iso?.source?.version === '4.1') ? 'gfw' : 'rw'
+        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
+        const uri: string = GLADLPresenter.#getURLForDownload(startDate, endDate, geostoreId, geostoreSource);
         return {
             csv: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'csv'),
             json: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'json'),

@@ -1,4 +1,6 @@
+import axios, { AxiosResponse } from 'axios';
 import logger from 'logger';
+import config from 'config';
 import { RWAPIMicroservice } from 'rw-api-microservice-node';
 
 class GeostoreService {
@@ -37,30 +39,23 @@ class GeostoreService {
     }
 
     static async getGeostoreFromISOCountryCode(countryCode: string): Promise<string> {
-        const uri: string = `/v2/geostore/admin/${countryCode}`;
-        const response: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
-            uri,
-            method: 'GET',
-        });
-        return response.data.id;
+
+        const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}?adminVersion=${config.get('dataApi.gadmVersion')}`;
+        const response: AxiosResponse<Record<string, any>> = await axios.get(uri);
+        return response.data.data.id;
     }
 
     static async getGeostoreFromISORegionCode(countryCode: string, regionCode: string): Promise<string> {
-        const uri: string = `/v2/geostore/admin/${countryCode}/${regionCode}`;
-        const response: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
-            uri,
-            method: 'GET',
-        });
-        return response.data.id;
+        const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}/${regionCode}?adminVersion=${config.get('dataApi.gadmVersion')}`;
+        const response: AxiosResponse<Record<string, any>> = await axios.get(uri);
+        return response.data.data.id;
+
     }
 
     static async getGeostoreFromISOSubregionCode(countryCode: string, regionCode: string, subregionCode: string): Promise<string> {
-        const uri: string = `/v2/geostore/admin/${countryCode}/${regionCode}/${subregionCode}`;
-        const response: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
-            uri,
-            method: 'GET',
-        });
-        return response.data.id;
+        const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}/${regionCode}/${subregionCode}?adminVersion=${config.get('dataApi.gadmVersion')}`;
+        const response: AxiosResponse<Record<string, any>> = await axios.get(uri);
+        return response.data.data.id;
     }
 
     static async getGeostoreFromWDPAID(wdpaId: string): Promise<string> {

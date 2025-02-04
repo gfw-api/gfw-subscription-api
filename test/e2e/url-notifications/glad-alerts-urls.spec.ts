@@ -9,7 +9,7 @@ import Statistic from  'models/statistic';
 import AlertQueue from  'queues/alert.queue';
 
 import { getTestServer } from  '../utils/test-server';
-import { createURLSubscription, createURLSubscriptionCallMock } from  '../utils/helpers';
+import { createURLSubscription, createURLSubscriptionCallMock, getUUID } from  '../utils/helpers';
 import { USERS } from  '../utils/test.constants';
 
 import {
@@ -27,7 +27,7 @@ import {
     mockGLADLGeostoreQuery,
     mockGLADLISOQuery, mockGLADLWDPAQuery
 } from '../utils/mocks/gladL.mocks';
-import { createMockGeostore } from '../utils/mock';
+import { createMockArea, createMockGeostore } from '../utils/mock';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -129,16 +129,18 @@ describe('GLAD alert - URL Subscriptions', () => {
     });
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - ISO code for country', async () => {
+        const country = 'BRA'
+        const areaId = getUUID()
         const subscriptionOne = await new Subscription(createURLSubscription(
             USERS.USER.id,
             'glad-alerts',
-            { params: { iso: { country: 'BRA' } } },
+            { params: { iso: { country: 'BRA' }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADLISOQuery();
-        createMockGeostore('/v2/geostore/admin/BRA');
-
+        createMockGeostore(`/geostore/admin/${country}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country })
         createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA',
         }));
@@ -166,15 +168,19 @@ describe('GLAD alert - URL Subscriptions', () => {
     });
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - ISO code for country and region', async () => {
+        const country = 'BRA'
+        const region = '1'
+        const areaId = getUUID()
         const subscriptionOne = await new Subscription(createURLSubscription(
             USERS.USER.id,
             'glad-alerts',
-            { params: { iso: { country: 'BRA', region: '1' } } },
+            { params: { iso: { country, region }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADLAdm1Query();
-        createMockGeostore('/v2/geostore/admin/BRA/1');
+        createMockGeostore(`/geostore/admin/${country}/${region}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country, region })
 
         createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA, ID1: 1',
@@ -203,15 +209,20 @@ describe('GLAD alert - URL Subscriptions', () => {
     });
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - ISO code for country, region and subregion', async () => {
+        const country = 'BRA'
+        const region = '1'
+        const subregion = '2'
+        const areaId = getUUID()
         const subscriptionOne = await new Subscription(createURLSubscription(
             USERS.USER.id,
             'glad-alerts',
-            { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
+            { params: { iso: { country, region, subregion }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADLAdm2Query();
-        createMockGeostore('/v2/geostore/admin/BRA/1/2');
+        createMockGeostore(`/geostore/admin/${country}/${region}/${subregion}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country, region, subregion })
 
         createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA, ID1: 1, ID2: 2',
@@ -283,7 +294,7 @@ describe('GLAD alert - URL Subscriptions', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADLGeostoreQuery();
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 2);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', process.env.GATEWAY_URL, 2);
 
         createURLSubscriptionCallMock(createGLADAlertsGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             downloadUrls: {
