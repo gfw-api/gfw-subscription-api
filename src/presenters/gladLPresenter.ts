@@ -78,16 +78,16 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
     }
 
     async getURLForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<string> {
-        const area = params.area ? await AreaService.getUserArea(params.area) : {};
-        const iso = area.admin && Object.keys(area.admin).length 
+        const area: Record<string, any> = params.area ? await AreaService.getUserArea(params.area) : {};
+        const iso: Record<string, any> = area.admin && Object.keys(area.admin).length 
         ? area.admin 
         : area.iso && Object.keys(area.iso).length 
         ? area.iso 
         : params.iso;
 
-        const country = iso?.country;
-        const region = iso?.region;
-        const subregion = iso?.subregion;
+        const country: string = iso?.country;
+        const region: string = iso?.region;
+        const subregion: string = iso?.subregion;
 
         if (!!params && !!params.iso && !!params.iso.country && !!params.iso.region && !!params.iso.subregion) {
             return GLADLPresenter.#getURLForAdmin2(startDate, endDate, country, region, subregion);
@@ -137,17 +137,17 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
     }
 
     async getDownloadURLs(startDate: string, endDate: string, params: Record<string, any>): Promise<{ csv: string, json: string }> {
-        const area = params.area ? await AreaService.getUserArea(params.area) : {};
-        const iso = area?.admin && Object.keys(area.admin).length 
+        const area: Record<string, any> = params.area ? await AreaService.getUserArea(params.area) : {};
+        const iso: Record<string, any> = area?.admin && Object.keys(area.admin).length 
             ? area.admin 
             : area?.iso && Object.keys(area.iso).length 
             ? area.iso 
             : params.iso;
         
         
-        const updatedParams = {...params, iso}
+        const updatedParams: Record<string, any> = {...params, iso};
 
-        const geostoreSource = (iso?.source?.provider === 'gadm' && iso?.source?.version === '4.1') ? 'gfw' : 'rw'
+        const geostoreSource: 'rw' | 'gfw' = (iso?.source?.provider === 'gadm' && iso?.source?.version === '4.1') ? 'gfw' : 'rw';
         const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
         const uri: string = GLADLPresenter.#getURLForDownload(startDate, endDate, geostoreId, geostoreSource);
         return {
@@ -169,7 +169,7 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
         resultObject.week_of = `${startDate.format('DD MMM')}`;
         resultObject.week_start = startDate.format('DD/MM/YYYY');
         resultObject.week_end = endDate.format('DD/MM/YYYY');
-        const alertCount: number = results.data.reduce((acc: number, curr: GladLAlertResultType) => acc + curr.alert__count, 0)
+        const alertCount: number = results.data.reduce((acc: number, curr: GladLAlertResultType) => acc + curr.alert__count, 0);
         resultObject.glad_count = alertCount;
         resultObject.alert_count = alertCount;
 
