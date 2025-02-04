@@ -9,8 +9,8 @@ import Statistic from 'models/statistic';
 import AlertQueue from 'queues/alert.queue';
 import EmailHelpersService from 'services/emailHelpersService';
 
-import { createSubscriptionContent, assertNoEmailSent } from '../utils/helpers';
-import { createMockGeostore } from '../utils/mock';
+import { createSubscriptionContent, assertNoEmailSent, getUUID } from '../utils/helpers';
+import { createMockArea, createMockGeostore } from '../utils/mock';
 const {
     bootstrapEmailNotificationTests,
     validateCommonNotificationParams,
@@ -24,6 +24,7 @@ import {
     mockGLADLISOQuery,
     mockGLADLWDPAQuery
 } from '../utils/mocks/gladL.mocks';
+import { getTestServer } from '../utils/test-server';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -47,6 +48,8 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
             throw Error(`Running the test suite with cron enabled is not supported. You can disable cron by setting the LOAD_CRON env variable to false.`);
         }
 
+        await getTestServer();
+        
         redisClient = createClient({ url: config.get('redis.url') });
         await redisClient.connect();
     });
@@ -191,17 +194,19 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     });
 
     it('GLAD alert emails for admin 0 subscriptions work as expected', async () => {
+        const country = 'BRA'
+        const areaId = getUUID()
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
             USERS.USER.id,
             'glad-alerts',
-            { params: { iso: { country: 'BRA' } } },
+            { params: { iso: { country }, area: areaId} },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA');
-
+        createMockGeostore(`/geostore/admin/${country}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country })
         mockGLADLISOQuery();
 
         redisClient.subscribe(CHANNEL, (message) => {
@@ -239,16 +244,20 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     });
 
     it('GLAD alert emails for admin 1 subscriptions work as expected', async () => {
+        const country = 'BRA'
+        const region = '1'
+        const areaId = getUUID()
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
             USERS.USER.id,
             'glad-alerts',
-            { params: { iso: { country: 'BRA', region: '1' } } },
+            { params: { iso: { country, region }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/1');
+        createMockGeostore(`/geostore/admin/${country}/${region}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country, region })
 
         mockGLADLAdm1Query();
 
@@ -287,16 +296,21 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
     });
 
     it('GLAD alert emails for admin 2 subscriptions work as expected', async () => {
+        const country = 'BRA'
+        const region = '1'
+        const subregion = '2'
+        const areaId = getUUID()
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
             USERS.USER.id,
             'glad-alerts',
-            { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
+            { params: { iso: { country, region, subregion }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/1/2');
+        createMockGeostore(`/geostore/admin/${country}/${region}/${subregion}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country, region, subregion })
 
         mockGLADLAdm2Query();
 
@@ -392,7 +406,7 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 2);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', process.env.GATEWAY_URL, 2);
 
         mockGLADLGeostoreQuery()
 
