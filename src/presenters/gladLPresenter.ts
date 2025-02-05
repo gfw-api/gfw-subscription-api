@@ -78,10 +78,13 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
     }
 
     async getURLForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<string> {
-        const area: Record<string, any> = params.area ? await AreaService.getUserArea(params.area) : {};
-        const iso: Record<string, any> = area.admin && Object.keys(area.admin).length 
+        let area: Record<string, any> = {};
+        if (params?.area && params?.iso && params.iso?.country) {
+            area = await AreaService.getUserArea(params.area);
+        }
+        const iso: Record<string, any> = area?.admin && Object.keys(area.admin).length 
         ? area.admin 
-        : area.iso && Object.keys(area.iso).length 
+        : area?.iso && Object.keys(area.iso).length 
         ? area.iso 
         : params.iso;
 
