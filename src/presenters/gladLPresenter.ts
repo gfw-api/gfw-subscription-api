@@ -89,15 +89,15 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
         const region: string = iso?.region;
         const subregion: string = iso?.subregion;
 
-        if (!!params && !!params.iso && !!params.iso.country && !!params.iso.region && !!params.iso.subregion) {
+        if (country && region && subregion) {
             return GLADLPresenter.#getURLForAdmin2(startDate, endDate, country, region, subregion);
         }
 
-        if (!!params && !!params.iso && !!params.iso.country && !!params.iso.region) {
+        if (country && region) {
             return GLADLPresenter.#getURLForAdmin1(startDate, endDate, country, region);
         }
 
-        if (!!params && !!params.iso && !!params.iso.country) {
+        if (country) {
             return GLADLPresenter.#getURLForAdmin0(startDate, endDate, country);
         }
 

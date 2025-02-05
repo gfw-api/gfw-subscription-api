@@ -134,7 +134,7 @@ describe('GLAD alert - URL Subscriptions', () => {
         const subscriptionOne = await new Subscription(createURLSubscription(
             USERS.USER.id,
             'glad-alerts',
-            { params: { iso: { country: 'BRA' }, area: areaId } },
+            { params: { iso: { country }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
