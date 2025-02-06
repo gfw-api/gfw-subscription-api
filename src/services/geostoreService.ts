@@ -40,22 +40,19 @@ class GeostoreService {
 
     static async getGeostoreFromISOCountryCode(countryCode: string): Promise<string> {
 
-        const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}?adminVersion=${config.get('dataApi.gadmVersion')}`;
-        const response: AxiosResponse<Record<string, any>> = await axios.get(uri);
-        return response.data.data.id;
+        const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}`;
+        return this.getIsoGeostoreId(uri);
     }
 
     static async getGeostoreFromISORegionCode(countryCode: string, regionCode: string): Promise<string> {
-        const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}/${regionCode}?adminVersion=${config.get('dataApi.gadmVersion')}`;
-        const response: AxiosResponse<Record<string, any>> = await axios.get(uri);
-        return response.data.data.id;
+        const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}/${regionCode}`;
+        return this.getIsoGeostoreId(uri);
 
     }
 
     static async getGeostoreFromISOSubregionCode(countryCode: string, regionCode: string, subregionCode: string): Promise<string> {
-        const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}/${regionCode}/${subregionCode}?adminVersion=${config.get('dataApi.gadmVersion')}`;
-        const response: AxiosResponse<Record<string, any>> = await axios.get(uri);
-        return response.data.data.id;
+        const uri: string = `${config.get('dataApi.url')}/geostore/admin/${countryCode}/${regionCode}/${subregionCode}`;
+        return this.getIsoGeostoreId(uri);
     }
 
     static async getGeostoreFromWDPAID(wdpaId: string): Promise<string> {
@@ -74,6 +71,14 @@ class GeostoreService {
             method: 'GET',
         });
         return response.data.id;
+    }
+
+    static async getIsoGeostoreId(uri: string): Promise<string> {
+        const params: Record<string, any> = { adminVersion: config.get('dataApi.gadmVersion') };
+        const response: AxiosResponse<Record<string, any>> = await axios.get(
+            uri, { params }
+        );
+        return response.data.data.id;
     }
 
 }
