@@ -78,16 +78,14 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
     }
 
     async getURLForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<string> {
-        let area: Record<string, any> = {};
+        let areaIso: Record<string, any> = {};
         if (params?.area && params?.iso && params.iso?.country) {
-            area = await AreaService.getUserArea(params.area);
+           const area: Record<string, any> = await AreaService.getUserArea(params.area);
+           areaIso = AreaService.getIsoParams(area);
         }
-        const iso: Record<string, any> = area?.admin && Object.keys(area.admin).length 
-        ? area.admin 
-        : area?.iso && Object.keys(area.iso).length 
-        ? area.iso 
-        : params.iso;
 
+        const iso: Record<string, any> = Object.keys(areaIso).length && areaIso?.country ? areaIso : params.iso;
+        
         const country: string = iso?.country;
         const region: string = iso?.region;
         const subregion: string = iso?.subregion;
@@ -140,17 +138,17 @@ class GLADLPresenter extends PresenterInterface<GladLAlertResultType, GladLPrese
     }
 
     async getDownloadURLs(startDate: string, endDate: string, params: Record<string, any>): Promise<{ csv: string, json: string }> {
-        const area: Record<string, any> = params.area ? await AreaService.getUserArea(params.area) : {};
-        const iso: Record<string, any> = area?.admin && Object.keys(area.admin).length 
-            ? area.admin 
-            : area?.iso && Object.keys(area.iso).length 
-            ? area.iso 
-            : params.iso;
-        
-        
-        const updatedParams: Record<string, any> = {...params, iso};
+        let areaIso: Record<string, any> = {};
+        let area: Record<string, any>;
+        if (params?.area && params?.iso && params.iso?.country) {
+            area = await AreaService.getUserArea(params.area);
+           areaIso = AreaService.getIsoParams(area);
+        }
 
-        const geostoreSource: 'rw' | 'gfw' = (iso?.source?.provider === 'gadm' && iso?.source?.version === '4.1') ? 'gfw' : 'rw';
+        const iso: Record<string, any> = Object.keys(areaIso).length && areaIso?.country ? areaIso : params.iso;
+
+        const updatedParams: Record<string, any> = {...params, iso};
+        const geostoreSource: 'gfw' | 'rw' = area ? AreaService.getGeostoreSource(area) : 'rw';
         const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
         const uri: string = GLADLPresenter.#getURLForDownload(startDate, endDate, geostoreId, geostoreSource);
         return {

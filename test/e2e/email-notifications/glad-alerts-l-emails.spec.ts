@@ -63,7 +63,7 @@ describe('GLAD-L alerts', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore(`/geostore/admin/${country}`, config.get('dataApi.url'));
-        createMockArea(areaId, { country })
+        createMockArea(areaId, { country }, 2)
         mockGLADLISOQuery();
 
         redisClient.subscribe(CHANNEL, (message) => {
@@ -111,7 +111,7 @@ describe('GLAD-L alerts', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore(`/geostore/admin/${country}/${region}`, config.get('dataApi.url'));
-        createMockArea(areaId, { country, region })
+        createMockArea(areaId, { country, region }, 2)
         mockGLADLAdm1Query();
 
         redisClient.subscribe(CHANNEL, (message) => {
@@ -160,7 +160,7 @@ describe('GLAD-L alerts', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore(`/geostore/admin/${country}/${region}/${subregion}`, config.get('dataApi.url'));
-        createMockArea(areaId, { country, region, subregion })
+        createMockArea(areaId, { country, region, subregion }, 2)
         mockGLADLAdm2Query();
 
         redisClient.subscribe(CHANNEL, (message) => {
