@@ -1,7 +1,5 @@
 import { expect } from 'chai';
 import nock from 'nock';
-import config from 'config';
-import logger from 'logger';
 import AreaService from 'services/areaService'
 import { createMockArea } from '../../e2e/utils/mock';
 import { getUUID } from '../../e2e/utils/helpers';
@@ -35,8 +33,6 @@ describe('AreaService', () => {
 
             const area = await AreaService.getUserArea(areaId);
 
-            logger.info(`area ${area}`)
-
             expect(area).to.include({
                 name: "Kiambu, Kenya",
                 application: "gfw",
@@ -49,16 +45,14 @@ describe('AreaService', () => {
     describe('getIsoParams', () => {
         it('should return ISO parameters when area contains iso data', () => {
             const result = AreaService.getIsoParams(ADMIN0_ISO);
-            logger.info(`result`)
-            logger.info(`${Object.keys(result)}`)
             expect(result).to.deep.include(ADMIN0_ISO.iso);
         });
 
         it('should return admin-based ISO parameters when area contains admin data', () => {
             const expected = {
                 country: 'KEN',
-                region: '15',
-                subregion: '1',
+                region: 15,
+                subregion: 1,
                 source: {
                     provider: 'gadm',
                     version: '3.6'
