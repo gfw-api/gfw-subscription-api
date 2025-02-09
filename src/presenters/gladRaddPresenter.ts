@@ -10,6 +10,7 @@ import config from 'config';
 import axios, { AxiosResponse } from 'axios';
 import { GladRaddAlertResultType } from 'types/alertResult.type';
 import { GladRaddPresenterResponse } from 'types/presenterResponse.type';
+import AreaService from 'services/areaService';
 
 const DATASET_GLAD_RADD_ADM_0: string = '/dataset/gadm__integrated_alerts__iso_daily_alerts/latest/query';
 const DATASET_GLAD_RADD_ADM_1: string = '/dataset/gadm__integrated_alerts__adm1_daily_alerts/latest/query';
@@ -68,23 +69,35 @@ class GLADRaddPresenter extends PresenterInterface<GladRaddAlertResultType, Glad
         return `${DATASET_GLAD_RADD_GEOSTORE}?sql=${sql}`;
     }
 
-    static #getURLForDownload(startDate: string, endDate: string, geostoreId: string): string {
+    static #getURLForDownload(startDate: string, endDate: string, geostoreId: string, geostoreSource: 'gfw' | 'rw' = 'rw'): string {
         const sql: string = `SELECT latitude, longitude, wur_radd_alerts__date, wur_radd_alerts__confidence `
             + `FROM data WHERE wur_radd_alerts__date >= '${startDate}' AND wur_radd_alerts__date <= '${endDate}'`;
-        return `${DATASET_GLAD_RADD_DOWNLOAD}/{format}?sql=${sql}&geostore_origin=rw&geostore_id=${geostoreId}`;
+        return `${DATASET_GLAD_RADD_DOWNLOAD}/{format}?sql=${sql}&geostore_origin=${geostoreSource}&geostore_id=${geostoreId}`;
     }
 
     static async getURLForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<string> {
-        if (!!params && !!params.iso && !!params.iso.country && !!params.iso.region && !!params.iso.subregion) {
-            return GLADRaddPresenter.#getURLForAdmin2(startDate, endDate, params.iso.country, params.iso.region, params.iso.subregion);
+        let areaIso: Record<string, any> = {};
+        if (params?.area && params?.iso && params.iso?.country) {
+           const area: Record<string, any> = await AreaService.getUserArea(params.area);
+           areaIso = AreaService.getIsoParams(area);
         }
 
-        if (!!params && !!params.iso && !!params.iso.country && !!params.iso.region) {
-            return GLADRaddPresenter.#getURLForAdmin1(startDate, endDate, params.iso.country, params.iso.region);
+        const iso: Record<string, any> = Object.keys(areaIso).length && areaIso?.country ? areaIso : params.iso;
+        
+        const country: string = iso?.country;
+        const region: string = iso?.region;
+        const subregion: string = iso?.subregion;
+
+        if (country && region && subregion) {
+            return GLADRaddPresenter.#getURLForAdmin2(startDate, endDate, country, region, subregion);
         }
 
-        if (!!params && !!params.iso && !!params.iso.country) {
-            return GLADRaddPresenter.#getURLForAdmin0(startDate, endDate, params.iso.country);
+        if (country && region) {
+            return GLADRaddPresenter.#getURLForAdmin1(startDate, endDate, country, region);
+        }
+
+        if (country) {
+            return GLADRaddPresenter.#getURLForAdmin0(startDate, endDate, country);
         }
 
         if (!!params && !!params.wdpaid) {
@@ -113,8 +126,19 @@ class GLADRaddPresenter extends PresenterInterface<GladRaddAlertResultType, Glad
     }
 
     async getDownloadURLs(startDate: string, endDate: string, params: Record<string, any>): Promise<{ csv: string, json: string }> {
-        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
-        const uri: string = GLADRaddPresenter.#getURLForDownload(startDate, endDate, geostoreId);
+        let areaIso: Record<string, any> = {};
+        let area: Record<string, any>;
+        if (params?.area && params?.iso && params.iso?.country) {
+            area = await AreaService.getUserArea(params.area);
+           areaIso = AreaService.getIsoParams(area);
+        }
+
+        const iso: Record<string, any> = Object.keys(areaIso).length && areaIso?.country ? areaIso : params.iso;
+
+        const updatedParams: Record<string, any> = {...params, iso};
+        const geostoreSource: 'gfw' | 'rw' = area ? AreaService.getGeostoreSource(area) : 'rw';
+        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
+        const uri: string = GLADRaddPresenter.#getURLForDownload(startDate, endDate, geostoreId, geostoreSource);
         return {
             csv: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'csv'),
             json: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'json'),
