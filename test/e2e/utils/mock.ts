@@ -422,60 +422,58 @@ export const createMockGeostore = (path: string, apiGateway: string = process.en
     }
 };
 
-export const createMockArea = (areaId: string, iso: Record<string, any>, times: Number = 1) => {
+export const createMockArea = (areaId: string, iso: Record<string, any>, times: number = 1) => {
     nock(process.env.GATEWAY_URL)
         .get(`/v2/area/${areaId}`)
         .query({ 'source[provider]': 'gadm', 'source[version]': '3.6' })
         .times(times)
         .reply(200, {
             data: {
-                "data": {
-                    "type": "area",
-                    "id": areaId,
-                    "attributes": {
-                        name: "Kiambu, Kenya",
-                        application: "gfw",
-                        geostore: "33b01a49bf9b56a8b56ce042a24f6567",
-                        wdpaid: null,
-                        userid: "testuser",
-                        createdAt: "2025-01-29T16:28:54.271Z",
-                        updatedAt: "2025-01-29T16:28:54.271Z",
-                        image: "",
-                        datasets: [],
-                        user: {},
-                        env: "production",
-                        iso: {
-                            country: iso?.country,
-                            region: iso?.region,
-                            subregion: iso?.subregion,
-                            source: {
-                                provider: "gadm",
-                                version: "3.6"
-                            }
-                        },
-                        admin: {
-                            adm0: iso?.country,
-                            adm1: iso?.region,
-                            adm2: iso?.subregion,
-                            source: {
-                                provider: "gadm",
-                                version: "3.6"
-                            }
-                        },
-                        tags: [],
-                        status: "saved",
-                        public: true,
-                        fireAerts: true,
-                        deforestationAlerts: true,
-                        deforestationAlertsType: "glad-all",
-                        webhookUrl: "",
-                        monthlySummary: false,
-                        subscriptionId: "testsub",
-                        email: "test.user@wri.org",
-                        language: "en",
-                        confirmed: false
-                    }
-                }
+                type: "area",
+                id: areaId,
+                attributes: {
+                    name: "Kiambu, Kenya",
+                    application: "gfw",
+                    geostore: "33b01a49bf9b56a8b56ce042a24f6567",
+                    wdpaid: null,
+                    userid: "testuser",
+                    createdAt: "2025-01-29T16:28:54.271Z",
+                    updatedAt: "2025-01-29T16:28:54.271Z",
+                    image: "",
+                    datasets: [],
+                    user: {},
+                    env: "production",
+                    iso: {
+                        country: iso?.country,
+                        region: iso?.region,
+                        subregion: iso?.subregion,
+                        source: {
+                            provider: "gadm",
+                            version: "3.6"
+                        }
+                    },
+                    admin: {
+                        adm0: iso?.country,
+                        adm1: iso?.region,
+                        adm2: iso?.subregion,
+                        source: {
+                            provider: "gadm",
+                            version: "3.6"
+                        }
+                    },
+                    tags: [],
+                    status: "saved",
+                    public: true,
+                    fireAerts: true,
+                    deforestationAlerts: true,
+                    deforestationAlertsType: "glad-all",
+                    webhookUrl: "",
+                    monthlySummary: false,
+                    subscriptionId: "testsub",
+                    email: "test.user@wri.org",
+                    language: "en",
+                    confirmed: false
+            }
             }
         });
 };

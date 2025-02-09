@@ -24,29 +24,10 @@ const area = {
     confirmed: false
 }
 
-const admin2Iso = {
-    country: "KEN",
-    region: '15',
-    subregion: '1',
-    source: {
-        provider: "gadm",
-        version: "3.6"
-    }
-}
-
 const admin2Admin = {
     adm0: "KEN",
-    adm1: '15',
-    adm2: '1',
-    source: {
-        provider: "gadm",
-        version: "3.6"
-    }
-}
-
-const admin1Iso = {
-    country: "KEN",
-    region: '15',
+    adm1: 15,
+    adm2: 1,
     source: {
         provider: "gadm",
         version: "3.6"
