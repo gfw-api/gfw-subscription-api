@@ -10,9 +10,9 @@ import AlertQueue from  'queues/alert.queue';
 import EmailHelpersService from 'services/emailHelpersService';
 
 import { getTestServer } from  '../utils/test-server';
-import { createURLSubscription, createURLSubscriptionCallMock } from  '../utils/helpers';
+import { createURLSubscription, createURLSubscriptionCallMock, getUUID } from  '../utils/helpers';
 import {
-    mockVIIRSAlertsGeostoreQuery, createMockGeostore, mockVIIRSAlertsISOQuery, mockVIIRSAlertsWDPAQuery
+    createMockArea, mockVIIRSAlertsGeostoreQuery, createMockGeostore, mockVIIRSAlertsISOQuery, mockVIIRSAlertsWDPAQuery
 } from '../utils/mock';
 import { USERS } from  '../utils/test.constants';
 
@@ -130,17 +130,20 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
     });
 
     it('VIIRS Fires emails for subscriptions that refer to an ISO code work as expected', async () => {
+        const country = 'BRA';
+        const areaId = getUUID();
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
             USERS.USER.id,
             'viirs-active-fires',
-            { params: { iso: { country: 'BRA' } } },
+            { params: { iso: { country }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsISOQuery(2, config.get('datasets.viirsISODataset'));
-        createMockGeostore('/v2/geostore/admin/BRA');
+        createMockGeostore(`/geostore/admin/${country}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country }, 3);
 
         createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA',
@@ -171,17 +174,22 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
     });
 
     it('VIIRS Fires emails for subscriptions that refer to an ISO region work as expected', async () => {
+        const country = 'BRA';
+        const region = '3';
+        const areaId = getUUID();
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
+
         const subscriptionOne = await new Subscription(createURLSubscription(
             USERS.USER.id,
             'viirs-active-fires',
-            { params: { iso: { country: 'BRA', region: '3' } } },
+            { params: { iso: { country, region }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsISOQuery(2, config.get('datasets.viirsISODataset'));
-        createMockGeostore('/v2/geostore/admin/BRA/3');
+        createMockGeostore(`/geostore/admin/${country}/${region}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country, region }, 3);
 
         createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA, ID1: 3',
@@ -212,18 +220,22 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
     });
 
     it('VIIRS Fires emails for subscriptions that refer to an ISO subregion work as expected', async () => {
+        const country = 'BRA';
+        const region = '1';
+        const subregion = '1';
+        const areaId = getUUID();
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
             USERS.USER.id,
             'viirs-active-fires',
-            { params: { iso: { country: 'BRA', region: '1', subregion: '1' } } },
+            { params: { iso: { country, region, subregion }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsISOQuery(2, config.get('datasets.viirsISODataset'));
-        createMockGeostore('/v2/geostore/admin/BRA/1/1');
-
+        createMockGeostore(`/geostore/admin/${country}/${region}/${subregion}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country, region, subregion }, 3);
         createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA, ID1: 1, ID2: 1',
         }));
@@ -303,7 +315,7 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsGeostoreQuery(2);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 3);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', process.env.GATEWAY_URL, 3);
 
         createURLSubscriptionCallMock(createViirsFireAlertsGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             downloadUrls: {
