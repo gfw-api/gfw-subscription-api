@@ -60,7 +60,6 @@ describe('GLAD-ALL alerts', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         createMockGeostore(`/geostore/admin/${country}`, config.get('dataApi.url'));
-        logger.info(`sending areaId to mock ${areaId} for ${country}`)
         createMockArea(areaId, { country }, 2)
 
         mockGLADAllISOQuery();
