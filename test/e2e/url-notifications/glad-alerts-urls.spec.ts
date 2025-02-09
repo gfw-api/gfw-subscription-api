@@ -140,7 +140,7 @@ describe('GLAD alert - URL Subscriptions', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADLISOQuery();
         createMockGeostore(`/geostore/admin/${country}`, config.get('dataApi.url'));
-        createMockArea(areaId, { country })
+        createMockArea(areaId, { country }, 2);
         createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA',
         }));
@@ -180,7 +180,7 @@ describe('GLAD alert - URL Subscriptions', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADLAdm1Query();
         createMockGeostore(`/geostore/admin/${country}/${region}`, config.get('dataApi.url'));
-        createMockArea(areaId, { country, region })
+        createMockArea(areaId, { country, region }, 2);
 
         createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA, ID1: 1',
@@ -222,7 +222,7 @@ describe('GLAD alert - URL Subscriptions', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockGLADLAdm2Query();
         createMockGeostore(`/geostore/admin/${country}/${region}/${subregion}`, config.get('dataApi.url'));
-        createMockArea(areaId, { country, region, subregion })
+        createMockArea(areaId, { country, region, subregion }, 2);
 
         createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA, ID1: 1, ID2: 2',
