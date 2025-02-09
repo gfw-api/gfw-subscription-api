@@ -8,7 +8,7 @@ import Statistic from 'models/statistic';
 import AlertQueue from 'queues/alert.queue';
 import EmailHelpersService from 'services/emailHelpersService';
 import { getTestServer } from '../utils/test-server';
-import { createSubscriptionContent, assertNoEmailSent } from '../utils/helpers';
+import { createSubscriptionContent, assertNoEmailSent, getUUID } from '../utils/helpers';
 const {
     mockVIIRSAlertsISOQuery,
     mockVIIRSAlertsWDPAQuery,
@@ -29,6 +29,7 @@ import {
     mockGLADLGeostoreQuery,
     mockGLADLISOQuery, mockGLADLWDPAQuery
 } from '../utils/mocks/gladL.mocks';
+import { createMockArea } from '../utils/mock';
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -173,17 +174,20 @@ describe('Monthly summary notifications', () => {
     });
 
     it('Monthly summary alert emails for subscriptions that refer to an ISO code work as expected', async () => {
+        const country = 'BRA';
+        const areaId = getUUID();
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
             USERS.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'BRA' } } },
+            { params: { iso: { country }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADLISOQuery(2);
         mockVIIRSAlertsISOQuery(2);
+        createMockArea(areaId, { country }, 4)
 
         await redisClient.subscribe(CHANNEL, (message: string) => {
             const jsonMessage = JSON.parse(message);
@@ -217,17 +221,21 @@ describe('Monthly summary notifications', () => {
     });
 
     it('Monthly summary alert emails for subscriptions that refer to an ADM 1 region work as expected', async () => {
+        const country = 'BRA';
+        const region = '1';
+        const areaId = getUUID();
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
             USERS.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'BRA', region: '1' } } },
+            { params: { iso: { country, region }, area: areaId} },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADLAdm1Query(2);
         mockVIIRSAlertsISOQuery(2);
+        createMockArea(areaId, { country, region }, 4);
         await redisClient.subscribe(CHANNEL, (message: string) => {
             const jsonMessage = JSON.parse(message);
 
@@ -260,17 +268,22 @@ describe('Monthly summary notifications', () => {
     });
 
     it('Monthly summary alert emails for subscriptions that refer to an ADM 2 subregion work as expected', async () => {
+        const country = 'BRA';
+        const region = '1';
+        const subregion = '2';
+        const areaId = getUUID();
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createSubscriptionContent(
             USERS.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
+            { params: { iso: { country, region, subregion }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADLAdm2Query(2);
         mockVIIRSAlertsISOQuery(2);
+        createMockArea(areaId, { country, region, subregion }, 4);
 
         await redisClient.subscribe(CHANNEL, (message: string) => {
             const jsonMessage = JSON.parse(message);
@@ -359,7 +372,7 @@ describe('Monthly summary notifications', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', process.env.GATEWAY_URL, 4);
 
         await redisClient.subscribe(CHANNEL, (message: string) => {
             const jsonMessage = JSON.parse(message);
