@@ -12,6 +12,7 @@ import GeostoreService from 'services/geostoreService';
 import axios, { AxiosResponse } from 'axios';
 import { ViirsPresenterResponse } from 'types/presenterResponse.type';
 import { ViirsActiveFiresAlertResultType } from 'types/alertResult.type';
+import AreaService from 'services/areaService';
 
 class ViirsPresenter extends PresenterInterface<ViirsActiveFiresAlertResultType, ViirsPresenterResponse> {
 
@@ -96,9 +97,20 @@ class ViirsPresenter extends PresenterInterface<ViirsActiveFiresAlertResultType,
      * @returns {Promise<*>}
      */
     static async getURLInPeriodForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<string> {
+        let areaIso: Record<string, any> = {};
+        if (params?.area && params?.iso && params.iso?.country) {
+            const area: Record<string, any> = await AreaService.getUserArea(params.area);
+            areaIso = AreaService.getIsoParams(area);
+        }
+
+        const iso: Record<string, any> = Object.keys(areaIso).length && areaIso?.country ? areaIso : params.iso;
+        
+        const country: string = iso?.country;
+
+
         // At least country must be defined to use the ISO dataset
-        if (!!params && !!params.iso && !!params.iso.country) {
-            return ViirsPresenter.#getURLInPeriodForISO(startDate, endDate, params);
+        if (country) {
+            return ViirsPresenter.#getURLInPeriodForISO(startDate, endDate, { iso });
         }
 
         if (!!params && !!params.wdpaid) {
@@ -153,18 +165,30 @@ class ViirsPresenter extends PresenterInterface<ViirsActiveFiresAlertResultType,
         );
     }
 
-    static getURLInPeriodForDownload(startDate: string, endDate: string, geostoreId: string): string {
+    static getURLInPeriodForDownload(startDate: string, endDate: string, geostoreId: string, geostoreSource: 'gfw' | 'rw' = 'rw'): string {
         const sql: string = `SELECT latitude, longitude, alert__date, confidence__cat, `
             + `is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest, `
             + `is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> '' THEN 'True' ELSE 'False' END as in_protected_areas `
             + `FROM ${config.get('datasets.viirsDownloadDataset')} `
             + `WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}'`;
-        return `/dataset/${config.get('datasets.viirsDownloadDataset')}/latest/download/{format}?sql=${sql}&geostore_id=${geostoreId}&geostore_origin=rw`;
+        return `/dataset/${config.get('datasets.viirsDownloadDataset')}/latest/download/{format}?sql=${sql}&geostore_id=${geostoreId}&geostore_origin=${geostoreSource}`;
     }
 
     async getDownloadURLs(startDate: string, endDate: string, params: Record<string, any>): Promise<{ csv: string, json: string }> {
-        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(params);
-        const uri: string = ViirsPresenter.getURLInPeriodForDownload(startDate, endDate, geostoreId);
+        let areaIso: Record<string, any> = {};
+        let area: Record<string, any>;
+        if (params?.area && params?.iso && params.iso?.country) {
+            area = await AreaService.getUserArea(params.area);
+           areaIso = AreaService.getIsoParams(area);
+        }
+
+        const iso: Record<string, any> = Object.keys(areaIso).length && areaIso?.country ? areaIso : params.iso;
+
+        const updatedParams: Record<string, any> = {...params, iso};
+        const geostoreSource: 'gfw' | 'rw' = area ? AreaService.getGeostoreSource(area) : 'rw';
+
+        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
+        const uri: string = ViirsPresenter.getURLInPeriodForDownload(startDate, endDate, geostoreId, geostoreSource);
         return {
             csv: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'csv'),
             json: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'json'),
@@ -185,7 +209,7 @@ class ViirsPresenter extends PresenterInterface<ViirsActiveFiresAlertResultType,
             resultObject.week_of = `${startDate.format('DD MMM')}`;
             resultObject.week_start = startDate.format('DD/MM/YYYY');
             resultObject.week_end = endDate.format('DD/MM/YYYY');
-            const alertCount: number = results.data.reduce((acc: number, curr: ViirsActiveFiresAlertResultType) => acc + curr.alert__count, 0)
+            const alertCount: number = results.data.reduce((acc: number, curr: ViirsActiveFiresAlertResultType) => acc + curr.alert__count, 0);
             resultObject.viirs_count = alertCount;
             resultObject.alert_count = alertCount;
 

@@ -7,8 +7,8 @@ import Subscription, { ISubscription } from 'models/subscription';
 import Statistic from 'models/statistic';
 import AlertQueue from 'queues/alert.queue';
 
-import { createSubscription, createSubscriptionContent } from '../utils/helpers';
-import { createMockGeostore } from '../utils/mock';
+import { createSubscription, createSubscriptionContent, getUUID } from '../utils/helpers';
+import { createMockArea, createMockGeostore } from '../utils/mock';
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
 import {
@@ -51,13 +51,16 @@ describe('GLAD-ALL alerts', () => {
     });
 
     it('GLAD-ALL alerts matches "glad-all" for admin0 subscriptions, using the correct email template and providing the needed data', async () => {
+        const country = 'BRA'
+        const areaId = getUUID()
         const sub: ISubscription = await createSubscription(
             USERS.USER.id,
-            { datasets: ['glad-all'], params: { iso: { country: 'BRA' } } }
+            { datasets: ['glad-all'], params: { iso: { country }, area: areaId } }
         );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA');
+        createMockGeostore(`/geostore/admin/${country}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country }, 2)
 
         mockGLADAllISOQuery();
 
@@ -95,14 +98,18 @@ describe('GLAD-ALL alerts', () => {
     });
 
     it('GLAD-ALL alerts matches "glad-all" for admin1 subscriptions, using the correct email template and providing the needed data', async () => {
+        const country = 'BRA'
+        const region = '1'
+        const areaId = getUUID()
         const sub = await new Subscription(createSubscriptionContent(
             USERS.USER.id,
             'glad-all',
-            { params: { iso: { country: 'BRA', region: '1' } } },
+            { params: { iso: { country, region }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/1');
+        createMockGeostore(`/geostore/admin/${country}/${region}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country, region }, 2)
 
         mockGLADAllAdm1Query();
 
@@ -140,15 +147,19 @@ describe('GLAD-ALL alerts', () => {
     });
 
     it('GLAD-ALL alerts matches "glad-all" for admin2 subscriptions, using the correct email template and providing the needed data', async () => {
+        const country = 'BRA'
+        const region = '1'
+        const subregion = '2'
+        const areaId = getUUID()
         const sub = await new Subscription(createSubscriptionContent(
             USERS.USER.id,
             'glad-all',
-            { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
+            { params: { iso: { country, region, subregion }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/1/2');
-
+        createMockGeostore(`/geostore/admin/${country}/${region}/${subregion}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country, region, subregion }, 2)
         mockGLADAllAdm2Query();
 
         redisClient.subscribe(CHANNEL, (message) => {

@@ -9,8 +9,9 @@ import Statistic from 'models/statistic';
 import AlertQueue from 'queues/alert.queue';
 
 import { getTestServer } from '../utils/test-server';
-import { createURLSubscription, createURLSubscriptionCallMock } from '../utils/helpers';
+import { createURLSubscription, createURLSubscriptionCallMock, getUUID } from '../utils/helpers';
 import {
+    createMockArea,
     createMockGeostore,
     mockVIIRSAlertsGeostoreQuery, mockVIIRSAlertsISOQuery,
     mockVIIRSAlertsWDPAQuery
@@ -140,17 +141,20 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
     });
 
     it('Monthly summary alert for url subscriptions that refer to an ISO code work as expected', async () => {
+        const country = 'BRA';
+        const areaId = getUUID();
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
             USERS.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'BRA' } } },
+            { params: { iso: { country }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADLISOQuery(2);
         mockVIIRSAlertsISOQuery(2);
+        createMockArea(areaId, { country }, 4);
 
         createURLSubscriptionCallMock(createMonthlySummaryISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA',
@@ -181,17 +185,21 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
     });
 
     it('Monthly summary alert for url subscriptions that refer to an ADM 1 region work as expected', async () => {
+        const country = 'BRA';
+        const region = '1';
+        const areaId = getUUID();
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
             USERS.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'BRA', region: '1' } } },
+            { params: { iso: { country, region }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADLAdm1Query(2);
         mockVIIRSAlertsISOQuery(2);
+        createMockArea(areaId, { country, region }, 4);
 
         createURLSubscriptionCallMock(createMonthlySummaryISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA, ID1: 1',
@@ -222,17 +230,22 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
     });
 
     it('Monthly summary alert for url subscriptions that refer to an ADM 2 subregion work as expected', async () => {
+        const country = 'BRA';
+        const region = '1';
+        const subregion = '2';
+        const areaId = getUUID()
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await new Subscription(createURLSubscription(
             USERS.USER.id,
             'monthly-summary',
-            { params: { iso: { country: 'BRA', region: '1', subregion: '2' } } },
+            { params: { iso: { country, region, subregion }, area: areaId } },
         )).save();
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADLAdm2Query(2);
         mockVIIRSAlertsISOQuery(2);
+        createMockArea(areaId, { country, region, subregion }, 4);
 
         createURLSubscriptionCallMock(createMonthlySummaryISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
             selected_area: 'ISO Code: BRA, ID1: 1, ID2: 2',
@@ -315,7 +328,7 @@ describe('Monthly summary notifications - URL Subscriptions', () => {
         const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
         mockGLADLGeostoreQuery(2);
         mockVIIRSAlertsGeostoreQuery(2);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 4);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', process.env.GATEWAY_URL, 4);
 
         createURLSubscriptionCallMock(createMonthlySummaryGeostoreURLSubscriptionBody(subscriptionOne, beginDate, endDate));
 
