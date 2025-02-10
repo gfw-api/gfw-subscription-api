@@ -10,8 +10,9 @@ import AlertQueue from 'queues/alert.queue';
 import EmailHelpersService from 'services/emailHelpersService';
 
 import { getTestServer } from '../utils/test-server';
-import { assertNoEmailSent, createSubscription } from '../utils/helpers';
+import { assertNoEmailSent, createSubscription, getUUID } from '../utils/helpers';
 import { USERS } from '../utils/test.constants';
+import { createMockArea } from '../utils/mock';
 
 const {
     mockVIIRSAlertsISOQuery,
@@ -223,18 +224,21 @@ describe('VIIRS Fires alert emails', () => {
     });
 
     it('VIIRS Fires emails for subscriptions that refer to an ISO code work as expected', async () => {
+        const country = 'BRA';
+        const areaId = getUUID();
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await createSubscription(
             USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
-                params: { iso: { country: 'BRA' } }
+                params: { iso: { country }, area: areaId }
             }
         );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA');
+        createMockGeostore(`/geostore/admin/${country}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country }, 3);
         mockVIIRSAlertsISOQuery(2);
 
         let expectedQueueMessageCount = 1;
@@ -288,18 +292,22 @@ describe('VIIRS Fires alert emails', () => {
     });
 
     it('VIIRS Fires emails for subscriptions that refer to an ADM 1 region work as expected', async () => {
+        const country = 'BRA';
+        const region = '3';
+        const areaId = getUUID();
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await createSubscription(
             USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
-                params: { iso: { country: 'BRA', region: '3' } }
+                params: { iso: { country, region }, area: areaId }
             }
         );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/3');
+        createMockGeostore(`/geostore/admin/${country}/${region}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country, region }, 3);
         mockVIIRSAlertsISOQuery(2);
 
         let expectedQueueMessageCount = 1;
@@ -353,18 +361,23 @@ describe('VIIRS Fires alert emails', () => {
     });
 
     it('VIIRS Fires emails for subscriptions that refer to an ADM 2 subregion work as expected', async () => {
+        const country = 'BRA';
+        const region = '1';
+        const subregion = '1';
+        const areaId = getUUID();
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
         const subscriptionOne = await createSubscription(
             USERS.USER.id,
             {
                 datasets: ['viirs-active-fires'],
-                params: { iso: { country: 'BRA', region: '1', subregion: '1' } }
+                params: { iso: { country, region, subregion }, area: areaId },
             }
         );
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
-        createMockGeostore('/v2/geostore/admin/BRA/1/1');
+        createMockGeostore(`/geostore/admin/${country}/${region}/${subregion}`, config.get('dataApi.url'));
+        createMockArea(areaId, { country, region, subregion }, 3);
         mockVIIRSAlertsISOQuery(2);
 
         let expectedQueueMessageCount = 1;
@@ -495,7 +508,7 @@ describe('VIIRS Fires alert emails', () => {
 
         const { beginDate, endDate } = bootstrapEmailNotificationTests();
         mockVIIRSAlertsGeostoreQuery(2);
-        createMockGeostore('/v2/geostore/use/gfw_logging/29407', 3);
+        createMockGeostore('/v2/geostore/use/gfw_logging/29407', process.env.GATEWAY_URL, 3);
 
         let expectedQueueMessageCount = 1;
 

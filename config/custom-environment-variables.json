@@ -45,6 +45,7 @@
   "dataApi": {
     "url": "DATA_API_URL",
     "apiKey": "DATA_API_KEY",
-    "origin": "DATA_API_ORIGIN"
+    "origin": "DATA_API_ORIGIN",
+    "gadmVersion": "GADM_VERSION"
   }
 }
