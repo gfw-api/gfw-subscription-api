@@ -139,14 +139,18 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
         const iso: Record<string, any> = Object.keys(areaIso).length && areaIso?.country ? areaIso : params.iso;
 
         const updatedParams: Record<string, any> = {...params, iso};
-        const geostoreSource: 'gfw' | 'rw' = area ? AreaService.getGeostoreSource(area) : 'rw';
-        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
-        const uri: string = GLADAllPresenter.#getURLForDownload(startDate, endDate, geostoreId, geostoreSource);
+        const uri: string = await this.buildGeostoreURL(area, updatedParams, startDate, endDate);
         return {
             csv: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'csv'),
             json: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'json'),
         };
     }
+
+    private buildGeostoreURL = async (area: Record<string, any>, updatedParams: Record<string, any>, startDate: string, endDate: string): Promise<string> => {
+        const geostoreSource: 'gfw' | 'rw' = area ? AreaService.getGeostoreSource(area) : 'rw';
+        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
+        return GLADAllPresenter.#getURLForDownload(startDate, endDate, geostoreId, geostoreSource);
+    };
 
     buildResultObject(results: AlertResultWithCount<GladAllAlertResultType>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): GladAllPresenterResponse {
         const resultObject: Partial<GladAllPresenterResponse> = { value: results.value };
