@@ -74,6 +74,10 @@ describe('GLAD-ALL alerts', () => {
                     validateCustomMapURLs(jsonMessage);
                     validateGladAll(jsonMessage, sub, beginDate, endDate, 'download',
                         {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                        {
                             total: 400,
                             area: '40',
                             intactForestArea: '10',
@@ -122,6 +126,10 @@ describe('GLAD-ALL alerts', () => {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
                     validateGladAll(jsonMessage, sub, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -172,6 +180,10 @@ describe('GLAD-ALL alerts', () => {
                     validateCustomMapURLs(jsonMessage);
                     validateGladAll(jsonMessage, sub, beginDate, endDate, 'download',
                         {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                        {
                             total: 400,
                             area: '40',
                             intactForestArea: '10',
@@ -217,6 +229,10 @@ describe('GLAD-ALL alerts', () => {
                     validateCustomMapURLs(jsonMessage);
                     validateGladAll(jsonMessage, sub, beginDate, endDate, 'download',
                         {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                        {
                             total: 400,
                             area: '40',
                             intactForestArea: '10',
@@ -261,6 +277,10 @@ describe('GLAD-ALL alerts', () => {
                     validateCustomMapURLs(jsonMessage);
                     validateGladAll(jsonMessage, sub, beginDate, endDate, 'download',
                         {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                        {
                             total: 400,
                             area: '40',
                             intactForestArea: '10',
@@ -282,6 +302,57 @@ describe('GLAD-ALL alerts', () => {
             begin_date: beginDate,
             end_date: endDate
         }));
+    });
+
+    xdescribe("GADM 4.1 Administrative Areas", () => {
+        it('GLAD-ALL alerts matches "glad-all" for admin0 subscriptions, using the correct email template and providing the needed data', async () => {
+            const country = 'BRA'
+            const areaId = getUUID()
+            const sub: ISubscription = await createSubscription(
+                USERS.USER.id,
+                { datasets: ['glad-all'], params: { iso: { country, source: { provider: 'gadm', version: '4.1' } }, area: areaId } }
+            );
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            createMockArea(areaId, { country, source: {provider: 'gadm', version: '4.1'} }, 2);
+
+            mockGLADAllISOQuery();
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+                jsonMessage.should.have.property('template');
+                switch (jsonMessage.template) {
+
+                    case 'glad-updated-notification-en': {
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
+                        validateCustomMapURLs(jsonMessage);
+                        validateGladAll(jsonMessage, sub, beginDate, endDate, 'download_by_aoi',
+                            {
+
+                            },
+                            {
+                                total: 400,
+                                area: '40',
+                                intactForestArea: '10',
+                                primaryForestArea: '10',
+                                peatArea: '10',
+                                wdpaArea: '10'
+                            });
+                        break;
+                    }
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'glad-alerts',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
     });
 
     afterEach(async () => {
