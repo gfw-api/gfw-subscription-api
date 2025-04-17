@@ -72,7 +72,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladAll(jsonMessage, sub, beginDate, endDate, 'download',
                         {
                             total: 400,
                             area: '40',
@@ -121,7 +121,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladAll(jsonMessage, sub, beginDate, endDate, 'download',
                         {
                             total: 400,
                             area: '40',
@@ -170,7 +170,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladAll(jsonMessage, sub, beginDate, endDate, 'download',
                         {
                             total: 400,
                             area: '40',
@@ -215,7 +215,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladAll(jsonMessage, sub, beginDate, endDate, 'download',
                         {
                             total: 400,
                             area: '40',
@@ -259,7 +259,7 @@ describe('GLAD-ALL alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladAll(jsonMessage, sub, beginDate, endDate,
+                    validateGladAll(jsonMessage, sub, beginDate, endDate, 'download',
                         {
                             total: 400,
                             area: '40',
@@ -286,7 +286,6 @@ describe('GLAD-ALL alerts', () => {
 
     afterEach(async () => {
         await redisClient.unsubscribe(CHANNEL);
-        ;
         process.removeAllListeners('unhandledRejection');
 
         if (!nock.isDone()) {
