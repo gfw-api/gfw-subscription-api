@@ -304,7 +304,7 @@ describe('GLAD-ALL alerts', () => {
         }));
     });
 
-    xdescribe("GADM 4.1 Administrative Areas", () => {
+    describe("GADM 4.1 Administrative Areas @gadm4_1", () => {
         it('GLAD-ALL alerts matches "glad-all" for admin0 subscriptions, using the correct email template and providing the needed data', async () => {
             const country = 'BRA';
             const areaId = getUUID();
