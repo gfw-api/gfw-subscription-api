@@ -9,7 +9,6 @@ class AreaService {
             params: { 'source[provider]': 'gadm', 'source[version]': config.get('dataApi.gadmVersion') },
             method: 'GET'
         });
-
         return body.data.attributes;
     }
 
@@ -37,10 +36,13 @@ class AreaService {
     }
 
     static getGeostoreSource(area: Record<string, any>): 'gfw' | 'rw' {
-        const iso: Record<string, any> = this.getIsoParams(area);
-        const geostoreSource: 'rw' | 'gfw' = (iso?.source && iso.source?.provider === 'gadm' && iso.source?.version === '4.1') ? 'gfw' : 'rw';
+        return AreaService.areaIsAdminBoundary(area, { provider: 'gadm', version: '4.1' }) ? 'gfw' : 'rw';
+    }
 
-        return geostoreSource;
+    static areaIsAdminBoundary(area: Record<string, any>, source: { provider: string; version: string }): boolean {
+        const { provider, version } = source;
+        const iso: Record<string, any> = this.getIsoParams(area);
+        return iso?.source && iso.source?.provider === provider && iso.source?.version === version;
     }
 }
 
