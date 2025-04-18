@@ -1,7 +1,7 @@
 {
   "logger": {
     "name": "gfw-subscription-api-TEST",
-    "level": "debug",
+    "level": "fatal",
     "toFile": false,
     "dirLogFile": null
   },

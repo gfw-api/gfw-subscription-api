@@ -22,8 +22,8 @@ services:
       AWS_ACCESS_KEY_ID: "test"
       AWS_SECRET_ACCESS_KEY: "test"
       REQUIRE_API_KEY: true
-      GADM_VERSION: "3.6"
-    command: test
+      GADM_VERSION: ${GADM_VERSION:-3.6}
+    command: ${TEST_CMD:-test}
     depends_on:
       - mongo
       - redis
