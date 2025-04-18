@@ -77,7 +77,17 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
     }
 
     static #getAdminURLForDownload(startDate: string, endDate: string, params: Record<string, any>):string {
+        const parseSimplifyGeom = (iso: string, id1: string, id2: string): number => {
+            const bigCountries: string[] = ['USA', 'RUS', 'CAN', 'CHN', 'BRA', 'IDN'];
+            const baseThresh: 0.1|0.005 = bigCountries.includes(iso) ? 0.1 : 0.005;
+            if (iso && !id1 && !id2) {
+                return baseThresh;
+            }
+            return id1 && !id2 ? baseThresh / 10 : baseThresh / 100;
+        };
+
         const { country, region, subregion, source: { provider, version } } = params.iso;
+        const simplify: number = parseSimplifyGeom(country, region, subregion);
         const sql: string = GLADAllPresenter.#buildDownloadSQL(startDate, endDate);
         return `${DATASET_GLAD_ALL_DOWNLOAD}_by_aoi/{format}?sql=${sql}` +
             '&aoi[type]=admin' +
@@ -85,7 +95,8 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
             (region ? `&aoi[region]=${region}` : '') +
             (subregion ? `&aoi[subregion]=${subregion}` : '') +
             (provider ? `&aoi[provider]=${provider}`: '') +
-            (version? `&aoi[version]=${version}` : '');
+            (version ? `&aoi[version]=${version}` : '') +
+            (simplify ? `&aoi[simplify]=${simplify}` : '');
     }
 
     static #buildDownloadSQL(startDate: string, endDate: string): string {
