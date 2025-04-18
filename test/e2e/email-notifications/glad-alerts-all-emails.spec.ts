@@ -328,6 +328,7 @@ describe('GLAD-ALL alerts', () => {
                         validateCustomMapURLs(jsonMessage);
                         validateGladAll(jsonMessage, sub, beginDate, endDate, 'download_by_aoi',
                             {
+                                'aoi[type]': 'admin',
                                 'aoi[country]': 'BRA',
                                 'aoi[provider]': 'gadm',
                                 'aoi[version]': '4.1',
@@ -380,6 +381,7 @@ describe('GLAD-ALL alerts', () => {
                         validateCustomMapURLs(jsonMessage);
                         validateGladAll(jsonMessage, sub, beginDate, endDate, 'download_by_aoi',
                             {
+                                'aoi[type]': 'admin',
                                 'aoi[country]': 'BRA',
                                 'aoi[region]': '1',
                                 'aoi[provider]': 'gadm',
@@ -434,6 +436,7 @@ describe('GLAD-ALL alerts', () => {
                         validateCustomMapURLs(jsonMessage);
                         validateGladAll(jsonMessage, sub, beginDate, endDate, 'download_by_aoi',
                             {
+                                'aoi[type]': 'admin',
                                 'aoi[country]': 'BRA',
                                 'aoi[region]': '1',
                                 'aoi[subregion]': '2',
