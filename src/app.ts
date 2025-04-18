@@ -63,7 +63,10 @@ const init: () => Promise<IInit> = async (): Promise<IInit> => {
                 // instance of koa
                 const app: Koa = new Koa();
                 app.use(koaSimpleHealthCheck());
-                app.use(koaLogger());
+
+                if (process.env.NODE_ENV !== 'test') {
+                    app.use(koaLogger());
+                }
 
                 koaQs(app, 'extended');
                 app.use(

@@ -425,7 +425,7 @@ export const createMockGeostore = (path: string, apiGateway: string = process.en
 export const createMockArea = (areaId: string, iso: Record<string, any>, times: number = 1) => {
     nock(process.env.GATEWAY_URL)
         .get(`/v2/area/${areaId}`)
-        .query({ 'source[provider]': 'gadm', 'source[version]': '3.6' })
+        .query({ 'source[provider]': (iso?.source?.provider ?? 'gadm'), 'source[version]': (iso?.source?.version ?? '3.6') })
         .times(times)
         .reply(200, {
             data: {
@@ -448,8 +448,8 @@ export const createMockArea = (areaId: string, iso: Record<string, any>, times: 
                         region: iso?.region,
                         subregion: iso?.subregion,
                         source: {
-                            provider: "gadm",
-                            version: "3.6"
+                            provider: (iso?.source?.provider ?? "gadm"),
+                            version: (iso?.source?.version?? "3.6")
                         }
                     },
                     admin: {
@@ -457,8 +457,8 @@ export const createMockArea = (areaId: string, iso: Record<string, any>, times: 
                         adm1: iso?.region,
                         adm2: iso?.subregion,
                         source: {
-                            provider: "gadm",
-                            version: "3.6"
+                            provider: (iso?.source?.provider ?? "gadm"),
+                            version: (iso ?.source?.version ?? "3.6")
                         }
                     },
                     tags: [],

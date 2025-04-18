@@ -1,4 +1,4 @@
-import chai from 'chai';
+import chai, {expect} from 'chai';
 import config from 'config';
 import moment, { DurationInputArg1, DurationInputArg2, Moment } from 'moment';
 
@@ -201,6 +201,8 @@ export const validateGladAll = (
     sub: ISubscription,
     beginDate: Moment,
     endDate: Moment,
+    downloadEndpoint: string,
+    expectedQueryParameters: Record<string, string>,
     {
         total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea, lang = 'en'
     }: {
@@ -214,18 +216,30 @@ export const validateGladAll = (
     jsonMessage.data.downloadUrls.should.have.property('csv')
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
-        .and.contain('/dataset/gfw_integrated_alerts/latest/download/csv')
+        .and.contain(`/dataset/gfw_integrated_alerts/latest/${downloadEndpoint}/csv`)
         .and.contain('SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, wur_radd_alerts__confidence, gfw_integrated_alerts__confidence')
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
+
+    // Validate each expected parameter
+    const csvUrl = new URL(jsonMessage.data.downloadUrls['csv']);
+    Object.entries(expectedQueryParameters).forEach(([key, value]) => {
+        const param = csvUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
+    });
 
     jsonMessage.data.downloadUrls.should.have.property('json')
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
-        .and.contain('/dataset/gfw_integrated_alerts/latest/download/json')
+        .and.contain(`/dataset/gfw_integrated_alerts/latest/${downloadEndpoint}/json`)
         .and.contain('SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, wur_radd_alerts__confidence, gfw_integrated_alerts__confidence')
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
+
+    // Validate each expected parameter
+    const jsonUrl = new URL(jsonMessage.data.downloadUrls['json']);
+    Object.entries(expectedQueryParameters).forEach(([key, value]) => {
+        const param = jsonUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
+    });
 
     jsonMessage.data.should.have.property('alert_count').and.equal(total);
     jsonMessage.data.should.have.property('value').and.equal(total);
