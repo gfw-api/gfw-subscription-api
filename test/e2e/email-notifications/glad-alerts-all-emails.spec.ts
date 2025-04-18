@@ -332,6 +332,7 @@ describe('GLAD-ALL alerts', () => {
                                 'aoi[country]': 'BRA',
                                 'aoi[provider]': 'gadm',
                                 'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.1',
                             },
                             {
                                 total: 400,
@@ -386,6 +387,7 @@ describe('GLAD-ALL alerts', () => {
                                 'aoi[region]': '1',
                                 'aoi[provider]': 'gadm',
                                 'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.01',
                             },
                             {
                                 total: 400,
@@ -442,6 +444,7 @@ describe('GLAD-ALL alerts', () => {
                                 'aoi[subregion]': '2',
                                 'aoi[provider]': 'gadm',
                                 'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.001',
                             },
                             {
                                 total: 400,
