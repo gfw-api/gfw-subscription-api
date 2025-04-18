@@ -1,4 +1,4 @@
-import chai from 'chai';
+import chai, {expect} from 'chai';
 import config from 'config';
 import moment, { DurationInputArg1, DurationInputArg2, Moment } from 'moment';
 
@@ -222,7 +222,9 @@ export const validateGladAll = (
     // Validate each expected parameter
     const csvUrl = new URL(jsonMessage.data.downloadUrls['csv']);
     Object.entries(expectedQueryParameters).forEach(([key, value]) => {
-        csvUrl.searchParams.get(key).should.equal(value);
+        const param = csvUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
     });
 
     jsonMessage.data.downloadUrls.should.have.property('json')
@@ -234,7 +236,9 @@ export const validateGladAll = (
     // Validate each expected parameter
     const jsonUrl = new URL(jsonMessage.data.downloadUrls['json']);
     Object.entries(expectedQueryParameters).forEach(([key, value]) => {
-        jsonUrl.searchParams.get(key).should.equal(value);
+        const param = jsonUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
     });
 
     jsonMessage.data.should.have.property('alert_count').and.equal(total);

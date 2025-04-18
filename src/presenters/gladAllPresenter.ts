@@ -80,6 +80,7 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
         const { country, region, subregion, source: { provider, version } } = params.iso;
         const sql: string = GLADAllPresenter.#buildDownloadSQL(startDate, endDate);
         return `${DATASET_GLAD_ALL_DOWNLOAD}_by_aoi/{format}?sql=${sql}` +
+            '&aoi[type]=admin' +
             `&aoi[country]=${country}` +
             (region ? `&aoi[region]=${region}` : '') +
             (subregion ? `&aoi[subregion]=${subregion}` : '') +
