@@ -274,7 +274,7 @@ export const createGLADAlertsWDPAURLSubscriptionBody = (subscription: Record<str
     };
 };
 
-export const createGLADAlertsISOURLSubscriptionBody = (subscription: Record<string, any>, beginDate: Moment, endDate: Moment, bodyData: Record<string, any> = {}) => {
+export const createGLADAlertsISOURLSubscriptionBody = (subscription: Record<string, any>, beginDate: Moment, endDate: Moment, downloadEndpoint: string, downloadQueryParams: string, bodyData: Record<string, any> = {}) => {
     const mapURLIntactForestQueryString = {
         lang: subscription.language,
         map: btoa(JSON.stringify({
@@ -528,8 +528,8 @@ export const createGLADAlertsISOURLSubscriptionBody = (subscription: Record<stri
         peat_ha_sum: "10",
         wdpa_ha_sum: "10",
         downloadUrls: {
-            csv: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/csv?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`,
-            json: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/download/json?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`
+            csv: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/${downloadEndpoint}/csv?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'${downloadQueryParams}`,
+            json: `${config.get('dataApi.url')}/dataset/umd_glad_landsat_alerts/latest/${downloadEndpoint}/json?sql=SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence FROM data WHERE umd_glad_landsat_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND umd_glad_landsat_alerts__date <= '${endDate.format('YYYY-MM-DD')}'${downloadQueryParams}`
         },
         glad_alert_type: 'GLAD-L deforestation alerts',
         layerSlug: 'glad-alerts',

@@ -11,7 +11,6 @@ import { getTestServer } from '../utils/test-server';
 import { createSubscriptionContent, getUUID } from '../utils/helpers';
 import { createMockArea, createMockGeostore } from '../utils/mock';
 import { USERS } from '../utils/test.constants';
-import { mockGLADAllGeostoreQuery } from '../utils/mocks/gladAll.mocks';
 import {
     mockGLADRADDAdm1Query,
     mockGLADRADDAdm2Query, mockGLADRADDGeostoreQuery,
@@ -74,7 +73,11 @@ describe('GLAD-RADD alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladRadd(jsonMessage, sub, beginDate, endDate,
+                    validateGladRadd(jsonMessage, sub, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -122,7 +125,11 @@ describe('GLAD-RADD alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladRadd(jsonMessage, sub, beginDate, endDate,
+                    validateGladRadd(jsonMessage, sub, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -172,7 +179,11 @@ describe('GLAD-RADD alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladRadd(jsonMessage, sub, beginDate, endDate,
+                    validateGladRadd(jsonMessage, sub, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -217,7 +228,11 @@ describe('GLAD-RADD alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladRadd(jsonMessage, sub, beginDate, endDate,
+                    validateGladRadd(jsonMessage, sub, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -261,7 +276,11 @@ describe('GLAD-RADD alerts', () => {
                 case 'glad-updated-notification-en': {
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladRadd(jsonMessage, sub, beginDate, endDate,
+                    validateGladRadd(jsonMessage, sub, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -284,6 +303,173 @@ describe('GLAD-RADD alerts', () => {
             begin_date: beginDate,
             end_date: endDate
         }));
+    });
+
+    describe('GADM 4.1 Administrative Areas @gadm4_1', () => {
+        it('GLAD-RADD alerts matches "glad-radd" for admin0 subscriptions, using the correct email template and providing the needed data', async () => {
+            const country = 'BRA'
+            const areaId = getUUID()
+            const sub = await new Subscription(createSubscriptionContent(
+                USERS.USER.id,
+                'glad-radd',
+                { params: { iso: { country, source: {provider: 'gadm', version: '4.1'} }, area: areaId} },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            createMockArea(areaId, { country, source: {provider: 'gadm', version: '4.1'} }, 2)
+
+            mockGLADRADDISOQuery();
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+                jsonMessage.should.have.property('template');
+                switch (jsonMessage.template) {
+
+                    case 'glad-updated-notification-en': {
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
+                        validateCustomMapURLs(jsonMessage);
+                        validateGladRadd(jsonMessage, sub, beginDate, endDate, 'download_by_aoi',
+                            {
+                                'aoi[type]': 'admin',
+                                'aoi[country]': 'BRA',
+                                'aoi[provider]': 'gadm',
+                                'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.1',
+                            },
+                            {
+                                total: 400,
+                                area: '40',
+                                intactForestArea: '10',
+                                primaryForestArea: '10',
+                                peatArea: '10',
+                                wdpaArea: '10'
+                            });
+                        break;
+                    }
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'glad-alerts',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
+
+        it('GLAD-RADD alerts matches "glad-radd" for admin1 subscriptions, using the correct email template and providing the needed data', async () => {
+            const country = 'BRA'
+            const region = '1'
+            const areaId = getUUID()
+            const sub = await new Subscription(createSubscriptionContent(
+                USERS.USER.id,
+                'glad-radd',
+                { params: { iso: { country, region, source: {provider: 'gadm', version: '4.1'} }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            createMockArea(areaId, { country, region, source: {provider: 'gadm', version: '4.1'} }, 2)
+
+            mockGLADRADDAdm1Query();
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+                jsonMessage.should.have.property('template');
+                switch (jsonMessage.template) {
+
+                    case 'glad-updated-notification-en': {
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
+                        validateCustomMapURLs(jsonMessage);
+                        validateGladRadd(jsonMessage, sub, beginDate, endDate, 'download_by_aoi',
+                            {
+                                'aoi[type]': 'admin',
+                                'aoi[country]': 'BRA',
+                                'aoi[region]': '1',
+                                'aoi[provider]': 'gadm',
+                                'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.01',
+                            },
+                            {
+                                total: 400,
+                                area: '40',
+                                intactForestArea: '10',
+                                primaryForestArea: '10',
+                                peatArea: '10',
+                                wdpaArea: '10'
+                            });
+                        break;
+                    }
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'glad-alerts',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
+
+        it('GLAD-RADD alerts matches "glad-radd" for admin2 subscriptions, using the correct email template and providing the needed data', async () => {
+            const country = 'BRA'
+            const region = '1'
+            const subregion = '2'
+            const areaId = getUUID()
+            const sub = await new Subscription(createSubscriptionContent(
+                USERS.USER.id,
+                'glad-radd',
+                { params: { iso: { country, region, subregion, source: {provider: 'gadm', version: '4.1'} }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            createMockArea(areaId, { country, region, subregion, source: {provider: 'gadm', version: '4.1'} }, 2)
+
+            mockGLADRADDAdm2Query();
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+                jsonMessage.should.have.property('template');
+                switch (jsonMessage.template) {
+
+                    case 'glad-updated-notification-en': {
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, sub);
+                        validateCustomMapURLs(jsonMessage);
+                        validateGladRadd(jsonMessage, sub, beginDate, endDate, 'download_by_aoi',
+                            {
+                                'aoi[type]': 'admin',
+                                'aoi[country]': 'BRA',
+                                'aoi[region]': '1',
+                                'aoi[subregion]': '2',
+                                'aoi[provider]': 'gadm',
+                                'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.001',
+                            },
+                            {
+                                total: 400,
+                                area: '40',
+                                intactForestArea: '10',
+                                primaryForestArea: '10',
+                                peatArea: '10',
+                                wdpaArea: '10'
+                            });
+                        break;
+                    }
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'glad-alerts',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
     });
 
     afterEach(async () => {

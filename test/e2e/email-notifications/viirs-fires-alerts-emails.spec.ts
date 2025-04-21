@@ -74,7 +74,17 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
-                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSAlertsAndPriorityAreas(
+                        jsonMessage,
+                        beginDate,
+                        endDate,
+                        subscriptionOne,
+                        'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                    );
                     validateCustomMapURLs(jsonMessage);
                     break;
                 default:
@@ -132,7 +142,17 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-fr':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'moyenne');
-                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSAlertsAndPriorityAreas(
+                        jsonMessage,
+                        beginDate,
+                        endDate,
+                        subscriptionOne,
+                        'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                    );
                     validateCustomMapURLs(jsonMessage);
                     break;
                 default:
@@ -190,7 +210,17 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-zh':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, '平均');
-                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSAlertsAndPriorityAreas(
+                        jsonMessage,
+                        beginDate,
+                        endDate,
+                        subscriptionOne,
+                        'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                    );
                     validateCustomMapURLs(jsonMessage);
                     break;
                 default:
@@ -251,7 +281,17 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
-                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                    validateVIIRSAlertsAndPriorityAreas(
+                        jsonMessage,
+                        beginDate,
+                        endDate,
+                        subscriptionOne,
+                        'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                        {
                         intact_forest: 0,
                         other: 25,
                         peat: 0,
@@ -320,7 +360,17 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
-                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                    validateVIIRSAlertsAndPriorityAreas(
+                        jsonMessage,
+                        beginDate,
+                        endDate,
+                        subscriptionOne,
+                        'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                        {
                         intact_forest: 0,
                         other: 25,
                         peat: 0,
@@ -390,7 +440,17 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
-                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                    validateVIIRSAlertsAndPriorityAreas(
+                        jsonMessage,
+                        beginDate,
+                        endDate,
+                        subscriptionOne,
+                        'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                        {
                         intact_forest: 0,
                         other: 25,
                         peat: 0,
@@ -430,6 +490,257 @@ describe('VIIRS Fires alert emails', () => {
         return consumerPromise;
     });
 
+    describe('GADM 4.1 Administrative Areas @gadm4_1', () => {
+        it('VIIRS Fires emails for subscriptions that refer to an ISO code work as expected', async () => {
+            const country = 'BRA';
+            const areaId = getUUID();
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+            const subscriptionOne = await createSubscription(
+                USERS.USER.id,
+                {
+                    datasets: ['viirs-active-fires'],
+                    params: { iso: { country, source: {provider: 'gadm', version: '4.1'} }, area: areaId }
+                }
+            );
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            createMockArea(areaId, { country, source: {provider: 'gadm', version: '4.1'} }, 3);
+
+            mockVIIRSAlertsISOQuery(2);
+
+            let expectedQueueMessageCount = 1;
+
+            const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
+                const jsonMessage = JSON.parse(message);
+                jsonMessage.should.have.property('template');
+                switch (jsonMessage.template) {
+
+                    case 'forest-fires-notification-viirs-en':
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                        validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                        validateVIIRSAlertsAndPriorityAreas(
+                            jsonMessage,
+                            beginDate,
+                            endDate,
+                            subscriptionOne,
+                            'download_by_aoi',
+                            {
+                                'aoi[type]': 'admin',
+                                'aoi[country]': 'BRA',
+                                'aoi[provider]': 'gadm',
+                                'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.1',
+                            },
+                            {
+                                intact_forest: 0,
+                                other: 25,
+                                peat: 0,
+                                plantations: 0,
+                                primary_forest: 75,
+                                protected_areas: 0,
+                            });
+                        validateCustomMapURLs(jsonMessage);
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+
+                expectedQueueMessageCount -= 1;
+
+                if (expectedQueueMessageCount < 0) {
+                    throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+                }
+
+                if (expectedQueueMessageCount === 0) {
+                    resolve(null);
+                }
+            };
+
+            const consumerPromise = new Promise((resolve) => {
+                redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+            })
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'viirs-active-fires',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+
+            return consumerPromise;
+        });
+
+        it('VIIRS Fires emails for subscriptions that refer to an ADM 1 region work as expected', async () => {
+            const country = 'BRA';
+            const region = '3';
+            const areaId = getUUID();
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+            const subscriptionOne = await createSubscription(
+                USERS.USER.id,
+                {
+                    datasets: ['viirs-active-fires'],
+                    params: { iso: { country, region, source: {provider: 'gadm', version: '4.1'} }, area: areaId }
+                }
+            );
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            createMockArea(areaId, { country, region, source: {provider: 'gadm', version: '4.1'} }, 3);
+
+            mockVIIRSAlertsISOQuery(2);
+
+            let expectedQueueMessageCount = 1;
+
+            const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
+                const jsonMessage = JSON.parse(message);
+                jsonMessage.should.have.property('template');
+                switch (jsonMessage.template) {
+
+                    case 'forest-fires-notification-viirs-en':
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                        validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                        validateVIIRSAlertsAndPriorityAreas(
+                            jsonMessage,
+                            beginDate,
+                            endDate,
+                            subscriptionOne,
+                            'download_by_aoi',
+                            {
+                                'aoi[type]': 'admin',
+                                'aoi[country]': 'BRA',
+                                'aoi[region]': '3',
+                                'aoi[provider]': 'gadm',
+                                'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.01',
+                            },
+                            {
+                                intact_forest: 0,
+                                other: 25,
+                                peat: 0,
+                                plantations: 0,
+                                primary_forest: 75,
+                                protected_areas: 0,
+                            });
+                        validateCustomMapURLs(jsonMessage);
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+
+                expectedQueueMessageCount -= 1;
+
+                if (expectedQueueMessageCount < 0) {
+                    throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+                }
+
+                if (expectedQueueMessageCount === 0) {
+                    resolve(null);
+                }
+            };
+
+            const consumerPromise = new Promise((resolve) => {
+                redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+            })
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'viirs-active-fires',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+
+            return consumerPromise;
+        });
+
+        it('VIIRS Fires emails for subscriptions that refer to an ADM 2 subregion work as expected', async () => {
+            const country = 'BRA';
+            const region = '1';
+            const subregion = '2';
+            const areaId = getUUID();
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+            const subscriptionOne = await createSubscription(
+                USERS.USER.id,
+                {
+                    datasets: ['viirs-active-fires'],
+                    params: { iso: { country, region, subregion, source: {provider: 'gadm', version: '4.1'} }, area: areaId },
+                }
+            );
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            createMockArea(areaId, { country, region, subregion, source: {provider: 'gadm', version: '4.1'} }, 3);
+
+            mockVIIRSAlertsISOQuery(2);
+
+            let expectedQueueMessageCount = 1;
+
+            const validateMailQueuedMessages = (resolve: (value: (PromiseLike<unknown> | unknown)) => void) => async (message: string) => {
+                const jsonMessage = JSON.parse(message);
+                jsonMessage.should.have.property('template');
+                switch (jsonMessage.template) {
+
+                    case 'forest-fires-notification-viirs-en':
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                        validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                        validateVIIRSAlertsAndPriorityAreas(
+                            jsonMessage,
+                            beginDate,
+                            endDate,
+                            subscriptionOne,
+                            'download_by_aoi',
+                            {
+                                'aoi[type]': 'admin',
+                                'aoi[country]': 'BRA',
+                                'aoi[region]': '1',
+                                'aoi[subregion]': '2',
+                                'aoi[provider]': 'gadm',
+                                'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.001',
+                            },
+                            {
+                                intact_forest: 0,
+                                other: 25,
+                                peat: 0,
+                                plantations: 0,
+                                primary_forest: 75,
+                                protected_areas: 0,
+                            });
+                        validateCustomMapURLs(jsonMessage);
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+
+                expectedQueueMessageCount -= 1;
+
+                if (expectedQueueMessageCount < 0) {
+                    throw new Error(`Unexpected message count - expectedQueueMessageCount:${expectedQueueMessageCount}`);
+                }
+
+                if (expectedQueueMessageCount === 0) {
+                    resolve(null);
+                }
+            };
+
+            const consumerPromise = new Promise((resolve) => {
+                redisClient.subscribe(CHANNEL, validateMailQueuedMessages(resolve));
+            })
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'viirs-active-fires',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+
+            return consumerPromise;
+        });
+    });
+
     it('VIIRS Fires emails for subscriptions that refer to a WDPA ID work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');
@@ -455,7 +766,17 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
-                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                    validateVIIRSAlertsAndPriorityAreas(
+                        jsonMessage,
+                        beginDate,
+                        endDate,
+                        subscriptionOne,
+                        'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                        {
                         intact_forest: 0,
                         other: 0,
                         peat: 0,
@@ -520,7 +841,17 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
-                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSAlertsAndPriorityAreas(
+                        jsonMessage,
+                        beginDate,
+                        endDate,
+                        subscriptionOne,
+                        'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                    );
                     validateCustomMapURLs(jsonMessage);
                     break;
                 default:
@@ -827,7 +1158,17 @@ describe('VIIRS Fires alert emails', () => {
                 case 'forest-fires-notification-viirs-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
-                    validateVIIRSAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne);
+                    validateVIIRSAlertsAndPriorityAreas(
+                        jsonMessage,
+                        beginDate,
+                        endDate,
+                        subscriptionOne,
+                        'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
+                    );
                     validateCustomMapURLs(jsonMessage);
                     break;
                 default:

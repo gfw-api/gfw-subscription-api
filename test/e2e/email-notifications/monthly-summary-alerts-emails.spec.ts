@@ -316,6 +316,151 @@ describe('Monthly summary notifications', () => {
         }));
     });
 
+    describe('GADM 4.1 Administrative Areas @gadm4_1', () => {
+        it('Monthly summary alert emails for subscriptions that refer to an ISO code work as expected', async () => {
+            const country = 'BRA';
+            const areaId = getUUID();
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+            const subscriptionOne = await new Subscription(createSubscriptionContent(
+                USERS.USER.id,
+                'monthly-summary',
+                { params: { iso: { country, source: {provider: 'gadm', version: '4.1'} }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+            mockGLADLISOQuery(2);
+            mockVIIRSAlertsISOQuery(2);
+            createMockArea(areaId, { country, source: {provider: 'gadm', version: '4.1'} }, 4)
+
+            await redisClient.subscribe(CHANNEL, (message: string) => {
+                const jsonMessage = JSON.parse(message);
+
+                jsonMessage.should.have.property('template');
+
+                switch (jsonMessage.template) {
+
+                    case 'monthly-summary-en':
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                        validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                        validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                        validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                            other: 25,
+                            primary_forest: 175,
+                            protected_areas: 100
+                        });
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'monthly-summary',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
+
+        it('Monthly summary alert emails for subscriptions that refer to an ADM 1 region work as expected', async () => {
+            const country = 'BRA';
+            const region = '1';
+            const areaId = getUUID();
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+            const subscriptionOne = await new Subscription(createSubscriptionContent(
+                USERS.USER.id,
+                'monthly-summary',
+                { params: { iso: { country, region, source: {provider: 'gadm', version: '4.1'} }, area: areaId} },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+            mockGLADLAdm1Query(2);
+            mockVIIRSAlertsISOQuery(2);
+            createMockArea(areaId, { country, region, source: {provider: 'gadm', version: '4.1'} }, 4);
+            await redisClient.subscribe(CHANNEL, (message: string) => {
+                const jsonMessage = JSON.parse(message);
+
+                jsonMessage.should.have.property('template');
+
+                switch (jsonMessage.template) {
+
+                    case 'monthly-summary-en':
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                        validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                        validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                        validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                            other: 25,
+                            primary_forest: 175,
+                            protected_areas: 100
+                        });
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'monthly-summary',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
+
+        it('Monthly summary alert emails for subscriptions that refer to an ADM 2 subregion work as expected', async () => {
+            const country = 'BRA';
+            const region = '1';
+            const subregion = '2';
+            const areaId = getUUID();
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+            const subscriptionOne = await new Subscription(createSubscriptionContent(
+                USERS.USER.id,
+                'monthly-summary',
+                { params: { iso: { country, region, subregion, source: {provider: 'gadm', version: '4.1'} }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests('1', 'month');
+            mockGLADLAdm2Query(2);
+            mockVIIRSAlertsISOQuery(2);
+            createMockArea(areaId, { country, region, subregion, source: {provider: 'gadm', version: '4.1'} }, 4);
+
+            await redisClient.subscribe(CHANNEL, (message: string) => {
+                const jsonMessage = JSON.parse(message);
+
+                jsonMessage.should.have.property('template');
+
+                switch (jsonMessage.template) {
+
+                    case 'monthly-summary-en':
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                        validateGLADSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                        validateVIIRSSpecificParams(jsonMessage, beginDate, endDate, subscriptionOne, 'average');
+                        validateMonthlySummaryAlertsAndPriorityAreas(jsonMessage, beginDate, endDate, subscriptionOne, {
+                            other: 25,
+                            primary_forest: 175,
+                            protected_areas: 100
+                        });
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'monthly-summary',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
+    });
+
     it('Monthly summary alert emails for subscriptions that refer to a WDPA ID work as expected', async () => {
         EmailHelpersService.updateMonthTranslations();
         moment.locale('en');

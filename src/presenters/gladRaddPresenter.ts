@@ -70,9 +70,36 @@ class GLADRaddPresenter extends PresenterInterface<GladRaddAlertResultType, Glad
     }
 
     static #getURLForDownload(startDate: string, endDate: string, geostoreId: string, geostoreSource: 'gfw' | 'rw' = 'rw'): string {
-        const sql: string = `SELECT latitude, longitude, wur_radd_alerts__date, wur_radd_alerts__confidence `
-            + `FROM data WHERE wur_radd_alerts__date >= '${startDate}' AND wur_radd_alerts__date <= '${endDate}'`;
+        const sql: string = GLADRaddPresenter.#buildDownloadSQL(startDate, endDate);
         return `${DATASET_GLAD_RADD_DOWNLOAD}/{format}?sql=${sql}&geostore_origin=${geostoreSource}&geostore_id=${geostoreId}`;
+    }
+
+    static #getAdminURLForDownload(startDate: string, endDate: string, params: Record<string, any>):string {
+        const parseSimplifyGeom = (iso: string, id1: string, id2: string): number => {
+            const bigCountries: string[] = ['USA', 'RUS', 'CAN', 'CHN', 'BRA', 'IDN'];
+            const baseThresh: 0.1|0.005 = bigCountries.includes(iso) ? 0.1 : 0.005;
+            if (iso && !id1 && !id2) {
+                return baseThresh;
+            }
+            return id1 && !id2 ? baseThresh / 10 : baseThresh / 100;
+        };
+
+        const { country, region, subregion, source: { provider, version } } = params.iso;
+        const simplify: number = parseSimplifyGeom(country, region, subregion);
+        const sql: string = GLADRaddPresenter.#buildDownloadSQL(startDate, endDate);
+        return `${DATASET_GLAD_RADD_DOWNLOAD}_by_aoi/{format}?sql=${sql}` +
+            '&aoi[type]=admin' +
+            `&aoi[country]=${country}` +
+            (region ? `&aoi[region]=${region}` : '') +
+            (subregion ? `&aoi[subregion]=${subregion}` : '') +
+            (provider ? `&aoi[provider]=${provider}`: '') +
+            (version ? `&aoi[version]=${version}` : '') +
+            (simplify ? `&aoi[simplify]=${simplify}` : '');
+    }
+
+    static #buildDownloadSQL(startDate: string, endDate: string): string {
+        return `SELECT latitude, longitude, wur_radd_alerts__date, wur_radd_alerts__confidence `
+            + `FROM data WHERE wur_radd_alerts__date >= '${startDate}' AND wur_radd_alerts__date <= '${endDate}'`;
     }
 
     static async getURLForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<string> {
@@ -128,21 +155,36 @@ class GLADRaddPresenter extends PresenterInterface<GladRaddAlertResultType, Glad
     async getDownloadURLs(startDate: string, endDate: string, params: Record<string, any>): Promise<{ csv: string, json: string }> {
         let areaIso: Record<string, any> = {};
         let area: Record<string, any>;
+
         if (params?.area && params?.iso && params.iso?.country) {
             area = await AreaService.getUserArea(params.area);
            areaIso = AreaService.getIsoParams(area);
         }
 
         const iso: Record<string, any> = Object.keys(areaIso).length && areaIso?.country ? areaIso : params.iso;
-
         const updatedParams: Record<string, any> = {...params, iso};
-        const geostoreSource: 'gfw' | 'rw' = area ? AreaService.getGeostoreSource(area) : 'rw';
-        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
-        const uri: string = GLADRaddPresenter.#getURLForDownload(startDate, endDate, geostoreId, geostoreSource);
+
+        let uri: string;
+        if (AreaService.areaIsAdminBoundary(area, { provider: 'gadm', version: '4.1' })) {
+            uri = this.buildAdminURL(updatedParams, startDate, endDate);
+        } else {
+            uri = await this.buildGeostoreURL(area, updatedParams, startDate, endDate);
+        }
+
         return {
             csv: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'csv'),
             json: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'json'),
         };
+    }
+
+    private async buildGeostoreURL(area: Record<string, any>, updatedParams: Record<string, any>, startDate: string, endDate: string): Promise<string> {
+        const geostoreSource: 'gfw' | 'rw' = area ? AreaService.getGeostoreSource(area) : 'rw';
+        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
+        return GLADRaddPresenter.#getURLForDownload(startDate, endDate, geostoreId, geostoreSource);
+    }
+
+    private buildAdminURL(params: Record<string, any>, startDate: string, endDate: string):string {
+        return GLADRaddPresenter.#getAdminURLForDownload(startDate, endDate, params);
     }
 
     async transform(results: AlertResultWithCount<GladRaddAlertResultType>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<GladRaddPresenterResponse> {

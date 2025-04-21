@@ -87,6 +87,42 @@ class ViirsPresenter extends PresenterInterface<ViirsActiveFiresAlertResultType,
         return `/dataset/${config.get('datasets.viirsGeostoreDataset')}/latest/query?sql=${sql}`;
     }
 
+    static getURLInPeriodForDownload(startDate: string, endDate: string, geostoreId: string, geostoreSource: 'gfw' | 'rw' = 'rw'): string {
+        const sql: string = ViirsPresenter.#buildDownloadSQL(startDate, endDate);
+        return `/dataset/${config.get('datasets.viirsDownloadDataset')}/latest/download/{format}?sql=${sql}&geostore_id=${geostoreId}&geostore_origin=${geostoreSource}`;
+    }
+
+    static #getAdminURLForDownload(startDate: string, endDate: string, params: Record<string, any>):string {
+        const parseSimplifyGeom = (iso: string, id1: string, id2: string): number => {
+            const bigCountries: string[] = ['USA', 'RUS', 'CAN', 'CHN', 'BRA', 'IDN'];
+            const baseThresh: 0.1|0.005 = bigCountries.includes(iso) ? 0.1 : 0.005;
+            if (iso && !id1 && !id2) {
+                return baseThresh;
+            }
+            return id1 && !id2 ? baseThresh / 10 : baseThresh / 100;
+        };
+
+        const { country, region, subregion, source: { provider, version } } = params.iso;
+        const simplify: number = parseSimplifyGeom(country, region, subregion);
+        const sql: string = ViirsPresenter.#buildDownloadSQL(startDate, endDate);
+        return `/dataset/${config.get('datasets.viirsDownloadDataset')}/latest/download_by_aoi/{format}?sql=${sql}` +
+            '&aoi[type]=admin' +
+            `&aoi[country]=${country}` +
+            (region ? `&aoi[region]=${region}` : '') +
+            (subregion ? `&aoi[subregion]=${subregion}` : '') +
+            (provider ? `&aoi[provider]=${provider}`: '') +
+            (version ? `&aoi[version]=${version}` : '') +
+            (simplify ? `&aoi[simplify]=${simplify}` : '');
+    }
+
+    static #buildDownloadSQL(startDate: string, endDate: string): string {
+        return `SELECT latitude, longitude, alert__date, confidence__cat, `
+            + `is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest, `
+            + `is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> '' THEN 'True' ELSE 'False' END as in_protected_areas `
+            + `FROM ${config.get('datasets.viirsDownloadDataset')} `
+            + `WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}'`;
+    }
+
     /**
      * Returns the URL for the query for VIIRS alerts for the provided period (startDate to endDate). The params are
      * taken into account to decide which dataset will be used to fetch the alerts.
@@ -165,15 +201,6 @@ class ViirsPresenter extends PresenterInterface<ViirsActiveFiresAlertResultType,
         );
     }
 
-    static getURLInPeriodForDownload(startDate: string, endDate: string, geostoreId: string, geostoreSource: 'gfw' | 'rw' = 'rw'): string {
-        const sql: string = `SELECT latitude, longitude, alert__date, confidence__cat, `
-            + `is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest, `
-            + `is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> '' THEN 'True' ELSE 'False' END as in_protected_areas `
-            + `FROM ${config.get('datasets.viirsDownloadDataset')} `
-            + `WHERE alert__date > '${startDate}' AND alert__date <= '${endDate}'`;
-        return `/dataset/${config.get('datasets.viirsDownloadDataset')}/latest/download/{format}?sql=${sql}&geostore_id=${geostoreId}&geostore_origin=${geostoreSource}`;
-    }
-
     async getDownloadURLs(startDate: string, endDate: string, params: Record<string, any>): Promise<{ csv: string, json: string }> {
         let areaIso: Record<string, any> = {};
         let area: Record<string, any>;
@@ -183,16 +210,29 @@ class ViirsPresenter extends PresenterInterface<ViirsActiveFiresAlertResultType,
         }
 
         const iso: Record<string, any> = Object.keys(areaIso).length && areaIso?.country ? areaIso : params.iso;
-
         const updatedParams: Record<string, any> = {...params, iso};
-        const geostoreSource: 'gfw' | 'rw' = area ? AreaService.getGeostoreSource(area) : 'rw';
 
-        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
-        const uri: string = ViirsPresenter.getURLInPeriodForDownload(startDate, endDate, geostoreId, geostoreSource);
+        let uri: string;
+        if (AreaService.areaIsAdminBoundary(area, { provider: 'gadm', version: '4.1' })) {
+            uri = this.buildAdminURL(updatedParams, startDate, endDate);
+        } else {
+            uri = await this.buildGeostoreURL(area, updatedParams, startDate, endDate);
+        }
+
         return {
             csv: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'csv'),
             json: `${config.get('dataApi.url')}${uri}`.replace('{format}', 'json'),
         };
+    }
+
+    private async buildGeostoreURL(area: Record<string, any>, updatedParams: Record<string, any>, startDate: string, endDate: string): Promise<string> {
+        const geostoreSource: 'gfw' | 'rw' = area ? AreaService.getGeostoreSource(area) : 'rw';
+        const geostoreId: string = await GeostoreService.getGeostoreIdFromSubscriptionParams(updatedParams);
+        return ViirsPresenter.getURLInPeriodForDownload(startDate, endDate, geostoreId, geostoreSource);
+    }
+
+    private buildAdminURL(params: Record<string, any>, startDate: string, endDate: string):string {
+        return ViirsPresenter.#getAdminURLForDownload(startDate, endDate, params);
     }
 
     async transform(results: AlertResultWithCount<ViirsActiveFiresAlertResultType>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<ViirsPresenterResponse> {
