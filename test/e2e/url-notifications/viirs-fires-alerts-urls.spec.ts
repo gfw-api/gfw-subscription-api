@@ -145,9 +145,14 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
         createMockGeostore(`/geostore/admin/${country}`, config.get('dataApi.url'));
         createMockArea(areaId, { country }, 3);
 
-        createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
-            selected_area: 'ISO Code: BRA',
-        }));
+        createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(
+                subscriptionOne,
+                beginDate,
+                endDate,
+                'download',
+                '&geostore_id=423e5dfb0448e692f97b590c61f45f22&geostore_origin=rw',
+                { selected_area: 'ISO Code: BRA', }
+        ));
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -191,9 +196,14 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
         createMockGeostore(`/geostore/admin/${country}/${region}`, config.get('dataApi.url'));
         createMockArea(areaId, { country, region }, 3);
 
-        createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
-            selected_area: 'ISO Code: BRA, ID1: 3',
-        }));
+        createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(
+            subscriptionOne,
+            beginDate,
+            endDate,
+            'download',
+            '&geostore_id=423e5dfb0448e692f97b590c61f45f22&geostore_origin=rw',
+            { selected_area: 'ISO Code: BRA, ID1: 3', }
+        ));
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -236,9 +246,14 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
         mockVIIRSAlertsISOQuery(2, config.get('datasets.viirsISODataset'));
         createMockGeostore(`/geostore/admin/${country}/${region}/${subregion}`, config.get('dataApi.url'));
         createMockArea(areaId, { country, region, subregion }, 3);
-        createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
-            selected_area: 'ISO Code: BRA, ID1: 1, ID2: 1',
-        }));
+        createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(
+            subscriptionOne,
+            beginDate,
+            endDate,
+            'download',
+            '&geostore_id=423e5dfb0448e692f97b590c61f45f22&geostore_origin=rw',
+            { selected_area: 'ISO Code: BRA, ID1: 1, ID2: 1',}
+        ));
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -262,6 +277,155 @@ describe('VIIRS Fires alert - URL Subscriptions', () => {
             begin_date: beginDate,
             end_date: endDate
         }));
+    });
+
+    describe('GADM 4.1 Administrative Areas @gadm4_1', () => {
+        it('VIIRS Fires emails for subscriptions that refer to an ISO code work as expected', async () => {
+            const country = 'BRA';
+            const areaId = getUUID();
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+            const subscriptionOne = await new Subscription(createURLSubscription(
+                USERS.USER.id,
+                'viirs-active-fires',
+                { params: { iso: { country, source: {provider: 'gadm', version: '4.1'} }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            mockVIIRSAlertsISOQuery(2, config.get('datasets.viirsISODataset'));
+            createMockArea(areaId, { country, source: {provider: 'gadm', version: '4.1'} }, 3);
+
+            createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(
+                subscriptionOne,
+                beginDate,
+                endDate,
+                'download_by_aoi',
+                '&aoi[type]=admin&aoi[country]=BRA&aoi[provider]=gadm&aoi[version]=4.1&aoi[simplify]=0.1',
+                { selected_area: 'ISO Code: BRA', }
+            ));
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+
+                jsonMessage.should.have.property('template');
+
+                switch (jsonMessage.template) {
+
+                    case 'subscriptions-stats':
+                        assertSubscriptionStatsNotificationEvent(jsonMessage);
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'viirs-active-fires',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
+
+        it('VIIRS Fires emails for subscriptions that refer to an ISO region work as expected', async () => {
+            const country = 'BRA';
+            const region = '3';
+            const areaId = getUUID();
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+
+            const subscriptionOne = await new Subscription(createURLSubscription(
+                USERS.USER.id,
+                'viirs-active-fires',
+                { params: { iso: { country, region, source: {provider: 'gadm', version: '4.1'} }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            mockVIIRSAlertsISOQuery(2, config.get('datasets.viirsISODataset'));
+            createMockArea(areaId, { country, region, source: {provider: 'gadm', version: '4.1'} }, 3);
+
+            createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(
+                subscriptionOne,
+                beginDate,
+                endDate,
+                'download_by_aoi',
+                '&aoi[type]=admin&aoi[country]=BRA&aoi[region]=3&aoi[provider]=gadm&aoi[version]=4.1&aoi[simplify]=0.01',
+                { selected_area: 'ISO Code: BRA, ID1: 3', }
+            ));
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+
+                jsonMessage.should.have.property('template');
+
+                switch (jsonMessage.template) {
+
+                    case 'subscriptions-stats':
+                        assertSubscriptionStatsNotificationEvent(jsonMessage);
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'viirs-active-fires',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
+
+        it('VIIRS Fires emails for subscriptions that refer to an ISO subregion work as expected', async () => {
+            const country = 'BRA';
+            const region = '1';
+            const subregion = '2';
+            const areaId = getUUID();
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+            const subscriptionOne = await new Subscription(createURLSubscription(
+                USERS.USER.id,
+                'viirs-active-fires',
+                { params: { iso: { country, region, subregion, source: {provider: 'gadm', version: '4.1'} }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            mockVIIRSAlertsISOQuery(2, config.get('datasets.viirsISODataset'));
+            createMockArea(areaId, { country, region, subregion, source: {provider: 'gadm', version: '4.1'} }, 3);
+            createURLSubscriptionCallMock(createViirsFireAlertsISOURLSubscriptionBody(
+                subscriptionOne,
+                beginDate,
+                endDate,
+                'download_by_aoi',
+                '&aoi[type]=admin&aoi[country]=BRA&aoi[region]=1&aoi[subregion]=2&aoi[provider]=gadm&aoi[version]=4.1&aoi[simplify]=0.001',
+                { selected_area: 'ISO Code: BRA, ID1: 1, ID2: 2',}
+            ));
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+
+                jsonMessage.should.have.property('template');
+
+                switch (jsonMessage.template) {
+
+                    case 'subscriptions-stats':
+                        assertSubscriptionStatsNotificationEvent(jsonMessage);
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'viirs-active-fires',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
     });
 
     it('VIIRS Fires emails for subscriptions that refer to a WDPA ID work as expected', async () => {

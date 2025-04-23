@@ -49,7 +49,14 @@ export const validateCommonNotificationParams = (jsonMessage: Record<string, any
     jsonMessage.data.should.have.property('help_center_url_investigate_alerts', `${config.get('gfw.flagshipUrl')}/help/map/guides/investigate-forest-change-satellite-imagery?lang=${sub.language}`);
 };
 
-export const validateVIIRSAlertsAndPriorityAreas = (jsonMessage: Record<string, any>, beginDate: Moment, endDate: Moment, sub: ISubscription, priorityOverride = {}) => {
+export const validateVIIRSAlertsAndPriorityAreas = (
+    jsonMessage: Record<string, any>,
+    beginDate: Moment,
+    endDate: Moment,
+    sub: ISubscription,
+    downloadEndpoint: string,
+    expectedQueryParameters: Record<string, string>,
+    priorityOverride = {}) => {
     jsonMessage.data.should.have.property('layerSlug').and.equal('viirs-active-fires');
 
     // Validate download URLs
@@ -58,25 +65,37 @@ export const validateVIIRSAlertsAndPriorityAreas = (jsonMessage: Record<string, 
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
         .and.contain(config.get('datasets.viirsDownloadDataset'))
-        .and.contain('download/csv')
+        .and.contain(`${downloadEndpoint}/csv`)
         .and.contain('SELECT latitude, longitude, alert__date, confidence__cat')
         .and.contain(', is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest')
         .and.contain(', is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> \'\' THEN \'True\' ELSE \'False\' END as in_protected_areas')
         .and.contain(`FROM ${config.get('datasets.viirsDownloadDataset')}`)
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
+
+    // Validate each expected parameter
+    const csvUrl = new URL(jsonMessage.data.downloadUrls['csv']);
+    Object.entries(expectedQueryParameters).forEach(([key, value]) => {
+        const param = csvUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
+    });
 
     jsonMessage.data.downloadUrls.should.have.property('json')
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
         .and.contain(config.get('datasets.viirsDownloadDataset'))
-        .and.contain('download/json')
+        .and.contain(`${downloadEndpoint}/json`)
         .and.contain('SELECT latitude, longitude, alert__date, confidence__cat')
         .and.contain(', is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest')
         .and.contain(', is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> \'\' THEN \'True\' ELSE \'False\' END as in_protected_areas')
         .and.contain(`FROM ${config.get('datasets.viirsDownloadDataset')}`)
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
+
+    // Validate each expected parameter
+    const jsonUrl = new URL(jsonMessage.data.downloadUrls['json']);
+    Object.entries(expectedQueryParameters).forEach(([key, value]) => {
+        const param = jsonUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
+    });
 
     const priorityAreas = {
         intact_forest: 0,
@@ -275,6 +294,8 @@ export const validateGladL = (
     sub: ISubscription,
     beginDate: Moment,
     endDate: Moment,
+    downloadEndpoint: string,
+    expectedQueryParameters: Record<string, string>,
     {
         total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea, lang = 'en'
     }: {
@@ -288,18 +309,30 @@ export const validateGladL = (
     jsonMessage.data.downloadUrls.should.have.property('csv')
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
-        .and.contain('/dataset/umd_glad_landsat_alerts/latest/download/csv')
+        .and.contain(`/dataset/umd_glad_landsat_alerts/latest/${downloadEndpoint}/csv`)
         .and.contain('SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence')
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
+
+    // Validate each expected parameter
+    const csvUrl = new URL(jsonMessage.data.downloadUrls['csv']);
+    Object.entries(expectedQueryParameters).forEach(([key, value]) => {
+        const param = csvUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
+    });
 
     jsonMessage.data.downloadUrls.should.have.property('json')
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
-        .and.contain('/dataset/umd_glad_landsat_alerts/latest/download/json')
+        .and.contain(`/dataset/umd_glad_landsat_alerts/latest/${downloadEndpoint}/json`)
         .and.contain('SELECT latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence')
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
+
+    // Validate each expected parameter
+    const jsonUrl = new URL(jsonMessage.data.downloadUrls['json']);
+    Object.entries(expectedQueryParameters).forEach(([key, value]) => {
+        const param = jsonUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
+    });
 
     jsonMessage.data.should.have.property('alert_count').and.equal(total);
     jsonMessage.data.should.have.property('value').and.equal(total);
@@ -335,6 +368,8 @@ export const validateGladS2 = (
     sub: ISubscription,
     beginDate: Moment,
     endDate: Moment,
+    downloadEndpoint: string,
+    expectedQueryParameters: Record<string, string>,
     {
         total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea, lang = 'en'
     }: {
@@ -348,18 +383,30 @@ export const validateGladS2 = (
     jsonMessage.data.downloadUrls.should.have.property('csv')
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
-        .and.contain('/dataset/gfw_integrated_alerts/latest/download/csv')
+        .and.contain(`/dataset/gfw_integrated_alerts/latest/${downloadEndpoint}/csv`)
         .and.contain('SELECT latitude, longitude, umd_glad_sentinel2_alerts__date, umd_glad_sentinel2_alerts__confidence')
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
+
+    // Validate each expected parameter
+    const csvUrl = new URL(jsonMessage.data.downloadUrls['csv']);
+    Object.entries(expectedQueryParameters).forEach(([key, value]) => {
+        const param = csvUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
+    });
 
     jsonMessage.data.downloadUrls.should.have.property('json')
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
-        .and.contain('/dataset/gfw_integrated_alerts/latest/download/json')
+        .and.contain(`/dataset/gfw_integrated_alerts/latest/${downloadEndpoint}/json`)
         .and.contain('SELECT latitude, longitude, umd_glad_sentinel2_alerts__date, umd_glad_sentinel2_alerts__confidence')
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
+
+    // Validate each expected parameter
+    const jsonUrl = new URL(jsonMessage.data.downloadUrls['json']);
+    Object.entries(expectedQueryParameters).forEach(([key, value]) => {
+        const param = jsonUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
+    });
 
     jsonMessage.data.should.have.property('alert_count').and.equal(total);
     jsonMessage.data.should.have.property('value').and.equal(total);
@@ -395,6 +442,8 @@ export const validateGladRadd = (
     sub: ISubscription,
     beginDate: Moment,
     endDate: Moment,
+    downloadEndpoint: string,
+    expectedQueryParameters: Record<string, string>,
     {
         total, area, intactForestArea, primaryForestArea, peatArea, wdpaArea, lang = 'en'
     }: {
@@ -408,18 +457,30 @@ export const validateGladRadd = (
     jsonMessage.data.downloadUrls.should.have.property('csv')
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
-        .and.contain('/dataset/gfw_integrated_alerts/latest/download/csv')
+        .and.contain(`/dataset/gfw_integrated_alerts/latest/${downloadEndpoint}/csv`)
         .and.contain('SELECT latitude, longitude, wur_radd_alerts__date, wur_radd_alerts__confidence')
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
+
+    // Validate each expected parameter
+    const csvUrl = new URL(jsonMessage.data.downloadUrls['csv']);
+    Object.entries(expectedQueryParameters).forEach(([key, value]) => {
+        const param = csvUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
+    });
 
     jsonMessage.data.downloadUrls.should.have.property('json')
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
-        .and.contain('/dataset/gfw_integrated_alerts/latest/download/json')
+        .and.contain(`/dataset/gfw_integrated_alerts/latest/${downloadEndpoint}/json`)
         .and.contain('SELECT latitude, longitude, wur_radd_alerts__date, wur_radd_alerts__confidence')
-        .and.contain('&geostore_id=')
-        .and.contain('&geostore_origin=rw');
+
+    // Validate each expected parameter
+    const jsonUrl = new URL(jsonMessage.data.downloadUrls['json']);
+    Object.entries(expectedQueryParameters).forEach(([key, value]) => {
+        const param = jsonUrl.searchParams.get(key);
+        expect(param).to.not.eq(null, `${key} is missing from query parameters`);
+        expect(param).to.eq(value, `query parameter: ${key}`);
+    });
 
     jsonMessage.data.should.have.property('alert_count').and.equal(total);
     jsonMessage.data.should.have.property('value').and.equal(total);
