@@ -23,6 +23,7 @@ node {
     stage ('Run Tests') {
       sh('docker-compose -H :2375 -f docker-compose-test.yml build')
       sh('docker-compose -H :2375 -f docker-compose-test.yml run --rm test')
+      sh('GADM_VERSION=4.1 TEST_CMD=test4_1 docker-compose -H :2375 -f docker-compose-test.yml run --rm test4_1')
       sh('docker-compose -H :2375 -f docker-compose-test.yml stop')
     }
 
