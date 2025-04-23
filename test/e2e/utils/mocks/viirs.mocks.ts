@@ -555,7 +555,7 @@ export const createViirsFireAlertsGeostoreURLSubscriptionBody = (subscription: R
     };
 };
 
-export const createViirsFireAlertsISOURLSubscriptionBody = (subscription: Record<string, any>, beginDate: Moment, endDate: Moment, bodyData: Record<string, any> = {}) => {
+export const createViirsFireAlertsISOURLSubscriptionBody = (subscription: Record<string, any>, beginDate: Moment, endDate: Moment, downloadEndpoint: string, downloadQueryParams: string, bodyData: Record<string, any> = {}) => {
     const mapURLIntactForestQueryString = {
         lang: subscription.language,
         map: btoa(JSON.stringify({
@@ -791,8 +791,8 @@ export const createViirsFireAlertsISOURLSubscriptionBody = (subscription: Record
         viirs_count: 100,
         alert_count: 100,
         downloadUrls: {
-            csv: `${config.get('dataApi.url')}/dataset/nasa_viirs_fire_alerts/latest/download/csv?sql=SELECT latitude, longitude, alert__date, confidence__cat, is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest, is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> '' THEN 'True' ELSE 'False' END as in_protected_areas FROM nasa_viirs_fire_alerts WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_id=423e5dfb0448e692f97b590c61f45f22&geostore_origin=rw`,
-            json: `${config.get('dataApi.url')}/dataset/nasa_viirs_fire_alerts/latest/download/json?sql=SELECT latitude, longitude, alert__date, confidence__cat, is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest, is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> '' THEN 'True' ELSE 'False' END as in_protected_areas FROM nasa_viirs_fire_alerts WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_id=423e5dfb0448e692f97b590c61f45f22&geostore_origin=rw`
+            csv: `${config.get('dataApi.url')}/dataset/nasa_viirs_fire_alerts/latest/${downloadEndpoint}/csv?sql=SELECT latitude, longitude, alert__date, confidence__cat, is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest, is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> '' THEN 'True' ELSE 'False' END as in_protected_areas FROM nasa_viirs_fire_alerts WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}'${downloadQueryParams}`,
+            json: `${config.get('dataApi.url')}/dataset/nasa_viirs_fire_alerts/latest/${downloadEndpoint}/json?sql=SELECT latitude, longitude, alert__date, confidence__cat, is__ifl_intact_forest_landscape_2016 as in_intact_forest, is__umd_regional_primary_forest_2001 as in_primary_forest, is__peatland as in_peat, CASE WHEN wdpa_protected_area__iucn_cat <> '' THEN 'True' ELSE 'False' END as in_protected_areas FROM nasa_viirs_fire_alerts WHERE alert__date > '${beginDate.format('YYYY-MM-DD')}' AND alert__date <= '${endDate.format('YYYY-MM-DD')}'${downloadQueryParams}`
         },
         priority_areas: {
             intact_forest: 0,

@@ -73,7 +73,11 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -120,7 +124,11 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-fr':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -168,7 +176,11 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-zh':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -219,7 +231,11 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -271,7 +287,11 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -324,7 +344,11 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -346,6 +370,182 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
             begin_date: beginDate,
             end_date: endDate
         }));
+    });
+
+    describe('GADM 4.1 Administrative Areas @gadm4_1', () => {
+        it('GLAD alert emails for admin 0 subscriptions work as expected', async () => {
+            const country = 'BRA'
+            const areaId = getUUID()
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+            const subscriptionOne = await new Subscription(createSubscriptionContent(
+                USERS.USER.id,
+                'glad-alerts',
+                { params: { iso: { country, source: { provider: 'gadm', version: '4.1' }}, area: areaId} },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            createMockArea(areaId, { country, source: { provider: 'gadm', version: '4.1' } }, 2)
+
+            mockGLADLISOQuery();
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+
+                jsonMessage.should.have.property('template');
+
+                switch (jsonMessage.template) {
+
+                    case 'glad-updated-notification-en':
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                        validateCustomMapURLs(jsonMessage);
+                        validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download_by_aoi',
+                            {
+                                'aoi[type]': 'admin',
+                                'aoi[country]': 'BRA',
+                                'aoi[provider]': 'gadm',
+                                'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.1',
+                            },
+                            {
+                                total: 400,
+                                area: '40',
+                                intactForestArea: '10',
+                                primaryForestArea: '10',
+                                peatArea: '10',
+                                wdpaArea: '10'
+                            });
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'glad-alerts',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
+
+        it('GLAD alert emails for admin 1 subscriptions work as expected', async () => {
+            const country = 'BRA'
+            const region = '1'
+            const areaId = getUUID()
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+            const subscriptionOne = await new Subscription(createSubscriptionContent(
+                USERS.USER.id,
+                'glad-alerts',
+                { params: { iso: { country, region, source: { provider: 'gadm', version: '4.1' } }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            createMockArea(areaId, { country, region, source: { provider: 'gadm', version: '4.1' } }, 2)
+
+            mockGLADLAdm1Query();
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+
+                jsonMessage.should.have.property('template');
+
+                switch (jsonMessage.template) {
+
+                    case 'glad-updated-notification-en':
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                        validateCustomMapURLs(jsonMessage);
+                        validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download_by_aoi',
+                            {
+                                'aoi[type]': 'admin',
+                                'aoi[country]': 'BRA',
+                                'aoi[region]': '1',
+                                'aoi[provider]': 'gadm',
+                                'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.01',
+                            },
+                            {
+                                total: 400,
+                                area: '40',
+                                intactForestArea: '10',
+                                primaryForestArea: '10',
+                                peatArea: '10',
+                                wdpaArea: '10'
+                            });
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'glad-alerts',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
+
+        it('GLAD alert emails for admin 2 subscriptions work as expected', async () => {
+            const country = 'BRA'
+            const region = '1'
+            const subregion = '2'
+            const areaId = getUUID()
+            EmailHelpersService.updateMonthTranslations();
+            moment.locale('en');
+            const subscriptionOne = await new Subscription(createSubscriptionContent(
+                USERS.USER.id,
+                'glad-alerts',
+                { params: { iso: { country, region, subregion, source: { provider: 'gadm', version: '4.1' } }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            createMockArea(areaId, { country, region, subregion, source: { provider: 'gadm', version: '4.1' } }, 2);
+
+            mockGLADLAdm2Query();
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+
+                jsonMessage.should.have.property('template');
+
+                switch (jsonMessage.template) {
+
+                    case 'glad-updated-notification-en':
+                        validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
+                        validateCustomMapURLs(jsonMessage);
+                        validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download_by_aoi',
+                            {
+                                'aoi[type]': 'admin',
+                                'aoi[country]': 'BRA',
+                                'aoi[region]': '1',
+                                'aoi[subregion]': '2',
+                                'aoi[provider]': 'gadm',
+                                'aoi[version]': '4.1',
+                                'aoi[simplify]': '0.001',
+                            },
+                            {
+                                total: 400,
+                                area: '40',
+                                intactForestArea: '10',
+                                primaryForestArea: '10',
+                                peatArea: '10',
+                                wdpaArea: '10'
+                            });
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'glad-alerts',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
     });
 
     it('GLAD alert emails for WDPA subscriptions work as expected', async () => {
@@ -372,7 +572,11 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -420,7 +624,11 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',
@@ -497,7 +705,11 @@ describe('GLAD-ALL emails (existing "glad-alerts" subscriptions should now use "
                 case 'glad-updated-notification-en':
                     validateCommonNotificationParams(jsonMessage, beginDate, endDate, subscriptionOne);
                     validateCustomMapURLs(jsonMessage);
-                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate,
+                    validateGladL(jsonMessage, subscriptionOne, beginDate, endDate, 'download',
+                        {
+                            geostore_id: '423e5dfb0448e692f97b590c61f45f22',
+                            geostore_origin: 'rw',
+                        },
                         {
                             total: 400,
                             area: '40',

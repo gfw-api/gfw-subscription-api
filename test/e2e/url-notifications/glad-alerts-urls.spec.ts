@@ -141,9 +141,14 @@ describe('GLAD alert - URL Subscriptions', () => {
         mockGLADLISOQuery();
         createMockGeostore(`/geostore/admin/${country}`, config.get('dataApi.url'));
         createMockArea(areaId, { country }, 2);
-        createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
-            selected_area: 'ISO Code: BRA',
-        }));
+        createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(
+            subscriptionOne,
+            beginDate,
+            endDate,
+            'download',
+            '&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22',
+            { selected_area: 'ISO Code: BRA',}
+        ));
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -182,9 +187,14 @@ describe('GLAD alert - URL Subscriptions', () => {
         createMockGeostore(`/geostore/admin/${country}/${region}`, config.get('dataApi.url'));
         createMockArea(areaId, { country, region }, 2);
 
-        createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
-            selected_area: 'ISO Code: BRA, ID1: 1',
-        }));
+        createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(
+            subscriptionOne,
+            beginDate,
+            endDate,
+            'download',
+            '&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22',
+            { selected_area: 'ISO Code: BRA, ID1: 1', }
+        ));
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -224,9 +234,14 @@ describe('GLAD alert - URL Subscriptions', () => {
         createMockGeostore(`/geostore/admin/${country}/${region}/${subregion}`, config.get('dataApi.url'));
         createMockArea(areaId, { country, region, subregion }, 2);
 
-        createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(subscriptionOne, beginDate, endDate, {
-            selected_area: 'ISO Code: BRA, ID1: 1, ID2: 2',
-        }));
+        createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(
+            subscriptionOne,
+            beginDate,
+            endDate,
+            'download',
+            '&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22',
+            { selected_area: 'ISO Code: BRA, ID1: 1, ID2: 2', }
+        ));
 
         redisClient.subscribe(CHANNEL, (message) => {
             const jsonMessage = JSON.parse(message);
@@ -248,6 +263,142 @@ describe('GLAD alert - URL Subscriptions', () => {
             begin_date: beginDate,
             end_date: endDate
         }));
+    });
+
+    describe('GADM 4.1 Administrative Areas @gadm4_1', () => {
+        it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - ISO code for country', async () => {
+            const country = 'BRA'
+            const areaId = getUUID()
+            const subscriptionOne = await new Subscription(createURLSubscription(
+                USERS.USER.id,
+                'glad-alerts',
+                { params: { iso: { country, source: {provider: 'gadm', version: '4.1'} }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            mockGLADLISOQuery();
+            createMockArea(areaId, { country, source: {provider: 'gadm', version: '4.1'} }, 2);
+            createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(
+                subscriptionOne,
+                beginDate,
+                endDate,
+                'download_by_aoi',
+                '&aoi[type]=admin&aoi[country]=BRA&aoi[provider]=gadm&aoi[version]=4.1&aoi[simplify]=0.1',
+                { selected_area: 'ISO Code: BRA', },
+            ));
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+                jsonMessage.should.have.property('template');
+                switch (jsonMessage.template) {
+
+                    case 'subscriptions-stats':
+                        assertSubscriptionStatsNotificationEvent(jsonMessage);
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'glad-alerts',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
+
+        it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - ISO code for country and region', async () => {
+            const country = 'BRA'
+            const region = '1'
+            const areaId = getUUID()
+            const subscriptionOne = await new Subscription(createURLSubscription(
+                USERS.USER.id,
+                'glad-alerts',
+                { params: { iso: { country, region, source: {provider: 'gadm', version: '4.1'} }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            mockGLADLAdm1Query();
+            createMockArea(areaId, { country, region, source: {provider: 'gadm', version: '4.1'} }, 2);
+
+            createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(
+                subscriptionOne,
+                beginDate,
+                endDate,
+                'download_by_aoi',
+                '&aoi[type]=admin&aoi[country]=BRA&aoi[region]=1&aoi[provider]=gadm&aoi[version]=4.1&aoi[simplify]=0.01',
+                { selected_area: 'ISO Code: BRA, ID1: 1', }
+            ));
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+                jsonMessage.should.have.property('template');
+                switch (jsonMessage.template) {
+
+                    case 'subscriptions-stats':
+                        assertSubscriptionStatsNotificationEvent(jsonMessage);
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'glad-alerts',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
+
+        it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - ISO code for country, region and subregion', async () => {
+            const country = 'BRA'
+            const region = '1'
+            const subregion = '2'
+            const areaId = getUUID()
+            const subscriptionOne = await new Subscription(createURLSubscription(
+                USERS.USER.id,
+                'glad-alerts',
+                { params: { iso: { country, region, subregion, source: {provider: 'gadm', version: '4.1'} }, area: areaId } },
+            )).save();
+
+            const { beginDate, endDate } = bootstrapEmailNotificationTests();
+            mockGLADLAdm2Query();
+            createMockArea(areaId, { country, region, subregion, source: {provider: 'gadm', version: '4.1'} }, 2);
+
+            createURLSubscriptionCallMock(createGLADAlertsISOURLSubscriptionBody(
+                subscriptionOne,
+                beginDate,
+                endDate,
+                'download_by_aoi',
+                '&aoi[type]=admin&aoi[country]=BRA&aoi[region]=1&aoi[subregion]=2&aoi[provider]=gadm&aoi[version]=4.1&aoi[simplify]=0.001',
+                { selected_area: 'ISO Code: BRA, ID1: 1, ID2: 2', }
+            ));
+
+            redisClient.subscribe(CHANNEL, (message) => {
+                const jsonMessage = JSON.parse(message);
+                jsonMessage.should.have.property('template');
+                switch (jsonMessage.template) {
+
+                    case 'subscriptions-stats':
+                        assertSubscriptionStatsNotificationEvent(jsonMessage);
+                        break;
+                    default:
+                        should.fail('Unsupported message type: ', jsonMessage.template);
+                        break;
+
+                }
+            });
+
+            await AlertQueue.processMessage(JSON.stringify({
+                layer_slug: 'glad-alerts',
+                begin_date: beginDate,
+                end_date: endDate
+            }));
+        });
     });
 
     it('Updating GLAD alerts dataset triggers the configured subscription url being called using the correct body data - WDPA ID', async () => {

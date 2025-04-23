@@ -29,7 +29,7 @@ export type PriorityArea = {
     other: number
 };
 
-export type AlertResultWithCount<T extends AlertResultType> = { value: number, data: T[] }
+export type AlertResultWithCount<T extends AlertResultType> = { value: number, data: T[] };
 
 const ALERT_TYPES: string[] = ['EMAIL', 'URL'];
 
@@ -110,9 +110,9 @@ export abstract class PresenterInterface<T extends AlertResultType, U extends Pr
         }
     }
 
-    protected abstract getAlertsForSubscription(startDate: string, endDate: string, params: Record<string, any>, layerSlug: string): Promise<T[]>
+    protected abstract getAlertsForSubscription(startDate: string, endDate: string, params: Record<string, any>, layerSlug: string): Promise<T[]>;
 
-    protected abstract transform(results: AlertResultWithCount<T>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<U>
+    protected abstract transform(results: AlertResultWithCount<T>, subscription: ISubscription, layer: ILayer, begin: Date, end: Date): Promise<U>;
 
     protected async getAlertsWithCountForSubscription(startDate: string, endDate: string, params: Record<string, any>, layerSlug: string): Promise<AlertResultWithCount<T>> {
         const analysisResults: T[] = await this.getAlertsForSubscription(startDate, endDate, params, layerSlug);
@@ -158,7 +158,7 @@ export abstract class PresenterInterface<T extends AlertResultType, U extends Pr
 
         if (publish) {
             logger.debug('[PresenterInterface] Saving statistic and notifying user');
-            await this.notifyUser(analysisResultsWithCount, subscription, layer, begin, end)
+            await this.notifyUser(analysisResultsWithCount, subscription, layer, begin, end);
             await new Statistic({ slug: layerConfig.slug, application: subscription.application }).save();
         }
 
