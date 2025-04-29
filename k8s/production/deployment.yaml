@@ -136,7 +136,7 @@ spec:
                   key: REQUIRE_API_KEY
                   name: mssecrets
             - name: GADM_VERSION
-              value: "3.6"
+              value: "4.1"
           image: gfwdockerhub/subscriptions
           imagePullPolicy: Always
           livenessProbe:
