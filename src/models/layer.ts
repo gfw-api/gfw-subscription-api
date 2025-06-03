@@ -32,19 +32,19 @@ const LAYERS: ILayer[] = [{
     slug: 'glad-l',
     subscription: true,
     datasetId: config.get('layers.gladAlertLayerDataset'),
-    layerId: config.get('layers.gladAlertLayer')
+    layerId: config.get('layers.gladLAlertLayer')
 }, {
     name: 'glad-s2',
     slug: 'glad-s2',
     subscription: true,
     datasetId: config.get('layers.gladAlertLayerDataset'),
-    layerId: config.get('layers.gladAlertLayer')
+    layerId: config.get('layers.gladSAlertLayer')
 }, {
     name: 'glad-radd',
     slug: 'glad-radd',
     subscription: true,
     datasetId: config.get('layers.gladAlertLayerDataset'),
-    layerId: config.get('layers.gladAlertLayer')
+    layerId: config.get('layers.gladRaddAlertLayer')
 }, {
     name: 'monthly-summary',
     slug: 'monthly-summary',
