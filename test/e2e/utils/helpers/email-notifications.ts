@@ -235,8 +235,8 @@ export const validateGladAll = (
             name: 'umd_as_it_happens',
             slug: 'glad-alerts',
             subscription: true,
-            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
-            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+            datasetId: '8a7b6f20-7564-4265-8246-8fd9158814ae',
+            layerId: '1e7f2868-7fcd-46b2-bbc8-64ec78f95cca'
         },
         beginDate.toDate(),
         endDate.toDate(),
@@ -295,8 +295,8 @@ export const validateGladL = (
             name: 'umd_as_it_happens',
             slug: 'glad-alerts',
             subscription: true,
-            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
-            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+            datasetId: '8a7b6f20-7564-4265-8246-8fd9158814ae',
+            layerId: 'ff797c8d-0c1b-4df5-beb3-20a9b900716a'
         },
         beginDate.toDate(),
         endDate.toDate(),
@@ -355,8 +355,8 @@ export const validateGladS2 = (
             name: 'umd_as_it_happens',
             slug: 'glad-alerts',
             subscription: true,
-            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
-            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+            datasetId: '8a7b6f20-7564-4265-8246-8fd9158814ae',
+            layerId: 'cb184858-4501-4e18-bdf4-8fc4150b9f6e'
         },
         beginDate.toDate(),
         endDate.toDate(),
@@ -415,8 +415,8 @@ export const validateGladRadd = (
             name: 'umd_as_it_happens',
             slug: 'glad-alerts',
             subscription: true,
-            datasetId: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
-            layerId: '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+            datasetId: '8a7b6f20-7564-4265-8246-8fd9158814ae',
+            layerId: '5f6819a7-ad89-4c40-8715-9f859cb5e827'
         },
         beginDate.toDate(),
         endDate.toDate(),

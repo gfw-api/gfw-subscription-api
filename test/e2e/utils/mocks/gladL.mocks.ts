@@ -10,9 +10,9 @@ export const createGLADLGeostoreURLSubscriptionBody = (subscription: Record<stri
             canBound: true,
             datasets: [
                 {
-                    dataset: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                    dataset: '8a7b6f20-7564-4265-8246-8fd9158814ae',
                     layers: [
-                        '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        'ff797c8d-0c1b-4df5-beb3-20a9b900716a'
                     ],
                     timelineParams: {
                         startDateAbsolute: beginDate.format('YYYY-MM-DD'),
@@ -48,9 +48,9 @@ export const createGLADLGeostoreURLSubscriptionBody = (subscription: Record<stri
             canBound: true,
             datasets: [
                 {
-                    dataset: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                    dataset: '8a7b6f20-7564-4265-8246-8fd9158814ae',
                     layers: [
-                        '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        'ff797c8d-0c1b-4df5-beb3-20a9b900716a'
                     ],
                     timelineParams: {
                         startDateAbsolute: beginDate.format('YYYY-MM-DD'),
@@ -86,9 +86,9 @@ export const createGLADLGeostoreURLSubscriptionBody = (subscription: Record<stri
             canBound: true,
             datasets: [
                 {
-                    dataset: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                    dataset: '8a7b6f20-7564-4265-8246-8fd9158814ae',
                     layers: [
-                        '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        'ff797c8d-0c1b-4df5-beb3-20a9b900716a'
                     ],
                     timelineParams: {
                         startDateAbsolute: beginDate.format('YYYY-MM-DD'),
@@ -143,9 +143,9 @@ export const createGLADLGeostoreURLSubscriptionBody = (subscription: Record<stri
             canBound: true,
             datasets: [
                 {
-                    dataset: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                    dataset: '8a7b6f20-7564-4265-8246-8fd9158814ae',
                     layers: [
-                        '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        'ff797c8d-0c1b-4df5-beb3-20a9b900716a'
                     ],
                     timelineParams: {
                         startDateAbsolute: beginDate.format('YYYY-MM-DD'),
@@ -182,9 +182,9 @@ export const createGLADLGeostoreURLSubscriptionBody = (subscription: Record<stri
             canBound: true,
             datasets: [
                 {
-                    dataset: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                    dataset: '8a7b6f20-7564-4265-8246-8fd9158814ae',
                     layers: [
-                        '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        'ff797c8d-0c1b-4df5-beb3-20a9b900716a'
                     ],
                     timelineParams: {
                         startDateAbsolute: beginDate.format('YYYY-MM-DD'),
