@@ -9,9 +9,9 @@ export const createMonthlySummaryGeostoreURLSubscriptionBody = (subscription: Re
             canBound: true,
             datasets: [
                 {
-                    dataset: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                    dataset: '8a7b6f20-7564-4265-8246-8fd9158814ae',
                     layers: [
-                        '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        '1e7f2868-7fcd-46b2-bbc8-64ec78f95cca'
                     ],
                     timelineParams: {
                         startDateAbsolute: beginDate.format('YYYY-MM-DD'),
@@ -141,9 +141,9 @@ export const createMonthlySummaryISOURLSubscriptionBody = (subscription: Record<
             canBound: true,
             datasets: [
                 {
-                    dataset: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                    dataset: '8a7b6f20-7564-4265-8246-8fd9158814ae',
                     layers: [
-                        '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        '1e7f2868-7fcd-46b2-bbc8-64ec78f95cca'
                     ],
                     timelineParams: {
                         startDateAbsolute: beginDate.format('YYYY-MM-DD'),
@@ -273,9 +273,9 @@ export const createMonthlySummaryWDPAURLSubscriptionBody = (subscription: Record
             canBound: true,
             datasets: [
                 {
-                    dataset: 'bfd1d211-8106-4393-86c3-9e1ab2ee1b9b',
+                    dataset: '8a7b6f20-7564-4265-8246-8fd9158814ae',
                     layers: [
-                        '8e4a527d-1bcd-4a12-82b0-5a108ffec452'
+                        '1e7f2868-7fcd-46b2-bbc8-64ec78f95cca'
                     ],
                     timelineParams: {
                         startDateAbsolute: beginDate.format('YYYY-MM-DD'),
