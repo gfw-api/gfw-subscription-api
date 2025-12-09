@@ -252,8 +252,8 @@ export const createGLADAllGeostoreURLSubscriptionBody = (subscription: Record<st
         peat_ha_sum: "10",
         wdpa_ha_sum: "10",
         downloadUrls: {
-            csv: `${config.get('dataApi.url')}/dataset/gfw_integrated_alerts/latest/download/csv?sql=SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, wur_radd_alerts__confidence, gfw_integrated_alerts__confidence FROM data WHERE gfw_integrated_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND gfw_integrated_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`,
-            json: `${config.get('dataApi.url')}/dataset/gfw_integrated_alerts/latest/download/json?sql=SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, wur_radd_alerts__confidence, gfw_integrated_alerts__confidence FROM data WHERE gfw_integrated_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND gfw_integrated_alerts__date <= '${endDate.format('YYYY-MM-DD')}'&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`
+            csv: `${config.get('dataApi.url')}/dataset/gfw_integrated_alerts/latest/download/csv?sql=SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, wur_radd_alerts__confidence, gfw_integrated_alerts__confidence FROM data WHERE gfw_integrated_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND gfw_integrated_alerts__date <= '${endDate.format('YYYY-MM-DD')}' AND is__tree_cover_2022 = true&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`,
+            json: `${config.get('dataApi.url')}/dataset/gfw_integrated_alerts/latest/download/json?sql=SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, wur_radd_alerts__confidence, gfw_integrated_alerts__confidence FROM data WHERE gfw_integrated_alerts__date >= '${beginDate.format('YYYY-MM-DD')}' AND gfw_integrated_alerts__date <= '${endDate.format('YYYY-MM-DD')}' AND is__tree_cover_2022 = true&geostore_origin=rw&geostore_id=423e5dfb0448e692f97b590c61f45f22`
         },
         glad_alert_type: "total alerts",
         layerSlug: "glad-all",
@@ -272,7 +272,7 @@ export const createGLADAllGeostoreURLSubscriptionBody = (subscription: Record<st
 
 export const mockGLADAllISOQuery = () => nock(config.get('dataApi.url'))
     .get('/dataset/gadm__integrated_alerts__iso_daily_alerts/latest/query')
-    .query((data) => data.sql && data.sql.includes('iso = \'BRA\''))
+    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('is__tree_cover_2022 = true'))
     .matchHeader('x-api-key', config.get('dataApi.apiKey'))
     .matchHeader('origin', config.get('dataApi.origin'))
     .reply(200, {
@@ -315,7 +315,7 @@ export const mockGLADAllISOQuery = () => nock(config.get('dataApi.url'))
 
 export const mockGLADAllAdm1Query = () => nock(config.get('dataApi.url'))
     .get('/dataset/gadm__integrated_alerts__adm1_daily_alerts/latest/query')
-    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\''))
+    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\'') && data.sql.includes('is__tree_cover_2022 = true'))
     .matchHeader('x-api-key', config.get('dataApi.apiKey'))
     .matchHeader('origin', config.get('dataApi.origin'))
     .reply(200, {
@@ -358,7 +358,7 @@ export const mockGLADAllAdm1Query = () => nock(config.get('dataApi.url'))
 
 export const mockGLADAllAdm2Query = () => nock(config.get('dataApi.url'))
     .get('/dataset/gadm__integrated_alerts__adm2_daily_alerts/latest/query')
-    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\'') && data.sql.includes('adm2 = \'2\''))
+    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\'') && data.sql.includes('adm2 = \'2\'') && data.sql.includes('is__tree_cover_2022 = true'))
     .matchHeader('x-api-key', config.get('dataApi.apiKey'))
     .matchHeader('origin', config.get('dataApi.origin'))
     .reply(200, {
@@ -402,7 +402,7 @@ export const mockGLADAllAdm2Query = () => nock(config.get('dataApi.url'))
 export const mockGLADAllWDPAQuery = () =>
     nock(config.get('dataApi.url'))
         .get('/dataset/wdpa_protected_areas__integrated_alerts__daily_alerts/latest/query')
-        .query((data) => data.sql && data.sql.includes('wdpa_protected_area__id = \'1\''))
+        .query((data) => data.sql && data.sql.includes('wdpa_protected_area__id = \'1\'') && data.sql.includes('is__tree_cover_2022 = true'))
         .matchHeader('x-api-key', config.get('dataApi.apiKey'))
         .matchHeader('origin', config.get('dataApi.origin'))
         .reply(200, {
@@ -445,7 +445,7 @@ export const mockGLADAllWDPAQuery = () =>
 export const mockGLADAllGeostoreQuery = (times: number = 1) =>
     nock(config.get('dataApi.url'))
         .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
-        .query((data) => data.sql && data.sql.includes('geostore__id = \'423e5dfb0448e692f97b590c61f45f22\''))
+        .query((data) => data.sql && data.sql.includes('geostore__id = \'423e5dfb0448e692f97b590c61f45f22\'') && data.sql.includes('is__tree_cover_2022 = true'))
         .matchHeader('x-api-key', config.get('dataApi.apiKey'))
         .matchHeader('origin', config.get('dataApi.origin'))
         .times(times)

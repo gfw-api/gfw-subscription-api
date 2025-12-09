@@ -11,3 +11,4 @@ coverage
 dev.env
 .eslintcache
 dist
+package-lock.json
