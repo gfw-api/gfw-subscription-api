@@ -28,7 +28,8 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
                              FROM data
                              WHERE iso = '${country}'
                                AND gfw_integrated_alerts__date >= '${startDate}'
-                               AND gfw_integrated_alerts__date <= '${endDate}'`;
+                               AND gfw_integrated_alerts__date <= '${endDate}'
+                               AND is__tree_cover_2022 = true`;
         return `${DATASET_GLAD_ALL_ADM_0}?sql=${sql}`;
     }
 
@@ -38,7 +39,8 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
                              WHERE iso = '${country}'
                                AND adm1 = '${region}'
                                AND gfw_integrated_alerts__date >= '${startDate}'
-                               AND gfw_integrated_alerts__date <= '${endDate}'`;
+                               AND gfw_integrated_alerts__date <= '${endDate}'
+                               AND is__tree_cover_2022 = true`;
         return `${DATASET_GLAD_ALL_ADM_1}?sql=${sql}`;
     }
 
@@ -49,7 +51,8 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
                                AND adm1 = '${region}'
                                AND adm2 = '${subregion}'
                                AND gfw_integrated_alerts__date >= '${startDate}' `
-            + `AND gfw_integrated_alerts__date <= '${endDate}'`;
+            + `AND gfw_integrated_alerts__date <= '${endDate}'`
+            + `AND is__tree_cover_2022 = true`;
         return `${DATASET_GLAD_ALL_ADM_2}?sql=${sql}`;
     }
 
@@ -58,7 +61,8 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
                              FROM data
                              WHERE wdpa_protected_area__id = '${wdpa}'
                                AND gfw_integrated_alerts__date >= '${startDate}' `
-            + `AND gfw_integrated_alerts__date <= '${endDate}'`;
+            + `AND gfw_integrated_alerts__date <= '${endDate}'`
+            + `AND is__tree_cover_2022 = true`;
         return `${DATASET_GLAD_ALL_WDPA}?sql=${sql}`;
     }
 
@@ -67,7 +71,8 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
                              FROM data
                              WHERE geostore__id = '${geostoreId}'
                                AND gfw_integrated_alerts__date >= '${startDate}'
-                               AND gfw_integrated_alerts__date <= '${endDate}'`;
+                               AND gfw_integrated_alerts__date <= '${endDate}'
+                               AND is__tree_cover_2022 = true`;
         return `${DATASET_GLAD_ALL_GEOSTORE}?sql=${sql}`;
     }
 
@@ -102,7 +107,7 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
     static #buildDownloadSQL(startDate: string, endDate: string): string {
         return `SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, `
             + `wur_radd_alerts__confidence, gfw_integrated_alerts__confidence FROM data WHERE gfw_integrated_alerts__date >= '${startDate}' `
-            + `AND gfw_integrated_alerts__date <= '${endDate}'`;
+            + `AND gfw_integrated_alerts__date <= '${endDate}' AND is__tree_cover_2022 = true`;
     }
 
     static async getURLForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<string> {
