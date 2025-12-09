@@ -18,6 +18,10 @@ case "$1" in
         echo "Running Start"
         exec yarn start
         ;;
+    coverage)
+        echo "Running Start"
+        exec yarn start
+        ;;
     *)
         exec "$@"
 esac
