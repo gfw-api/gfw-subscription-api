@@ -51,7 +51,7 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
                                AND adm1 = '${region}'
                                AND adm2 = '${subregion}'
                                AND gfw_integrated_alerts__date >= '${startDate}' `
-            + `AND gfw_integrated_alerts__date <= '${endDate}'`
+            + `AND gfw_integrated_alerts__date <= '${endDate}' `
             + `AND is__tree_cover_2022 = true`;
         return `${DATASET_GLAD_ALL_ADM_2}?sql=${sql}`;
     }
@@ -61,7 +61,7 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
                              FROM data
                              WHERE wdpa_protected_area__id = '${wdpa}'
                                AND gfw_integrated_alerts__date >= '${startDate}' `
-            + `AND gfw_integrated_alerts__date <= '${endDate}'`
+            + `AND gfw_integrated_alerts__date <= '${endDate}' `
             + `AND is__tree_cover_2022 = true`;
         return `${DATASET_GLAD_ALL_WDPA}?sql=${sql}`;
     }
