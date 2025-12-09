@@ -272,7 +272,7 @@ export const createGLADAllGeostoreURLSubscriptionBody = (subscription: Record<st
 
 export const mockGLADAllISOQuery = () => nock(config.get('dataApi.url'))
     .get('/dataset/gadm__integrated_alerts__iso_daily_alerts/latest/query')
-    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('is__tree_cover_2022 = true'))
+    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('gfw_integrated_alerts__date') && data.sql.includes('is__tree_cover_2022 = true'))
     .matchHeader('x-api-key', config.get('dataApi.apiKey'))
     .matchHeader('origin', config.get('dataApi.origin'))
     .reply(200, {
@@ -315,7 +315,7 @@ export const mockGLADAllISOQuery = () => nock(config.get('dataApi.url'))
 
 export const mockGLADAllAdm1Query = () => nock(config.get('dataApi.url'))
     .get('/dataset/gadm__integrated_alerts__adm1_daily_alerts/latest/query')
-    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\'') && data.sql.includes('is__tree_cover_2022 = true'))
+    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\'') && data.sql.includes('gfw_integrated_alerts__date') && data.sql.includes('is__tree_cover_2022 = true'))
     .matchHeader('x-api-key', config.get('dataApi.apiKey'))
     .matchHeader('origin', config.get('dataApi.origin'))
     .reply(200, {
@@ -358,7 +358,7 @@ export const mockGLADAllAdm1Query = () => nock(config.get('dataApi.url'))
 
 export const mockGLADAllAdm2Query = () => nock(config.get('dataApi.url'))
     .get('/dataset/gadm__integrated_alerts__adm2_daily_alerts/latest/query')
-    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\'') && data.sql.includes('adm2 = \'2\'') && data.sql.includes('is__tree_cover_2022 = true'))
+    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('adm1 = \'1\'') && data.sql.includes('adm2 = \'2\'') && data.sql.includes('gfw_integrated_alerts__date') && data.sql.includes('is__tree_cover_2022 = true'))
     .matchHeader('x-api-key', config.get('dataApi.apiKey'))
     .matchHeader('origin', config.get('dataApi.origin'))
     .reply(200, {
@@ -402,7 +402,7 @@ export const mockGLADAllAdm2Query = () => nock(config.get('dataApi.url'))
 export const mockGLADAllWDPAQuery = () =>
     nock(config.get('dataApi.url'))
         .get('/dataset/wdpa_protected_areas__integrated_alerts__daily_alerts/latest/query')
-        .query((data) => data.sql && data.sql.includes('wdpa_protected_area__id = \'1\'') && data.sql.includes('is__tree_cover_2022 = true'))
+        .query((data) => data.sql && data.sql.includes('wdpa_protected_area__id = \'1\'') && data.sql.includes('gfw_integrated_alerts__date') && data.sql.includes('is__tree_cover_2022 = true'))
         .matchHeader('x-api-key', config.get('dataApi.apiKey'))
         .matchHeader('origin', config.get('dataApi.origin'))
         .reply(200, {
@@ -445,7 +445,7 @@ export const mockGLADAllWDPAQuery = () =>
 export const mockGLADAllGeostoreQuery = (times: number = 1) =>
     nock(config.get('dataApi.url'))
         .get('/dataset/geostore__integrated_alerts__daily_alerts/latest/query')
-        .query((data) => data.sql && data.sql.includes('geostore__id = \'423e5dfb0448e692f97b590c61f45f22\'') && data.sql.includes('is__tree_cover_2022 = true'))
+        .query((data) => data.sql && data.sql.includes('geostore__id = \'423e5dfb0448e692f97b590c61f45f22\'') && data.sql.includes('gfw_integrated_alerts__date') && data.sql.includes('is__tree_cover_2022 = true'))
         .matchHeader('x-api-key', config.get('dataApi.apiKey'))
         .matchHeader('origin', config.get('dataApi.origin'))
         .times(times)
