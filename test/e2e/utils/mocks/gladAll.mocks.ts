@@ -272,7 +272,7 @@ export const createGLADAllGeostoreURLSubscriptionBody = (subscription: Record<st
 
 export const mockGLADAllISOQuery = () => nock(config.get('dataApi.url'))
     .get('/dataset/gadm__integrated_alerts__iso_daily_alerts/latest/query')
-    .query((data) => data.sql && data.sql.includes('iso = \'BRA\''))
+    .query((data) => data.sql && data.sql.includes('iso = \'BRA\'') && data.sql.includes('is__tree_cover_2022 = true'))
     .matchHeader('x-api-key', config.get('dataApi.apiKey'))
     .matchHeader('origin', config.get('dataApi.origin'))
     .reply(200, {
