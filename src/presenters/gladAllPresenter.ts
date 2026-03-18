@@ -18,7 +18,7 @@ const DATASET_GLAD_ALL_ADM_1: string = '/dataset/gadm__integrated_alerts__adm1_d
 const DATASET_GLAD_ALL_ADM_2: string = '/dataset/gadm__integrated_alerts__adm2_daily_alerts/latest/query';
 const DATASET_GLAD_ALL_WDPA: string = '/dataset/wdpa_protected_areas__integrated_alerts__daily_alerts/latest/query';
 const DATASET_GLAD_ALL_GEOSTORE: string = '/dataset/geostore__integrated_alerts__daily_alerts/latest/query';
-const DATASET_GLAD_ALL_DOWNLOAD: string = '/dataset/gfw_integrated_alerts/latest/download';
+const DATASET_GLAD_ALL_DOWNLOAD: string = '/dataset/gfw_integrated_dist_alerts/latest/download';
 
 
 class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAllPresenterResponse> {
@@ -107,7 +107,7 @@ class GLADAllPresenter extends PresenterInterface<GladAllAlertResultType, GladAl
     static #buildDownloadSQL(startDate: string, endDate: string): string {
         return `SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, `
             + `wur_radd_alerts__confidence, gfw_integrated_alerts__confidence FROM data WHERE gfw_integrated_alerts__date >= '${startDate}' `
-            + `AND gfw_integrated_alerts__date <= '${endDate}' AND is__tree_cover_2022 = true`;
+            + `AND gfw_integrated_alerts__date <= '${endDate}' AND umd_tree_cover_density_2010__tree_cover_2022 = true`;
     }
 
     static async getURLForSubscription(startDate: string, endDate: string, params: Record<string, any>): Promise<string> {
