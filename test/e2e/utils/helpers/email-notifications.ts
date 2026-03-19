@@ -235,7 +235,7 @@ export const validateGladAll = (
     jsonMessage.data.downloadUrls.should.have.property('csv')
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
-        .and.contain(`/dataset/gfw_integrated_alerts/latest/${downloadEndpoint}/csv`)
+        .and.contain(`/dataset/gfw_integrated_dist_alerts/latest/${downloadEndpoint}/csv`)
         .and.contain('SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, wur_radd_alerts__confidence, gfw_integrated_alerts__confidence')
 
     // Validate each expected parameter
@@ -249,7 +249,7 @@ export const validateGladAll = (
     jsonMessage.data.downloadUrls.should.have.property('json')
         .and.be.a('string')
         .and.contain(config.get('dataApi.url'))
-        .and.contain(`/dataset/gfw_integrated_alerts/latest/${downloadEndpoint}/json`)
+        .and.contain(`/dataset/gfw_integrated_dist_alerts/latest/${downloadEndpoint}/json`)
         .and.contain('SELECT latitude, longitude, gfw_integrated_alerts__date, umd_glad_landsat_alerts__confidence, umd_glad_sentinel2_alerts__confidence, wur_radd_alerts__confidence, gfw_integrated_alerts__confidence')
 
     // Validate each expected parameter
